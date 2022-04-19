@@ -3,8 +3,24 @@ spring:
     console:
       enabled: true
       path: /h2
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
   datasource:
-    url: jdbc:h2:file:mem:test
+    url: jdbc:h2:file:~/test
     username: user
     password:
     driverClassName: org.h2.Driver
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          auth: 'true'
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    username: ${EMAIL_USERNAME:hassano19988991@gmail.com}
+    password: ${EMAIL_PASSWORD:etxkzjeuvuupkpmq}
+    port: ${EMAIL_PORT:#{587}}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
