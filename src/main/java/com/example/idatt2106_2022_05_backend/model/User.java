@@ -18,7 +18,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
     @Id

@@ -36,12 +36,12 @@ public class AuthController {
     @PostMapping("/forgotPassword")
     @ApiOperation(value = "Endpoint to handle renewal of password", response = Response.class)
     public Response forgotPassword(){
-
+        return null;
     }
 
     @PostMapping("/create")
     @ApiOperation(value = "", response = Response.class)
     public Response createUser(){
-
+        return null;
     }
 }
