@@ -1,7 +1,7 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.LoginDto;
-import com.example.idatt2106_2022_05_backend.service.UserService;
+import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
