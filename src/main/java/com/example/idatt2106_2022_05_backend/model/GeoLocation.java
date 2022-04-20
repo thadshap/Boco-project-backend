@@ -25,7 +25,8 @@ public class GeoLocation {
     @Column(name="LNG")
     private  double lng;
 
-    //TODO: add relation to AD
+    @OneToOne
+    private Ad ad;
 
     @Override
     public boolean equals(Object o) {
