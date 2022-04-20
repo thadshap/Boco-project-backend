@@ -126,7 +126,15 @@ public class AdServiceImpl {
         Ad newAd = new Ad();
 
         // Checking if dto contains any of the nullable attributes
-        if()
+        if(adDto.getDescription() != null) {
+            newAd.setDescription(adDto.getDescription());
+        }
+        if(adDto.getPicturesIn() != null) {
+            // todo fix this
+        }
+
+
+
     }
 
     // update ad title
