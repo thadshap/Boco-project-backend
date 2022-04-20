@@ -34,4 +34,8 @@ public class Category {
     @ManyToOne
     private Category mainCategory;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
+
 }
