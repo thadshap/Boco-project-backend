@@ -17,7 +17,7 @@ public class GeoLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="GEO_ID", nullable=false)
-    private long geo_id;
+    private Long geo_id;
 
     @Column(name="LAT")
     private double lat;
