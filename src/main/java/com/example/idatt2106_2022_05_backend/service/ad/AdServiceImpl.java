@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.service;
+package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
@@ -8,6 +8,7 @@ import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

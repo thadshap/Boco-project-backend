@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.service;
+package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;

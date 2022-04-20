@@ -1,15 +1,17 @@
-package com.example.idatt2106_2022_05_backend.service;
+package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.GeoLocation;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.GeoLocationRepository;
+import com.example.idatt2106_2022_05_backend.service.ad.GeoLocationService;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GeoLocationServiceImpl implements GeoLocationService{
+public class GeoLocationServiceImpl implements GeoLocationService {
 
 
     @Autowired
@@ -25,22 +27,11 @@ public class GeoLocationServiceImpl implements GeoLocationService{
      * @param long2 longitude item
      * @return distance in km
      */
-    public double calculateDistance(double lat1, double long1, double lat2,
+    public Response calculateDistance(double lat1, double long1, double lat2,
                                             double long2) {
 
         double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
-        return dist/1000;
+        return new Response(dist/1000, HttpStatus.OK);
     }
-
-    public void addNewGeoLocation( userGeoLocation){
-        Ad ad = adRepository.getById(userGeoLocation.getAd_id());
-
-        GeoLocation geoLocation = new GeoLocation();
-        geoLocation.setLng();
-
-    }
-
-
-
 
 }

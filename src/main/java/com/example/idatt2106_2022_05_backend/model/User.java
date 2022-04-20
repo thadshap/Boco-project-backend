@@ -44,6 +44,9 @@ public class User {
     @NotNull
     private String password;
 
+    @Column(name="profile_picture")
+    private byte[] picture;
+
     //@OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
 //    private Picture picture;
