@@ -18,4 +18,9 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     @Query("SELECT a FROM Ad a WHERE a.user.id= :id")
     Set<Ad> getAvailableAdsByUserId(@Param("id") long id);
 
+    // Get all ads with a specific postal code
+    Set<Ad> findByPostalCode(int postalCode);
+
+    // Get all ads with items that are either being rented or given away
+    Set<Ad> findByRental(boolean rental);
 }

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -26,7 +25,8 @@ public class Ad {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = false)
+    // Is nullable
+    @Column(name = "description")
     private String description;
 
     // If true --> for rent; if false --> item is being given away
@@ -34,7 +34,10 @@ public class Ad {
     private boolean rental;
 
     @Column(name = "duration", nullable = false)
-    private AdType duration;
+    private int duration;
+
+    @Column(name = "duration_type", nullable = false)
+    private AdType durationType;
 
     // True if the item is rented out
     @Column(name = "rented_out", nullable = false)

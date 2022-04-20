@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service;
 
+import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
@@ -78,10 +79,55 @@ public class AdServiceImpl {
             return new Response(null, HttpStatus.NO_CONTENT);
         }
     }
-    // Get all ads by postal code
-    // Get all ads with items that are being given away
 
-    // post new ad
+    // Get all ads by postal code
+    public Response getAllAdsByPostalCode(int postalCode) {
+        return new Response(adRepository.findByPostalCode(postalCode), HttpStatus.OK);
+    }
+
+    /**
+     * Get all ads with items that are:
+     *      - Being given away = false
+     *      - Being rented out = true
+      */
+    //
+    public Response getAllAdsByRentalType(boolean rentalType) {
+        Set<Ad> ads = adRepository.findByRental(rentalType);
+
+        if(ads != null) {
+            return new Response(ads, HttpStatus.OK)
+        }
+        else {
+            return new Response(null, HttpStatus.NO_CONTENT);
+        }
+    }
+
+
+    /**
+     * Posts new ad
+     * @param adDto must contain:
+     *              - rental (being rented out or given away)
+     *              - rentedOut (true if the item is rented out)
+     *              - duration (quantity of duration type)
+     *              - durationType (type of duration --> see "AdType" enum)
+     *              - categoryId (only the id of the nearest category)
+     *              - price
+     *              - street_address (of the item)
+     *              - postal_code (of the item)
+     *              - name (header of the ad)
+     *
+     *              can contain (nullable in db):
+     *              - description
+     *              - picture (pictures of the item to be rented out)
+     *
+     * @return
+     */
+    public Response postNewAd(AdDto adDto) {
+        Ad newAd = new Ad();
+
+        // Checking if dto contains any of the nullable attributes
+        if()
+    }
 
     // update ad title
     // update ad description
@@ -89,6 +135,7 @@ public class AdServiceImpl {
     // update ad price
     // update ad street address
     // update ad postal code
+    // update ad rented_out status...
 
     // delete ad
 }
