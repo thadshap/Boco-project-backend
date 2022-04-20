@@ -25,6 +25,8 @@ public class Review {
     @ManyToOne
     private User user;
 
-    //TODO: add dependency to Ad
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
 
 }

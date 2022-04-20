@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -64,4 +65,8 @@ public class Ad {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    // one-to-many connection with review.
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
+    private Set<Review> reviews;
 }

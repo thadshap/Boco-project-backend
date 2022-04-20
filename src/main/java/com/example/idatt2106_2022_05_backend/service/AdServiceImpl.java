@@ -1,8 +1,10 @@
 package com.example.idatt2106_2022_05_backend.service;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
+import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
@@ -159,14 +161,226 @@ public class AdServiceImpl {
     }
 
     // get all reviews for an add with owner = user id
+    public Response getReviewsByUserId(long userId) {
+
+        // Set containing all reviews connected to the ads that the given user owns
+        Set<Review> reviews = adRepository.getReviewsByUserId(userId);
+
+        // If the reviews-list contains anything
+        if(adRepository.getReviewsByUserId(userId) != null) {
+            return new Response(adRepository.getReviewsByUserId(userId), HttpStatus.OK);
+        }
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
     // update ad title
+    public Response updateTitle(long adId, String newTitle) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setTitle(newTitle);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
     // update ad description
+    public Response updateDescription(long adId, String newTitle) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setTitle(newTitle);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     // update ad duration (how long it can be rented for)
+    public Response updateDuration(long adId, int newDuration) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setDuration(newDuration);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    // update duration-type
+    public Response updateDurationType(long adId, AdType newDurationType) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setDurationType(newDurationType);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     // update ad price
+    public Response updatePrice(long adId, int newPrice) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setPrice(newPrice);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     // update ad street address
+    public Response updateStreetAddress(long adId, String newStreetAddress) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setStreetAddress(newStreetAddress);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     // update ad postal code
+    public Response updatePostalCode(long adId, int newPostalCode) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setPostalCode(newPostalCode);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     // update ad rented_out status...
+    public Response updateRentedOut(long adId, boolean rentedOut) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If ad exists
+        if(ad.isPresent()) {
+
+            // Update the ad
+            ad.get().setRentedOut(rentedOut);
+
+            // Save the changes
+            adRepository.save(ad.get());
+
+            // HttpStatus = OK
+            return new Response(null, HttpStatus.OK);
+        }
+
+        // The given ad id was not present in db
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+
+    }
 
     // delete ad
+    public Response deleteAd(long adId) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        // If the ad exists
+        if(ad.isPresent()) {
+
+            // Delete the ad
+            adRepository.deleteById(adId);
+
+            // HttpResponse = OK
+            return new Response(null, HttpStatus.OK);
+        }
+        else {
+            return new Response(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }
