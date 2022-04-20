@@ -12,24 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeoLocationServiceTest {
 
-    @Autowired
-    GeoLocationService service;
-
-    @BeforeEach
-    void setUp() {
-        /*
-        Distance between these two locations should be about 3km
-         */
-
-
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
-    void calculateDistance1() {
+    void calculateDistanceInMeters(){
+        GeoLocationService service = new GeoLocationService();
         UserGeoLocation userGeoLocation = new UserGeoLocation();
         userGeoLocation.setLat(63.424595);
         userGeoLocation.setLng(10.810314);
@@ -39,24 +25,8 @@ class GeoLocationServiceTest {
         itemGeoLocation.setLat(63.442858);
         itemGeoLocation.setLng(10.868397);
 
-        double dist = service.calculateDistance1(userGeoLocation, itemGeoLocation);
-        System.out.println(dist);
-        assertTrue(3<dist );
-    }
-
-    @Test
-    void calculateDistance2() {
-        UserGeoLocation userGeoLocation = new UserGeoLocation();
-        userGeoLocation.setLat(63.424595);
-        userGeoLocation.setLng(10.810314);
-
-        GeoLocation itemGeoLocation = new GeoLocation();
-        itemGeoLocation.setGeo_id(1);
-        itemGeoLocation.setLat(63.442858);
-        itemGeoLocation.setLng(10.868397);
-
-        double dist = service.calculateDistance2(userGeoLocation, itemGeoLocation);
-        System.out.println(dist);
-        assertTrue(3<dist );
+        double dist = service.calculateDistanceInMeters(userGeoLocation.getLat(),userGeoLocation.getLng(), itemGeoLocation.getLat(), itemGeoLocation.getLng());
+        System.out.println("Distance between the given points should be about 3,5km" + dist);
+        assertTrue(3.4<dist && dist<36 );
     }
 }
