@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nonapi.io.github.classgraph.json.Id;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,12 +24,14 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
-    // Recursive relationship
-    @JoinColumn(name = "sub_category_id")
-    private Category subCategory;
+    /**
+     * Recursive one-to-many relationship
+     * // todo some suspicions regarding the tags --> should they be the opposite?
+     */
+    @OneToMany(mappedBy="mainCategory")
+    private Set<Category> subCategories;
 
-    @OneToOne(mappedBy = "subCategory", cascade = CascadeType.REMOVE)
-    private Category category;
+    @ManyToOne
+    private Category mainCategory;
 
-    //TODO create the other side of the one-to-one connection above
 }
