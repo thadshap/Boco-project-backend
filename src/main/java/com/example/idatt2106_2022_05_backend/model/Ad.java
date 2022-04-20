@@ -1,35 +1,21 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nonapi.io.github.classgraph.json.Id;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "courses")
-/**
- * This table has a many-to-many relationship with teachers
- * This table has a many-to-many relationship with students
- * This table has a many-to-one relationship with administrator (teacher)
- * This table has a one-to-many relationship with queues
- */
+@Table(name = "ads")
 public class Ad {
 
-    //address
-    //postal_code
-    //picture
-    //name
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ad_id", nullable = false)
