@@ -14,5 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // get all ads for user (by user id)
     @Query("SELECT u.ads FROM User u WHERE u.id= :id")
-    Set<Ad> getAdsByTeacherId(@Param("id") long id);
+    Set<Ad> getAdsByUserId(@Param("id") long id);
+
 }
