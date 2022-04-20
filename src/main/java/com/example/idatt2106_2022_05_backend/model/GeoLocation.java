@@ -1,13 +1,17 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-import lombok.AllArgsConstructor;
-import javax.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-@Data
+import javax.persistence.*;
+import java.util.Objects;
+
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+@Entity
 public class GeoLocation {
 
     @Id
@@ -23,4 +27,16 @@ public class GeoLocation {
 
     //TODO: add relation to AD
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        GeoLocation that = (GeoLocation) o;
+        return Objects.equals(geo_id, that.geo_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
