@@ -12,7 +12,7 @@
     <groupId>com.example</groupId>
     <artifactId>idatt2106_2022_05_backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>idatt2106_2022_05_backend</name>
+    <title>idatt2106_2022_05_backend</title>
     <description>idatt2106_2022_05_backend</description>
     <properties>
         <java.version>11</java.version>

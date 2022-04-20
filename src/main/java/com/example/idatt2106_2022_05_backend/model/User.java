@@ -9,7 +9,9 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -55,6 +57,10 @@ public class User {
 
     //@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     //private Set<Rental> borrower
+
+    // One to many relationship w/ ad
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user")
+    private Set<Ad> ads = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
