@@ -16,7 +16,7 @@ import java.util.Set;
  *          - price
  *          - street_address (of the item)
  *          - postal_code (of the item)
- *          - name (header of the ad)
+ *          - title (header of the ad)
  *
  * Data transfer object upon receipt from fronted CAN contain:
  *              - description
@@ -31,7 +31,7 @@ public class AdDto {
     private int price;
     private String streetAddress;
     private int postalCode;
-    private String name; // title/header
+    private String title; // title/header
     private String description;
 
     // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
@@ -74,8 +74,8 @@ public class AdDto {
         return postalCode;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {
@@ -124,8 +124,8 @@ public class AdDto {
         this.postalCode = postalCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setDescription(String description) {

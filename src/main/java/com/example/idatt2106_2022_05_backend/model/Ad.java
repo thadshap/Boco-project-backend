@@ -49,7 +49,7 @@ public class Ad {
 
     // Is nullable
     @Column(name = "street_address")
-    private int streetAddress;
+    private String streetAddress;
     // Is nullable
     @Column(name = "postal_code")
     private int postalCode;

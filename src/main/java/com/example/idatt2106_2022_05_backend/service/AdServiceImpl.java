@@ -2,14 +2,15 @@ package com.example.idatt2106_2022_05_backend.service;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
+import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,6 +22,9 @@ public class AdServiceImpl {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     // Get all ads
     public Response getAllAds() {
@@ -95,7 +99,7 @@ public class AdServiceImpl {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
         if(ads != null) {
-            return new Response(ads, HttpStatus.OK)
+            return new Response(ads, HttpStatus.OK);
         }
         else {
             return new Response(null, HttpStatus.NO_CONTENT);
@@ -107,7 +111,6 @@ public class AdServiceImpl {
      * Posts new ad
      * @param adDto must contain:
      *              - rental (being rented out or given away)
-     *              - rentedOut (true if the item is rented out)
      *              - duration (quantity of duration type)
      *              - durationType (type of duration --> see "AdType" enum)
      *              - categoryId (only the id of the nearest category)
@@ -119,11 +122,31 @@ public class AdServiceImpl {
      *              can contain (nullable in db):
      *              - description
      *              - picture (pictures of the item to be rented out)
+     *              - rentedOut (true if the item is rented out, which it should be at initialization)
      *
      * @return
      */
     public Response postNewAd(AdDto adDto) {
         Ad newAd = new Ad();
+
+        // Required attributes
+        newAd.setRental(adDto.isRental());
+        newAd.setRentedOut(false);
+        newAd.setDuration(adDto.getDuration());
+        newAd.setDurationType(adDto.getDurationType());
+        newAd.setPrice(adDto.getPrice());
+        newAd.setStreetAddress(adDto.getStreetAddress());
+        newAd.setTitle(adDto.getTitle());
+
+        // If category exists
+        Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
+        if(category.isPresent()) {
+            newAd.setCategory(category.get());
+        }
+        // If the category given is null or wrong, the ad cannot be created
+        else {
+            return new Response(null, HttpStatus.NOT_ACCEPTABLE);
+        }
 
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
@@ -133,9 +156,9 @@ public class AdServiceImpl {
             // todo fix this
         }
 
-
-
     }
+
+    // get all reviews for an add with owner = user id
 
     // update ad title
     // update ad description
