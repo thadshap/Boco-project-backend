@@ -1,0 +1,6 @@
+image: maven:3-jdk-11
+
+build:
+  script: "mvn clean install -B"
+test:
+  script: "mvn test -B"

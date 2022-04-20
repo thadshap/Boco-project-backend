@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.email;
 
-import com.example.qsgruppe12.model.Email;
+import com.example.idatt2106_2022_05_backend.model.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
