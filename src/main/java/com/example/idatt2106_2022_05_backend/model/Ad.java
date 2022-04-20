@@ -53,8 +53,12 @@ public class Ad {
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
-    private Set<Picture> pictures = new HashSet<>();
+    private Set<Picture> pictures;
 
     @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
