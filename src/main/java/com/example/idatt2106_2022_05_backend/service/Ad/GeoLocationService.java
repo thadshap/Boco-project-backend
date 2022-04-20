@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.service;
+package com.example.idatt2106_2022_05_backend.service.Ad;
 
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.GeoLocation;

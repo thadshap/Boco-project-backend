@@ -1,9 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +8,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "pictures")
 public class Picture {
@@ -20,8 +18,14 @@ public class Picture {
     @Column(name = "picture_id", nullable = false)
     private Long pictureId;
 
-    @Column(name = "content", nullable = false)
-    private String title;
+    @Column(name = "name", nullable = false)
+    private String filename;
+
+    @Column(name="type")
+    private String type;
+
+    @Column(name="content")
+    private byte[] content;
 
     @ManyToOne
     @JoinColumn(name = "ad_id")
