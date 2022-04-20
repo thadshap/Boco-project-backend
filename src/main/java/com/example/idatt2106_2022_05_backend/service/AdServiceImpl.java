@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class AdServiceImpl {
+public class AdServiceImpl implements AdService {
 
     @Autowired
     AdRepository adRepository;
@@ -29,11 +29,13 @@ public class AdServiceImpl {
     CategoryRepository categoryRepository;
 
     // Get all ads
+    @Override
     public Response getAllAds() {
         return new Response(adRepository.findAll(), HttpStatus.OK);
     }
 
     // Get ad by id
+    @Override
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
         if(ad.isPresent()) {
@@ -45,6 +47,7 @@ public class AdServiceImpl {
     }
 
     // Get all ads for user
+    @Override
     public Response getAllAdsByUser(long userId) {
         if(userRepository.getAdsByUserId(userId) != null) {
             return new Response(userRepository.getAdsByUserId(userId), HttpStatus.OK);
@@ -57,6 +60,7 @@ public class AdServiceImpl {
     // Get random ads --> how many? 20-50? TODO implement in frontend
 
     // Get all available ads
+    @Override
     public Response getAllAvailableAds() {
         Set<Ad> availableAds = adRepository.getAllAvailableAds();
 
@@ -72,6 +76,7 @@ public class AdServiceImpl {
     }
 
     // Get all available ads by user id
+    @Override
     public Response getAllAvailableAdsByUser(long userId) {
         Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
 
@@ -87,6 +92,7 @@ public class AdServiceImpl {
     }
 
     // Get all ads by postal code
+    @Override
     public Response getAllAdsByPostalCode(int postalCode) {
         return new Response(adRepository.findByPostalCode(postalCode), HttpStatus.OK);
     }
@@ -96,7 +102,8 @@ public class AdServiceImpl {
      *      - Being given away = false
      *      - Being rented out = true
       */
-    //
+    // Get all ads by rental type
+    @Override
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
@@ -128,6 +135,7 @@ public class AdServiceImpl {
      *
      * @return
      */
+    @Override
     public Response postNewAd(AdDto adDto) {
         Ad newAd = new Ad();
 
@@ -161,6 +169,7 @@ public class AdServiceImpl {
     }
 
     // get all reviews for an add with owner = user id
+    @Override
     public Response getReviewsByUserId(long userId) {
 
         // Set containing all reviews connected to the ads that the given user owns
@@ -176,6 +185,7 @@ public class AdServiceImpl {
     }
 
     // update ad title
+    @Override
     public Response updateTitle(long adId, String newTitle) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -199,6 +209,7 @@ public class AdServiceImpl {
     }
 
     // update ad description
+    @Override
     public Response updateDescription(long adId, String newTitle) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -223,6 +234,7 @@ public class AdServiceImpl {
     }
 
     // update ad duration (how long it can be rented for)
+    @Override
     public Response updateDuration(long adId, int newDuration) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -247,6 +259,7 @@ public class AdServiceImpl {
     }
 
     // update duration-type
+    @Override
     public Response updateDurationType(long adId, AdType newDurationType) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -271,6 +284,7 @@ public class AdServiceImpl {
     }
 
     // update ad price
+    @Override
     public Response updatePrice(long adId, int newPrice) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -295,6 +309,7 @@ public class AdServiceImpl {
     }
 
     // update ad street address
+    @Override
     public Response updateStreetAddress(long adId, String newStreetAddress) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -319,6 +334,7 @@ public class AdServiceImpl {
     }
 
     // update ad postal code
+    @Override
     public Response updatePostalCode(long adId, int newPostalCode) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -343,6 +359,7 @@ public class AdServiceImpl {
     }
 
     // update ad rented_out status...
+    @Override
     public Response updateRentedOut(long adId, boolean rentedOut) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -367,6 +384,7 @@ public class AdServiceImpl {
     }
 
     // delete ad
+    @Override
     public Response deleteAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
 
