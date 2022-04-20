@@ -9,4 +9,5 @@ import javax.mail.MessagingException;
 public interface EmailService {
     void sendEmail(Email email) throws MessagingException;
     void sendEmail(String from, String to, String subject, String message) throws MessagingException;
+
 }
