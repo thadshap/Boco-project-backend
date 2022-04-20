@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
+import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,9 @@ public class Ad {
     @Column(name = "rental", nullable = false)
     private boolean rental;
 
+    @Column(name = "duration", nullable = false)
+    private AdType duration;
+
     // True if the item is rented out
     @Column(name = "rented_out", nullable = false)
     private boolean rentedOut;
@@ -48,11 +52,9 @@ public class Ad {
     private int postalCode;
 
     // Is nullable
-    // todo fk where relationship is zero-to-many
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
     private Set<Picture> pictures = new HashSet<>();
 
-    // todo one-to-one
     @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)
     private Category category;
 }

@@ -23,6 +23,7 @@ public class Picture {
     @Column(name = "content", nullable = false)
     private String title;
 
+    @ManyToOne
     @JoinColumn(name = "ad_id")
     private Ad ad;
 
