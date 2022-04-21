@@ -65,7 +65,8 @@ public class Ad {
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
     private Set<Picture> pictures;
 
-    @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne

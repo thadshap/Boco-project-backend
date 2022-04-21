@@ -1,9 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -13,6 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "categories")
 public class Category {
 
@@ -34,8 +32,8 @@ public class Category {
     @ManyToOne
     private Category mainCategory;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id")
-    private Ad ad;
+    private Set<Ad> ads;
 
 }
