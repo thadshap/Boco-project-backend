@@ -1,8 +1,12 @@
 package com.example.idatt2106_2022_05_backend.config;
 
+import com.example.idatt2106_2022_05_backend.security.DatabaseLoginSuccessHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
+import com.example.idatt2106_2022_05_backend.security.oauth.CustomOAuth2UserService;
+import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginSuccessHandler;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -50,20 +54,36 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/","/auth/login", "/auth/login/outside/service", "/auth/forgotPassword").permitAll()
+                .antMatchers("/","/auth/login","/h2/**", "/auth/login/outside/service", "/auth/forgotPassword").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
                 .antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth" + "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/users/").permitAll()
                 .antMatchers(HttpMethod.GET, "/users/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
+//                .formLogin().permitAll()
+//                .loginPage("/auth/login")
+//                .usernameParameter("email")
+//                .passwordParameter("password")
+//                .successHandler(databaseLoginSuccessHandler)
+//                .and()
+//                .oauth2Login()
+//                .loginPage("/auth/login/outside/service")
+//                .userInfoEndpoint()
+//                .userService(oauth2UserService)
+//                .and()
+//                .successHandler(oauthLoginSuccessHandler)
+//                .and()
+//                .logout().logoutSuccessUrl("/").permitAll()
+//                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(
                         (req, res, e) -> {
@@ -77,4 +97,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
+
+//    @Autowired
+//    private CustomOAuth2UserService oauth2UserService;
+//
+//    @Autowired
+//    private OAuthLoginSuccessHandler oauthLoginSuccessHandler;
+//
+//    @Autowired
+//    private DatabaseLoginSuccessHandler databaseLoginSuccessHandler;
 }

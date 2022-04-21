@@ -31,9 +31,9 @@ public class RegistrationCompleteListener implements
 
         String url =
                 event.getApplicationUrl()
-                        + "/verifyEmail?token="
+                        + "/auth/verifyEmail?token="
                         + token;
-        emailService.sendEmail("BOCO", user.getEmail(), "Konto at BOCO",
+        emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
                 "Kontoen din er nesten klar, " +
                         " klikk på lenken under for å verifisere kontoen din." +
                         "\n" + url);
