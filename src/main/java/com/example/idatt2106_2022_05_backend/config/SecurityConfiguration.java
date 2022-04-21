@@ -1,12 +1,11 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import com.example.idatt2106_2022_05_backend.security.DatabaseLoginSuccessHandler;
+import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
-import com.example.idatt2106_2022_05_backend.security.oauth.CustomOAuth2UserService;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginSuccessHandler;
+import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
+import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -69,21 +68,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()
-//                .formLogin().permitAll()
-//                .loginPage("/auth/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password")
-//                .successHandler(databaseLoginSuccessHandler)
-//                .and()
-//                .oauth2Login()
-//                .loginPage("/auth/login/outside/service")
-//                .userInfoEndpoint()
-//                .userService(oauth2UserService)
-//                .and()
-//                .successHandler(oauthLoginSuccessHandler)
-//                .and()
-//                .logout().logoutSuccessUrl("/").permitAll()
-//                .and()
+                .formLogin().permitAll()
+                .loginPage("/auth/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .successHandler(databaseLoginHandler)
+                .and()
+                .oauth2Login()
+                .loginPage("/auth/login/outside/service")
+                .userInfoEndpoint()
+                .userService(oauth2UserService)
+                .and()
+                .successHandler(oauthLoginHandler)
+                .and()
+                .logout().logoutSuccessUrl("/").permitAll()
+                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(
                         (req, res, e) -> {
@@ -98,12 +97,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
-//    @Autowired
-//    private CustomOAuth2UserService oauth2UserService;
-//
-//    @Autowired
-//    private OAuthLoginSuccessHandler oauthLoginSuccessHandler;
-//
-//    @Autowired
-//    private DatabaseLoginSuccessHandler databaseLoginSuccessHandler;
+    @Autowired
+    private OAuth2UserServiceImpl oauth2UserService;
+
+    @Autowired
+    private OAuthLoginHandler oauthLoginHandler;
+
+    @Autowired
+    private DatabaseLoginHandler databaseLoginHandler;
 }
