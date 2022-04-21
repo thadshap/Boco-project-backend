@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.service.Ad;
+package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
