@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     public List<Review> getAllByUser(User user);
     public List<Review> getAllByAd(Ad ad);
+    public Optional<Review> getByAdAndUser(Ad ad, User user);
+
 }

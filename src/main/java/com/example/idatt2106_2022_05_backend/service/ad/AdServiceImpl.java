@@ -143,7 +143,7 @@ public class AdServiceImpl implements AdService {
      *              - picture (pictures of the item to be rented out)
      *              - rentedOut (true if the item is rented out, which it should be at initialization)
      *
-     * @return
+     * @return response
      */
     @Override
     public Response postNewAd(AdDto adDto) throws IOException {
