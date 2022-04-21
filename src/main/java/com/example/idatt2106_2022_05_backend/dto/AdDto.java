@@ -8,20 +8,13 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * Data transfer object upon receipt from frontend MUST contain:
- *          - rental (being rented out or given away)
- *          - rentedOut (true if the item is rented out)
- *          - duration (quantity of duration type)
- *          - durationType (type of duration --> see "AdType" enum)
- *          - categoryId (only the id of the nearest category)
- *          - price
- *          - street_address (of the item)
- *          - postal_code (of the item)
- *          - title (header of the ad)
+ * Data transfer object upon receipt from frontend MUST contain: - rental (being rented out or given away) - rentedOut
+ * (true if the item is rented out) - duration (quantity of duration type) - durationType (type of duration --> see
+ * "AdType" enum) - categoryId (only the id of the nearest category) - price - street_address (of the item) -
+ * postal_code (of the item) - title (header of the ad)
  *
- * Data transfer object upon receipt from fronted CAN contain:
- *              - description
- *              - picture (pictures of the item to be rented out)
+ * Data transfer object upon receipt from fronted CAN contain: - description - picture (pictures of the item to be
+ * rented out)
  */
 public class AdDto {
     private boolean rental;

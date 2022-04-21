@@ -16,10 +16,10 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name="RATING")
+    @Column(name = "RATING")
     private int rating;
 
-    @Column(name="DESCRIPTION")
+    @Column(name = "DESCRIPTION")
     private String description;
 
     @ManyToOne

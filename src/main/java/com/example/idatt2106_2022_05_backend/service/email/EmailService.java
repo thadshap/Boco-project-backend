@@ -8,5 +8,7 @@ import javax.mail.MessagingException;
 @Service
 public interface EmailService {
     void sendEmail(Email email) throws MessagingException;
+
     void sendEmail(String from, String to, String subject, String message) throws MessagingException;
+
 }

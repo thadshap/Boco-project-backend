@@ -43,22 +43,13 @@ public class SwaggerConfig {
     private String contactEmail = "BOCO@ntnu.no";
 
     @Bean
-    public Docket api(){
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()))
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build();
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
+                .securityContexts(Arrays.asList(securityContext())).securitySchemes(Arrays.asList(apiKey())).select()
+                .apis(RequestHandlerSelectors.any()).paths(PathSelectors.any()).build();
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title(title)
-                .description(description)
-                .version(version)
-                .build();
+        return new ApiInfoBuilder().title(title).description(description).version(version).build();
     }
 }

@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.ads FROM User u WHERE u.id= :id")
     Set<Ad> getAdsByUserId(@Param("id") long id);
 
+    User findByEmail(String email);
 }
