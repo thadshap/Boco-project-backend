@@ -197,8 +197,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void updateAuthenticationType(String username, String database) {
-
+    public void updateAuthenticationType(String username, String oauth2ClientName) {
+//        userRepository.
+        //TODO verify user logging in by facebook and google and put them in repo
     }
 
     @Override
