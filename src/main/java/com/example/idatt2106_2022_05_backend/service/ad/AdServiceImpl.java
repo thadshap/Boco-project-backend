@@ -195,6 +195,7 @@ public class AdServiceImpl implements AdService {
         picture.setAd(ad);
     }
 
+    @Override
     public Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
         ArrayList<AdDto> ads = new ArrayList<>();
         for(Ad ad :adRepository.findAll()){
