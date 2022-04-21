@@ -40,6 +40,9 @@ public class AdDto {
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
     private Set<Image> picturesOut;
 
+    // Upon update-methods
+    private long adId;
+
     // GETTERS
 
     public boolean isRental() {
@@ -90,6 +93,10 @@ public class AdDto {
         return picturesOut;
     }
 
+    public long getAdId() {
+        return adId;
+    }
+
     // SETTERS
 
     public void setRental(boolean rental) {
@@ -138,5 +145,9 @@ public class AdDto {
 
     public void setPicturesOut(Set<Image> picturesOut) {
         this.picturesOut = picturesOut;
+    }
+
+    public void setAdId(long adId) {
+        this.adId = adId;
     }
 }
