@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.dto;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
+import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
@@ -22,6 +23,7 @@ import java.util.Set;
  *              - description
  *              - picture (pictures of the item to be rented out)
  */
+@Builder
 public class AdDto {
     private boolean rental;
     private boolean rentedOut;
