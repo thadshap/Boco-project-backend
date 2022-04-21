@@ -24,14 +24,14 @@ public class PictureController {
     PictureService pictureService;
 
     @PostMapping("/upload/image")
-    public ResponseEntity<PictureUploadResponse> uploadImage(@RequestParam("image") MultipartFile file) throws Exception {
+    public ResponseEntity<PictureUploadResponse> uploadImage(@RequestParam("image") MultipartFile file)
+            throws Exception {
         return pictureService.uploadPicture(file);
     }
 
     @GetMapping("/getimage/{filename}")
-    public Image getPicture(@PathVariable("name")String filename) throws Exception{
-
+    public Image getPicture(@PathVariable("name") String filename) throws Exception {
+        return null;
     }
-
 
 }

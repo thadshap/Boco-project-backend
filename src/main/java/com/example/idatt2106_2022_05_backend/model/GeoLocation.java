@@ -16,21 +16,23 @@ public class GeoLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="GEO_ID", nullable=false)
+    @Column(name = "GEO_ID", nullable = false)
     private Long geo_id;
 
-    @Column(name="LAT")
+    @Column(name = "LAT")
     private double lat;
 
-    @Column(name="LNG")
-    private  double lng;
+    @Column(name = "LNG")
+    private double lng;
 
-    //TODO: add relation to AD
+    // TODO: add relation to AD
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         GeoLocation that = (GeoLocation) o;
         return Objects.equals(geo_id, that.geo_id);
     }

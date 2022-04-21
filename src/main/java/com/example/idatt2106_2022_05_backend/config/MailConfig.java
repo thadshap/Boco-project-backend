@@ -27,14 +27,14 @@ public class MailConfig {
     @Value("${spring.mail.password}")
     private String EMAIL_PASSWORD;
 
-
     /**
      *
      * @return
+     * 
      * @throws IOException
      */
     @Bean
-    public JavaMailSender mailSender() throws IOException  {
+    public JavaMailSender mailSender() throws IOException {
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(EMAIL_HOST);
         mailSender.setPort(EMAIL_PORT);
@@ -42,8 +42,8 @@ public class MailConfig {
         mailSender.setPassword(EMAIL_PASSWORD);
 
         Properties javaMailProperties = new Properties();
-        javaMailProperties.put("mail.smtp.starttls.enable","true");
-        javaMailProperties.put("mail.smtp.auth","true");
+        javaMailProperties.put("mail.smtp.starttls.enable", "true");
+        javaMailProperties.put("mail.smtp.auth", "true");
         mailSender.setJavaMailProperties(javaMailProperties);
 
         return mailSender;

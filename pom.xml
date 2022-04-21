@@ -12,7 +12,6 @@
     <groupId>com.example</groupId>
     <artifactId>idatt2106_2022_05_backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <title>idatt2106_2022_05_backend</title>
     <description>idatt2106_2022_05_backend</description>
     <properties>
         <java.version>11</java.version>
@@ -146,6 +145,27 @@
 
     <build>
         <plugins>
+            <!-- Maven Javadoc - Documentation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <source>11</source>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <reportOutputDirectory>public/javadoc</reportOutputDirectory>
+                    <destDir>/</destDir>
+                </configuration>
+            </plugin>
+
+            <!-- Eclipse Java Format - Formatting -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.14.0</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

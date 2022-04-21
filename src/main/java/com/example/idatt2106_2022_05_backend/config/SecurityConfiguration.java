@@ -45,54 +45,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
-                    var cors = new CorsConfiguration();
-                    cors.setAllowedOrigins(List.of("*"));
-                    cors.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS"));
-                    cors.setAllowedHeaders(List.of("*"));
-                    return cors;}).and()
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/","/auth/login","/h2/**", "/auth/login/outside/service", "/auth/forgotPassword").permitAll()
-                .antMatchers("/v2/api-docs").permitAll()
-                .antMatchers("/configuration/ui").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/configuration/security").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/users/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .formLogin().permitAll()
-                .loginPage("/auth/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .successHandler(databaseLoginHandler)
-                .and()
-                .oauth2Login()
-                .loginPage("/auth/login/outside/service")
-                .userInfoEndpoint()
-                .userService(oauth2UserService)
-                .and()
-                .successHandler(oauthLoginHandler)
-                .and()
-                .logout().logoutSuccessUrl("/").permitAll()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (req, res, e) -> {
-                            res.setContentType("application/json");
-                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
-                        })
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            var cors = new CorsConfiguration();
+            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedHeaders(List.of("*"));
+            return cors;
+        }).and().csrf().disable().authorizeRequests()
+                .antMatchers("/", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/**").permitAll().antMatchers(HttpMethod.GET, "/auth/**")
+                .permitAll().antMatchers(HttpMethod.POST, "/users/").permitAll()
+                .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
+                .permitAll().anyRequest().authenticated().and().formLogin().permitAll().loginPage("/auth/login")
+                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
+                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
+                .userService(oauth2UserService).and().successHandler(oauthLoginHandler).and().logout()
+                .logoutSuccessUrl("/").permitAll().and().exceptionHandling().authenticationEntryPoint((req, res, e) -> {
+                    res.setContentType("application/json");
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
+                }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
