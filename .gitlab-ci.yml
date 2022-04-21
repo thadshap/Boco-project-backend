@@ -21,6 +21,8 @@ lint:
     - master
     - merge_requests
   script:
+    - echo "Formatting"
+    - mvn clean formatter:format
     - echo "Checking formatting"
     - mvn clean formatter:validate
 
