@@ -44,6 +44,16 @@ public class User {
     @NotNull
     private String password;
 
+    private String role = "USER";
+
+    private boolean verified = false;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    UserVerificationToken userVerificationToken;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    ResetPasswordToken resetPasswordToken;
+
     //@OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
 //    private Picture picture;
