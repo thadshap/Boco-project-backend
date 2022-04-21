@@ -1,10 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
