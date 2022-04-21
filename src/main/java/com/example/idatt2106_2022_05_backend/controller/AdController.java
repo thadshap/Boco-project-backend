@@ -19,6 +19,18 @@ public class AdController {
         return adService.getAllAds();
     }
 
+    // Get all available ads
+    @PostMapping("/ads/available")
+    public Response getAllAvailableAds() {
+        return adService.getAllAvailableAds();
+    }
+
+    // Get all available ads by user
+    @GetMapping("/ads/available/{userId}")
+    public Response getAvailableAdsByUserId(@PathVariable("userId") long id) {
+        return adService.getAllAvailableAdsByUser(id);
+    }
+
     // Get all ads by postal code
     @PostMapping("/ads")
     public Response getAdByPostalCode(@RequestBody int postalCode) { // todo use dto instead?
@@ -30,6 +42,8 @@ public class AdController {
     public Response getAllAdsByRentalType(@RequestBody boolean rentalType) {
         return adService.getAllAdsByRentalType(rentalType);
     }
+
+
 
     // Get ad by id
     @GetMapping("/ads/{adId}")

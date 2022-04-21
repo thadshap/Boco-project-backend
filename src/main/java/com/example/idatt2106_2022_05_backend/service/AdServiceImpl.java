@@ -380,7 +380,6 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response(null, HttpStatus.NOT_FOUND);
         }
-
     }
 
     // delete ad

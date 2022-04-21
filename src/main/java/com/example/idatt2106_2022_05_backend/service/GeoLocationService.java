@@ -1,7 +1,5 @@
 package com.example.idatt2106_2022_05_backend.service;
 
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
-import com.example.idatt2106_2022_05_backend.model.GeoLocation;
 import org.springframework.stereotype.Service;
 
 @Service

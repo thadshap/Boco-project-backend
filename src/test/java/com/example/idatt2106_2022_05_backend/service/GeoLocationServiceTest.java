@@ -1,12 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service;
 
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
-import com.example.idatt2106_2022_05_backend.model.GeoLocation;
-import jakarta.validation.constraints.AssertTrue;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
 
