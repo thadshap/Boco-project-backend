@@ -212,39 +212,129 @@ class AdControllerTest {
     }
 
     @Test
-    void updateTitle() {
+    void updateTitle() throws Exception {
+        Mockito.when(adService.updateTitle(1L, "newTitle")).
+                thenReturn(new Response(null,HttpStatus.OK));
 
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateTitle").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"title\" : \"newTitle\"\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.title").value(ad.getTitle()));;
     }
 
     @Test
-    void updateDescription() {
+    void updateDescription() throws Exception {
+        Mockito.when(adService.updateDescription(1L, "new description")).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateDescription").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"description\" : \"new description\"\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.description").value(ad.getDescription()));
     }
 
     @Test
-    void updateDuration() {
+    void updateDuration() throws Exception {
+        Mockito.when(adService.updateDuration(1L, 10)).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateDuration").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"duration\" : 10\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.duration").value(ad.getDuration()));
     }
 
     @Test
-    void updateDurationType() {
+    void updateDurationType() throws Exception {
+        Mockito.when(adService.updateDurationType(1L, AdType.DAY)).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateDurationType").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"durationType\" : DAY\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.durationType").
+                        value(ad.getDurationType()));    }
+
+    @Test
+    void updatePrice() throws Exception {
+        Mockito.when(adService.updatePrice(1L, 300)).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updatePrice").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"price\" : 300\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.price").value(ad.getPrice()));
     }
 
     @Test
-    void updatePrice() {
+    void updateStreetAddress() throws Exception {
+        Mockito.when(adService.updateStreetAddress(1L, "new address 4")).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateStreetAddress").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"streetAddress\" : \"new address 4\"\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.streetAddress").
+                        value(ad.getStreetAddress()));
     }
 
     @Test
-    void updateStreetAddress() {
+    void updatePostalCode() throws Exception {
+        Mockito.when(adService.updatePostalCode(1L, 1111)).
+                thenReturn(new Response(null,HttpStatus.OK));
+
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updatePostalCode").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"postalCode\" : 1111\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.postalCode").
+                        value(ad.getPostalCode()));
     }
 
     @Test
-    void updatePostalCode() {
-    }
+    void updateRentedOut() throws Exception {
+        Mockito.when(adService.updateRentedOut(1L, true)).
+                thenReturn(new Response(null,HttpStatus.OK));
 
-    @Test
-    void updateRentedOut() {
+        // Performing the post operation
+        mockMvc.perform(post("/ads/updateRentedOut").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content("{\n" +
+                                "\t\"rentedOut\" : true\n" +
+                                "}")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.rentedOut").value(ad.isRentedOut()));
     }
 
     @Test
     void deleteAd() {
+
     }
 }
