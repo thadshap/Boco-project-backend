@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public class Ad {
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
-    private Set<Picture> pictures;
+    private ArrayList<Picture> pictures;
 
     @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)
     private Category category;
@@ -68,5 +69,5 @@ public class Ad {
 
     // one-to-many connection with review.
     @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
-    private Set<Review> reviews;
+    private ArrayList<Review> reviews;
 }

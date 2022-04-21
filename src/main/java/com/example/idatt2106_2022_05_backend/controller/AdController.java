@@ -1,5 +1,7 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.service.AdServiceImpl;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdController {
 
     @Autowired
-    AdService adService;
+    AdServiceImpl adService;
 
     // get all ads
     @GetMapping("/ads")
@@ -34,6 +36,11 @@ public class AdController {
     @PostMapping("/users/ads")
     public Response getAdByPostalCode(@RequestBody int postalCode) { // todo use dto instead?
         return adService.getAllAdsByPostalCode(postalCode);
+    }
+
+    @GetMapping("/ads/nearby")
+    public Response getAllAdsNeaby(@RequestBody UserGeoLocation userGeoLocation){
+        return adService.getAllAdsWithDistance(userGeoLocation);
     }
 
     // Get all ads by rental type
