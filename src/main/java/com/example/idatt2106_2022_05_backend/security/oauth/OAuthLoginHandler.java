@@ -14,19 +14,19 @@ import java.io.IOException;
 @Component
 public class OAuthLoginHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-	@Autowired
-	AuthService authService;
-	
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-										Authentication authentication) throws ServletException, IOException {
-		OAuth2UserImpl oauth2User = (OAuth2UserImpl) authentication.getPrincipal();
-		String oauth2ClientName = oauth2User.getOauth2ClientName();
-		String username = oauth2User.getEmail();
-		
-		authService.updateAuthenticationType(username, oauth2ClientName);
-		
-		super.onAuthenticationSuccess(request, response, authentication);
-	}
+    @Autowired
+    AuthService authService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws ServletException, IOException {
+        OAuth2UserImpl oauth2User = (OAuth2UserImpl) authentication.getPrincipal();
+        String oauth2ClientName = oauth2User.getOauth2ClientName();
+        String username = oauth2User.getEmail();
+
+        authService.updateAuthenticationType(username, oauth2ClientName);
+
+        super.onAuthenticationSuccess(request, response, authentication);
+    }
 
 }

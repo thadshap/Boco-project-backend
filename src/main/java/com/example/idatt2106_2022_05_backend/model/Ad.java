@@ -55,7 +55,7 @@ public class Ad {
     private int postalCode;
 
     // Is nullable
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "ad")
     private Set<Picture> pictures;
 
     @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)

@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User createUser(CreateAccountDto createAccount) {
-        if (userRepository.findByEmail(createAccount.getEmail()) != null){
+        if (userRepository.findByEmail(createAccount.getEmail()) != null) {
             return null;
         }
 
@@ -78,8 +78,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String validateEmailThroughToken(String token) {
-        UserVerificationToken verificationToken
-                = userVerificationTokenRepository.findByToken(token).get();
+        UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(token).get();
 
         if (verificationToken == null) {
             return "Invalid email";
@@ -88,8 +87,7 @@ public class AuthServiceImpl implements AuthService {
         User user = verificationToken.getUser();
         Calendar cal = Calendar.getInstance();
 
-        if ((verificationToken.getExpirationTime().getTime()
-                - cal.getTime().getTime()) <= 0) {
+        if ((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
             userVerificationTokenRepository.delete(verificationToken);
             return "Valideringstid utløpt";
         }
@@ -101,33 +99,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
-        UserVerificationToken verificationToken
-                = userVerificationTokenRepository.findByToken(prevToken).get();
+        UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(prevToken).get();
 
-        //        if (verificationToken == null) {
-        //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
-        //        } TODO exception
+        // if (verificationToken == null) {
+        // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
+        // } TODO exception
 
         verificationToken.setToken(UUID.randomUUID().toString());
         userVerificationTokenRepository.save(verificationToken);
         User user = verificationToken.getUser();
 
-        String newUrl = "http://" +
-                url.getServerName() +
-                ":" +
-                url.getServerPort() +
-                url.getContextPath() +
-                "/auth/verifyRegistration?token="
-                + verificationToken.getToken();
+        String newUrl = "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
+                + "/auth/verifyRegistration?token=" + verificationToken.getToken();
 
         emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
-                "Kontoen din er nesten klar, " +
-                        " klikk på lenken under for å verifisere kontoen din." +
-                        "\n" + url);
-        //TODO create own mail
+                "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
+        // TODO create own mail
 
-        log.info("Click the link to verify your account: {}",
-                newUrl);
+        log.info("Click the link to verify your account: {}", newUrl);
         return new Response("Verifikasjons mail er sendt til din email!", HttpStatus.ACCEPTED);
     }
 
@@ -135,14 +124,14 @@ public class AuthServiceImpl implements AuthService {
     public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException {
         User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
 
-        if(user!=null){
+        if (user != null) {
             String token = UUID.randomUUID().toString();
             ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
             resetPasswordTokenRepository.save(resetToken);
             emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-                    "Klikk på lenken under for å endre passordet ditt." +
-                            "\n" + url+ "/auth/renewPassword?token=" + token);
-            return new Response("Reset passord link sent til mail.",HttpStatus.ACCEPTED);
+                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewPassword?token="
+                            + token);
+            return new Response("Reset passord link sent til mail.", HttpStatus.ACCEPTED);
         }
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
@@ -150,8 +139,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Response validatePasswordThroughToken(String token, UserForgotPasswordDto forgotPasswordDto) {
-        ResetPasswordToken resetPasswordToken
-                = resetPasswordTokenRepository.findByToken(token);
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
 
         if (resetPasswordToken == null) {
             return new Response("Passord to ken ikke funnet", HttpStatus.NOT_FOUND);
@@ -160,8 +148,7 @@ public class AuthServiceImpl implements AuthService {
         User user = resetPasswordToken.getUser();
         Calendar cal = Calendar.getInstance();
 
-        if ((resetPasswordToken.getExpirationTime().getTime()
-                - cal.getTime().getTime()) <= 0) {
+        if ((resetPasswordToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
             resetPasswordTokenRepository.delete(resetPasswordToken);
             return new Response("Passord to ken tid utgått", HttpStatus.GONE);
         }
@@ -169,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(forgotPasswordDto.getPassword()));
         userRepository.save(user);
 
-        return new Response("valid token",HttpStatus.CREATED);
+        return new Response("valid token", HttpStatus.CREATED);
     }
 
     @Override
@@ -177,37 +164,35 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(loginDto.getEmail() + " " + loginDto.getPassword());
 
-        if (userRepository.findByEmail(loginDto.getEmail())==null) {
-            //throw exception
+        if (userRepository.findByEmail(loginDto.getEmail()) == null) {
+            // throw exception
             log.info("Did not find user with email {} ", loginDto.getEmail());
             return new Response("Email er feil", HttpStatus.NOT_FOUND);
         }
-        if (!passwordEncoder.matches(loginDto.getPassword(), userRepository.findByEmail(loginDto.getEmail()).getPassword())){
-            //throw exception
+        if (!passwordEncoder.matches(loginDto.getPassword(),
+                userRepository.findByEmail(loginDto.getEmail()).getPassword())) {
+            // throw exception
             log.debug("[X] Password check failed for user with email {}", loginDto.getEmail());
             return new Response("Passord er feil", HttpStatus.NOT_FOUND);
         }
-        final UserDetails userDetails
-                = userDetailsServiceImpl.loadUserByUsername(loginDto.getEmail());
+        final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginDto.getEmail());
 
-        final String token =
-                jwtUtil.generateToken(userDetails);
+        final String token = jwtUtil.generateToken(userDetails);
 
         return new Response(token, HttpStatus.ACCEPTED);
     }
 
     @Override
     public void updateAuthenticationType(String username, String oauth2ClientName) {
-//        userRepository.
-        //TODO verify user logging in by facebook and google and put them in repo
+        // userRepository.
+        // TODO verify user logging in by facebook and google and put them in repo
     }
 
     @Override
     public String getUserJWT(String token) {
-        UserVerificationToken verificationToken
-                = userVerificationTokenRepository.findByToken(token).get();
-        final UserDetails userDetails
-                = userDetailsServiceImpl.loadUserByUsername(verificationToken.getUser().getEmail());
+        UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(token).get();
+        final UserDetails userDetails = userDetailsServiceImpl
+                .loadUserByUsername(verificationToken.getUser().getEmail());
 
         return jwtUtil.generateToken(userDetails);
     }

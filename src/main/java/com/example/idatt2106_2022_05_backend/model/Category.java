@@ -25,10 +25,9 @@ public class Category {
     private String name;
 
     /**
-     * Recursive one-to-many relationship
-     * // todo some suspicions regarding the tags --> should they be the opposite?
+     * Recursive one-to-many relationship // todo some suspicions regarding the tags --> should they be the opposite?
      */
-    @OneToMany(mappedBy="mainCategory")
+    @OneToMany(mappedBy = "mainCategory")
     private Set<Category> subCategories;
 
     @ManyToOne

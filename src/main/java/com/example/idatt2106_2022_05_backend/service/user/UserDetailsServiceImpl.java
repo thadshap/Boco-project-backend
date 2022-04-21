@@ -24,18 +24,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * this method retrieves a user by their email
-     * @param email email of the user
+     * 
+     * @param email
+     *            email of the user
+     * 
      * @return returns a {@link UserDetails} object
      */
     @Override
     public UserDetails loadUserByUsername(String email) {
-        if(userRepository.findByEmail(email)==null){
-//            throw new IllegalArgumentException();
+        if (userRepository.findByEmail(email) == null) {
+            // throw new IllegalArgumentException();
             System.out.println("user does not exist");
             return null;
         }
         User user = userRepository.findByEmail(email);
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                new ArrayList<>());
     }
 }

@@ -34,20 +34,18 @@ public class AdServiceImpl {
     // Get ad by id
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
-        if(ad.isPresent()) {
+        if (ad.isPresent()) {
             return new Response(ad.get(), HttpStatus.OK);
-        }
-        else{
-            return new Response(null,HttpStatus.NOT_FOUND);
+        } else {
+            return new Response(null, HttpStatus.NOT_FOUND);
         }
     }
 
     // Get all ads for user
     public Response getAllAdsByUser(long userId) {
-        if(userRepository.getAdsByUserId(userId) != null) {
+        if (userRepository.getAdsByUserId(userId) != null) {
             return new Response(userRepository.getAdsByUserId(userId), HttpStatus.OK);
-        }
-        else {
+        } else {
             return new Response(null, HttpStatus.NO_CONTENT);
         }
     }
@@ -59,7 +57,7 @@ public class AdServiceImpl {
         Set<Ad> availableAds = adRepository.getAllAvailableAds();
 
         // If the db contains any available ads
-        if(availableAds.size() != 0) {
+        if (availableAds.size() != 0) {
             return new Response(availableAds, HttpStatus.OK);
         }
 
@@ -74,7 +72,7 @@ public class AdServiceImpl {
         Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
 
         // If the db contains any available ads
-        if(availableAds.size() != 0) {
+        if (availableAds.size() != 0) {
             return new Response(availableAds, HttpStatus.OK);
         }
 
@@ -90,39 +88,29 @@ public class AdServiceImpl {
     }
 
     /**
-     * Get all ads with items that are:
-     *      - Being given away = false
-     *      - Being rented out = true
-      */
+     * Get all ads with items that are: - Being given away = false - Being rented out = true
+     */
     //
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
-        if(ads != null) {
+        if (ads != null) {
             return new Response(ads, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new Response(null, HttpStatus.NO_CONTENT);
         }
     }
 
-
     /**
      * Posts new ad
-     * @param adDto must contain:
-     *              - rental (being rented out or given away)
-     *              - duration (quantity of duration type)
-     *              - durationType (type of duration --> see "AdType" enum)
-     *              - categoryId (only the id of the nearest category)
-     *              - price
-     *              - street_address (of the item)
-     *              - postal_code (of the item)
-     *              - name (header of the ad)
+     * 
+     * @param adDto
+     *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
+     *            durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
+     *            category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
      *
-     *              can contain (nullable in db):
-     *              - description
-     *              - picture (pictures of the item to be rented out)
-     *              - rentedOut (true if the item is rented out, which it should be at initialization)
+     *            can contain (nullable in db): - description - picture (pictures of the item to be rented out) -
+     *            rentedOut (true if the item is rented out, which it should be at initialization)
      *
      * @return
      */
@@ -140,7 +128,7 @@ public class AdServiceImpl {
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
-        if(category.isPresent()) {
+        if (category.isPresent()) {
             newAd.setCategory(category.get());
         }
         // If the category given is null or wrong, the ad cannot be created
@@ -149,10 +137,10 @@ public class AdServiceImpl {
         }
 
         // Checking if dto contains any of the nullable attributes
-        if(adDto.getDescription() != null) {
+        if (adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());
         }
-        if(adDto.getPicturesIn() != null) {
+        if (adDto.getPicturesIn() != null) {
             // todo fix this
         }
         return null;

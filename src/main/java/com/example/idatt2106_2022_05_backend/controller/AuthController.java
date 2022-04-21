@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/login/outside/service")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
-    public Response loginWithOutsideService(Principal prinsipal){
+    public Response loginWithOutsideService(Principal prinsipal) {
         return null;
     }
 
@@ -47,28 +47,26 @@ public class AuthController {
 
     @PostMapping("/forgotPassword")
     @ApiOperation(value = "Endpoint to handle forgotten password", response = Response.class)
-    public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url) throws MessagingException {
+    public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url)
+            throws MessagingException {
         return authService.resetPassword(forgotPasswordDto, url(url));
     }
 
     @PostMapping("/renewPassword")
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
     public Response renewPassword(@RequestParam("token") String token,
-                                  @RequestBody UserForgotPasswordDto forgotPasswordDto){
+            @RequestBody UserForgotPasswordDto forgotPasswordDto) {
         return authService.validatePasswordThroughToken(token, forgotPasswordDto);
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "Endpoint where user can create an account", response = Response.class)
-    public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url){
+    public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) {
         User user = authService.createUser(createAccount);
-        if(user == null){
+        if (user == null) {
             return new Response("Mail is already registered", HttpStatus.BAD_REQUEST);
         }
-        publisher.publishEvent(new RegistrationComplete(
-                user,
-                url(url)
-        ));
+        publisher.publishEvent(new RegistrationComplete(user, url(url)));
         return new Response("Registration mail is created", HttpStatus.CREATED);
     }
 
@@ -76,26 +74,22 @@ public class AuthController {
     @ApiOperation(value = "Endpoint where user can create an account", response = Response.class)
     public Response verifyRegistration(@RequestParam("token") String token) {
         String result = authService.validateEmailThroughToken(token);
-        String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?" + token;
-        if(result.equalsIgnoreCase("valid email")) {
-            return new Response("Kontoen er nå verifisert!\n:"+ authService.getUserJWT(token), HttpStatus.ACCEPTED);
+        String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?"
+                + token;
+        if (result.equalsIgnoreCase("valid email")) {
+            return new Response("Kontoen er nå verifisert!\n:" + authService.getUserJWT(token), HttpStatus.ACCEPTED);
         }
         return new Response(result + "\n" + resendVerificationMail, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/resendVerification")
     @ApiOperation(value = "Endpoint to handle verification sendt a second time", response = Response.class)
-    public Response resendVerificationMail(@RequestParam("token") String prevToken, final HttpServletRequest url) throws MessagingException {
+    public Response resendVerificationMail(@RequestParam("token") String prevToken, final HttpServletRequest url)
+            throws MessagingException {
         return authService.createNewToken(prevToken, url);
     }
 
-
-
-    private String url(HttpServletRequest url){
-        return "http://" +
-                url.getServerName() +
-                ":" +
-                url.getServerPort() +
-                url.getContextPath();
+    private String url(HttpServletRequest url) {
+        return "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath();
     }
 }

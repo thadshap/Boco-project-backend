@@ -13,8 +13,7 @@ import java.util.UUID;
 
 @Component
 @Slf4j
-public class RegistrationCompleteListener implements
-        ApplicationListener<RegistrationComplete> {
+public class RegistrationCompleteListener implements ApplicationListener<RegistrationComplete> {
 
     @Autowired
     private AuthService authService;
@@ -27,17 +26,11 @@ public class RegistrationCompleteListener implements
     public void onApplicationEvent(RegistrationComplete event) {
         User user = event.getUser();
         String token = UUID.randomUUID().toString();
-        authService.saveUserVerificationTokenForUser(token,user);
+        authService.saveUserVerificationTokenForUser(token, user);
 
-        String url =
-                event.getApplicationUrl()
-                        + "/auth/verifyEmail?token="
-                        + token;
+        String url = event.getApplicationUrl() + "/auth/verifyEmail?token=" + token;
         emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
-                "Kontoen din er nesten klar, " +
-                        " klikk på lenken under for å verifisere kontoen din." +
-                        "\n" + url);
-        log.info("Click the link to verify your account: {}",
-                url);
+                "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
+        log.info("Click the link to verify your account: {}", url);
     }
 }
