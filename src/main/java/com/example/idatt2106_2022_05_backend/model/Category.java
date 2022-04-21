@@ -35,5 +35,4 @@ public class Category {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id")
     private Set<Ad> ads;
-
 }

@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -51,6 +52,10 @@ class AdServiceTest {
         // Building a category
         Category category = Category.builder().
                 categoryId(3L).
+                name("Shoes").
+                build();
+
+        // Building an ad
         Ad ad = Ad.builder().
                 adId(1L).
                 title("Shoes").
@@ -75,8 +80,10 @@ class AdServiceTest {
         user.setAds(ads);
 
         // Add the list of ads to the category
-        category.setAd(a);
+        category.setAds(ads);
 
+        // We want to use this ad-object when we call on methods later on.
+        Mockito.when(adRepository.findByPostalCode(7234)).thenReturn(ads);
     }
 
 
