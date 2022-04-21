@@ -30,7 +30,7 @@ public class PictureController {
 
     @GetMapping("/getimage/{filename}")
     public Image getPicture(@PathVariable("name")String filename) throws Exception{
-
+        return null;
     }
 
 

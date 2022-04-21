@@ -18,7 +18,7 @@ class GeoLocationServiceTest {
         userGeoLocation.setLng(10.810314);
 
         GeoLocation itemGeoLocation = new GeoLocation();
-        itemGeoLocation.setGeo_id(1);
+        itemGeoLocation.setGeo_id(1L);
         itemGeoLocation.setLat(63.442858);
         itemGeoLocation.setLng(10.868397);
 

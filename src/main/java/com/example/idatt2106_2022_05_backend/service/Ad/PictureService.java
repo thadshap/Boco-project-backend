@@ -30,7 +30,7 @@ public class PictureService {
     }
 
     public Picture getPictureByFilename(String filename){
-        Optional<Picture> picture = pictureRepository.findByName(filename);
+        Optional<Picture> picture = pictureRepository.findByFilename(filename);
         if(!picture.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No picture with this filename found");
         }

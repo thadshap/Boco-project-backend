@@ -155,7 +155,7 @@ public class AdServiceImpl {
         if(adDto.getPicturesIn() != null) {
             // todo fix this
         }
-
+        return null;
     }
 
     // get all reviews for an add with owner = user id
