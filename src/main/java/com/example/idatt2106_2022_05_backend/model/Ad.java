@@ -1,10 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "ads")
 public class Ad {
 
@@ -56,11 +54,20 @@ public class Ad {
     @Column(name = "postal_code")
     private int postalCode;
 
+    // Coordinates latitude
+    @Column(name="LAT")
+    private double lat;
+
+    // Coordinates longitude
+    @Column(name="LNG")
+    private  double lng;
+
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
     private ArrayList<Picture> pictures;
 
-    @OneToOne(mappedBy = "ad", cascade = CascadeType.REMOVE)
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne

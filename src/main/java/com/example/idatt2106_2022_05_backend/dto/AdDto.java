@@ -4,7 +4,6 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -41,6 +40,9 @@ public class AdDto {
 
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
     private ArrayList<Image> picturesOut;
+
+    // Upon update-methods
+    private long adId;
 
     // GETTERS
 
@@ -90,6 +92,10 @@ public class AdDto {
 
     public ArrayList<Image> getPicturesOut() {
         return picturesOut;
+    }
+
+    public long getAdId() {
+        return adId;
     }
 
     public double getDistance(){return distance;}
@@ -142,6 +148,10 @@ public class AdDto {
 
     public void setPicturesOut(ArrayList<Image> picturesOut) {
         this.picturesOut = picturesOut;
+    }
+
+    public void setAdId(long adId) {
+        this.adId = adId;
     }
 
     private void setDistance(double distance){this.distance = distance;}
