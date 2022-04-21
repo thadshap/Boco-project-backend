@@ -4,6 +4,7 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**

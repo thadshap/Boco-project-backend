@@ -1,18 +1,28 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
+import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -136,7 +146,7 @@ public class AdServiceImpl implements AdService {
      * @return
      */
     @Override
-    public Response postNewAd(AdDto adDto) {
+    public Response postNewAd(AdDto adDto) throws IOException {
         Ad newAd = new Ad();
 
         // Required attributes
@@ -150,7 +160,7 @@ public class AdServiceImpl implements AdService {
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
-        if(category.isPresent()) {
+        if (category.isPresent()) {
             newAd.setCategory(category.get());
         }
         // If the category given is null or wrong, the ad cannot be created
@@ -159,14 +169,95 @@ public class AdServiceImpl implements AdService {
         }
 
         // Checking if dto contains any of the nullable attributes
-        if(adDto.getDescription() != null) {
+        if (adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());
         }
-        if(adDto.getPicturesIn() != null) {
-            // todo fix this
+        if (adDto.getPicturesIn() != null) {
+            //Creating and saving each picture connected to ad
+            for (MultipartFile m : adDto.getPicturesIn()) {
+                savePicture(m, newAd);
+            }
         }
+        return new Response(null, HttpStatus.OK);
+    }
+
+    /*
+   support method to create and save Picture
+    */
+    private void savePicture(MultipartFile file, Ad ad) throws IOException {
+        if(file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Picture file is empty");
+        }
+        Picture picture = new Picture();
+        picture.setFilename(file.getOriginalFilename());
+        picture.setType(file.getContentType());
+        picture.setContent(PictureUtility.compressImage(file.getBytes()));
+        picture.setAd(ad);
+    }
+
+    public Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
+        ArrayList<AdDto> ads = new ArrayList<>();
+        for(Ad ad :adRepository.findAll()){
+            //Setting all attributes and decompressing pictures in help method
+            AdDto adDto = castObject(ad);
+            //Calculate and set distance
+            //TODO: calculate distance
+
+            //Adding all ads to list and then response
+            ads.add(adDto);
+        }
+        return new Response(ads, HttpStatus.OK);
+    }
+
+    private AdDto castObject(Ad ad) throws IOException {
+        AdDto adDto = new AdDto();
+        adDto.setDescription(ad.getDescription());
+        adDto.setCategoryId(ad.getAdId());
+        adDto.setDuration(ad.getDuration());
+        adDto.setDurationType(ad.getDurationType());
+        adDto.setPostalCode(ad.getPostalCode());
+        adDto.setPrice(ad.getPrice());
+        adDto.setStreetAddress(ad.getStreetAddress());
+        adDto.setTitle(ad.getTitle());
+
+        //decompressing and converting images in support method
+        convertPictures(ad, adDto);
+        return adDto;
+    }
+
+    /**
+     * Method to convert Picture objects to Image for DTO
+     * @param ad saved ad
+     * @param adDto dto
+     * @throws IOException throws exception if decompression fails
+     */
+    private void convertPictures(Ad ad, AdDto adDto) throws IOException {
+        ArrayList<Picture> pictures = ad.getPictures();
+        ArrayList<Image> images = adDto.getPicturesOut();
+        for(Picture picture : pictures){
+            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
+            Image image = ImageIO.read(bis);
+            images.add(image);
+        }
+        adDto.setPicturesOut(images);
 
     }
+
+    /**
+     * Method that calculates distance between two geolocations
+     * @param lat1 latitude user
+     * @param long1 longitude user
+     * @param lat2 latitude item
+     * @param long2 longitude item
+     * @return distance in km
+     */
+    public Response calculateDistance(double lat1, double long1, double lat2,
+                                      double long2) {
+
+        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
+        return new Response(dist/1000, HttpStatus.OK);
+    }
+
 
     // get all reviews for an add with owner = user id
     @Override

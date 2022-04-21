@@ -5,6 +5,8 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public interface AdService {
     // Get all ads
@@ -28,7 +30,7 @@ public interface AdService {
     // Get all ads by rental type
     Response getAllAdsByRentalType(boolean rentalType);
 
-    Response postNewAd(AdDto adDto);
+    Response postNewAd(AdDto adDto) throws IOException;
 
     // get all reviews for an add with owner = user id
     Response getReviewsByUserId(long userId);
