@@ -2,22 +2,22 @@ package com.example.idatt2106_2022_05_backend.service;
 
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.GeoLocation;
-<<<<<<< HEAD:src/test/java/com/example/idatt2106_2022_05_backend/service/GeoLocationServiceServiceImplTest.java
 import com.example.idatt2106_2022_05_backend.service.ad.GeoLocationServiceImpl;
 import com.example.idatt2106_2022_05_backend.util.Response;
-=======
-import com.example.idatt2106_2022_05_backend.service.Ad.GeoLocationService;
->>>>>>> image/feature:src/test/java/com/example/idatt2106_2022_05_backend/service/GeoLocationServiceTest.java
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeoLocationServiceServiceImplTest {
 
+   @Autowired
+   GeoLocationServiceImpl service;
+
 
     @Test
     void calculateDistanceInMeters(){
-        GeoLocationServiceImpl service = new GeoLocationServiceImpl();
+
         UserGeoLocation userGeoLocation = new UserGeoLocation();
         userGeoLocation.setLat(63.424595);
         userGeoLocation.setLng(10.810314);

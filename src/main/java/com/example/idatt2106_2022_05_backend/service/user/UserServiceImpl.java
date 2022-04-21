@@ -9,8 +9,4 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserServiceImpl implements UserService {
 
 
-    @Override
-    public Response upLoadProfilePicture(MultipartFile file) {
-
-    }
 }
