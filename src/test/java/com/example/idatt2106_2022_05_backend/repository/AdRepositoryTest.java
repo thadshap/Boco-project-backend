@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.repository;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
+import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ class AdRepositoryTest {
 
         // Set of ads
         Set<Ad> ads = new HashSet<>();
+
+        // Set of reviews
+        Set<Review> reviews = new HashSet<>();
 
         // Building a user
         User user = User.builder().
@@ -58,12 +62,25 @@ class AdRepositoryTest {
                 postalCode(7234).
                 build();
 
+        Review review = Review.builder().
+                id(5L).
+                description("Great shoes!").
+                rating(5).
+                user(user). // todo might have to persist before doing these things
+                build();
+
         // Set the foreign keys for the ad
         ad.setCategory(category);
         ad.setUser(user);
 
         // Add the new ad to the list of ads
         ads.add(ad);
+
+        // Do the same to the review
+        reviews.add(review);
+
+        // Add the list of reviews to the ad
+        ad.setReviews(reviews);
 
         // Add the list of ads to the user
         user.setAds(ads);
@@ -74,6 +91,7 @@ class AdRepositoryTest {
         entityManager.persist(category);
         entityManager.persist(ad);
         entityManager.persist(user);
+        entityManager.persist(review);
     }
 
     @Test
@@ -84,21 +102,31 @@ class AdRepositoryTest {
 
     @Test
     void getAllAvailableAds() {
+        Set<Ad> ads = adRepository.getAllAvailableAds();
+        assertEquals(ads.size(), 1);
     }
 
     @Test
     void getAvailableAdsByUserId() {
+        Set<Ad> ads = adRepository.getAvailableAdsByUserId(1L);
+        assertEquals(ads.size(), 1);
     }
 
     @Test
     void getReviewsByUserId() {
+        Set<Review> reviews = adRepository.getReviewsByUserId(1L);
+        assertEquals(reviews.size(), 1);
     }
 
     @Test
     void findByPostalCode() {
+        Set<Ad> ads = adRepository.findByPostalCode(7234);
+        assertEquals(ads.size(), 1);
     }
 
     @Test
     void findByRental() {
+        Set<Ad> ads = adRepository.findByRental(true);
+        assertEquals(ads.size(), 1);
     }
 }
