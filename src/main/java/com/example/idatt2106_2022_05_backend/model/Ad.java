@@ -62,7 +62,7 @@ public class Ad {
     private  double lng;
 
     // Is nullable
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "ad")
     private Set<Picture> pictures;
 
     @ManyToOne

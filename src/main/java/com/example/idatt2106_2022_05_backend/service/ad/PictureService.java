@@ -18,25 +18,22 @@ public class PictureService {
     @Autowired
     PictureRepository pictureRepository;
 
-    public ResponseEntity<PictureUploadResponse> uploadPicture(MultipartFile file) throws Exception{
-        if(file.isEmpty()){
+    public ResponseEntity<PictureUploadResponse> uploadPicture(MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "File is empty");
         }
-        pictureRepository.save(Picture.builder()
-                .filename(file.getOriginalFilename())
-                .type(file.getContentType())
+        pictureRepository.save(Picture.builder().filename(file.getOriginalFilename()).type(file.getContentType())
                 .content(PictureUtility.compressImage(file.getBytes())).build());
-        return ResponseEntity.status(HttpStatus.OK).body(new PictureUploadResponse("Image uploaded successfully" + file.getOriginalFilename()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new PictureUploadResponse("Image uploaded successfully" + file.getOriginalFilename()));
     }
 
-    public Picture getPictureByFilename(String filename){
-        Optional<Picture> picture = pictureRepository.findByName(filename);
-        if(!picture.isPresent()){
+    public Picture getPictureByFilename(String filename) {
+        Optional<Picture> picture = pictureRepository.findByFilename(filename);
+        if (!picture.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No picture with this filename found");
         }
-        return Picture.builder()
-                .filename(picture.get().getFilename())
-                .type(picture.get().getType())
+        return Picture.builder().filename(picture.get().getFilename()).type(picture.get().getType())
                 .content(PictureUtility.decompressImage(picture.get().getContent())).build();
     }
 }

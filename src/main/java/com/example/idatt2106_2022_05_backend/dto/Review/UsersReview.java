@@ -5,13 +5,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel(description="Sending back reviews for requested ad or user")
+@ApiModel(description = "Sending back reviews for requested ad or user")
 public class UsersReview {
-    @ApiModelProperty(notes="rating between 1 and 10")
+    @ApiModelProperty(notes = "rating between 1 and 10")
     private int rating;
 
-    @ApiModelProperty(notes="description of rental, ad or communication")
+    @ApiModelProperty(notes = "description of rental, ad or communication")
     private String description;
 
-    
 }

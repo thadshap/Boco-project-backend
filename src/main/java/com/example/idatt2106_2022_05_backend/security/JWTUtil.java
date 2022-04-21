@@ -33,7 +33,10 @@ public class JWTUtil implements Serializable {
 
     /**
      * Finds experation date of the token
-     * @param token JWT token
+     * 
+     * @param token
+     *            JWT token
+     * 
      * @return Date it is expiring
      */
     public Date getExpirationDateFromToken(String token) {
@@ -46,7 +49,10 @@ public class JWTUtil implements Serializable {
 
     /**
      * Method to see if the token of the user is expired.
-     * @param token JWT token
+     * 
+     * @param token
+     *            JWT token
+     * 
      * @return returns true if the token has time left
      */
     private Boolean isTokenExpired(String token) {
@@ -56,7 +62,10 @@ public class JWTUtil implements Serializable {
 
     /**
      * Method to generate token
-     * @param userDetails userDetails
+     * 
+     * @param userDetails
+     *            userDetails
+     * 
      * @return
      */
     public String generateToken(UserDetails userDetails) {
@@ -65,10 +74,14 @@ public class JWTUtil implements Serializable {
     }
 
     /**
-     * Helper method to Generate the JWT token and define the claims ass well
-     * as signing it with our secret key and HS512 algorithm
-     * @param claims defining claims of the token hashmap
-     * @param subject email of the user.
+     * Helper method to Generate the JWT token and define the claims ass well as signing it with our secret key and
+     * HS512 algorithm
+     * 
+     * @param claims
+     *            defining claims of the token hashmap
+     * @param subject
+     *            email of the user.
+     * 
      * @return returns the JWT token
      */
     private String generateToken(Map<String, Object> claims, String subject) {
@@ -79,8 +92,12 @@ public class JWTUtil implements Serializable {
 
     /**
      * Method to validate the token sent in requests
-     * @param token JWT token
-     * @param userDetails userdetails of the
+     * 
+     * @param token
+     *            JWT token
+     * @param userDetails
+     *            userdetails of the
+     * 
      * @return returns true if token email and user email are the same
      */
     public Boolean validateToken(String token, UserDetails userDetails) {

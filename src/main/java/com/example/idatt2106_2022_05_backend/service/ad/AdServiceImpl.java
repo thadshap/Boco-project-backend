@@ -101,7 +101,7 @@ public class AdServiceImpl implements AdService {
      * Get all ads with items that are:
      *      - Being given away = false
      *      - Being rented out = true
-      */
+     */
     // Get all ads by rental type
     @Override
     public Response getAllAdsByRentalType(boolean rentalType) {

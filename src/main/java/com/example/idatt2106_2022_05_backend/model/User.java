@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,14 +22,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            generator = "user_sequence",
-            strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
     @Column(name = "user_id")
     private Long id;
     @NotBlank
@@ -44,28 +37,39 @@ public class User {
     @NotNull
     private String password;
 
-    //@OneToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
-//    private Picture picture;
+    private String role = "USER";
 
+    private boolean verified = false;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    UserVerificationToken userVerificationToken;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    ResetPasswordToken resetPasswordToken;
+
+    // @OneToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
+    // private Picture picture;
 
     //
-    //private Set<UserGroup> userGroup
+    // private Set<UserGroup> userGroup
 
-    //@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    //private Set<Rental> owner
+    // @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    // private Set<Rental> owner
 
-    //@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    //private Set<Rental> borrower
+    // @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    // private Set<Rental> borrower
 
     // One to many relationship w/ ad
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user")
+    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
     private Set<Ad> ads = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         User user = (User) o;
         return id != null && Objects.equals(id, user.id);
     }

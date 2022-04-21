@@ -21,10 +21,10 @@ public class Picture {
     @Column(name = "name", nullable = false)
     private String filename;
 
-    @Column(name="type")
+    @Column(name = "type")
     private String type;
 
-    @Column(name="content")
+    @Column(name = "content")
     private byte[] content;
 
     @ManyToOne
