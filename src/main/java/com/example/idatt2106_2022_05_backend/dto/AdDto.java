@@ -155,5 +155,5 @@ public class AdDto {
         this.adId = adId;
     }
 
-    private void setDistance(double distance){this.distance = distance;}
+    public void setDistance(double distance){this.distance = distance;}
 }

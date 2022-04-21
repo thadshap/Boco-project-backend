@@ -200,9 +200,8 @@ public class AdServiceImpl implements AdService {
         for(Ad ad :adRepository.findAll()){
             //Setting all attributes and decompressing pictures in help method
             AdDto adDto = castObject(ad);
-            //Calculate and set distance
-            //TODO: calculate distance
-
+            //Calculate and set distance between users location and ad
+            adDto.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
             //Adding all ads to list and then response
             ads.add(adDto);
         }
@@ -251,11 +250,11 @@ public class AdServiceImpl implements AdService {
      * @param long2 longitude item
      * @return distance in km
      */
-    public Response calculateDistance(double lat1, double long1, double lat2,
+    public double calculateDistance(double lat1, double long1, double lat2,
                                       double long2) {
 
         double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
-        return new Response(dist/1000, HttpStatus.OK);
+        return dist/1000;
     }
 
 

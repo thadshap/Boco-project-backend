@@ -1,10 +1,13 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.service.AdService;
+import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -57,21 +60,15 @@ public class AdController {
         return adService.getAllAdsByUser(id);
     }
 
-    // Get all ads by postal code
-    @PostMapping("/users/ads")
-    public Response getAdByPostalCode(@RequestBody int postalCode) { // todo use dto instead?
-        return adService.getAllAdsByPostalCode(postalCode);
-    }
-
     @GetMapping("/ads/nearby")
-    public Response getAllAdsNeaby(@RequestBody UserGeoLocation userGeoLocation){
+    public Response getAllAdsNeaby(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
         return adService.getAllAdsWithDistance(userGeoLocation);
     }
 
     // Get all ads by rental type
     // Post new ad
     @PostMapping("/ads/newAd")
-    public Response postAd(@RequestBody AdDto adDto) {
+    public Response postAd(@RequestBody AdDto adDto) throws IOException {
         return adService.postNewAd(adDto);
     }
 

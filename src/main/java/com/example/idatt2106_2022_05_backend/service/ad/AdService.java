@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,8 @@ public interface AdService {
 
     // update ad rented_out status...
     Response updateRentedOut(long adId, boolean rentedOut);
+
+    Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
 
     // delete ad
     Response deleteAd(long adId);
