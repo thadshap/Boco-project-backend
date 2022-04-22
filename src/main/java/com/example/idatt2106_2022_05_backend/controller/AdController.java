@@ -138,4 +138,9 @@ public class AdController {
     public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
         return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
     }
+
+    @PostMapping("/ads/picture")
+    public Response uploadNewPicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
+        return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
+    }
 }

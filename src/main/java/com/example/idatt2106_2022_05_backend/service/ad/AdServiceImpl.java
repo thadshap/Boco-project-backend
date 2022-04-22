@@ -497,6 +497,7 @@ public class AdServiceImpl implements AdService {
         return new Response(null, HttpStatus.NOT_FOUND);
     }
 
+    @Override
     public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
         Ad ad = adRepository.getById(ad_id);
         pictureRepository.save(Picture.builder()
