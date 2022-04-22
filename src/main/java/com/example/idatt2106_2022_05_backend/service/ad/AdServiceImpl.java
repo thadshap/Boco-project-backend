@@ -231,7 +231,7 @@ public class AdServiceImpl implements AdService {
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = new AdDto(); // todo use builder/modelMapper
         adDto.setDescription(ad.getDescription());
-        adDto.setCategoryId(ad.getAdId());
+        adDto.setCategoryId(ad.getId());
         adDto.setDuration(ad.getDuration());
         adDto.setDurationType(ad.getDurationType());
         adDto.setPostalCode(ad.getPostalCode());
@@ -361,7 +361,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response deletePicture(long ad_id, long picture_id){
         Ad ad = adRepository.getById(ad_id);
-        Picture picture = pictureRepository.findByAdAndPictureId(ad, picture_id).get();
+        Picture picture = pictureRepository.findByAdAndId(ad, picture_id).get();
         if(picture!=null){
             pictureRepository.delete(picture);
             return new Response(null, HttpStatus.OK);

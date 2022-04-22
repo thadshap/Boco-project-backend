@@ -26,7 +26,7 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     Set<Review> getReviewsByUserId(@Param("id") long id);
 
     // Get all dates for ad
-    @Query("SELECT a.dates FROM Ad a WHERE a.adId = :id")
+    @Query("SELECT a.dates FROM Ad a WHERE a.id = :id")
     Set<CalendarDate> getDatesForAd(@Param("id") long id);
 
     // Get all ads with a specific postal code

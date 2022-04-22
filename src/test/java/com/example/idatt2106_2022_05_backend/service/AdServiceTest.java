@@ -52,13 +52,13 @@ class AdServiceTest {
 
         // Building a category
         Category category = Category.builder().
-                categoryId(3L).
+                id(3L).
                 name("Shoes").
                 build();
 
         // Building an ad
         Ad ad = Ad.builder().
-                adId(1L).
+                id(1L).
                 title("Shoes").
                 description("Renting out a pair of shoes in size 36").
                 rental(true).

@@ -82,7 +82,7 @@ public class CalendarServiceImpl implements CalendarService {
                         date.setAvailable(dto.isAvailable());
 
                         // Persist the change to the specific date from the CalendarDate table
-                        Optional<CalendarDate> dateFound = dateRepository.findById(date.getDateId());
+                        Optional<CalendarDate> dateFound = dateRepository.findById(date.getId());
 
                         if(dateFound.isPresent()) {
                             dateFound.get().setAvailable(dto.isAvailable());
