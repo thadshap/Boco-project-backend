@@ -2,9 +2,10 @@ package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,7 +63,13 @@ public class Ad {
 
     // Coordinates longitude
     @Column(name="LNG")
-    private  double lng;
+    private double lng;
+
+    // Created timestamp --> for use in calculating ad-expiration
+    @Temporal( TemporalType.TIMESTAMP )
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDate created;
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
@@ -77,6 +84,12 @@ public class Ad {
     private User user;
 
     // one-to-many connection with review.
-    @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
+    // When an ad is removed, its corresponding reviews are also removed.
+    // When ad is persisted, the reviews are also updated
+    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private Set<Review> reviews;
+
+    // Many-to-many connection with Date. Date is parent in this case.
+    @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
+    private Set<CalendarDate> dates = new HashSet<>();
 }
