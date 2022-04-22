@@ -4,6 +4,7 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -26,12 +27,16 @@ public class AdDto {
     private int postalCode;
     private String title; // title/header
     private String description;
+    private double distance;
 
     // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private MultipartFile picturesIn;
+    private ArrayList<MultipartFile> picturesIn;
 
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private Set<Image> picturesOut;
+    private ArrayList<Image> picturesOut;
+
+    // Upon update-methods
+    private long adId;
 
     // GETTERS
 
@@ -75,13 +80,19 @@ public class AdDto {
         return description;
     }
 
-    public MultipartFile getPicturesIn() {
+    public ArrayList<MultipartFile> getPicturesIn() {
         return picturesIn;
     }
 
-    public Set<Image> getPicturesOut() {
+    public ArrayList<Image> getPicturesOut() {
         return picturesOut;
     }
+
+    public long getAdId() {
+        return adId;
+    }
+
+    public double getDistance(){return distance;}
 
     // SETTERS
 
@@ -125,11 +136,17 @@ public class AdDto {
         this.description = description;
     }
 
-    public void setPicturesIn(MultipartFile picturesIn) {
+    public void setPicturesIn(ArrayList<MultipartFile> picturesIn) {
         this.picturesIn = picturesIn;
     }
 
-    public void setPicturesOut(Set<Image> picturesOut) {
+    public void setPicturesOut(ArrayList<Image> picturesOut) {
         this.picturesOut = picturesOut;
     }
+
+    public void setAdId(long adId) {
+        this.adId = adId;
+    }
+
+    public void setDistance(double distance){this.distance = distance;}
 }
