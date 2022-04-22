@@ -23,6 +23,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -249,18 +250,14 @@ public class AdServiceImpl implements AdService {
       * @throws IOException if decompression fails
      */
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
-        //list of pictures on each ad
-        ArrayList<Picture> pictures = ad.getPictures();
-        //sets a list of images on ad dto
-        ArrayList<Image> images = adDto.getPicturesOut();
-        //iterate through all pictures on the ad and decompress them and convert them to images
+        Set<Picture> pictures = ad.getPictures();
+        Set<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
             ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
             Image image = ImageIO.read(bis);
             images.add(image);
         }
         adDto.setPicturesOut(images);
-
     }
 
     /**
