@@ -44,16 +44,16 @@ public class AdController {
         return adService.getAllAvailableAdsByUser(id);
     }
 
-    @PostMapping("/ads")
+    @GetMapping("/ads/{postalCode}")
     @ApiOperation(value = "Endpoint to return all ads by with the same postal code", response = Response.class)
-    public Response getAdByPostalCode(@RequestBody int postalCode) { // todo use dto instead?
+    public Response getAdByPostalCode(@PathVariable int postalCode) { // todo use dto instead?
         log.debug("[X] Call to get all ads with postal code = {}", postalCode);
         return adService.getAllAdsByPostalCode(postalCode);
     }
 
-    @PostMapping("/ads")
+    @GetMapping("/ads/{rentalType}")
     @ApiOperation(value = "Endpoint to return all ads with specific rental type", response = Response.class)
-    public Response getAllAdsByRentalType(@RequestBody boolean rentalType) {
+    public Response getAllAdsByRentalType(@PathVariable boolean rentalType) {
         log.debug("[X] Call to return ads by rental type = {}", rentalType);
         return adService.getAllAdsByRentalType(rentalType);
     }

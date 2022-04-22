@@ -231,7 +231,7 @@ public class AdServiceImpl implements AdService {
     }
 
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
-        ArrayList<Picture> pictures = ad.getPictures();
+        Set<Picture> pictures = ad.getPictures();
         ArrayList<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
             ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
