@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Review {
 
     @Id
@@ -25,6 +27,8 @@ public class Review {
     @ManyToOne
     private User user;
 
-    // TODO: add dependency to Ad
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
 
 }

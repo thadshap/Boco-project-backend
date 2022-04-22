@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @SuperBuilder
+@Data
 @AllArgsConstructor
 public class User {
 
