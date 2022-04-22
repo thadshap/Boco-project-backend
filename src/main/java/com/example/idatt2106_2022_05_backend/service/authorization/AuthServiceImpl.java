@@ -171,8 +171,7 @@ public class AuthServiceImpl implements AuthService {
         }
         if (!passwordEncoder.matches(loginDto.getPassword(),
                 userRepository.findByEmail(loginDto.getEmail()).getPassword())) {
-            // throw exception
-            log.debug("[X] Password check failed for user with email {}", loginDto.getEmail());
+            log.info("[X] Password check failed for user with email {}", loginDto.getEmail());
             return new Response("Passord er feil", HttpStatus.NOT_FOUND);
         }
         final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginDto.getEmail());
