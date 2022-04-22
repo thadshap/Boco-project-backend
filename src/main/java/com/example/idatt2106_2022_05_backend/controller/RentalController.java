@@ -24,7 +24,7 @@ public class RentalController {
 
     @DeleteMapping("/delete/{rentalId}")
     @ApiOperation(value = "Endpoint to delete a rental", response = Response.class)
-    public Response deleteRental(@RequestParam Long rentalId){
+    public Response deleteRental( @PathVariable Long rentalId){
         return rentalService.deleteRental(rentalId);
     }
 
@@ -42,13 +42,13 @@ public class RentalController {
 
     @GetMapping("/{userId}")
     @ApiOperation(value = "Endpoint to get a rental by user id", response = Response.class)
-    public Response getRentalByUserId(@RequestParam Long userId){
+    public Response getRentalByUserId( @PathVariable Long userId){
         return rentalService.getRentalByUserId(userId);
     }
 
     @GetMapping("s/{userId}")
     @ApiOperation(value = "Endpoint to get list of rentals by user id", response = Response.class)
-    public Response getRentalsByUserId(@RequestParam Long userId){
+    public Response getRentalsByUserId( @PathVariable Long userId){
         return rentalService.getRentalsByUserId(userId);
     }
 }

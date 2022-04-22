@@ -1,21 +1,35 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
+import com.example.idatt2106_2022_05_backend.dto.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class to handle user objects
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper modelMapper = new ModelMapper();
+
+
+    /**
+     * Method to delete user from repository.
+     * @param userId user id to delete user.
+     * @return returns HttpStatus and a response object with.
+     */
     @Override
     public Response deleteUser(Long userId) {
         userRepository.deleteById(userId);
@@ -23,6 +37,12 @@ public class UserServiceImpl implements UserService {
         return new Response("User deleted", HttpStatus.ACCEPTED);
     }
 
+    /**
+     * Method to update User object in the repository.
+     * @param userId id of the user to update.
+     * @param userUpdateDto {@link UserUpdateDto} object with variables to update user.
+     * @return returns HttpStatus and a response object with.
+     */
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
         User user = userRepository.getById(userId);
@@ -46,9 +66,14 @@ public class UserServiceImpl implements UserService {
         return new Response("User updated", HttpStatus.OK);
     }
 
+    /**
+     * Method to retrieve user from the database.
+     * @param userId id of user to retrieve.
+     * @return returns HttpStatus and a response object with.
+     */
     @Override
     public Response getUser(Long userId) {
-        User user = userRepository.getById(userId);
+        UserReturnDto user = modelMapper.map(userRepository.getById(userId), UserReturnDto.class);
         if(user == null){
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
