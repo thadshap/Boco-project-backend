@@ -2,6 +2,7 @@ package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
@@ -150,7 +151,7 @@ public class AdServiceImpl implements AdService {
      * @return
      */
     @Override
-    public Response postNewAd(AdDto adDto) {
+    public Response postNewAd(AdDto adDto) throws IOException {
         Ad newAd = new Ad();
 
         // Required attributes
@@ -213,7 +214,7 @@ public class AdServiceImpl implements AdService {
     }
 
     private AdDto castObject(Ad ad) throws IOException {
-        AdDto adDto = new AdDto();
+        AdDto adDto = new AdDto(); // todo use builder/modelMapper
         adDto.setDescription(ad.getDescription());
         adDto.setCategoryId(ad.getAdId());
         adDto.setDuration(ad.getDuration());
