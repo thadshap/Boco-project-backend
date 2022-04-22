@@ -79,7 +79,11 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get random ads --> how many? 20-50? TODO implement in frontend
+    /**
+     * Get a page of ads
+     * @param sizeOfPage number of the page size
+     * @return Response with page in body
+     */
     @Override
     public Response getPageOfAds(int sizeOfPage){
         Pageable pageOf24 = PageRequest.of(0,sizeOfPage);
@@ -366,16 +370,18 @@ public class AdServiceImpl implements AdService {
     /**
      * method to delete a picture on an ad
      * @param ad_id ad_id
-     * @param picture_id picture_id
+     * @param chosenPicture picture_id
      * @return response with status ok or not found
      */
     @Override
-    public Response deletePicture(long ad_id, long picture_id){
+    public Response deletePicture(long ad_id, byte[] chosenPicture){
         Ad ad = adRepository.getById(ad_id);
         Picture picture = pictureRepository.findByAdAndPictureId(ad, picture_id).get();
         if(picture!=null){
-            pictureRepository.delete(picture);
-            return new Response(null, HttpStatus.OK);
+            if(PictureUtility.decompressImage(picture.getContent()).equals(chosenPicture)){
+                pictureRepository.delete(picture);
+                return new Response(null, HttpStatus.OK);
+            }
         }
         return new Response(null, HttpStatus.NOT_FOUND);
     }

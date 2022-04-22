@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController()
 @RequestMapping("/user")
 @Api(tags = "Controller class to handle user")
@@ -18,7 +20,7 @@ public class UserController {
 
     @PutMapping("/{userId}")
     @ApiOperation(value = "Endpoint to update user", response = Response.class)
-    public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) {
+    public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) throws IOException {
         return userService.updateUser(userId, userUpdateDto);
     }
 

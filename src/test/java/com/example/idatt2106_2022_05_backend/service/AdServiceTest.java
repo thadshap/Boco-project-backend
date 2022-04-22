@@ -12,8 +12,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,6 +97,41 @@ class AdServiceTest {
 
     @Test
     void getAdById() {
+    }
+
+    @Test
+    void getPageOfAds(){
+        User user = User.builder().
+                id(1L).
+                firstName("firstName").
+                lastName("lastName").
+                email("user.name@hotmail.com").
+                password("pass1word").
+                build();
+
+        for(int i=0; i<40; i++){
+            Ad ad = new Ad();
+            ad.setCategory(new Category());
+            ad.setDescription("text:" + i);
+            ad.setDuration(i);
+            ad.setDurationType(AdType.HOUR);
+            ad.setLat(63.424595+i);
+            ad.setLng(10.810314+i);
+            ad.setPictures(null);
+            ad.setPostalCode(1234+i);
+            ad.setPrice(10*i);
+            ad.setRental(false);
+            ad.setReviews(null);
+            ad.setRentedOut(false);
+            ad.setStreetAddress("Olavsgate" + i);
+            ad.setTitle("Ad" + i);
+            ad.setUser(user);
+            adRepository.save(ad);
+        }
+        Pageable pageOf24 = PageRequest.of(0,25);
+        List<Ad> ads = adRepository.findAll(pageOf24).getContent();
+        System.out.println("ads:" +ads);
+
     }
 
     @Test
