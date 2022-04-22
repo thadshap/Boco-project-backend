@@ -2,9 +2,10 @@ package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,7 +61,13 @@ public class Ad {
 
     // Coordinates longitude
     @Column(name="LNG")
-    private  double lng;
+    private double lng;
+
+    // Created timestamp --> for use in calculating ad-expiration
+    @Temporal( TemporalType.TIMESTAMP )
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDate created;
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
