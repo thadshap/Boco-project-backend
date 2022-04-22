@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,23 +43,23 @@ public class User {
     private boolean verified = false;
 
     @OneToOne(fetch = FetchType.EAGER)
-    UserVerificationToken userVerificationToken;
+    private UserVerificationToken userVerificationToken;
 
     @OneToOne(fetch = FetchType.EAGER)
-    ResetPasswordToken resetPasswordToken;
+    private ResetPasswordToken resetPasswordToken;
 
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
-    // private Picture picture;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
+    private Picture picture;
 
     //
     // private Set<UserGroup> userGroup
 
-    // @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    // private Set<Rental> owner
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private List<Rental> rentalsOwned;
 
-    // @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    // private Set<Rental> borrower
+    @OneToMany(mappedBy = "borrower", fetch = FetchType.EAGER)
+    private List<Rental> rentalsBorrowed;
 
     // One to many relationship w/ ad
     @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")

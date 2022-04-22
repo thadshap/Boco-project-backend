@@ -24,7 +24,7 @@ import java.security.Principal;
 
 @RestController()
 @RequestMapping("auth")
-@Api(tags = "Authorization class to handle users logging in ")
+@Api(tags = "Authorization class to handle users logging in and verifying themselves")
 public class AuthController {
 
     @Autowired
