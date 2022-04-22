@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
@@ -288,202 +289,48 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // update ad title
     @Override
-    public Response updateTitle(long adId, String newTitle) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
+    public Response updateAd(Long adId, AdUpdateDto adUpdateDto) {
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        Ad ad;
+        if(adOptional.isPresent()) {
+            ad = adOptional.get();
             // Update the ad
-            ad.get().setTitle(newTitle);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
+            if (!adUpdateDto.getTitle().isBlank()){
+                ad.setTitle(adUpdateDto.getTitle());
+            }
+            if (!adUpdateDto.getDescription().isBlank()){
+                ad.setDescription(adUpdateDto.getDescription());
+            }
+            if (adUpdateDto.getDuration() > 0){
+                ad.setDuration(adUpdateDto.getDuration());
+            }
+            if (adUpdateDto.getDurationType() != null){
+                ad.setDurationType(adUpdateDto.getDurationType());
+            }
+            if (adUpdateDto.getPrice() > 0){
+                ad.setPrice(adUpdateDto.getPrice());
+            }
+            if (!adUpdateDto.getStreetAddress().isBlank()){
+                ad.setStreetAddress(adUpdateDto.getStreetAddress());
+            }
+            if (adUpdateDto.getPostalCode() > 0){
+                ad.setPostalCode(adUpdateDto.getPostalCode());
+            }
+            if(!adUpdateDto.getRentedOut().isBlank()){
+                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
+                    ad.setRentedOut(false);
+                }
+                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
+                    ad.setRentedOut(true);
+                }
+            }
+            adRepository.save(ad);
         }
-
-        // The given ad id was not present in db
         else {
-            return new Response(null, HttpStatus.NOT_FOUND);
+            return new Response("Ad was not found in the database", HttpStatus.NOT_FOUND);
         }
-    }
-
-    // update ad description
-    @Override
-    public Response updateDescription(long adId, String newTitle) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setTitle(newTitle);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update ad duration (how long it can be rented for)
-    @Override
-    public Response updateDuration(long adId, int newDuration) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setDuration(newDuration);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update duration-type
-    @Override
-    public Response updateDurationType(long adId, AdType newDurationType) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setDurationType(newDurationType);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update ad price
-    @Override
-    public Response updatePrice(long adId, int newPrice) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setPrice(newPrice);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update ad street address
-    @Override
-    public Response updateStreetAddress(long adId, String newStreetAddress) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setStreetAddress(newStreetAddress);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update ad postal code
-    @Override
-    public Response updatePostalCode(long adId, int newPostalCode) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setPostalCode(newPostalCode);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    // update ad rented_out status...
-    @Override
-    public Response updateRentedOut(long adId, boolean rentedOut) {
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        // If ad exists
-        if(ad.isPresent()) {
-
-            // Update the ad
-            ad.get().setRentedOut(rentedOut);
-
-            // Save the changes
-            adRepository.save(ad.get());
-
-            // HttpStatus = OK
-            return new Response(null, HttpStatus.OK);
-        }
-
-        // The given ad id was not present in db
-        else {
-            return new Response(null, HttpStatus.NOT_FOUND);
-        }
+        return new Response("Ad is updated", HttpStatus.OK);
     }
 
     // delete ad
