@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -64,5 +65,10 @@ public interface AdService {
 
     // delete ad
     Response deleteAd(long adId);
+
+    //delete picture
+    Response deletePicture(long ad_id, long picture_id);
+
+    Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 }
 

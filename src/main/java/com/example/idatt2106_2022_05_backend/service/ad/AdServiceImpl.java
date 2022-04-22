@@ -485,4 +485,24 @@ public class AdServiceImpl implements AdService {
             return new Response(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    @Override
+    public Response deletePicture(long ad_id, long picture_id){
+        Ad ad = adRepository.getById(ad_id);
+        Picture picture = pictureRepository.findByAdAndPictureId(ad, picture_id).get();
+        if(picture!=null){
+            pictureRepository.delete(picture);
+            return new Response(null, HttpStatus.OK);
+        }
+        return new Response(null, HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
+        Ad ad = adRepository.getById(ad_id);
+        pictureRepository.save(Picture.builder()
+        .filename(file.getOriginalFilename())
+        .ad(ad).type(file.getContentType()).content(PictureUtility.compressImage(file.getBytes())).build());
+        return new Response(null, HttpStatus.OK);
+    }
 }
