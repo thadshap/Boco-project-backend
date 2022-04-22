@@ -110,7 +110,8 @@ public class AdServiceImpl {
      *      - Being given away = false
      *      - Being rented out = true
      */
-    //
+    // Get all ads by rental type
+    @Override
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
