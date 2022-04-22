@@ -1,7 +1,12 @@
 package com.example.idatt2106_2022_05_backend.dto;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
@@ -17,138 +22,53 @@ import java.util.Set;
  * Data transfer object upon receipt from fronted CAN contain: - description - picture (pictures of the item to be
  * rented out)
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Data
+@ApiModel(description = "Data transfer object for Ad, used for creation of Ad and returning available ads")
 public class AdDto {
+    @ApiModelProperty(notes = "boolean true if item is for rent, false if it is for sale")
     private boolean rental;
+
+    @ApiModelProperty(notes = "boolean true if item is currently rented out")
     private boolean rentedOut;
+
+    @ApiModelProperty(notes = "Duration of rental")
     private int duration;
+
+    @ApiModelProperty(notes = "unity of rental: hour, day, week or month")
     private AdType durationType;
+
+    @ApiModelProperty(notes = "Id of category the ad belongs to")
     private long categoryId;
+
+    @ApiModelProperty(notes = "price of renting item")
     private int price;
+
+    @ApiModelProperty(notes = "location streetaddress of item")
     private String streetAddress;
+
+    @ApiModelProperty(notes = "postalcode of items location")
     private int postalCode;
+
+    @ApiModelProperty(notes = "title of ad")
     private String title; // title/header
+
+    @ApiModelProperty(notes = "description of item/ad")
     private String description;
+
+    @ApiModelProperty(notes = "distance between user and the location of ad in km")
     private double distance;
 
     // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private ArrayList<MultipartFile> picturesIn;
+    private Set<MultipartFile> picturesIn;
 
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private ArrayList<Image> picturesOut;
+    private Set<Image> picturesOut;
 
     // Upon update-methods
+    @ApiModelProperty(notes = "Id of ad")
     private long adId;
 
-    // GETTERS
-
-    public boolean isRental() {
-        return rental;
-    }
-
-    public boolean isRentedOut() {
-        return rentedOut;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public AdType getDurationType() {
-        return durationType;
-    }
-
-    public long getCategoryId() {
-        return categoryId;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public String getStreetAddress() {
-        return streetAddress;
-    }
-
-    public int getPostalCode() {
-        return postalCode;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public ArrayList<MultipartFile> getPicturesIn() {
-        return picturesIn;
-    }
-
-    public ArrayList<Image> getPicturesOut() {
-        return picturesOut;
-    }
-
-    public long getAdId() {
-        return adId;
-    }
-
-    public double getDistance(){return distance;}
-
-    // SETTERS
-
-    public void setRental(boolean rental) {
-        this.rental = rental;
-    }
-
-    public void setRentedOut(boolean rentedOut) {
-        this.rentedOut = rentedOut;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public void setDurationType(AdType durationType) {
-        this.durationType = durationType;
-    }
-
-    public void setCategoryId(long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
-    }
-
-    public void setPostalCode(int postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPicturesIn(ArrayList<MultipartFile> picturesIn) {
-        this.picturesIn = picturesIn;
-    }
-
-    public void setPicturesOut(ArrayList<Image> picturesOut) {
-        this.picturesOut = picturesOut;
-    }
-
-    public void setAdId(long adId) {
-        this.adId = adId;
-    }
-
-    public void setDistance(double distance){this.distance = distance;}
 }

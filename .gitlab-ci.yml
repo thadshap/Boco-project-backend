@@ -33,7 +33,7 @@ test:
     - merge_requests
   script:
     - echo "Running tests"
-    - mvn clean test
+    - mvn test
 
 pages:
   stage: pages
