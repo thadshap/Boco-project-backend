@@ -191,16 +191,23 @@ public class AdServiceImpl implements AdService {
     support method to create and save Picture
      */
     private void savePicture(MultipartFile file, Ad ad) throws IOException {
+        //ensures that content of file is presentent
         if(file.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Picture file is empty");
         }
-        Picture picture = new Picture();
-        picture.setFilename(file.getOriginalFilename());
-        picture.setType(file.getContentType());
-        picture.setContent(PictureUtility.compressImage(file.getBytes()));
-        picture.setAd(ad);
+        //create and save object
+        pictureRepository.save(Picture.builder()
+        .type(file.getContentType())
+        .filename(file.getOriginalFilename())
+        .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build());
     }
 
+    /**
+     * method that goes through all ads and returns the with the calculated distance
+     * @param userGeoLocation users location
+     * @return a list of ads including the distance to the users location
+     * @throws IOException if decompression pictures fails
+     */
     public Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
         ArrayList<AdDto> ads = new ArrayList<>();
         for(Ad ad :adRepository.findAll()){
@@ -214,6 +221,12 @@ public class AdServiceImpl implements AdService {
         return new Response(ads, HttpStatus.OK);
     }
 
+    /**
+     * support method that creates a dto of ad
+     * @param ad ad
+     * @return ad dto
+     * @throws IOException if decompression of bytes fails
+     */
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = new AdDto(); // todo use builder/modelMapper
         adDto.setDescription(ad.getDescription());
@@ -230,6 +243,12 @@ public class AdServiceImpl implements AdService {
         return adDto;
     }
 
+    /**
+     * support method to decompress pictures
+     * @param ad ad object from database
+     * @param adDto dto object to be returned
+      * @throws IOException if decompression fails
+     */
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
         Set<Image> images = adDto.getPicturesOut();
@@ -486,6 +505,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * method to delete a picture on an ad
+     * @param ad_id ad_id
+     * @param picture_id picture_id
+     * @return response with status ok or not found
+     */
     @Override
     public Response deletePicture(long ad_id, long picture_id){
         Ad ad = adRepository.getById(ad_id);
@@ -497,9 +522,18 @@ public class AdServiceImpl implements AdService {
         return new Response(null, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * method to ad a new  picture to an ad
+     * @param ad_id ad_id
+     * @param file file containing picture
+     * @return response with status ok
+     * @throws IOException if compression of file fails
+     */
     @Override
     public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
+        //Getting the ad to connect to the picture
         Ad ad = adRepository.getById(ad_id);
+        //building and saving the picture
         pictureRepository.save(Picture.builder()
         .filename(file.getOriginalFilename())
         .ad(ad).type(file.getContentType()).content(PictureUtility.compressImage(file.getBytes())).build());
