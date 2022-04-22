@@ -16,7 +16,7 @@ public class CalendarController {
 
     // sends all unavailable dates for the remaining span of the ad
     // dto contains adId
-    @PostMapping()
+    @PostMapping("/get")
     public Response getUnavailableDates(@RequestBody CalendarDto dto) {
         return calendarService.getUnavailableDates(dto);
     }
@@ -35,7 +35,7 @@ public class CalendarController {
      *            adId
      *            available (true for rental, false for cancellation)
      */
-    @PostMapping()
+    @PostMapping("/post") //todo fix these paths hihi
     public Response postRentalDates(@RequestBody CalendarDto dto) {
         return calendarService.markDatesFromToAs(dto);
     }

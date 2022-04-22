@@ -111,7 +111,8 @@ public class AdController {
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
     public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
+        // return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
+        return null;
     }
 
     @PostMapping("/ads/picture")

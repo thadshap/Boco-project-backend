@@ -29,12 +29,6 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     @Query("SELECT a.dates FROM Ad a WHERE a.adId = :id")
     Set<CalendarDate> getDatesForAd(@Param("id") long id);
 
-    // Get all dates for add with date between start and end // todo not correct...
-    @Query("SELECT c FROM Ad a, CalendarDate c WHERE c.date BETWEEN ?1 AND ?2 HAVING a.adId = :id")
-    Set<CalendarDate> findByDateBetween(LocalDate start, LocalDate end, long id);
-
-
-
     // Get all ads with a specific postal code
     Set<Ad> findByPostalCode(int postalCode);
 

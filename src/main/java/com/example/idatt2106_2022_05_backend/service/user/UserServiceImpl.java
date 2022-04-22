@@ -6,12 +6,15 @@ import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
+import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * Service class to handle user objects
@@ -26,10 +29,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to delete user from repository.
-     * 
+     *
      * @param userId
      *            user id to delete user.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -41,16 +44,16 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to update User object in the repository.
-     * 
+     *
      * @param userId
      *            id of the user to update.
      * @param userUpdateDto
      *            {@link UserUpdateDto} object with variables to update user.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
+    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
         User user = userRepository.getById(userId);
         if (!userUpdateDto.getFirstName().isBlank()) {
             user.setFirstName(userUpdateDto.getFirstName());
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(userUpdateDto.getPassword());
         }
         if (userUpdateDto.getPicture() != null) {
-            Picture picture = Picture.builder().filename("PB").content(userUpdateDto.getPicture()).build();
+            Picture picture = Picture.builder().filename("PB").content(PictureUtility.compressImage(userUpdateDto.getPicture().getBytes())).build();
             user.setPicture(picture);
         }
         userRepository.save(user);
@@ -74,10 +77,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to retrieve user from the database.
-     * 
+     *
      * @param userId
      *            id of user to retrieve.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override

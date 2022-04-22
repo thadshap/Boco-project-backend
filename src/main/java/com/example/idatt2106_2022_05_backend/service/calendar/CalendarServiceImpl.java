@@ -21,6 +21,8 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private CalendarDateRepository dateRepository;
 
+    // autowire repo for rental
+
     @Autowired
     private AdRepository adRepository;
 
@@ -54,6 +56,9 @@ public class CalendarServiceImpl implements CalendarService {
      */
     @Override
     public Response markDatesFromToAs(CalendarDto dto) {
+
+        //TODO if rental is made unavailable (cancelled) -->
+        // delete rental using some type of id that has to be sent through the dto......
 
         // Because we want to change availability, we check for the OPPOSITE of dto.isAvailable()
         if(datesAre(dto.getStartDate(),dto.getEndDate(), !dto.isAvailable())) {

@@ -22,14 +22,11 @@ public class CalendarDate {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "date_id", nullable = false)
-    private Long dateId;
+    private Long id;
 
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "date", nullable = false)
     private LocalDate date;
-
-    @Column(name = "timeZone", nullable = false) // todo needed? or maybe better for use in service methods?
-    private ZoneId timezone;
 
     // Is nullable
     @Column(name = "available")
