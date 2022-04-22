@@ -1,9 +1,12 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public interface AdService {
@@ -28,7 +31,7 @@ public interface AdService {
     // Get all ads by rental type
     Response getAllAdsByRentalType(boolean rentalType);
 
-    Response postNewAd(AdDto adDto);
+    Response postNewAd(AdDto adDto) throws IOException;
 
     // get all reviews for an add with owner = user id
     Response getReviewsByUserId(long userId);
@@ -56,6 +59,8 @@ public interface AdService {
 
     // update ad rented_out status...
     Response updateRentedOut(long adId, boolean rentedOut);
+
+    Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
 
     // delete ad
     Response deleteAd(long adId);

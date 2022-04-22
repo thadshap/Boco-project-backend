@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -50,6 +51,12 @@ public class User {
     // @OneToOne(cascade = CascadeType.ALL)
     // @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     // private Picture picture;
+    @Column(name="profile_picture")
+    private byte[] picture;
+
+    //@OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
+//    private Picture picture;
 
     //
     // private Set<UserGroup> userGroup
