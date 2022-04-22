@@ -24,6 +24,7 @@ public class CalendarController {
     // the frontend sends two dates that an item is to be rented/cancelled out to from
     // dto contains date from, date to, ad id and available (true for rental, false for cancellation)
 
+
     /**
      * Method marks a selected span of dates (for specified ad) as available.
      * Available is either true or false.
