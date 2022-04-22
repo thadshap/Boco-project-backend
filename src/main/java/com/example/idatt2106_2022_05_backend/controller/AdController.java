@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -130,5 +131,11 @@ public class AdController {
     @DeleteMapping("ads/{adId}")
     public Response deleteAd(@PathVariable long adId) {
         return adService.deleteAd(adId);
+    }
+
+    //Delete Picture
+    @DeleteMapping("/ads/picture")
+    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
+        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
     }
 }

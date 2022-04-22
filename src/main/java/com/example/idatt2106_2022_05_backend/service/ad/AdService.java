@@ -64,5 +64,8 @@ public interface AdService {
 
     // delete ad
     Response deleteAd(long adId);
+
+    //delete picture
+    public Response deletePicture(long ad_id, long picture_id);
 }
 
