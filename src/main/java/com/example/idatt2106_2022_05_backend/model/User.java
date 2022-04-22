@@ -19,6 +19,7 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @SuperBuilder
+@Data
 @AllArgsConstructor
 public class User {
 

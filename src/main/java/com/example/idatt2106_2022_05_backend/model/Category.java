@@ -10,6 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Data
 @Builder
 @Table(name = "categories")
 public class Category {
