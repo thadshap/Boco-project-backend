@@ -4,6 +4,7 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,8 +63,8 @@ public class Ad {
     private  double lng;
 
     // Is nullable
-    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "ad")
-    private Set<Picture> pictures;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    private ArrayList<Picture> pictures;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -75,5 +76,5 @@ public class Ad {
 
     // one-to-many connection with review.
     @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
-    private Set<Review> reviews;
+    private ArrayList<Review> reviews;
 }
