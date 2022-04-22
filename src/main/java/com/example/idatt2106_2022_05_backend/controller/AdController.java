@@ -143,4 +143,9 @@ public class AdController {
     public Response uploadNewPicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
     }
+
+    @GetMapping("/ads/page")
+    public Response getPageOfAds(@RequestBody int sizeOfPage){
+        return adService.getPageOfAds(sizeOfPage);
+    }
 }

@@ -15,7 +15,7 @@ public class UpdatePictureDto {
 
     //TODO: fix this
     @ApiModelProperty(notes = "id of the picture the ")
-    private String filename;
+    private long picture_id;
 
     @ApiModelProperty(notes = "multipartfile containing the new picture")
     private MultipartFile file;

@@ -14,6 +14,9 @@ import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +46,8 @@ public class AdServiceImpl implements AdService {
     PictureRepository pictureRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
+
+
 
     // Get all ads
     @Override
@@ -74,6 +79,12 @@ public class AdServiceImpl implements AdService {
     }
 
     // Get random ads --> how many? 20-50? TODO implement in frontend
+    @Override
+    public Response getPageOfAds(int sizeOfPage){
+        Pageable pageOf24 = PageRequest.of(0,sizeOfPage);
+        List<Ad> ads = adRepository.findAll(pageOf24).getContent();
+        return new Response(ads, HttpStatus.OK);
+    }
 
     // Get all available ads
     @Override
@@ -539,4 +550,6 @@ public class AdServiceImpl implements AdService {
         .ad(ad).type(file.getContentType()).content(PictureUtility.compressImage(file.getBytes())).build());
         return new Response(null, HttpStatus.OK);
     }
+
+
 }
