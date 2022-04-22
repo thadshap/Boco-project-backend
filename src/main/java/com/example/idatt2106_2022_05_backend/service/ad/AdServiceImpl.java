@@ -172,9 +172,6 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getReviewsByUserId(long userId) {
 
-        // Set containing all reviews connected to the ads that the given user owns
-        Set<Review> reviews = adRepository.getReviewsByUserId(userId);
-
         // If the reviews-list contains anything
         if(adRepository.getReviewsByUserId(userId) != null) {
             return new Response(adRepository.getReviewsByUserId(userId), HttpStatus.OK);
