@@ -18,12 +18,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for CRUD on Review
+ */
 @Service
 public class ReviewServiceImpl implements ReviewService{
-    /*
-    - get reviews by ad_id
-    - get reviews by user_id
-     */
 
     @Autowired
     ReviewRepository reviewRepository;
@@ -108,6 +107,12 @@ public class ReviewServiceImpl implements ReviewService{
         return new Response(null, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * method to delete a review
+     * @param ad_id id of ad to be deleted
+     * @param user_id user who wrote the review
+     * @return response
+     */
     @Override
     public Response deleteReview(long ad_id, long user_id){
         Optional<Review> review = reviewRepository.getByAdAndUser(adRepository.getById(ad_id), userRepository.getById(user_id));

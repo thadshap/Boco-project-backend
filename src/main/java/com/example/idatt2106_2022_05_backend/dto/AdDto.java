@@ -62,12 +62,10 @@ public class AdDto {
     private double distance;
 
     // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    @ApiModelProperty(notes = "pictures uploaded for ad")
-    private ArrayList<MultipartFile> picturesIn;
+    private Set<MultipartFile> picturesIn;
 
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    @ApiModelProperty(notes = "pictures on ad sent to frontend")
-    private ArrayList<Image> picturesOut;
+    private Set<Image> picturesOut;
 
     // Upon update-methods
     @ApiModelProperty(notes = "Id of ad")
