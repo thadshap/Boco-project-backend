@@ -1,12 +1,14 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController()
 @RequestMapping("/user")
@@ -18,7 +20,7 @@ public class UserController {
 
     @PutMapping("/{userId}")
     @ApiOperation(value = "Endpoint to update user", response = Response.class)
-    public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) {
+    public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) throws IOException {
         return userService.updateUser(userId, userUpdateDto);
     }
 

@@ -1,9 +1,9 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
-import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -111,7 +111,8 @@ public class AdController {
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
     public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
+//        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto);
+        return null;
     }
 
     @PostMapping("/ads/picture")
