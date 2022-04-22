@@ -64,7 +64,7 @@ public class Ad {
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
-    private ArrayList<Picture> pictures;
+    private Set<Picture> pictures;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -76,5 +76,9 @@ public class Ad {
 
     // one-to-many connection with review.
     @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
-    private ArrayList<Review> reviews;
+    private Set<Review> reviews;
+
+    // Many-to-many connection with Date. Date is parent in this case.
+    @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
+    private Set<CalendarDate> dates = new HashSet<>();
 }
