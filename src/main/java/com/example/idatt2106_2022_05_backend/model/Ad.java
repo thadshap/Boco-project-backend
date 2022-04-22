@@ -66,7 +66,6 @@ public class Ad {
     private double lng;
 
     // Created timestamp --> for use in calculating ad-expiration
-    @Temporal( TemporalType.TIMESTAMP )
     @CreationTimestamp
     @Column(name = "created")
     private LocalDate created;
