@@ -13,12 +13,22 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
+/**
+ * Service for CRUD in picture
+ * More methods for upload, create, read, update in AdServiceImpl
+ */
 @Service
 public class PictureServiceImpl implements PictureService {
 
     @Autowired
     PictureRepository pictureRepository;
 
+    /**
+     * method that uploads and saves picture
+     * @param file mulitpartfile
+     * @return ResponseEntity
+     * @throws Exception
+     */
     @Override
     public ResponseEntity<PictureUploadResponse> uploadPicture(MultipartFile file) throws Exception{
         if(file.isEmpty()){

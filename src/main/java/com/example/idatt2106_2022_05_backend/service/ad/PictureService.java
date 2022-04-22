@@ -7,9 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * interface for picture service
+ */
 @Service
 public interface PictureService {
 
-    public ResponseEntity<PictureUploadResponse> uploadPicture(MultipartFile file) throws Exception;
+    //upload a picture
+    ResponseEntity<PictureUploadResponse> uploadPicture(MultipartFile file) throws Exception;
 
 }

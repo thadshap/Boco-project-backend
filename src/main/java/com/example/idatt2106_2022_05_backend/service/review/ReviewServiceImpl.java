@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for CRUD on Review
+ */
 @Service
 public class ReviewServiceImpl implements ReviewService{
     /*
