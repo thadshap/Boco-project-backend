@@ -50,7 +50,7 @@ public interface AdService {
     Response deleteAd(long adId);
     //delete picture
 
-    Response deletePicture(long ad_id, long picture_id);
+    Response deletePicture(long ad_id, byte[] chosenPicture);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 }

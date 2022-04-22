@@ -376,11 +376,13 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response deletePicture(long ad_id, byte[] chosenPicture){
         Ad ad = adRepository.getById(ad_id);
-        Picture picture = pictureRepository.findByAdAndPictureId(ad, picture_id).get();
-        if(picture!=null){
-            if(PictureUtility.decompressImage(picture.getContent()).equals(chosenPicture)){
-                pictureRepository.delete(picture);
-                return new Response(null, HttpStatus.OK);
+        List<Picture> picture = pictureRepository.findByAd(ad);
+        if(picture!=null) {
+            for (Picture p : picture) {
+                if (PictureUtility.decompressImage(p.getContent()).equals(chosenPicture)) {
+                    pictureRepository.delete(p);
+                    return new Response(null, HttpStatus.OK);
+                }
             }
         }
         return new Response(null, HttpStatus.NOT_FOUND);

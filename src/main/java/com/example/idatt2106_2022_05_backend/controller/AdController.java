@@ -109,9 +109,9 @@ public class AdController {
 
     @DeleteMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
+    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
+        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getFile().getBytes());
     }
 
     @PostMapping("/ads/picture")

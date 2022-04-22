@@ -13,10 +13,6 @@ public class UpdatePictureDto {
     @ApiModelProperty(notes = "id of the ad the picture belongs to")
     private long ad_id;
 
-    //TODO: fix this
-    @ApiModelProperty(notes = "id of the picture the ")
-    private long picture_id;
-
     @ApiModelProperty(notes = "multipartfile containing the new picture")
     private MultipartFile file;
 }
