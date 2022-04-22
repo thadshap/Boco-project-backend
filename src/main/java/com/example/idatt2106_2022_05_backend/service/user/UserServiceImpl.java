@@ -21,13 +21,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper = new ModelMapper();
-
+    ModelMapper modelMapper = new ModelMapper();
 
     /**
      * Method to delete user from repository.
-     * @param userId user id to delete user.
+     * 
+     * @param userId
+     *            user id to delete user.
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -39,26 +40,30 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to update User object in the repository.
-     * @param userId id of the user to update.
-     * @param userUpdateDto {@link UserUpdateDto} object with variables to update user.
+     * 
+     * @param userId
+     *            id of the user to update.
+     * @param userUpdateDto
+     *            {@link UserUpdateDto} object with variables to update user.
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
         User user = userRepository.getById(userId);
-        if(!userUpdateDto.getFirstName().isBlank()){
+        if (!userUpdateDto.getFirstName().isBlank()) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
-        if(!userUpdateDto.getLastName().isBlank()){
+        if (!userUpdateDto.getLastName().isBlank()) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if(!userUpdateDto.getEmail().isBlank()){
+        if (!userUpdateDto.getEmail().isBlank()) {
             user.setEmail(userUpdateDto.getEmail());
         }
-        if(!userUpdateDto.getPassword().isBlank()){
+        if (!userUpdateDto.getPassword().isBlank()) {
             user.setPassword(userUpdateDto.getPassword());
         }
-        if(userUpdateDto.getPicture() != null){
+        if (userUpdateDto.getPicture() != null) {
             Picture picture = Picture.builder().filename("PB").content(userUpdateDto.getPicture()).build();
             user.setPicture(picture);
         }
@@ -68,17 +73,19 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to retrieve user from the database.
-     * @param userId id of user to retrieve.
+     * 
+     * @param userId
+     *            id of user to retrieve.
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
     public Response getUser(Long userId) {
         UserReturnDto user = modelMapper.map(userRepository.getById(userId), UserReturnDto.class);
-        if(user == null){
+        if (user == null) {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
         return new Response(user, HttpStatus.OK);
     }
-
 
 }

@@ -17,7 +17,7 @@ import java.util.List;
  * Service Rental class to handle rental objects
  */
 @Service
-public class RentalServiceImpl implements RentalService{
+public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private RentalRepository rentalRepository;
@@ -30,7 +30,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to create Rental object
-     * @param rentalDto {@link RentalDto} object with information to create a rental
+     * 
+     * @param rentalDto
+     *            {@link RentalDto} object with information to create a rental
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -42,7 +45,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to delete a rental object from the repository.
-     * @param rentalId Id of the rental to delete.
+     * 
+     * @param rentalId
+     *            Id of the rental to delete.
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -53,7 +59,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to update Rental object
-     * @param rentalDto {@link RentalDto} object with information to update a rental
+     * 
+     * @param rentalDto
+     *            {@link RentalDto} object with information to update a rental
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -64,7 +73,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to retrieve a Rental Object
-     * @param rentalDto TODO change param
+     * 
+     * @param rentalDto
+     *            TODO change param
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -75,7 +87,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to retrieve a Rental object by User id
-     * @param userId user id to retrieve the rental object for
+     * 
+     * @param userId
+     *            user id to retrieve the rental object for
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -86,7 +101,10 @@ public class RentalServiceImpl implements RentalService{
 
     /**
      * Method to retrieve Rental objects by User id
-     * @param userId user id to retrieve the rental object for
+     * 
+     * @param userId
+     *            user id to retrieve the rental object for
+     * 
      * @return returns HttpStatus and a response object with.
      */
     @Override

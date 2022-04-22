@@ -18,19 +18,19 @@ public class UserController {
 
     @PutMapping("/{userId}")
     @ApiOperation(value = "Endpoint to update user", response = Response.class)
-    public Response update( @PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto){
+    public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) {
         return userService.updateUser(userId, userUpdateDto);
     }
 
     @DeleteMapping("/{userId}")
     @ApiOperation(value = "Endpoint to delete user", response = Response.class)
-    public Response deleteUser( @PathVariable Long userId){
+    public Response deleteUser(@PathVariable Long userId) {
         return userService.deleteUser(userId);
     }
 
     @GetMapping("/{userId}")
     @ApiOperation(value = "Endpoint to delete user", response = Response.class)
-    public Response getUser( @PathVariable Long userId){
+    public Response getUser(@PathVariable Long userId) {
         return userService.getUser(userId);
     }
 }
