@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Data
 @Builder
 @Table(name = "ads")
 public class Ad {
