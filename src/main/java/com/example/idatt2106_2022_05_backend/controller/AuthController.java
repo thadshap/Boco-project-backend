@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/login/outside/service")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
-    public Response loginWithOutsideService(Principal prinsipal) {
+    public Response loginWithOutsideService(Principal principal) {
         return null;
     }
 
