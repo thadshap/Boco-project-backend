@@ -38,10 +38,10 @@ public class AdDto {
     private double distance;
 
     // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private ArrayList<MultipartFile> picturesIn;
+    private Set<MultipartFile> picturesIn;
 
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private ArrayList<Image> picturesOut;
+    private Set<Image> picturesOut;
 
     // Upon update-methods
     private long adId;

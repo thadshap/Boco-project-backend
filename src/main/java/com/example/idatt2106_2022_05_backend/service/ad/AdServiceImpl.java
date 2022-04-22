@@ -23,6 +23,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -230,15 +231,14 @@ public class AdServiceImpl implements AdService {
     }
 
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
-        ArrayList<Picture> pictures = ad.getPictures();
-        ArrayList<Image> images = adDto.getPicturesOut();
+        Set<Picture> pictures = ad.getPictures();
+        Set<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
             ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
             Image image = ImageIO.read(bis);
             images.add(image);
         }
         adDto.setPicturesOut(images);
-
     }
 
     /**

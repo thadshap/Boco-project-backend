@@ -35,14 +35,14 @@ public class AdController {
     }
 
     // Get all ads by postal code
-    @PostMapping("/ads")
-    public Response getAdByPostalCode(@RequestBody int postalCode) { // todo use dto instead?
+    @GetMapping("/ads/{postalCode}")
+    public Response getAdByPostalCode(@PathVariable int postalCode) { // todo use dto instead?
         return adService.getAllAdsByPostalCode(postalCode);
     }
 
     // Get all ads by rental type
-    @PostMapping("/ads")
-    public Response getAllAdsByRentalType(@RequestBody boolean rentalType) {
+    @GetMapping("/ads/{rentalType}")
+    public Response getAllAdsByRentalType(@PathVariable boolean rentalType) {
         return adService.getAllAdsByRentalType(rentalType);
     }
 
