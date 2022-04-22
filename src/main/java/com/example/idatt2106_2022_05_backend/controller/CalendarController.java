@@ -34,7 +34,6 @@ public class CalendarController {
      *            date to
      *            adId
      *            available (true for rental, false for cancellation)
-     * @return
      */
     @PostMapping()
     public Response postRentalDates(@RequestBody CalendarDto dto) {

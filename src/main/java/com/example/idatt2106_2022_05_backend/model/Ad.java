@@ -82,7 +82,9 @@ public class Ad {
     private User user;
 
     // one-to-many connection with review.
-    @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
+    // When an ad is removed, its corresponding reviews are also removed.
+    // When ad is persisted, the reviews are also updated
+    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private Set<Review> reviews;
 
     // Many-to-many connection with Date. Date is parent in this case.
