@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -38,35 +39,14 @@ public interface AdService {
     Response getReviewsByUserId(long userId);
 
     // update ad title
-    Response updateTitle(long adId, String newTitle);
-
-    // update ad description
-    Response updateDescription(long adId, String newTitle);
-
-    // update ad duration (how long it can be rented for)
-    Response updateDuration(long adId, int newDuration);
-
-    // update duration-type
-    Response updateDurationType(long adId, AdType newDurationType);
-
-    // update ad price
-    Response updatePrice(long adId, int newPrice);
-
-    // update ad street address
-    Response updateStreetAddress(long adId, String newStreetAddress);
-
-    // update ad postal code
-    Response updatePostalCode(long adId, int newPostalCode);
-
-    // update ad rented_out status...
-    Response updateRentedOut(long adId, boolean rentedOut);
+    Response updateAd(Long adId, AdUpdateDto adUpdateDto);
 
     Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
-
     // delete ad
-    Response deleteAd(long adId);
 
+    Response deleteAd(long adId);
     //delete picture
+
     Response deletePicture(long ad_id, long picture_id);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;

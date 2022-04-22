@@ -64,7 +64,7 @@ public class AuthController {
     public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) {
         User user = authService.createUser(createAccount);
         if (user == null) {
-            return new Response("Mail is already registered", HttpStatus.BAD_REQUEST);
+            return new Response("Mail is already registered", HttpStatus.IM_USED);
         }
         publisher.publishEvent(new RegistrationComplete(user, url(url)));
         return new Response("Registration mail is created", HttpStatus.CREATED);

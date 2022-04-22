@@ -213,8 +213,8 @@ class AdControllerTest {
 
     @Test
     void updateTitle() throws Exception {
-        Mockito.when(adService.updateTitle(1L, "newTitle")).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateTitle(1L, "newTitle")).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateTitle").
@@ -228,8 +228,8 @@ class AdControllerTest {
 
     @Test
     void updateDescription() throws Exception {
-        Mockito.when(adService.updateDescription(1L, "new description")).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateDescription(1L, "new description")).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateDescription").
@@ -243,8 +243,8 @@ class AdControllerTest {
 
     @Test
     void updateDuration() throws Exception {
-        Mockito.when(adService.updateDuration(1L, 10)).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateDuration(1L, 10)).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateDuration").
@@ -258,8 +258,8 @@ class AdControllerTest {
 
     @Test
     void updateDurationType() throws Exception {
-        Mockito.when(adService.updateDurationType(1L, AdType.DAY)).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateDurationType(1L, AdType.DAY)).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateDurationType").
@@ -273,8 +273,8 @@ class AdControllerTest {
 
     @Test
     void updatePrice() throws Exception {
-        Mockito.when(adService.updatePrice(1L, 300)).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updatePrice(1L, 300)).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updatePrice").
@@ -288,8 +288,8 @@ class AdControllerTest {
 
     @Test
     void updateStreetAddress() throws Exception {
-        Mockito.when(adService.updateStreetAddress(1L, "new address 4")).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateStreetAddress(1L, "new address 4")).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateStreetAddress").
@@ -304,8 +304,8 @@ class AdControllerTest {
 
     @Test
     void updatePostalCode() throws Exception {
-        Mockito.when(adService.updatePostalCode(1L, 1111)).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updatePostalCode(1L, 1111)).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updatePostalCode").
@@ -320,8 +320,8 @@ class AdControllerTest {
 
     @Test
     void updateRentedOut() throws Exception {
-        Mockito.when(adService.updateRentedOut(1L, true)).
-                thenReturn(new Response(null,HttpStatus.OK));
+//        Mockito.when(adService.updateRentedOut(1L, true)).
+//                thenReturn(new Response(null,HttpStatus.OK));
 
         // Performing the post operation
         mockMvc.perform(post("/ads/updateRentedOut").
