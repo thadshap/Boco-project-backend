@@ -48,8 +48,18 @@ public class AdServiceImpl implements AdService {
 
     // Get all ads
     @Override
-    public Response getAllAds() {
-        return new Response(adRepository.findAll(), HttpStatus.OK);
+    public Response getAllAds() throws IOException {
+        List<Ad> allAds = adRepository.findAll();
+
+        List<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : allAds) {
+            AdDto newAd = castObject(ad);
+            adsToBeReturned.add(newAd);
+        }
+
+        return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
     // Get all ads in category by category id
@@ -125,15 +135,29 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAllAvailableAds() {
         Set<Ad> availableAds = adRepository.getAllAvailableAds();
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
 
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -142,21 +166,59 @@ public class AdServiceImpl implements AdService {
     public Response getAllAvailableAdsByUser(long userId) {
         Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
         }
     }
 
     // Get all ads by postal code
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
-        return new Response(adRepository.findByPostalCode(postalCode), HttpStatus.OK);
+        Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
+
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
+        // If the db contains any available ads
+        if(availableAds.size() != 0) {
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -169,11 +231,26 @@ public class AdServiceImpl implements AdService {
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : ads) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         if(ads != null) {
-            return new Response(ads, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find ads", HttpStatus.NO_CONTENT);
         }
     }
 

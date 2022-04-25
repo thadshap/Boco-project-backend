@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -26,11 +27,16 @@ public class AdController {
     @GetMapping("/ads")
     @ApiOperation(value = "Endpoint to return all ads", response = Response.class)
     public Response getAllAds() {
-        log.debug("[X] Call to return all ads");
-        return adService.getAllAds();
+        try {
+            log.debug("[X] Call to return all ads");
+            return adService.getAllAds();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Response("Could not get ads", HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/ads/available")
+    @PostMapping("/ads/available/true")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
         log.debug("[X] Call to retrieve avaliable ads");
@@ -44,14 +50,14 @@ public class AdController {
         return adService.getAllAvailableAdsByUser(id);
     }
 
-    @GetMapping("/ads/{postalCode}")
+    @GetMapping("/ads/postal/{postalCode}")
     @ApiOperation(value = "Endpoint to return all ads by with the same postal code", response = Response.class)
     public Response getAdByPostalCode(@PathVariable int postalCode) { // todo use dto instead?
         log.debug("[X] Call to get all ads with postal code = {}", postalCode);
         return adService.getAllAdsByPostalCode(postalCode);
     }
 
-    @GetMapping("/ads/{rentalType}")
+    @GetMapping("/ads/rental/{rentalType}")
     @ApiOperation(value = "Endpoint to return all ads with specific rental type", response = Response.class)
     public Response getAllAdsByRentalType(@PathVariable boolean rentalType) {
         log.debug("[X] Call to return ads by rental type = {}", rentalType);
