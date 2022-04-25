@@ -29,6 +29,7 @@ public class AdController {
         return adService.getAllAds();
     }
 
+    //TODO: getmapping?
     @PostMapping("/ads/available")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
@@ -120,45 +121,47 @@ public class AdController {
         return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
     }
 
-    @GetMapping("/ads/page")
+    @GetMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
-    public Response getPageOfAds(@RequestBody int sizeOfPage){
+    public Response getPageOfAds(@PathVariable int sizeOfPage){
         return adService.getPageOfAds(sizeOfPage);
     }
 
-    @GetMapping("/ads/sort/distance")
+    @PostMapping("/ads/sort/distance")
     @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
     public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
         return adService.sortByDistance(userGeoLocation);
     }
 
-    @GetMapping("/ads/sort/descending")
+    @PostMapping("/ads/sort/descending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
     public Response getsorteddescending(@RequestBody SortingAdsDto sortingDto){
         return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
-    @GetMapping("/ads/sort/ascending")
+    @PostMapping("/ads/sort/ascending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
     public Response getsortedAscending(@RequestBody SortingAdsDto sortingDto){
         return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
-    @GetMapping("/ads/newest")
+    @GetMapping("/ads/newest/{pageSize}")
     @ApiOperation(value = "sorting all ads by when they are created")
-    public Response getnewest(@RequestBody int pageSize){
+    public Response getnewest(@PathVariable int pageSize){
+
         return adService.sortByCreatedDateAscending(pageSize);
     }
 
-    @GetMapping("/ads/oldest")
+    @GetMapping("/ads/oldest/{pageSize}")
     @ApiOperation(value = "sorting all ads by creation oldest")
-    public Response getoldest(@RequestBody int pagesize){
-        return adService.sortByCreatedDateDescending(pagesize);
+    public Response getoldest(@PathVariable int pageSize){
+
+        return adService.sortByCreatedDateDescending(pageSize);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@RequestBody String searchword){
-        return adService.searchThroughAds(searchword);
+    public Response searchInAdsAndCategories(@PathVariable String searchWord){
+        return adService.searchThroughAds(searchWord);
     }
 }

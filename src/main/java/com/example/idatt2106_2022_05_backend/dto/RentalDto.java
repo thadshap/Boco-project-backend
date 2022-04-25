@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 

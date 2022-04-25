@@ -30,7 +30,7 @@ public class Review {
     private User user;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "ad_id")
+    @JoinColumn(name = "adId")
     private Ad ad;
 
     @Override

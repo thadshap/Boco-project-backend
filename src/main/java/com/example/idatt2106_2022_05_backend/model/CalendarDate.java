@@ -37,7 +37,7 @@ public class CalendarDate {
     @JoinTable(
             name = "calendar",
             joinColumns = { @JoinColumn(name = "date_id") },
-            inverseJoinColumns = { @JoinColumn(name = "ad_id") }
+            inverseJoinColumns = { @JoinColumn(name = "adId") }
     )
     private Set<Ad> ads;
 }

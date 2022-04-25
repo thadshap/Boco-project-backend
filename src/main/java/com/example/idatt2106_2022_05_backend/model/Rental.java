@@ -50,6 +50,6 @@ public class Rental {
     private User borrower;
 
     @ManyToOne
-    @JoinColumn(name = "ad_id", nullable = false)
+    @JoinColumn(name = "adId", nullable = false)
     private Ad ad;
 }
