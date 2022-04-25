@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
@@ -109,7 +109,7 @@ class AdServiceTest {
 
         Category category= new Category();
         category.setName("Kategori1");
-        category.setCategoryId((long) 1);
+        category.setId((long) 1);
 
         for(int i=0; i<20; i++){
             AdDto ad = new AdDto();

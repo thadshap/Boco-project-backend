@@ -44,6 +44,9 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response createRental(RentalDto rentalDto) {
+        if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
+            return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
+        }
         Ad ad = adRepository.getById(rentalDto.getAd());
         Set<CalendarDate> cld = ad.getDates();
         for (CalendarDate calDate : cld) {

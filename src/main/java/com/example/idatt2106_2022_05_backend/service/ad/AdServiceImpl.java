@@ -312,7 +312,7 @@ public class AdServiceImpl implements AdService {
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = new AdDto();
         adDto.setDescription(ad.getDescription());
-        adDto.setCategoryId(ad.getId());
+        adDto.setCategoryId(ad.getCategory().getId());
         adDto.setDuration(ad.getDuration());
         adDto.setDurationType(ad.getDurationType());
         adDto.setPostalCode(ad.getPostalCode());
