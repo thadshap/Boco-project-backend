@@ -1,6 +1,9 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.*;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -128,7 +131,7 @@ public class AdController {
     @GetMapping("/ads/sort/distance")
     @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
     public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
-        return adService.sortByDistance(userGeoLocation, userGeoLocation.getAmount());
+        return adService.sortByDistance(userGeoLocation);
     }
 
     @GetMapping("/ads/sort/descending")

@@ -1,18 +1,17 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
-import com.example.idatt2106_2022_05_backend.dto.UserReturnDto;
-import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
-import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -24,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PictureRepository pictureRepository;
 
     ModelMapper modelMapper = new ModelMapper();
 
@@ -68,7 +70,9 @@ public class UserServiceImpl implements UserService {
             user.setPassword(userUpdateDto.getPassword());
         }
         if (userUpdateDto.getPicture() != null) {
-            Picture picture = Picture.builder().filename("PB").content(PictureUtility.compressImage(userUpdateDto.getPicture().getBytes())).build();
+            Picture picture = Picture.builder().filename("PB")
+                    .content(PictureUtility.compressImage(userUpdateDto.getPicture().getBytes())).build();
+            pictureRepository.save(picture);
             user.setPicture(picture);
         }
         userRepository.save(user);

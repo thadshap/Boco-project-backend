@@ -46,7 +46,7 @@ class AdRepositoryTest {
 
         // Building a category
         Category category = Category.builder().
-                categoryId(3L).
+                id(3L).
                 name("Shoes").
                 build();
 

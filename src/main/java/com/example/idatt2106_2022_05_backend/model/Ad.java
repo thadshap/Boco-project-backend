@@ -23,7 +23,7 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ad_id", nullable = false)
-    private Long adId;
+    private Long id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -75,18 +75,21 @@ public class Ad {
     private Set<Picture> pictures;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    private Set<Rental> rentals;
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
-    private Set<Review> reviews;
+    private Set<Review> reviews; // todo create a rating for user such taht the rating does not get removed from the user
 
     // Many-to-many connection with Date. Date is parent in this case.
     @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")

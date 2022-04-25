@@ -10,7 +10,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Builder
 @Table(name = "categories")
 public class Category {
@@ -18,15 +17,15 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
 
     /**
-     * Recursive one-to-many relationship // todo some suspicions regarding the tags --> should they be the opposite?
+     * Recursive one-to-many relationship
      */
-    @OneToMany(mappedBy = "mainCategory")
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "mainCategory")
     private Set<Category> subCategories;
 
     @ManyToOne

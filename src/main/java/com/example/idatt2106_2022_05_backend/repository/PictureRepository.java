@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface PictureRepository extends JpaRepository<Picture, Long> {
     Optional<Picture> findByFilename(String name);
-    Optional<Picture> findByAdAndPictureId(Ad ad, long picture_id);
+    Optional<Picture> findByAdAndId(Ad ad, long picture_id);
     List<Picture> findByAd(Ad ad);
 }

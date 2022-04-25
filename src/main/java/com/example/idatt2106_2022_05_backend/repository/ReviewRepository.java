@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    public List<Review> getAllByUser(User user);
-    public List<Review> getAllByAd(Ad ad);
-    public Optional<Review> getByAdAndUser(Ad ad, User user);
+    List<Review> getAllByUser(User user);
+    List<Review> getAllByAd(Ad ad);
+    Optional<Review> getByAdAndUser(Ad ad, User user);
 
 }

@@ -1,57 +1,27 @@
 package com.example.idatt2106_2022_05_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 @Builder
+@Data
 public class CalendarDto {
 
     // AdId
     private long adId;
 
     // Date from
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     // Date to
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     // Available (for use in marking dates as available/unavailable)
     private boolean available;
 
-
-    // GETTERS
-    public long getAdId() {
-        return adId;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-
-    // SETTERS
-    public void setAdId(long adId) {
-        this.adId = adId;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
 }

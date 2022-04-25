@@ -1,10 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
-import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
-import com.example.idatt2106_2022_05_backend.enums.AdType;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
@@ -55,6 +54,38 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAllAds() {
         return new Response(adRepository.findAll().stream().map(ad -> modelMapper.map(ad, AdDto.class)), HttpStatus.OK);
+    }
+
+    // Get all ads in category by category id
+    public Response getAllAdsInCategory(Long categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        // If category exists
+        if(category.isPresent()) {
+            Set<Ad> adsFound = category.get().getAds();
+
+            // Return the ads
+            return new Response(adsFound, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Get all ads in category by category name
+    public Response getAllAdsInCategory(String name) {
+        Optional<Category> category = categoryRepository.findByName(name);
+
+        // If category exists
+        if(category.isPresent()) {
+            Set<Ad> adsFound = category.get().getAds();
+
+            // Return the ads
+            return new Response(adsFound, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
     }
 
     // Get ad by id
@@ -208,22 +239,49 @@ public class AdServiceImpl implements AdService {
                 savePicture(m, newAd);
             }
         }
+
+        // Persisting the entities
+        adRepository.save(newAd);
+        user.get().getAds().add(newAd);
+        userRepository.save(user.get());
+
         return new Response(null, HttpStatus.OK);
     }
 
     /*
     support method to create and save Picture
      */
-    private void savePicture(MultipartFile file, Ad ad) throws IOException {
-        //ensures that content of file is presentent
+    private Response savePicture(MultipartFile file, Ad ad) throws IOException {
+
+        // Ensures that content of file is present
         if(file.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Picture file is empty");
         }
-        //create and save object
-        pictureRepository.save(Picture.builder()
-        .type(file.getContentType())
-        .filename(file.getOriginalFilename())
-        .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build());
+
+        // Ensure that the ad exists
+        Optional<Ad> adFound = adRepository.findById(ad.getId());
+
+        if(adFound.isPresent()) {
+
+            // Create picture object
+            Picture picture = Picture.builder()
+                    .type(file.getContentType())
+                    .filename(file.getOriginalFilename())
+                    .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build();
+
+            // Save picture object
+            pictureRepository.save(picture);
+
+            // Add picture object as foreign key to the ad
+            adFound.get().getPictures().add(picture);
+
+            // Persist ad
+            adRepository.save(adFound.get());
+
+            // Return proper response
+            return new Response("Picture saved", HttpStatus.OK);
+        }
+        return new Response("Ad not found", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -233,12 +291,14 @@ public class AdServiceImpl implements AdService {
      * @throws IOException if decompression pictures fails
      */
     public Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
-        List<AdDto> ads = new ArrayList<>();
-        for(Ad ad :adRepository.findAll()){
+        ArrayList<AdDto> ads = new ArrayList<>();
+
+        for(Ad ad : adRepository.findAll()){
             //Setting all attributes and decompressing pictures in help method
             AdDto adDto = castObject(ad);
             //Calculate and set distance
-            adDto.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
+            adDto.setDistance(calculateDistance(userGeoLocation.getLat(),
+                    userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
             //Adding all ads to list and then response
             ads.add(adDto);
         }
@@ -268,6 +328,7 @@ public class AdServiceImpl implements AdService {
      */
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
+
         Set<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
             ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
@@ -346,7 +407,7 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response("Ad was not found in the database", HttpStatus.NOT_FOUND);
         }
-        return new Response("Ad is updated", HttpStatus.OK);
+        return new Response("Ad updated", HttpStatus.OK);
     }
 
     // delete ad
@@ -361,10 +422,10 @@ public class AdServiceImpl implements AdService {
             adRepository.deleteById(adId);
 
             // HttpResponse = OK
-            return new Response(null, HttpStatus.OK);
+            return new Response("Ad deleted", HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NOT_FOUND);
+            return new Response("Ad not found", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -376,21 +437,27 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public Response deletePicture(long ad_id, byte[] chosenPicture){
-        Ad ad = adRepository.getById(ad_id);
-        List<Picture> picture = pictureRepository.findByAd(ad);
-        if(picture!=null) {
-            for (Picture p : picture) {
-                if (PictureUtility.decompressImage(p.getContent()).equals(chosenPicture)) {
-                    pictureRepository.delete(p);
-                    return new Response(null, HttpStatus.OK);
+        Optional<Ad> ad = adRepository.findById(ad_id);
+
+        // If present
+        if(ad.isPresent()) {
+            List<Picture> pictures = pictureRepository.findByAd(ad.get());
+            if(pictures != null) {
+                for (Picture picture : pictures) {
+                    if (Arrays.equals(PictureUtility.decompressImage(picture.getContent()), chosenPicture))
+                    {
+                        pictureRepository.delete(picture);
+                        return new Response("Deleted pictures", HttpStatus.OK);
+                    }
                 }
             }
         }
-        return new Response(null, HttpStatus.NOT_FOUND);
+
+        return new Response("Picture not found", HttpStatus.NOT_FOUND);
     }
 
     /**
-     * method to ad a new  picture to an ad
+     * method to add a new  picture to an ad
      * @param ad_id ad_id
      * @param file file containing picture
      * @return response with status ok
@@ -398,26 +465,35 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
-        //Getting the ad to connect to the picture
-        Ad ad = adRepository.getById(ad_id);
-        //building and saving the picture
-        pictureRepository.save(Picture.builder()
-        .filename(file.getOriginalFilename())
-        .ad(ad).type(file.getContentType()).content(PictureUtility.compressImage(file.getBytes())).build());
-        return new Response(null, HttpStatus.OK);
-    }
 
+        //Getting the ad to connect to the picture
+        Optional<Ad> ad = adRepository.findById(ad_id);
+
+        if(ad.isPresent()) {
+
+            //building and saving the picture
+            pictureRepository.save(Picture.builder()
+                    .filename(file.getOriginalFilename())
+                    .ad(ad.get()).type(file.getContentType()).
+                    content(PictureUtility.compressImage(file.getBytes())).build());
+
+            // Return OK response
+            return new Response("Picture saved", HttpStatus.OK);
+        }
+
+        // The ad was not found
+        return new Response("Ad not found", HttpStatus.NOT_FOUND);
+    }
     /**
      * Method to get ads sorted on distance to user
      * @param userGeoLocation users location
-     * @param amountOfAds page size
      * @return list of ads
      * @throws IOException exception
      */
     @Override
-    public Response sortByDistance(UserGeoLocation userGeoLocation, int amountOfAds) throws IOException {
+    public Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
         List<AdDto> ads = (List<AdDto>) getAllAdsWithDistance(userGeoLocation).getBody();
-        return new Response(ads.stream().limit(amountOfAds).collect(Collectors.toList()), HttpStatus.OK);
+        return new Response(ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     /**
