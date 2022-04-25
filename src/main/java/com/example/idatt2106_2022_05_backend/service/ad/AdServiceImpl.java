@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
+import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
@@ -187,9 +188,13 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response(null, HttpStatus.NOT_ACCEPTABLE);
+            return new Response("could not find category", HttpStatus.NOT_FOUND);
         }
-
+        //Getting user
+        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
+        //checking user
+        user.ifPresent(newAd::setUser);
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());

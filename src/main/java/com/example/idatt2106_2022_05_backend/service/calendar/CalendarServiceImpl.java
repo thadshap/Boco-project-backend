@@ -24,7 +24,6 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private AdRepository adRepository;
 
-
     // return true if dates between start and end are "typeOfAvailability"
     private boolean datesAre(LocalDate startDate, LocalDate endDate, boolean typeOfAvailability) {
         // Get all dates between start -and endDate
@@ -52,6 +51,7 @@ public class CalendarServiceImpl implements CalendarService {
      *            (boolean) available --> for use as mutator
      * @return true if everything went well
      */
+
     @Override
     public Response markDatesFromToAs(CalendarDto dto) {
 
@@ -157,3 +157,4 @@ public class CalendarServiceImpl implements CalendarService {
         return new Response(null, HttpStatus.NOT_FOUND);
     }
 }
+

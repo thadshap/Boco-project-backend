@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service;
 
+import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +29,11 @@ class AdServiceTest {
     @Autowired
     private AdService adService;
 
-    @MockBean
-    private AdRepository adRepository;
+    @Autowired
+    AdRepository adRepository;
+
+    //@MockBean
+    //private AdRepository adRepository;
 
     /**
      * Creating an Ad object for use in each test (mocking repository)
@@ -36,6 +41,7 @@ class AdServiceTest {
      * us to create all possible variants of constructors for the object.
      * To create an ad, a user and a category must also be created.
      */
+    /*
     @BeforeEach
     void setUp() { // description, rental (boolean), rented_out,
                    // duration_type, duration, price, street_address, postal_code
@@ -89,18 +95,11 @@ class AdServiceTest {
         // We want to use this ad-object when we call on methods later on.
         Mockito.when(adRepository.findByPostalCode(7234)).thenReturn(ads);
     }
+*/
 
 
     @Test
-    void whenAdsExist_thenGetAllAds() {
-    }
-
-    @Test
-    void getAdById() {
-    }
-
-    @Test
-    void getPageOfAds(){
+    void getPageOfAds() throws IOException {
         User user = User.builder().
                 id(1L).
                 firstName("firstName").
@@ -109,24 +108,24 @@ class AdServiceTest {
                 password("pass1word").
                 build();
 
-        for(int i=0; i<40; i++){
-            Ad ad = new Ad();
-            ad.setCategory(new Category());
+        Category category= new Category();
+        category.setName("Kategori1");
+        category.setCategoryId((long) 1);
+
+        for(int i=0; i<20; i++){
+            AdDto ad = new AdDto();
             ad.setDescription("text:" + i);
             ad.setDuration(i);
             ad.setDurationType(AdType.HOUR);
-            ad.setLat(63.424595+i);
-            ad.setLng(10.810314+i);
-            ad.setPictures(null);
+            ad.setPicturesIn(null);
             ad.setPostalCode(1234+i);
             ad.setPrice(10*i);
             ad.setRental(false);
-            ad.setReviews(null);
             ad.setRentedOut(false);
+            ad.setCategoryId(1);
             ad.setStreetAddress("Olavsgate" + i);
             ad.setTitle("Ad" + i);
-            ad.setUser(user);
-            adRepository.save(ad);
+            adService.postNewAd(ad);
         }
         Pageable pageOf24 = PageRequest.of(0,25);
         List<Ad> ads = adRepository.findAll(pageOf24).getContent();
@@ -134,13 +133,7 @@ class AdServiceTest {
 
     }
 
-    @Test
-    void getAllAvailableAds() {
-    }
 
-    @Test
-    void getAllAvailableAdsByUser() {
-    }
 
     /**
      * This test uses the AdRepository method "findByPostalCode".
@@ -179,37 +172,5 @@ class AdServiceTest {
 
         // If equalAdFound --> test failed
         assertFalse(equalAdFound);
-    }
-
-    @Test
-    void getAllAdsByRentalType() {
-    }
-
-    @Test
-    void postNewAd() {
-    }
-
-    @Test
-    void updateTitle() {
-    }
-
-    @Test
-    void updateDescription() {
-    }
-
-    @Test
-    void updateDuration() {
-    }
-
-    @Test
-    void updateDurationType() {
-    }
-
-    @Test
-    void updatePrice() {
-    }
-
-    @Test
-    void deleteAd() {
     }
 }
