@@ -48,11 +48,42 @@ public class AdServiceImpl implements AdService {
     private ModelMapper modelMapper = new ModelMapper();
 
 
-
     // Get all ads
     @Override
     public Response getAllAds() {
         return new Response(adRepository.findAll(), HttpStatus.OK);
+    }
+
+    // Get all ads in category by category id
+    public Response getAllAdsInCategory(Long categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        // If category exists
+        if(category.isPresent()) {
+            Set<Ad> adsFound = category.get().getAds();
+
+            // Return the ads
+            return new Response(adsFound, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Get all ads in category by category name
+    public Response getAllAdsInCategory(String name) {
+        Optional<Category> category = categoryRepository.findByName(name);
+
+        // If category exists
+        if(category.isPresent()) {
+            Set<Ad> adsFound = category.get().getAds();
+
+            // Return the ads
+            return new Response(adsFound, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
     }
 
     // Get ad by id
@@ -220,17 +251,36 @@ public class AdServiceImpl implements AdService {
      * Support-method to create and save Picture
      */
     private Response savePicture(MultipartFile file, Ad ad) throws IOException {
-        //ensures that content of file is present
+
+        // Ensures that content of file is present
         if(file.isEmpty()){
             return new Response("Picture file is empty", HttpStatus.NO_CONTENT);
         }
 
-        //create and save object
-        pictureRepository.save(Picture.builder()
-        .type(file.getContentType())
-        .filename(file.getOriginalFilename())
-        .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build());
-        return new Response(null, HttpStatus.OK);
+        // Ensure that the ad exists
+        Optional<Ad> adFound = adRepository.findById(ad.getId());
+
+        if(adFound.isPresent()) {
+
+            // Create picture object
+            Picture picture = Picture.builder()
+                    .type(file.getContentType())
+                    .filename(file.getOriginalFilename())
+                    .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build();
+
+            // Save picture object
+            pictureRepository.save(picture);
+
+            // Add picture object as foreign key to the ad
+            adFound.get().getPictures().add(picture);
+
+            // Persist ad
+            adRepository.save(adFound.get());
+
+            // Return proper response
+            return new Response("Picture saved", HttpStatus.OK);
+        }
+        return new Response("Ad not found", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -318,7 +368,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adRepository.getReviewsByUserId(userId), HttpStatus.OK);
         }
         else {
-            return new Response("The user was not found. ", HttpStatus.NOT_FOUND);
+            return new Response("The user was not found", HttpStatus.NOT_FOUND);
         }
     }
 
