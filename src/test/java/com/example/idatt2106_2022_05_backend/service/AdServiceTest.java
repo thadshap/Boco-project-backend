@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -109,7 +108,7 @@ class AdServiceTest {
 
         Category category= new Category();
         category.setName("Kategori1");
-        category.setCategoryId((long) 1);
+        category.setId((long) 1);
 
         for(int i=0; i<20; i++){
             AdDto ad = new AdDto();
@@ -129,7 +128,6 @@ class AdServiceTest {
         Pageable pageOf24 = PageRequest.of(0,25);
         List<Ad> ads = adRepository.findAll(pageOf24).getContent();
         System.out.println("ads:" +ads);
-
     }
 
 
