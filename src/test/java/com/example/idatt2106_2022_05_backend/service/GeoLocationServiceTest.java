@@ -9,13 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeoLocationServiceTest {
 
-    @Autowired
-    AdServiceImpl service;
-
-
     @Test
     void calculateDistanceInMeters(){
-
+        AdServiceImpl service = new AdServiceImpl();
         UserGeoLocation userGeoLocation = new UserGeoLocation();
         userGeoLocation.setLat(63.424595);
         userGeoLocation.setLng(10.810314);
@@ -26,6 +22,6 @@ class GeoLocationServiceTest {
 
         double dist = service.calculateDistance(userGeoLocation.getLat(),userGeoLocation.getLng(), itemGeoLocation.getLat(), itemGeoLocation.getLng());
         System.out.println("Distance between the given points should be about 3,5km" + dist);
-        assertTrue(3.4<dist && dist<36 );
+        assertTrue(3.4<dist && dist<3.6 );
     }
 }

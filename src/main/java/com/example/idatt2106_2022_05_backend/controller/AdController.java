@@ -109,10 +109,9 @@ public class AdController {
 
     @DeleteMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto){
+    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        // return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getPicture_id());
-        return null;
+        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getFile().getBytes());
     }
 
     @PostMapping("/ads/picture")
@@ -120,5 +119,10 @@ public class AdController {
     public Response uploadNewPicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getAd_id());
         return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
+    }
+
+    @GetMapping("/ads/page")
+    public Response getPageOfAds(@RequestBody int sizeOfPage){
+        return adService.getPageOfAds(sizeOfPage);
     }
 }

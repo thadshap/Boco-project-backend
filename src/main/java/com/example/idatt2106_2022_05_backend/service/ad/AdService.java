@@ -27,6 +27,9 @@ public interface AdService {
     // Get all available ads by user id
     Response getAllAvailableAdsByUser(long userId);
 
+    //Get a page of ads
+    Response getPageOfAds(int sizeOfPage);
+
     // Get all ads by postal code
     Response getAllAdsByPostalCode(int postalCode);
 
@@ -47,7 +50,7 @@ public interface AdService {
     Response deleteAd(long adId);
     //delete picture
 
-    Response deletePicture(long ad_id, long picture_id);
+    Response deletePicture(long ad_id, byte[] chosenPicture);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 }

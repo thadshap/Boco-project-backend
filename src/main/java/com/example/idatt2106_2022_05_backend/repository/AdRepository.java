@@ -6,11 +6,13 @@ import com.example.idatt2106_2022_05_backend.model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
+@Repository
 public interface AdRepository extends JpaRepository<Ad, Long> {
 
     // Get all available ads

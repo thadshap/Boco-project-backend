@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PictureRepository extends JpaRepository<Picture, Long> {
-    public Optional<Picture> findByFilename(String name);
-    public Optional<Picture> findByAdAndId(Ad ad, long picture_id);
+    Optional<Picture> findByFilename(String name);
+    Optional<Picture> findByAdAndId(Ad ad, long picture_id);
+    List<Picture> findByAd(Ad ad);
 }

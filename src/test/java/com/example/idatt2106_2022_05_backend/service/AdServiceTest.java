@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service;
 
+import com.example.idatt2106_2022_05_backend.dto.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
@@ -12,8 +13,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +29,11 @@ class AdServiceTest {
     @Autowired
     private AdService adService;
 
-    @MockBean
-    private AdRepository adRepository;
+    @Autowired
+    AdRepository adRepository;
+
+    //@MockBean
+    //private AdRepository adRepository;
 
     /**
      * Creating an Ad object for use in each test (mocking repository)
@@ -88,21 +96,43 @@ class AdServiceTest {
     }
 
 
-    @Test
-    void whenAdsExist_thenGetAllAds() {
-    }
 
     @Test
-    void getAdById() {
+    void getPageOfAds() throws IOException {
+        User user = User.builder().
+                id(1L).
+                firstName("firstName").
+                lastName("lastName").
+                email("user.name@hotmail.com").
+                password("pass1word").
+                build();
+
+        Category category= new Category();
+        category.setName("Kategori1");
+        category.setCategoryId((long) 1);
+
+        for(int i=0; i<20; i++){
+            AdDto ad = new AdDto();
+            ad.setDescription("text:" + i);
+            ad.setDuration(i);
+            ad.setDurationType(AdType.HOUR);
+            ad.setPicturesIn(null);
+            ad.setPostalCode(1234+i);
+            ad.setPrice(10*i);
+            ad.setRental(false);
+            ad.setRentedOut(false);
+            ad.setCategoryId(1);
+            ad.setStreetAddress("Olavsgate" + i);
+            ad.setTitle("Ad" + i);
+            adService.postNewAd(ad);
+        }
+        Pageable pageOf24 = PageRequest.of(0,25);
+        List<Ad> ads = adRepository.findAll(pageOf24).getContent();
+        System.out.println("ads:" +ads);
+
     }
 
-    @Test
-    void getAllAvailableAds() {
-    }
 
-    @Test
-    void getAllAvailableAdsByUser() {
-    }
 
     /**
      * This test uses the AdRepository method "findByPostalCode".
@@ -141,37 +171,5 @@ class AdServiceTest {
 
         // If equalAdFound --> test failed
         assertFalse(equalAdFound);
-    }
-
-    @Test
-    void getAllAdsByRentalType() {
-    }
-
-    @Test
-    void postNewAd() {
-    }
-
-    @Test
-    void updateTitle() {
-    }
-
-    @Test
-    void updateDescription() {
-    }
-
-    @Test
-    void updateDuration() {
-    }
-
-    @Test
-    void updateDurationType() {
-    }
-
-    @Test
-    void updatePrice() {
-    }
-
-    @Test
-    void deleteAd() {
     }
 }

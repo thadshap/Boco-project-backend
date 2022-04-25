@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
+import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
@@ -15,6 +16,9 @@ import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +49,8 @@ public class AdServiceImpl implements AdService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+
+
     // Get all ads
     @Override
     public Response getAllAds() {
@@ -74,6 +80,17 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Get a page of ads
+     * @param sizeOfPage number of the page size
+     * @return Response with page in body
+     */
+    @Override
+    public Response getPageOfAds(int sizeOfPage){
+        Pageable pageOf24 = PageRequest.of(0,sizeOfPage);
+        List<Ad> ads = adRepository.findAll(pageOf24).getContent();
+        return new Response(ads, HttpStatus.OK);
+    }
 
     // Get all available ads
     @Override
@@ -171,9 +188,13 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response(null, HttpStatus.NOT_ACCEPTABLE);
+            return new Response("could not find category", HttpStatus.NOT_FOUND);
         }
-
+        //Getting user
+        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
+        //checking user
+        user.ifPresent(newAd::setUser);
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());
@@ -355,16 +376,20 @@ public class AdServiceImpl implements AdService {
     /**
      * method to delete a picture on an ad
      * @param ad_id ad_id
-     * @param picture_id picture_id
+     * @param chosenPicture picture_id
      * @return response with status ok or not found
      */
     @Override
-    public Response deletePicture(long ad_id, long picture_id){
+    public Response deletePicture(long ad_id, byte[] chosenPicture){
         Ad ad = adRepository.getById(ad_id);
-        Picture picture = pictureRepository.findByAdAndId(ad, picture_id).get();
-        if(picture!=null){
-            pictureRepository.delete(picture);
-            return new Response(null, HttpStatus.OK);
+        List<Picture> picture = pictureRepository.findByAd(ad);
+        if(picture!=null) {
+            for (Picture p : picture) {
+                if (PictureUtility.decompressImage(p.getContent()).equals(chosenPicture)) {
+                    pictureRepository.delete(p);
+                    return new Response(null, HttpStatus.OK);
+                }
+            }
         }
         return new Response(null, HttpStatus.NOT_FOUND);
     }
@@ -386,4 +411,6 @@ public class AdServiceImpl implements AdService {
         .ad(ad).type(file.getContentType()).content(PictureUtility.compressImage(file.getBytes())).build());
         return new Response(null, HttpStatus.OK);
     }
+
+
 }
