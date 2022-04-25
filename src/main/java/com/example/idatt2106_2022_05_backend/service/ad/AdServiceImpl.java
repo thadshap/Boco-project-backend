@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -205,10 +205,11 @@ public class AdServiceImpl implements AdService {
         newAd.setRental(adDto.isRental());
         newAd.setRentedOut(false);
         newAd.setDuration(adDto.getDuration());
-        newAd.setDurationType(adDto.getDurationType());
+        newAd.setDurationType(adDto.getDurationType()); //todo check
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
+        newAd.setPostalCode(adDto.getPostalCode());
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -219,12 +220,24 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response("could not find category", HttpStatus.NOT_FOUND);
         }
+
+        Optional<User> user = userRepository.findById(adDto.getUserId()); //todo id should be renamed
+
+        if(user.isPresent()) {
+            // Set foreign key
+            newAd.setUser(user.get());
+        }
+        else {
+            return new Response("could not find user", HttpStatus.NOT_FOUND);
+        }
+        /**
         //Getting user
-        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
+        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
 
         // Checking user
         user.ifPresent(newAd::setUser);
+         */
 
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
@@ -241,10 +254,10 @@ public class AdServiceImpl implements AdService {
 
         // Persisting the entities
         adRepository.save(newAd);
-        user.get().getAds().add(newAd);
+        user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        return new Response(null, HttpStatus.OK);
+        return new Response("everything went well", HttpStatus.OK);
     }
 
     /**

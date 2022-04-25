@@ -42,11 +42,11 @@ public class Rental {
     private boolean active;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(referencedColumnName = "userId", nullable = false)
     private User owner;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(referencedColumnName = "userId", nullable = false)
     private User borrower;
 
     @ManyToOne
