@@ -175,6 +175,5 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
-
         }
 }

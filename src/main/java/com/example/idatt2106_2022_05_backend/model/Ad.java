@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @ToString
@@ -79,7 +80,7 @@ public class Ad {
     private Set<Picture> pictures;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
@@ -114,5 +115,4 @@ public class Ad {
     public int hashCode() {
         return getClass().hashCode();
     }
-
 }

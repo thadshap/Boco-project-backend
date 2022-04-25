@@ -26,7 +26,7 @@ public class User {
     @Id
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "user_id") //todo change to auto
+    @Column(name = "userId") //todo change to auto
     private Long id;
 
     @NotBlank
@@ -75,6 +75,10 @@ public class User {
     @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads = new HashSet<>();
+
+    public void setAd(Ad newAd) {
+        ads.add(newAd);
+    }
 
     @Override
     public boolean equals(Object o) {
