@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.service.rental;
 import com.example.idatt2106_2022_05_backend.dto.RentalDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Rental;
+import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
@@ -39,7 +40,9 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response createRental(RentalDto rentalDto) {
         Ad ad = adRepository.getById(rentalDto.getAd());
-        List<Rental> rentals = rentalRepository.findByAd(ad);
+        User owner = userRepository.getById(rentalDto.getOwner());
+        User borrower = userRepository.getById(rentalDto.getBorrower());
+        Rental rental;
         return null;
     }
 
@@ -53,8 +56,12 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response deleteRental(Long rentalId) {
-
-        return null;
+        Rental rental = rentalRepository.getById(rentalId);
+        if (rental == null){
+            return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
+        }
+        rentalRepository.deleteById(rental.getId());
+        return new Response("Rental has been deleted", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -62,41 +69,44 @@ public class RentalServiceImpl implements RentalService {
      * 
      * @param rentalDto
      *            {@link RentalDto} object with information to update a rental
-     * 
+     *
+     * @param rentalId
+     *            Id of the rental to delete.
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateRental(RentalDto rentalDto) {
+    public Response updateRental(RentalDto rentalDto, Long rentalId) {
+        Rental rental = rentalRepository.getById(rentalId);
 
-        return null;
+        if (rental == null){
+            return new Response("Rental not found!", HttpStatus.NOT_FOUND);
+        }
+        if (rentalDto.getRentTo() != null){
+            rental.setRentTo(rentalDto.getRentTo());
+        }
+        if (rentalDto.getDeadline() != null){
+            rental.setDeadline(rentalDto.getDeadline());
+        }
+        return new Response("Rental", HttpStatus.ACCEPTED);
     }
 
     /**
      * Method to retrieve a Rental Object
-     * 
-     * @param rentalDto
-     *            TODO change param
-     * 
+     *
+     * @param rentalId
+     *            Id of the rental to delete.
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response getRental(RentalDto rentalDto) {
+    public Response getRental(Long rentalId) {
+        Rental rental = rentalRepository.getById(rentalId);
 
-        return null;
-    }
-
-    /**
-     * Method to retrieve a Rental object by User id
-     * 
-     * @param userId
-     *            user id to retrieve the rental object for
-     * 
-     * @return returns HttpStatus and a response object with.
-     */
-    @Override
-    public Response getRentalByUserId(Long userId) {
-
-        return null;
+        if (rental == null){
+            return new Response("Rental not found!", HttpStatus.NOT_FOUND);
+        }
+        return new Response(rental, HttpStatus.OK);
     }
 
     /**
@@ -109,7 +119,13 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response getRentalsByUserId(Long userId) {
+        User user = userRepository.getById(userId);
+        List<Rental> rental = rentalRepository.getByOwner(user);
+        rental.addAll(rentalRepository.getByBorrower(user));
 
-        return null;
+        if (rental.isEmpty()){
+            return new Response("Rentals not found!", HttpStatus.NOT_FOUND);
+        }
+        return new Response(rental, HttpStatus.OK);
     }
 }

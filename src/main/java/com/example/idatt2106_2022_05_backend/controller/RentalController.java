@@ -28,22 +28,16 @@ public class RentalController {
         return rentalService.deleteRental(rentalId);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/{rentalId}")
     @ApiOperation(value = "Endpoint to update a rental", response = Response.class)
-    public Response updateRental(@RequestBody RentalDto rentalDto) {
-        return rentalService.updateRental(rentalDto);// TODO real objects to return
+    public Response updateRental(@RequestBody RentalDto rentalDto, @PathVariable Long rentalId) {
+        return rentalService.updateRental(rentalDto, rentalId);// TODO real objects to return
     }
 
-    @GetMapping("/")
+    @GetMapping("/{rentalId}")
     @ApiOperation(value = "Endpoint to get a rental", response = Response.class)
-    public Response getRental(@RequestBody RentalDto rentalDto) {
-        return rentalService.getRental(rentalDto);
-    }
-
-    @GetMapping("/{userId}")
-    @ApiOperation(value = "Endpoint to get a rental by user id", response = Response.class)
-    public Response getRentalByUserId(@PathVariable Long userId) {
-        return rentalService.getRentalByUserId(userId);
+    public Response getRental(@PathVariable Long rentalId) {
+        return rentalService.getRental(rentalId);
     }
 
     @GetMapping("s/{userId}")
