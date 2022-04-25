@@ -101,21 +101,46 @@ public class AdServiceImpl implements AdService {
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
         if(ad.isPresent()) {
-            return new Response(ad.get(), HttpStatus.OK);
+            try {
+                // Create dto
+                AdDto newDto = castObject(ad.get());
+
+                // Return dto
+                return new Response(newDto, HttpStatus.OK);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else{
-            return new Response(null,HttpStatus.NOT_FOUND);
+            return new Response("Could not find ad with specified id",HttpStatus.NOT_FOUND);
         }
+        return null;
     }
 
     // Get all ads for user
     @Override
     public Response getAllAdsByUser(long userId) {
-        if(userRepository.getAdsByUserId(userId) != null) {
-            return new Response(userRepository.getAdsByUserId(userId), HttpStatus.OK);
+        Set<Ad> adsFound = userRepository.getAdsByUserId(userId);
+
+        if(adsFound != null) {
+            List<AdDto> adsToBeReturned = new ArrayList<>();
+
+            // Create dtos by iterating over all ads and creating DTOs
+            for(Ad ad : adsFound) {
+                AdDto newAd = null;
+                try {
+                    newAd = castObject(ad);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                adsToBeReturned.add(newAd);
+            }
+
+
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find ads for specified user", HttpStatus.NO_CONTENT);
         }
     }
 

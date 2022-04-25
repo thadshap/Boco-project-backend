@@ -78,7 +78,7 @@ public class AdController {
         return adService.getAllAdsByUser(id);
     }
 
-    @GetMapping("/ads/nearby")
+    @PostMapping("/ads/nearby")
     @ApiOperation(value = "Endpoint to return all ads near a location", response = Response.class)
     public Response getAllAdsNearby(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
         log.debug("[X] Call to retrieve all ads nearby a location");

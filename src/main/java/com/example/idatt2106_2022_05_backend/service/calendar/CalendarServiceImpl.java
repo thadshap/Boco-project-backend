@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -108,6 +109,50 @@ public class CalendarServiceImpl implements CalendarService {
         // If somehow the user was able to choose dates that did not have correct availability, then
         // a mistake has happened when sending unavailable dates to frontend
         return new Response(null, HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    public void addFutureDates(long id) {
+        // Find the ad
+        Optional<Ad> ad = adRepository.findById(id);
+
+        if(ad.isPresent()) {
+
+            // Get ad creation date
+            LocalDate creationDate = ad.get().getCreated();
+
+            // Add one year of CalendarDates to the ads
+            Set<CalendarDate> calendarDates = new HashSet<>();
+
+            for (int i = 1; i < 366; i++) {
+
+                CalendarDate newDate = CalendarDate.builder().
+                        available(true).
+                        date(creationDate.plusDays(i)).
+                        build();
+                if(newDate.getAds().size() == 0) {
+                    Set<Ad> newAdSet = new HashSet<>();
+                    newAdSet.add(ad.get());
+                    newDate.setAds(newAdSet);
+
+                    // Persist date
+                    dateRepository.save(newDate);
+                }
+                else {
+                    newDate.getAds().add(ad.get());
+
+                    // Persist date
+                    dateRepository.save(newDate);
+                }
+                calendarDates.add(newDate);
+            }
+
+            // List is created and must now be added to the ad
+            ad.get().setDates(calendarDates);
+
+            // Persist the update
+            adRepository.save(ad.get());
+
+        }
     }
 
     /**
