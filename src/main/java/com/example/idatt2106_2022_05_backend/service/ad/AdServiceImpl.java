@@ -68,7 +68,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsFound, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -84,7 +84,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsFound, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -120,7 +120,8 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getPageOfAds(int sizeOfPage){
         Pageable pageOf = PageRequest.of(0,sizeOfPage);
-        List<AdDto> ads = adRepository.findAll(pageOf).stream().map( ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+        List<AdDto> ads = adRepository.findAll(pageOf).stream()
+                .map( ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
         return new Response(ads, HttpStatus.OK);
     }
 
@@ -172,7 +173,8 @@ public class AdServiceImpl implements AdService {
     // Get all ads by rental type
     @Override
     public Response getAllAdsByRentalType(boolean rentalType) {
-        Set<AdDto> ads = adRepository.findByRental(rentalType).stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toSet());
+        Set<AdDto> ads = adRepository.findByRental(rentalType).stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toSet());
 
         if(ads != null) {
             return new Response(ads, HttpStatus.OK);
@@ -222,11 +224,11 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response("could not find category", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
         }
         //Getting user
         Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren")));
         //checking user
         user.ifPresent(newAd::setUser);
         // Checking if dto contains any of the nullable attributes
@@ -255,7 +257,7 @@ public class AdServiceImpl implements AdService {
 
         // Ensures that content of file is present
         if(file.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Picture file is empty");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Bildefilen er tom");
         }
 
         // Ensure that the ad exists
@@ -279,9 +281,9 @@ public class AdServiceImpl implements AdService {
             adRepository.save(adFound.get());
 
             // Return proper response
-            return new Response("Picture saved", HttpStatus.OK);
+            return new Response("Bildet ble lagret", HttpStatus.OK);
         }
-        return new Response("Ad not found", HttpStatus.NOT_FOUND);
+        return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -362,7 +364,7 @@ public class AdServiceImpl implements AdService {
                     .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
         }
         else {
-            return new Response("fant ingen omtaler på denne brukeren", HttpStatus.NOT_FOUND);
+            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -405,9 +407,9 @@ public class AdServiceImpl implements AdService {
             adRepository.save(ad);
         }
         else {
-            return new Response("Ad was not found in the database", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
         }
-        return new Response("Ad updated", HttpStatus.OK);
+        return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
 
     // delete ad
@@ -422,10 +424,10 @@ public class AdServiceImpl implements AdService {
             adRepository.deleteById(adId);
 
             // HttpResponse = OK
-            return new Response("Ad deleted", HttpStatus.OK);
+            return new Response("Annonsen er slettet", HttpStatus.OK);
         }
         else {
-            return new Response("Ad not found", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -447,13 +449,13 @@ public class AdServiceImpl implements AdService {
                     if (Arrays.equals(PictureUtility.decompressImage(picture.getContent()), chosenPicture))
                     {
                         pictureRepository.delete(picture);
-                        return new Response("Deleted pictures", HttpStatus.OK);
+                        return new Response("Slettet bildet", HttpStatus.OK);
                     }
                 }
             }
         }
 
-        return new Response("Picture not found", HttpStatus.NOT_FOUND);
+        return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -478,11 +480,11 @@ public class AdServiceImpl implements AdService {
                     content(PictureUtility.compressImage(file.getBytes())).build());
 
             // Return OK response
-            return new Response("Picture saved", HttpStatus.OK);
+            return new Response("Bildet ble lagret", HttpStatus.OK);
         }
 
         // The ad was not found
-        return new Response("Ad not found", HttpStatus.NOT_FOUND);
+        return new Response("Annonsen ble ikke funnet", HttpStatus.NOT_FOUND);
     }
     /**
      * Method to get ads sorted on distance to user
