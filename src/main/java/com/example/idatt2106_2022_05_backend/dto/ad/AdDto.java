@@ -72,4 +72,6 @@ public class AdDto {
 
     @ApiModelProperty(notes = "id of user creating the ad")
     private long userId;
+
+    private int sizeOfPage;
 }

@@ -151,9 +151,27 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public Response getPageOfAds(int sizeOfPage){
-        Pageable pageOf24 = PageRequest.of(0,sizeOfPage);
-        List<Ad> ads = adRepository.findAll(pageOf24).getContent();
-        return new Response(ads, HttpStatus.OK);
+
+        Pageable pageOf = PageRequest.of(0,sizeOfPage);
+        List<Ad> ads = adRepository.findAll(pageOf).getContent();
+
+        // Create dto
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : ads) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
+        return new Response(adsToBeReturned , HttpStatus.OK);
     }
 
     // Get all available ads
@@ -489,15 +507,17 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response updateAd(Long adId, AdUpdateDto adUpdateDto) {
-        Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad;
-        if(adOptional.isPresent()) {
-            ad = adOptional.get();
+
+        Optional<Ad> foundAd = adRepository.findById(adId);
+
+        if(foundAd.isPresent()) {
+            Ad ad = foundAd.get();
+
             // Update the ad
-            if (!adUpdateDto.getTitle().isBlank()){
+            if (adUpdateDto.getTitle() != null){
                 ad.setTitle(adUpdateDto.getTitle());
             }
-            if (!adUpdateDto.getDescription().isBlank()){
+            if (adUpdateDto.getDescription() != null){
                 ad.setDescription(adUpdateDto.getDescription());
             }
             if (adUpdateDto.getDuration() > 0){
@@ -509,13 +529,13 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPrice() > 0){
                 ad.setPrice(adUpdateDto.getPrice());
             }
-            if (!adUpdateDto.getStreetAddress().isBlank()){
+            if (adUpdateDto.getStreetAddress() != null){
                 ad.setStreetAddress(adUpdateDto.getStreetAddress());
             }
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
-            if(!adUpdateDto.getRentedOut().isBlank()){
+            if(adUpdateDto.getRentedOut() != null){
                 if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
                     ad.setRentedOut(false);
                 }
@@ -538,6 +558,24 @@ public class AdServiceImpl implements AdService {
 
         // If the ad exists
         if(ad.isPresent()) {
+
+            // Delete the ad's pictures
+            ad.get().setPictures(null);
+
+            // Delete the ad from its category
+            ad.get().getCategory().getAds().remove(ad.get());
+
+            // Delete the ad from its user
+            ad.get().getUser().getAds().remove(ad.get());
+
+            // Delete its rentals
+            ad.get().setRentals(null);
+
+            // Delete the reviews todo save these somewhere else during next iteration!
+            ad.get().setReviews(null);
+
+            // Delete the dates
+            ad.get().setDates(null);
 
             // Delete the ad
             adRepository.deleteById(adId);

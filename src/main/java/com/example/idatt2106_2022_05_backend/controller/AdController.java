@@ -101,7 +101,7 @@ public class AdController {
 
     @PutMapping("/ads/{adId}")
     @ApiOperation(value = "", response = Response.class)
-    public Response updateTitle(@PathVariable Long adId, @RequestBody AdUpdateDto adUpdateDto) {
+    public Response updateAd(@PathVariable Long adId, @RequestBody AdUpdateDto adUpdateDto) {
         log.debug("[X] Call to update an ad with id = {}", adId);
         return adService.updateAd(adId, adUpdateDto);
     }
@@ -127,8 +127,8 @@ public class AdController {
         return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
     }
 
-    @GetMapping("/ads/page")
-    public Response getPageOfAds(@RequestBody int sizeOfPage){
-        return adService.getPageOfAds(sizeOfPage);
+    @PostMapping("/ads/page")
+    public Response getPageOfAds(@RequestBody AdDto sizeOfPage){
+        return adService.getPageOfAds(sizeOfPage.getSizeOfPage());
     }
 }
