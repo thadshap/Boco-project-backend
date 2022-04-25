@@ -36,5 +36,4 @@ public class PictureController {
     public Response deletePicture(@PathVariable String filename){
         return pictureService.deletePicture(filename);
     }
-
 }

@@ -1,7 +1,5 @@
 package com.example.idatt2106_2022_05_backend.service.Picture;
 
-import com.example.idatt2106_2022_05_backend.dto.PictureDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
