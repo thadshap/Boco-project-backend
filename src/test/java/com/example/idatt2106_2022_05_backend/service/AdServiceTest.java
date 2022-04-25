@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -129,7 +128,6 @@ class AdServiceTest {
         Pageable pageOf24 = PageRequest.of(0,25);
         List<Ad> ads = adRepository.findAll(pageOf24).getContent();
         System.out.println("ads:" +ads);
-
     }
 
 
