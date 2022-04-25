@@ -53,6 +53,7 @@ public class AdServiceImpl implements AdService {
     }
 
     // Get all ads in category by category id
+    @Override
     public Response getAllAdsInCategory(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -69,6 +70,7 @@ public class AdServiceImpl implements AdService {
     }
 
     // Get all ads in category by category name
+    @Override
     public Response getAllAdsInCategory(String name) {
         Optional<Category> category = categoryRepository.findByName(name);
 

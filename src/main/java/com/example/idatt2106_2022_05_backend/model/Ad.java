@@ -21,8 +21,9 @@ import java.util.Set;
 public class Ad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ad_id", nullable = false)
+    @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
+    @Column(name = "ad_id")
     private Long id;
 
     @Column(name = "title", nullable = false)
