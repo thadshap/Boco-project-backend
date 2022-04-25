@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -72,5 +71,5 @@ public class AdDto {
     private long adId;
 
     @ApiModelProperty(notes = "id of user creating the ad")
-    private long user_id;
+    private long userId;
 }

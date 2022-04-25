@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -48,8 +48,18 @@ public class AdServiceImpl implements AdService {
 
     // Get all ads
     @Override
-    public Response getAllAds() {
-        return new Response(adRepository.findAll(), HttpStatus.OK);
+    public Response getAllAds() throws IOException {
+        List<Ad> allAds = adRepository.findAll();
+
+        List<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : allAds) {
+            AdDto newAd = castObject(ad);
+            adsToBeReturned.add(newAd);
+        }
+
+        return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
     // Get all ads in category by category id
@@ -91,21 +101,46 @@ public class AdServiceImpl implements AdService {
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
         if(ad.isPresent()) {
-            return new Response(ad.get(), HttpStatus.OK);
+            try {
+                // Create dto
+                AdDto newDto = castObject(ad.get());
+
+                // Return dto
+                return new Response(newDto, HttpStatus.OK);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else{
-            return new Response(null,HttpStatus.NOT_FOUND);
+            return new Response("Could not find ad with specified id",HttpStatus.NOT_FOUND);
         }
+        return null;
     }
 
     // Get all ads for user
     @Override
     public Response getAllAdsByUser(long userId) {
-        if(userRepository.getAdsByUserId(userId) != null) {
-            return new Response(userRepository.getAdsByUserId(userId), HttpStatus.OK);
+        Set<Ad> adsFound = userRepository.getAdsByUserId(userId);
+
+        if(adsFound != null) {
+            List<AdDto> adsToBeReturned = new ArrayList<>();
+
+            // Create dtos by iterating over all ads and creating DTOs
+            for(Ad ad : adsFound) {
+                AdDto newAd = null;
+                try {
+                    newAd = castObject(ad);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                adsToBeReturned.add(newAd);
+            }
+
+
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find ads for specified user", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -124,18 +159,31 @@ public class AdServiceImpl implements AdService {
     // Get all available ads
     @Override
     public Response getAllAvailableAds() {
-//        List<Ad> availableAds = adRepository.getAllAds();
-//
-//        // If the db contains any available ads
-//        if(availableAds.size() != 0) {
-//            return new Response(availableAds, HttpStatus.OK);
-//        }
-//
-//        // The db did not contain any available ads
-//        else {
-//            return new Response(null, HttpStatus.NO_CONTENT);
-//        }
-        return null;
+        Set<Ad> availableAds = adRepository.getAllAvailableAds();
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
+        // If the db contains any available ads
+        if(availableAds.size() != 0) {
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }
+
+        // The db did not contain any available ads
+        else {
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
+        }
     }
 
     // Get all available ads by user id
@@ -143,21 +191,59 @@ public class AdServiceImpl implements AdService {
     public Response getAllAvailableAdsByUser(long userId) {
         Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
         }
     }
 
     // Get all ads by postal code
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
-        return new Response(adRepository.findByPostalCode(postalCode), HttpStatus.OK);
+        Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
+
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
+        // If the db contains any available ads
+        if(availableAds.size() != 0) {
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -170,11 +256,26 @@ public class AdServiceImpl implements AdService {
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<Ad> ads = adRepository.findByRental(rentalType);
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : ads) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         if(ads != null) {
-            return new Response(ads, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -205,10 +306,11 @@ public class AdServiceImpl implements AdService {
         // Required attributes
         newAd.setRental(adDto.isRental());
         newAd.setDuration(adDto.getDuration());
-        newAd.setDurationType(adDto.getDurationType());
+        newAd.setDurationType(adDto.getDurationType()); //todo check
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
+        newAd.setPostalCode(adDto.getPostalCode());
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -219,12 +321,24 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response("could not find category", HttpStatus.NOT_FOUND);
         }
+
+        Optional<User> user = userRepository.findById(adDto.getUserId());
+
+        if(user.isPresent()) {
+            // Set foreign key
+            newAd.setUser(user.get());
+        }
+        else {
+            return new Response("could not find user", HttpStatus.NOT_FOUND);
+        }
+        /**
         //Getting user
-        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
+        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
 
         // Checking user
         user.ifPresent(newAd::setUser);
+         */
 
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
@@ -241,10 +355,10 @@ public class AdServiceImpl implements AdService {
 
         // Persisting the entities
         adRepository.save(newAd);
-        user.get().getAds().add(newAd);
+        user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        return new Response(null, HttpStatus.OK);
+        return new Response("everything went well", HttpStatus.OK);
     }
 
     /**

@@ -2,20 +2,21 @@ package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
+@ToString
+@RequiredArgsConstructor
 @Builder
 @Table(name = "ads")
 public class Ad {
@@ -59,11 +60,11 @@ public class Ad {
     private int postalCode;
 
     // Coordinates latitude
-    @Column(name="LAT")
+    @Column(name="lat")
     private double lat;
 
     // Coordinates longitude
-    @Column(name="LNG")
+    @Column(name="lng")
     private double lng;
 
     // Created timestamp --> for use in calculating ad-expiration
@@ -73,6 +74,7 @@ public class Ad {
 
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    @ToString.Exclude
     private Set<Picture> pictures;
 
     @ManyToOne
@@ -80,19 +82,35 @@ public class Ad {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @ToString.Exclude
     private Set<Rental> rentals;
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @ToString.Exclude
     private Set<Review> reviews; // todo create a rating for user such taht the rating does not get removed from the user
 
     // Many-to-many connection with Date. Date is parent in this case.
     @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
+    @ToString.Exclude
     private Set<CalendarDate> dates = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Ad ad = (Ad) o;
+        return id != null && Objects.equals(id, ad.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

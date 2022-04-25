@@ -45,7 +45,7 @@ class AdServiceTest {
     @BeforeEach
     void setUp() { // description, rental (boolean), rented_out,
                    // duration_type, duration, price, street_address, postal_code
-                   // picture, title, longitude, latitude, category_id (fk), user_id (fk)
+                   // picture, title, longitude, latitude, category_id (fk), userId (fk)
 
         // Set of ads
         Set<Ad> ads = new HashSet<>();

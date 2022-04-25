@@ -12,7 +12,7 @@ import java.io.IOException;
 @Service
 public interface AdService {
     // Get all ads
-    Response getAllAds();
+    Response getAllAds() throws IOException;
 
     // Get all ads in category by category id
     Response getAllAdsInCategory(Long categoryId);

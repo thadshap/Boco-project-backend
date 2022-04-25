@@ -26,7 +26,7 @@ public class Review {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="userId")
     private User user;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
