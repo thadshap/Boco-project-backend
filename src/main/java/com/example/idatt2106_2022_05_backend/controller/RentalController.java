@@ -32,7 +32,7 @@ public class RentalController {
         return rentalService.deleteRental(rentalId);
     }
 
-    @PostMapping("/update/{rentalId}")
+    @PutMapping("/update/{rentalId}")
     @ApiOperation(value = "Endpoint to update a rental", response = Response.class)
     public Response updateRental(@RequestBody RentalDto rentalDto, @PathVariable Long rentalId) {
         log.debug("[X] Call to update rental with id = {}", rentalId);

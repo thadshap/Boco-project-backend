@@ -51,14 +51,12 @@ public class DataLoader implements ApplicationRunner {
 
             // Create users
             User user1 = User.builder()
-                    .id(1L)
                     .firstName("Anders")
                     .lastName("Tellefsen")
                     .email("andetel@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .build();
             User user2 = User.builder()
-                    .id(2L)
                     .firstName("Brage")
                     .lastName("Minge")
                     .email("bragem@stud.ntnu.no")
@@ -66,7 +64,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user3 = User.builder()
-                    .id(3L)
                     .firstName("Hasan")
                     .lastName("Rehman")
                     .email("hasano@stud.ntnu.no")
@@ -74,7 +71,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user4 = User.builder()
-                    .id(4L)
                     .firstName("Daniel")
                     .lastName("Danielsen")
                     .email("daniel@gmail.com")
@@ -175,5 +171,10 @@ public class DataLoader implements ApplicationRunner {
             Set<Ad> ads3 = new HashSet<>();
             ads3.add(pc);
             category6.setAds(ads3);
+
+            categoryRepository.save(category4);
+            categoryRepository.save(category5);
+            categoryRepository.save(category6);
+
         }
 }
