@@ -48,7 +48,6 @@ class AdControllerTest {
                 title("Shoes").
                 description("Renting out a pair of shoes in size 36").
                 rental(true).
-                rentedOut(false).
                 durationType(AdType.WEEK).
                 duration(2).
                 price(100).
@@ -326,7 +325,7 @@ class AdControllerTest {
                                 "\t\"rentedOut\" : true\n" +
                                 "}")).
                 andExpect(status().isOk()).
-                andExpect(jsonPath("$.rentedOut").value(ad.isRentedOut()));
+                andExpect(jsonPath("$.duration").exists());
     }
 
     @Test

@@ -2,9 +2,11 @@ package com.example.idatt2106_2022_05_backend.config;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
+import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import org.springframework.boot.ApplicationArguments;
@@ -12,6 +14,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -29,22 +32,26 @@ public class DataLoader implements ApplicationRunner {
 
         private CategoryRepository categoryRepository;
 
+        private CalendarDateRepository calDateRepository;
+
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
-        /**
-         * Constructor of the class.
-         *
-         * @param userRepository repository of the {@link User} object
-         * @param adRepository repository of the {@link Ad} object
-         * @param categoryRepository repository of the {@link Category} object
-         */
-        public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                          CategoryRepository categoryRepository) {
+    /**
+     * Constructor of the class.
+     *
+     * @param userRepository repository of the {@link User} object
+     * @param adRepository repository of the {@link Ad} object
+     * @param categoryRepository repository of the {@link Category} object
+     * @param calDateRepository repository of the {@link CalendarDate} object
+     */
+    public DataLoader(UserRepository userRepository, AdRepository adRepository,
+                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
             this.categoryRepository = categoryRepository;
+            this.calDateRepository = calDateRepository;
         }
 
         public void run(ApplicationArguments args) {
@@ -116,7 +123,6 @@ public class DataLoader implements ApplicationRunner {
                     title("New pants").
                     description("Renting out a pair of pants in size 36").
                     rental(true).
-                    rentedOut(false).
                     durationType(AdType.MONTH).
                     duration(2).
                     price(100).
@@ -130,7 +136,6 @@ public class DataLoader implements ApplicationRunner {
                     title("You may borrow fruit").
                     description("Renting out 12 grapes").
                     rental(true).
-                    rentedOut(false).
                     durationType(AdType.WEEK).
                     duration(2).
                     price(150).
@@ -144,7 +149,6 @@ public class DataLoader implements ApplicationRunner {
                     title("Pc rental").
                     description("Renting out a new lenovo").
                     rental(true).
-                    rentedOut(false).
                     durationType(AdType.MONTH).
                     duration(2).
                     price(800).

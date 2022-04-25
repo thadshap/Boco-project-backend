@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @ApiOperation(value = "Endpoint to delete user", response = Response.class)
+    @ApiOperation(value = "Endpoint to delete user", response = UserReturnDto.class)
     public Response getUser(@PathVariable Long userId) {
         log.debug("[X] Call to get user with id = {}", userId);
         return userService.getUser(userId);

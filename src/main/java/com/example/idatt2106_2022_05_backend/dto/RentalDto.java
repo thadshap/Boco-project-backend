@@ -5,11 +5,17 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(description = "Data transfer object for rental of item")
 public class RentalDto {
 
@@ -28,6 +34,8 @@ public class RentalDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @ApiModelProperty(notes = "deadline of cancellation of rental")
     private LocalDate deadline;
+
+    private boolean active;
 
     @ApiModelProperty(notes = "id of owner of item")
     private Long owner;

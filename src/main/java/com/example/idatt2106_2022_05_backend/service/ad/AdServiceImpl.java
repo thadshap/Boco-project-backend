@@ -124,17 +124,18 @@ public class AdServiceImpl implements AdService {
     // Get all available ads
     @Override
     public Response getAllAvailableAds() {
-        Set<Ad> availableAds = adRepository.getAllAvailableAds();
-
-        // If the db contains any available ads
-        if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
-        }
-
-        // The db did not contain any available ads
-        else {
-            return new Response(null, HttpStatus.NO_CONTENT);
-        }
+//        List<Ad> availableAds = adRepository.getAllAds();
+//
+//        // If the db contains any available ads
+//        if(availableAds.size() != 0) {
+//            return new Response(availableAds, HttpStatus.OK);
+//        }
+//
+//        // The db did not contain any available ads
+//        else {
+//            return new Response(null, HttpStatus.NO_CONTENT);
+//        }
+        return null;
     }
 
     // Get all available ads by user id
@@ -203,7 +204,6 @@ public class AdServiceImpl implements AdService {
 
         // Required attributes
         newAd.setRental(adDto.isRental());
-        newAd.setRentedOut(false);
         newAd.setDuration(adDto.getDuration());
         newAd.setDurationType(adDto.getDurationType());
         newAd.setPrice(adDto.getPrice());
@@ -399,14 +399,6 @@ public class AdServiceImpl implements AdService {
             }
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
-            }
-            if(!adUpdateDto.getRentedOut().isBlank()){
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
-                    ad.setRentedOut(false);
-                }
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
-                    ad.setRentedOut(true);
-                }
             }
             adRepository.save(ad);
         }

@@ -23,7 +23,7 @@ public class Ad {
     @Id
     @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
     @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "ad_id")
+    @Column(name = "ad_id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)

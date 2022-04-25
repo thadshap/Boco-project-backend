@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -27,9 +28,9 @@ public class RentalController {
 
     @DeleteMapping("/delete/{rentalId}")
     @ApiOperation(value = "Endpoint to delete a rental", response = Response.class)
-    public Response deleteRental(@PathVariable Long rentalId) {
+    public Response deleteRental(@PathVariable Long rentalId, @RequestBody RentalReviewDto rentalDto) {
         log.debug("[X] Call to delete a rental with id = {}", rentalId);
-        return rentalService.deleteRental(rentalId);
+        return rentalService.deleteRental(rentalId, rentalDto);
     }
 
     @PutMapping("/update/{rentalId}")
@@ -46,7 +47,7 @@ public class RentalController {
         return rentalService.getRental(rentalId);
     }
 
-    @GetMapping("s/{userId}")
+    @GetMapping("/s/{userId}")
     @ApiOperation(value = "Endpoint to get list of rentals by user id", response = Response.class)
     public Response getRentalsByUserId(@PathVariable Long userId) {
         log.debug("[X] Call to get all rentals of user with id = {}", userId);
