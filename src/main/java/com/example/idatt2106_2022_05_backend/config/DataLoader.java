@@ -50,14 +50,12 @@ public class DataLoader implements ApplicationRunner {
 
             // Create users
             User user1 = User.builder()
-                    .id(1L)
                     .firstName("Anders")
                     .lastName("Tellefsen")
                     .email("andetel@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .build();
             User user2 = User.builder()
-                    .id(2L)
                     .firstName("Brage")
                     .lastName("Minge")
                     .email("bragem@stud.ntnu.no")
@@ -65,7 +63,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user3 = User.builder()
-                    .id(3L)
                     .firstName("Hasan")
                     .lastName("Rehman")
                     .email("hasano@stud.ntnu.no")
@@ -73,7 +70,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user4 = User.builder()
-                    .id(4L)
                     .firstName("Daniel")
                     .lastName("Danielsen")
                     .email("daniel@gmail.com")
@@ -89,9 +85,9 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category category1 = Category.builder().id(5L).name("Food").build();
-            Category category2 = Category.builder().id(6L).name("Clothes").build();
-            Category category3 = Category.builder().id(7L).name("Equipment").build();
+            Category category1 = Category.builder().name("Food").build();
+            Category category2 = Category.builder().name("Clothes").build();
+            Category category3 = Category.builder().name("Equipment").build();
 
             // Persist main-categories
             categoryRepository.save(category1);
@@ -99,11 +95,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category3);
 
             // Create sub-categories
-            Category category4 = Category.builder().id(8L).name("Fruits").
+            Category category4 = Category.builder().name("Fruits").
                     mainCategory(category1).build();
-            Category category5 = Category.builder().id(9L).name("Pants").
+            Category category5 = Category.builder().name("Pants").
                     mainCategory(category2).build();
-            Category category6 = Category.builder().id(10L).name("IT").
+            Category category6 = Category.builder().name("IT").
                     mainCategory(category3).build();
 
             // Persist sub-categories
@@ -130,9 +126,8 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category3);
 
 
-            // Create ad
+//            // Create ad
             Ad pants = Ad.builder().
-                    id(11L).
                     title("New pants").
                     description("Renting out a pair of pants in size 36").
                     rental(true).
@@ -145,8 +140,8 @@ public class DataLoader implements ApplicationRunner {
                     user(user1).
                     category(category5).
                     build();
-
-            Ad fruit = Ad.builder().id(12L).
+//
+            Ad fruit = Ad.builder().
                     title("You may borrow fruit").
                     description("Renting out 12 grapes").
                     rental(true).
@@ -159,8 +154,8 @@ public class DataLoader implements ApplicationRunner {
                     user(user2).
                     category(category4).
                     build();
-
-            Ad pc = Ad.builder().id(13L).
+//
+            Ad pc = Ad.builder().
                     title("Pc rental").
                     description("Renting out a new lenovo").
                     rental(true).
@@ -173,8 +168,8 @@ public class DataLoader implements ApplicationRunner {
                     user(user3).
                     category(category6).
                     build();
-
-            // Persist the 3 ads
+//
+//            // Persist the 3 ads
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);

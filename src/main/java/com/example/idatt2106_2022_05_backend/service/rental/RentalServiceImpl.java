@@ -6,6 +6,7 @@ import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
+import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -31,6 +33,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private AdRepository adRepository;
+
+    @Autowired
+    private CalendarDateRepository dayDateRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -53,6 +58,12 @@ public class RentalServiceImpl implements RentalService {
             if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
                     && calDate.isAvailable())){
                 return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
+            }
+        }
+        for (CalendarDate calDate: cld) {
+            if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
+                calDate.setAvailable(false);
+                dayDateRepository.save(calDate);
             }
         }
         User owner = userRepository.getById(rentalDto.getOwner());
@@ -102,11 +113,12 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response updateRental(RentalDto rentalDto, Long rentalId) {
-        Rental rental = rentalRepository.getById(rentalId);
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
 
-        if (rental == null){
+        if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
+        Rental rental = rentalOptional.get();
         if (rentalDto.getRentTo() != null){
             rental.setRentTo(rentalDto.getRentTo());
         }
@@ -126,11 +138,12 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response getRental(Long rentalId) {
-        Rental rental = rentalRepository.getById(rentalId);
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
 
-        if (rental == null){
+        if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
+        Rental rental = rentalOptional.get();
         return new Response(rental, HttpStatus.OK);
     }
 
