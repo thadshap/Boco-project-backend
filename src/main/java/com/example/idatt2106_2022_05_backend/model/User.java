@@ -20,22 +20,25 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @SuperBuilder
-@Data
 @AllArgsConstructor
 public class User {
 
     @Id
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "user_id")
+    @Column(name = "userId") //todo change to auto
     private Long id;
+
     @NotBlank
     private String firstName;
+
     @NotBlank
     private String lastName;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     @NotNull
     private String password;
@@ -44,35 +47,43 @@ public class User {
 
     private boolean verified = false;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    private double rating;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private UserVerificationToken userVerificationToken;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private ResetPasswordToken resetPasswordToken;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     private Picture picture;
 
-    //
     // private Set<UserGroup> userGroup
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Rental> rentalsOwned;
 
-    @OneToMany(mappedBy = "borrower", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "borrower", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Rental> rentalsBorrowed;
+
+    // PS: These reviews are those that are WRITTEN by this user (not owned)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    private List<Review> reviews;
 
     // One to many relationship w/ ad
     @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
-    private Set<Ad> ads = new HashSet<>();
+    @ToString.Exclude
+    private Set<Ad> ads;
+
+    public void setAd(Ad newAd) {
+        ads.add(newAd);
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
-            return false;
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         User user = (User) o;
         return id != null && Objects.equals(id, user.id);
     }

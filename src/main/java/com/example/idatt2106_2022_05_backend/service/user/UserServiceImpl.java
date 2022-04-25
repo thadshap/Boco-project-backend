@@ -1,17 +1,22 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
-import com.example.idatt2106_2022_05_backend.dto.UserReturnDto;
-import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
-import com.example.idatt2106_2022_05_backend.service.user.UserService;
+import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service class to handle user objects
@@ -22,7 +27,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    private PictureRepository pictureRepository;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
      * Method to delete user from repository.
@@ -50,8 +60,12 @@ public class UserServiceImpl implements UserService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
-        User user = userRepository.getById(userId);
+    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
+        Optional<User> userFromDB = userRepository.findById(userId);
+        if(userFromDB.isEmpty()){
+            return new Response("User not found", HttpStatus.NOT_FOUND);
+        }
+        User user = userFromDB.get();
         if (!userUpdateDto.getFirstName().isBlank()) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
@@ -62,10 +76,12 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userUpdateDto.getEmail());
         }
         if (!userUpdateDto.getPassword().isBlank()) {
-            user.setPassword(userUpdateDto.getPassword());
+            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
         if (userUpdateDto.getPicture() != null) {
-            Picture picture = Picture.builder().filename("PB").content(userUpdateDto.getPicture()).build();
+            Picture picture = Picture.builder().filename("PB")
+                    .content(PictureUtility.compressImage(userUpdateDto.getPicture().getBytes())).build();
+            pictureRepository.save(picture);
             user.setPicture(picture);
         }
         userRepository.save(user);
@@ -82,10 +98,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Response getUser(Long userId) {
-        UserReturnDto user = modelMapper.map(userRepository.getById(userId), UserReturnDto.class);
-        if (user == null) {
+        Optional<User> userFromDB = userRepository.findById(userId);
+        if (userFromDB.isEmpty()) {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
+        UserReturnDto user = modelMapper.map(userFromDB.get(), UserReturnDto.class);
         return new Response(user, HttpStatus.OK);
     }
 

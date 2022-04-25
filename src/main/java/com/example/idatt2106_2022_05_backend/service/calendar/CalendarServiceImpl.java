@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,9 +22,10 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private CalendarDateRepository dateRepository;
 
+    // autowire repo for rental
+
     @Autowired
     private AdRepository adRepository;
-
 
     // return true if dates between start and end are "typeOfAvailability"
     private boolean datesAre(LocalDate startDate, LocalDate endDate, boolean typeOfAvailability) {
@@ -52,8 +54,12 @@ public class CalendarServiceImpl implements CalendarService {
      *            (boolean) available --> for use as mutator
      * @return true if everything went well
      */
+
     @Override
     public Response markDatesFromToAs(CalendarDto dto) {
+
+        //TODO if rental is made unavailable (cancelled) -->
+        // delete rental using some type of id that has to be sent through the dto......
 
         // Because we want to change availability, we check for the OPPOSITE of dto.isAvailable()
         if(datesAre(dto.getStartDate(),dto.getEndDate(), !dto.isAvailable())) {
@@ -77,7 +83,7 @@ public class CalendarServiceImpl implements CalendarService {
                         date.setAvailable(dto.isAvailable());
 
                         // Persist the change to the specific date from the CalendarDate table
-                        Optional<CalendarDate> dateFound = dateRepository.findById(date.getDateId());
+                        Optional<CalendarDate> dateFound = dateRepository.findById(date.getId());
 
                         if(dateFound.isPresent()) {
                             dateFound.get().setAvailable(dto.isAvailable());
@@ -103,6 +109,57 @@ public class CalendarServiceImpl implements CalendarService {
         // If somehow the user was able to choose dates that did not have correct availability, then
         // a mistake has happened when sending unavailable dates to frontend
         return new Response(null, HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @Override
+    public Set<CalendarDate> addFutureDates(long adId) {
+        // Find the ad
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        if(ad.isPresent()) {
+
+            // Get ad creation date
+            LocalDate creationDate = ad.get().getCreated();
+
+            // Add one year of CalendarDates to the ads
+            Set<CalendarDate> calendarDates = new HashSet<>();
+
+            for (int i = 1; i < 366; i++) {
+
+                CalendarDate newDate = CalendarDate.builder().
+                        available(true).
+                        date(creationDate.plusDays(i)).
+                        build();
+
+                if(newDate.getAds() != null) {
+                    newDate.getAds().add(ad.get());
+
+                    // Persist date
+                    dateRepository.save(newDate);
+                }
+                else {
+                    Set<Ad> newAdSet = new HashSet<>();
+                    newAdSet.add(ad.get());
+                    newDate.setAds(newAdSet);
+
+                    // Persist date
+                    dateRepository.save(newDate);
+
+                }
+                calendarDates.add(newDate);
+            }
+
+            // List is created and must now be added to the ad
+            ad.get().setDates(calendarDates);
+
+            // Persist the update
+            adRepository.save(ad.get());
+
+            return calendarDates;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -157,3 +214,4 @@ public class CalendarServiceImpl implements CalendarService {
         return new Response(null, HttpStatus.NOT_FOUND);
     }
 }
+

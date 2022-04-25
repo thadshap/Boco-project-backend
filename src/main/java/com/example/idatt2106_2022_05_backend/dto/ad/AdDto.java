@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.ad;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import io.swagger.annotations.ApiModel;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -71,4 +70,8 @@ public class AdDto {
     @ApiModelProperty(notes = "Id of ad")
     private long adId;
 
+    @ApiModelProperty(notes = "id of user creating the ad")
+    private long userId;
+
+    private int sizeOfPage;
 }

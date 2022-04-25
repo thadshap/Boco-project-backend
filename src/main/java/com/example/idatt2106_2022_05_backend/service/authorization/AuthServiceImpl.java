@@ -1,9 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.authorization;
 
-import com.example.idatt2106_2022_05_backend.dto.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.JWTResponse;
-import com.example.idatt2106_2022_05_backend.dto.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
+import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.ResetPasswordToken;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
@@ -11,7 +10,6 @@ import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenReposi
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
 import com.example.idatt2106_2022_05_backend.security.JWTUtil;
-import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -19,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

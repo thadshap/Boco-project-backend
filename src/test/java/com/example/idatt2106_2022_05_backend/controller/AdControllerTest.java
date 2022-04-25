@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Review;
@@ -16,13 +16,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -47,11 +44,10 @@ class AdControllerTest {
 
         // Initializing ad for use in our test-cases
         ad = Ad.builder().
-                adId(1L).
+                id(1L).
                 title("Shoes").
                 description("Renting out a pair of shoes in size 36").
                 rental(true).
-                rentedOut(false).
                 durationType(AdType.WEEK).
                 duration(2).
                 price(100).
@@ -90,7 +86,6 @@ class AdControllerTest {
                         contentType(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andExpect(jsonPath("$.title").value(ad.getTitle()));
-
     }
 
     @Test
@@ -330,7 +325,7 @@ class AdControllerTest {
                                 "\t\"rentedOut\" : true\n" +
                                 "}")).
                 andExpect(status().isOk()).
-                andExpect(jsonPath("$.rentedOut").value(ad.isRentedOut()));
+                andExpect(jsonPath("$.duration").exists());
     }
 
     @Test

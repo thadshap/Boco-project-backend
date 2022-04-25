@@ -1,9 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
-import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
-import com.example.idatt2106_2022_05_backend.enums.AdType;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +12,13 @@ import java.io.IOException;
 @Service
 public interface AdService {
     // Get all ads
-    Response getAllAds();
+    Response getAllAds() throws IOException;
+
+    // Get all ads in category by category id
+    Response getAllAdsInCategory(Long categoryId);
+
+    // Get all ads in category by category name
+    Response getAllAdsInCategory(String name);
 
     // Get ad by id
     Response getAdById(long id);
@@ -26,6 +31,9 @@ public interface AdService {
 
     // Get all available ads by user id
     Response getAllAvailableAdsByUser(long userId);
+
+    //Get a page of ads
+    Response getPageOfAds(int sizeOfPage);
 
     // Get all ads by postal code
     Response getAllAdsByPostalCode(int postalCode);
@@ -47,7 +55,7 @@ public interface AdService {
     Response deleteAd(long adId);
     //delete picture
 
-    Response deletePicture(long ad_id, long picture_id);
+    Response deletePicture(long ad_id, byte[] chosenPicture);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 }

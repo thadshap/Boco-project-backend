@@ -10,29 +10,34 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Builder
 @Table(name = "categories")
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @SequenceGenerator(name = "category_sequence", sequenceName = "category_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "category_sequence", strategy = GenerationType.SEQUENCE)
+    @Column(name = "category_id")
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    /**
-     * Recursive one-to-many relationship // todo some suspicions regarding the tags --> should they be the opposite?
-     */
-    @OneToMany(mappedBy = "mainCategory")
-    private Set<Category> subCategories;
+    private boolean parent;
 
-    @ManyToOne
-    private Category mainCategory;
+    private String parentName;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ad_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST,  mappedBy = "category")
     private Set<Ad> ads;
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", parent=" + parent +
+                ", parentName='" + parentName + '\'' +
+                ", ads=" + ads +
+                '}';
+    }
 }

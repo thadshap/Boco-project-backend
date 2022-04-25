@@ -1,17 +1,16 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
-import com.example.idatt2106_2022_05_backend.dto.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
 
-import com.example.idatt2106_2022_05_backend.util.Response;
-import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+
+import java.io.IOException;
 
 public interface UserService {
     Response deleteUser(Long userId);
 
-    Response updateUser(Long userId, UserUpdateDto userUpdateDto);
+    Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException;
 
     Response getUser(Long userId);
 }
