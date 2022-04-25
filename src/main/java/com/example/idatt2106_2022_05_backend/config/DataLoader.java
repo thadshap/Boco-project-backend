@@ -7,12 +7,16 @@ import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -22,7 +26,6 @@ import java.util.logging.Logger;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-
         private UserRepository userRepository;
 
         private AdRepository adRepository;
@@ -30,6 +33,9 @@ public class DataLoader implements ApplicationRunner {
         private CategoryRepository categoryRepository;
 
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        @Autowired
+        CalendarService calendarService;
 
 
         /**
@@ -158,6 +164,12 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);
+
+            // Add dates to the ads // todo might not work due to id
+            List<Ad> ads =  adRepository.findAll();
+            for(Ad ad : ads) {
+                ad.setDates(calendarService.addFutureDates(ad.getId()));
+            }
 
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();

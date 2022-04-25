@@ -111,9 +111,10 @@ public class CalendarServiceImpl implements CalendarService {
         return new Response(null, HttpStatus.I_AM_A_TEAPOT);
     }
 
-    public void addFutureDates(long id) {
+    @Override
+    public Set<CalendarDate> addFutureDates(long adId) {
         // Find the ad
-        Optional<Ad> ad = adRepository.findById(id);
+        Optional<Ad> ad = adRepository.findById(adId);
 
         if(ad.isPresent()) {
 
@@ -129,19 +130,21 @@ public class CalendarServiceImpl implements CalendarService {
                         available(true).
                         date(creationDate.plusDays(i)).
                         build();
-                if(newDate.getAds().size() == 0) {
+
+                if(newDate.getAds() != null) {
+                    newDate.getAds().add(ad.get());
+
+                    // Persist date
+                    dateRepository.save(newDate);
+                }
+                else {
                     Set<Ad> newAdSet = new HashSet<>();
                     newAdSet.add(ad.get());
                     newDate.setAds(newAdSet);
 
                     // Persist date
                     dateRepository.save(newDate);
-                }
-                else {
-                    newDate.getAds().add(ad.get());
 
-                    // Persist date
-                    dateRepository.save(newDate);
                 }
                 calendarDates.add(newDate);
             }
@@ -152,6 +155,10 @@ public class CalendarServiceImpl implements CalendarService {
             // Persist the update
             adRepository.save(ad.get());
 
+            return calendarDates;
+        }
+        else {
+            return null;
         }
     }
 

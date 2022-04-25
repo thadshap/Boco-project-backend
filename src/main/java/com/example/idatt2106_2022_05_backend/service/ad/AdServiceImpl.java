@@ -463,7 +463,7 @@ public class AdServiceImpl implements AdService {
      * support method to decompress pictures
      * @param ad ad object from database
      * @param adDto dto object to be returned
-      * @throws IOException if decompression fails
+     * @throws IOException if decompression fails
      */
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
