@@ -221,7 +221,7 @@ public class AdServiceImpl implements AdService {
             return new Response("could not find category", HttpStatus.NOT_FOUND);
         }
 
-        Optional<User> user = userRepository.findById(adDto.getUserId()); //todo id should be renamed
+        Optional<User> user = userRepository.findById(adDto.getUserId());
 
         if(user.isPresent()) {
             // Set foreign key

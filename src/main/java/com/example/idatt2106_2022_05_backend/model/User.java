@@ -74,7 +74,7 @@ public class User {
     // One to many relationship w/ ad
     @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
     @ToString.Exclude
-    private Set<Ad> ads = new HashSet<>();
+    private Set<Ad> ads;
 
     public void setAd(Ad newAd) {
         ads.add(newAd);

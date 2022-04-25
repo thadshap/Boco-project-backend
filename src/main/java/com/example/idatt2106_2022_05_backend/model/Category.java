@@ -27,8 +27,7 @@ public class Category {
 
     private String parentName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "ad_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST,  mappedBy = "category")
     private Set<Ad> ads;
 
     @Override

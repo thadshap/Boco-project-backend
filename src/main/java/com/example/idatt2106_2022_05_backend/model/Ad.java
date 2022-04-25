@@ -60,11 +60,11 @@ public class Ad {
     private int postalCode;
 
     // Coordinates latitude
-    @Column(name="LAT")
+    @Column(name="lat")
     private double lat;
 
     // Coordinates longitude
-    @Column(name="LNG")
+    @Column(name="lng")
     private double lng;
 
     // Created timestamp --> for use in calculating ad-expiration
