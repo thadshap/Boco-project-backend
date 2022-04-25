@@ -2,17 +2,20 @@ package com.example.idatt2106_2022_05_backend.service.rental;
 
 import com.example.idatt2106_2022_05_backend.dto.RentalDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service Rental class to handle rental objects
@@ -29,6 +32,8 @@ public class RentalServiceImpl implements RentalService {
     @Autowired
     private AdRepository adRepository;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
     /**
      * Method to create Rental object
      * 
@@ -40,10 +45,27 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response createRental(RentalDto rentalDto) {
         Ad ad = adRepository.getById(rentalDto.getAd());
+        Set<CalendarDate> cld = ad.getDates();
+        for (CalendarDate calDate : cld) {
+            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
+                    && calDate.isAvailable())){
+                return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
+            }
+        }
         User owner = userRepository.getById(rentalDto.getOwner());
         User borrower = userRepository.getById(rentalDto.getBorrower());
-        Rental rental;
-        return null;
+        Rental rental = modelMapper.map(rentalDto, Rental.class);
+        rental.setBorrower(borrower);
+        rental.setOwner(owner);
+        rental.setAd(ad);
+        borrower.getRentalsBorrowed().add(rental);
+        owner.getRentalsOwned().add(rental);
+        ad.getRentals().add(rental);
+        userRepository.save(borrower);
+        userRepository.save(owner);
+        adRepository.save(ad);
+        rentalRepository.save(rental);
+        return new Response("Rental object is now created", HttpStatus.OK);
     }
 
     /**
