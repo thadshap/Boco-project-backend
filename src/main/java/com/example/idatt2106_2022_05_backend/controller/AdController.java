@@ -146,6 +146,12 @@ public class AdController {
     @GetMapping("/ads/newest")
     @ApiOperation(value = "sorting all ads by when they are created")
     public Response getnewest(@RequestBody int pageSize){
-        return adService.sortByCreatedDate(pageSize);
+        return adService.sortByCreatedDateAscending(pageSize);
+    }
+
+    @GetMapping("/ads/oldest")
+    @ApiOperation(value = "sorting all ads by creation oldest")
+    public Response getoldest(@RequestBody int pagesize){
+        return adService.sortByCreatedDateDescending(pagesize);
     }
 }

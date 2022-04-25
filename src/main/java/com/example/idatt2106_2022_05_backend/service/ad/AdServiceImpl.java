@@ -420,22 +420,53 @@ public class AdServiceImpl implements AdService {
         return new Response(ads.stream().limit(amountOfAds).collect(Collectors.toList()), HttpStatus.OK);
     }
 
+    /**
+     * sorting method descending
+     * @param pageSize page size
+     * @param sortBy sorting by attribute
+     * @return response
+     */
     @Override
     public Response sortByDescending(int pageSize, String sortBy){
         Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
         return new Response(adRepository.findAll(pageable).get(), HttpStatus.OK);
     }
 
+    /**
+     * sorting method ascending
+     * @param pageSize page size
+     * @param sortBy sort by attribute
+     * @return response
+     */
     @Override
     public Response sortByAscending(int pageSize, String sortBy){
         Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
         return new Response(adRepository.findAll(pageable).get(), HttpStatus.OK);
     }
 
+    /**
+     * method to get newest ads
+     * @param pageSize page size
+     * @return response with list
+     */
     @Override
-    public Response sortByCreatedDate(int pageSize){
+    public Response sortByCreatedDateAscending(int pageSize){
         List<Ad> ads = adRepository.findAll();
         ads.sort(Comparator.comparing(Ad::getCreated));
+        return new Response(ads.stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+                .limit(pageSize), HttpStatus.OK);
+    }
+
+    /**
+     * method to get oldest ads
+     * @param pageSize page size
+     * @return response with list
+     */
+    @Override
+    public Response sortByCreatedDateDescending(int pageSize){
+        List<Ad> ads = adRepository.findAll();
+        ads.sort(Comparator.comparing(Ad::getCreated).reversed());
         return new Response(ads.stream()
                 .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
                 .limit(pageSize), HttpStatus.OK);

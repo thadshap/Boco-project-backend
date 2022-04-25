@@ -45,22 +45,31 @@ public interface AdService {
     // update ad title
     Response updateAd(Long adId, AdUpdateDto adUpdateDto);
 
+    //getting all ads with calculated distance
     Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
+
     // delete ad
-
     Response deleteAd(long adId);
-    //delete picture
 
+    //delete picture
     Response deletePicture(long ad_id, byte[] chosenPicture);
 
+    //upload a new picture
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 
+    //get nearest ads
     Response sortByDistance(UserGeoLocation userGeoLocation, int amountOfAds) throws IOException;
 
+    //generic sorting descending
     Response sortByDescending(int pageSize, String sortBy);
 
+    //generic sort ascending
     Response sortByAscending(int pageSize, String sortBy);
 
-    Response sortByCreatedDate(int pageSize);
+    //get newest ads
+    Response sortByCreatedDateAscending(int pageSize);
+
+    //get oldest ads
+    Response sortByCreatedDateDescending(int pageSize);
 }
 
