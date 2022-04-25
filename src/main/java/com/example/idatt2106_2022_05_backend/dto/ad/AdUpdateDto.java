@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.ad;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import lombok.Data;

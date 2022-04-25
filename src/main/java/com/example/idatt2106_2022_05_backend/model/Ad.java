@@ -82,6 +82,9 @@ public class Ad {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    private Set<Rental> rentals;
+
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
