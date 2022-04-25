@@ -1,6 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.rental;
 
 import com.example.idatt2106_2022_05_backend.dto.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.RentalListDto;
+import com.example.idatt2106_2022_05_backend.dto.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Rental;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -66,12 +69,19 @@ public class RentalServiceImpl implements RentalService {
                 dayDateRepository.save(calDate);
             }
         }
+        rentalDto.setActive(true);
         User owner = userRepository.getById(rentalDto.getOwner());
         User borrower = userRepository.getById(rentalDto.getBorrower());
-        Rental rental = modelMapper.map(rentalDto, Rental.class);
-        rental.setBorrower(borrower);
-        rental.setOwner(owner);
-        rental.setAd(ad);
+        Rental rental = Rental.builder()
+                .borrower(borrower)
+                .owner(owner)
+                .ad(ad)
+                .dateOfRental(rentalDto.getDateOfRental())
+                .rentFrom(rentalDto.getRentFrom())
+                .rentTo(rentalDto.getRentTo())
+                .deadline(rentalDto.getDeadline())
+                .active(rentalDto.isActive())
+                .build();
         borrower.getRentalsBorrowed().add(rental);
         owner.getRentalsOwned().add(rental);
         ad.getRentals().add(rental);
@@ -91,13 +101,16 @@ public class RentalServiceImpl implements RentalService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response deleteRental(Long rentalId) {
-        Rental rental = rentalRepository.getById(rentalId);
-        if (rental == null){
+    public Response deleteRental(Long rentalId, RentalReviewDto rating) {
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
+        if (rentalOptional.isEmpty()){
             return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
         }
-        rentalRepository.deleteById(rental.getId());
-        return new Response("Rental has been deleted", HttpStatus.ACCEPTED);
+        Rental rental = rentalOptional.get();
+        rental.setRating(rating.getRating());
+        rental.setActive(false);
+        rentalRepository.save(rental);
+        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -139,12 +152,23 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response getRental(Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
-
+        System.out.println("rental id = " + rentalId);
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
+        System.out.println("returning the rental");
         Rental rental = rentalOptional.get();
-        return new Response(rental, HttpStatus.OK);
+        RentalDto rentalReturn = RentalDto.builder()
+                .ad(rental.getAd().getId())
+                .borrower(rental.getBorrower().getId())
+                .owner(rental.getOwner().getId())
+                .active(rental.isActive())
+                .dateOfRental(rental.getDateOfRental())
+                .deadline(rental.getDeadline())
+                .rentFrom(rental.getRentFrom())
+                .rentTo(rental.getRentTo())
+                .build();
+        return new Response(rentalReturn, HttpStatus.OK);
     }
 
     /**
@@ -158,12 +182,27 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response getRentalsByUserId(Long userId) {
         User user = userRepository.getById(userId);
+        RentalListDto rentals = new RentalListDto();
+        rentals.setRentals(new ArrayList<>());
         List<Rental> rental = rentalRepository.getByOwner(user);
         rental.addAll(rentalRepository.getByBorrower(user));
 
         if (rental.isEmpty()){
             return new Response("Rentals not found!", HttpStatus.NOT_FOUND);
         }
-        return new Response(rental, HttpStatus.OK);
+        for (int i = 0; i < rental.size(); i++) {
+            RentalDto rentalReturn = RentalDto.builder()
+                    .ad(rental.get(i).getAd().getId())
+                    .borrower(rental.get(i).getBorrower().getId())
+                    .owner(rental.get(i).getOwner().getId())
+                    .active(rental.get(i).isActive())
+                    .dateOfRental(rental.get(i).getDateOfRental())
+                    .deadline(rental.get(i).getDeadline())
+                    .rentFrom(rental.get(i).getRentFrom())
+                    .rentTo(rental.get(i).getRentTo())
+                    .build();
+            rentals.getRentals().add(rentalReturn);
+        }
+        return new Response(rentals, HttpStatus.OK);
     }
 }
