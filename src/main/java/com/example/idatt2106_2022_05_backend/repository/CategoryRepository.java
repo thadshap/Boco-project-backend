@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    // Todo find all ads for category with category id --> do in service
 
     Optional<Category> findByName(String name);
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Class loads in data for use in db upon start of application
@@ -50,14 +51,12 @@ public class DataLoader implements ApplicationRunner {
 
             // Create users
             User user1 = User.builder()
-                    .id(1L)
                     .firstName("Anders")
                     .lastName("Tellefsen")
                     .email("andetel@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .build();
             User user2 = User.builder()
-                    .id(2L)
                     .firstName("Brage")
                     .lastName("Minge")
                     .email("bragem@stud.ntnu.no")
@@ -65,7 +64,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user3 = User.builder()
-                    .id(3L)
                     .firstName("Hasan")
                     .lastName("Rehman")
                     .email("hasano@stud.ntnu.no")
@@ -73,7 +71,6 @@ public class DataLoader implements ApplicationRunner {
                     .build();
 
             User user4 = User.builder()
-                    .id(4L)
                     .firstName("Daniel")
                     .lastName("Danielsen")
                     .email("daniel@gmail.com")
@@ -89,50 +86,33 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category category1 = Category.builder().id(5L).name("Food").build();
-            Category category2 = Category.builder().id(6L).name("Clothes").build();
-            Category category3 = Category.builder().id(7L).name("Equipment").build();
+            Category category1 = Category.builder().name("Food").parent(true).build();
+            Category category2 = Category.builder().name("Clothes").parent(true).build();
+            Category category3 = Category.builder().name("Equipment").parent(true).build();
 
             // Persist main-categories
-            //categoryRepository.save(category1);
-            //categoryRepository.save(category2);
-            //categoryRepository.save(category3);
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+            categoryRepository.save(category3);
+
+            System.out.println("categories: " + categoryRepository.findAll());
 
             // Create sub-categories
-            Category category4 = Category.builder().id(8L).name("Fruits").
-                    mainCategory(category1).build();
-            Category category5 = Category.builder().id(9L).name("Pants").
-                    mainCategory(category2).build();
-            Category category6 = Category.builder().id(10L).name("IT").
-                    mainCategory(category3).build();
+            Category category4 = Category.builder().name("Fruits").
+                    parentName(category1.getName()).build();
+            Category category5 = Category.builder().name("Pants").
+                    parentName(category2.getName()).build();
+            Category category6 = Category.builder().name("IT").
+                    parentName(category3.getName()).build();
 
             // Persist sub-categories
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
 
-            // Add sub-categories to sets
-            Set<Category> subCategories1 = new HashSet<>();
-            subCategories1.add(category4);
-            Set<Category> subCategories2 = new HashSet<>();
-            subCategories2.add(category5);
-            Set<Category> subCategories3 = new HashSet<>();
-            subCategories3.add(category6);
-
-            // Add sub-categories as FK to the main categories
-            category1.setSubCategories(subCategories1);
-            category2.setSubCategories(subCategories2);
-            category3.setSubCategories(subCategories3);
-
-            // Persist (update) the categories
-            //categoryRepository.save(category1);
-            //categoryRepository.save(category2);
-            //categoryRepository.save(category3);
-
 
             // Create ad
             Ad pants = Ad.builder().
-                    id(11L).
                     title("New pants").
                     description("Renting out a pair of pants in size 36").
                     rental(true).
@@ -146,7 +126,7 @@ public class DataLoader implements ApplicationRunner {
                     category(category5).
                     build();
 
-            Ad fruit = Ad.builder().id(12L).
+            Ad fruit = Ad.builder().
                     title("You may borrow fruit").
                     description("Renting out 12 grapes").
                     rental(true).
@@ -160,7 +140,7 @@ public class DataLoader implements ApplicationRunner {
                     category(category4).
                     build();
 
-            Ad pc = Ad.builder().id(13L).
+            Ad pc = Ad.builder().
                     title("Pc rental").
                     description("Renting out a new lenovo").
                     rental(true).
@@ -175,8 +155,26 @@ public class DataLoader implements ApplicationRunner {
                     build();
 
             // Persist the 3 ads
-            //adRepository.save(pants);
-            //adRepository.save(fruit);
-            //adRepository.save(pc);
+            adRepository.save(pants);
+            adRepository.save(fruit);
+            adRepository.save(pc);
+
+            // Adding the sets
+            Set<Ad> ads1 = new HashSet<>();
+            ads1.add(fruit);
+            category4.setAds(ads1);
+
+            Set<Ad> ads2 = new HashSet<>();
+            ads2.add(pants);
+            category5.setAds(ads2);
+
+            Set<Ad> ads3 = new HashSet<>();
+            ads3.add(pc);
+            category6.setAds(ads3);
+
+            categoryRepository.save(category4);
+            categoryRepository.save(category5);
+            categoryRepository.save(category6);
+
         }
 }

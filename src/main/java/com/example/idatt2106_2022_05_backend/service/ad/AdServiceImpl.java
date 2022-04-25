@@ -35,28 +35,28 @@ import java.util.stream.Collectors;
 public class AdServiceImpl implements AdService {
 
     @Autowired
-    AdRepository adRepository;
+    private AdRepository adRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    PictureRepository pictureRepository;
+    private PictureRepository pictureRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
-
 
 
     // Get all ads
     @Override
     public Response getAllAds() {
-        return new Response(adRepository.findAll().stream().map(ad -> modelMapper.map(ad, AdDto.class)), HttpStatus.OK);
+        return new Response(adRepository.findAll(), HttpStatus.OK);
     }
 
     // Get all ads in category by category id
+    @Override
     public Response getAllAdsInCategory(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -73,6 +73,7 @@ public class AdServiceImpl implements AdService {
     }
 
     // Get all ads in category by category name
+    @Override
     public Response getAllAdsInCategory(String name) {
         Optional<Category> category = categoryRepository.findByName(name);
 

@@ -15,8 +15,9 @@ import java.util.Set;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "category_id", nullable = false)
+    @SequenceGenerator(name = "category_sequence", sequenceName = "category_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "category_sequence", strategy = GenerationType.SEQUENCE)
+    @Column(name = "category_id")
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -30,11 +31,22 @@ public class Category {
      */
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "mainCategory")
     private Set<Category> subCategories;
+    private boolean parent;
 
-    @ManyToOne
-    private Category mainCategory;
+    private String parentName;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "ad_id")
     private Set<Ad> ads;
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", parent=" + parent +
+                ", parentName='" + parentName + '\'' +
+                ", ads=" + ads +
+                '}';
+    }
 }
