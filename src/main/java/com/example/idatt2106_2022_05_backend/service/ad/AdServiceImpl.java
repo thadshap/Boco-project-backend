@@ -32,16 +32,16 @@ import java.util.Set;
 public class AdServiceImpl implements AdService {
 
     @Autowired
-    AdRepository adRepository;
+    private AdRepository adRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    PictureRepository pictureRepository;
+    private PictureRepository pictureRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -74,7 +74,6 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get random ads --> how many? 20-50? TODO implement in frontend
 
     // Get all available ads
     @Override
@@ -180,7 +179,7 @@ public class AdServiceImpl implements AdService {
             newAd.setDescription(adDto.getDescription());
         }
         if(adDto.getPicturesIn() != null) {
-            //Creating and saving each picture connected to ad
+            //Creating and saving each picture connected to the ad
             for(MultipartFile m : adDto.getPicturesIn()){
                 savePicture(m, newAd);
             }
@@ -188,14 +187,15 @@ public class AdServiceImpl implements AdService {
         return new Response(null, HttpStatus.OK);
     }
 
-    /*
-    support method to create and save Picture
+    /**
+     * Support-method to create and save Picture
      */
     private void savePicture(MultipartFile file, Ad ad) throws IOException {
-        //ensures that content of file is presentent
+        //ensures that content of file is present
         if(file.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Picture file is empty");
         }
+
         //create and save object
         pictureRepository.save(Picture.builder()
         .type(file.getContentType())
