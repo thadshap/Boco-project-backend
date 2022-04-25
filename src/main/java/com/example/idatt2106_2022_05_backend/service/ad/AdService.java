@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public interface AdService {
@@ -53,5 +54,13 @@ public interface AdService {
     Response deletePicture(long ad_id, byte[] chosenPicture);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
+
+    Response sortByDistance(UserGeoLocation userGeoLocation, int amountOfAds) throws IOException;
+
+    Response sortByDescending(int pageSize, String sortBy);
+
+    Response sortByAscending(int pageSize, String sortBy);
+
+    Response sortByCreatedDate(int pageSize);
 }
 

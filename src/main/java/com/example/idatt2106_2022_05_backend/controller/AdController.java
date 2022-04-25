@@ -1,9 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.AdDto;
-import com.example.idatt2106_2022_05_backend.dto.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -12,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.RequestWrapper;
 import java.io.IOException;
 
 @Slf4j
@@ -122,7 +120,32 @@ public class AdController {
     }
 
     @GetMapping("/ads/page")
+    @ApiOperation(value = "Endpoint to request a page of ads")
     public Response getPageOfAds(@RequestBody int sizeOfPage){
         return adService.getPageOfAds(sizeOfPage);
+    }
+
+    @GetMapping("/ads/sort/distance")
+    @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
+    public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
+        return adService.sortByDistance(userGeoLocation, userGeoLocation.getAmount());
+    }
+
+    @GetMapping("/ads/sort/descending")
+    @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
+    public Response getsorteddescending(@RequestBody SortingAdsDto sortingDto){
+        return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
+    }
+
+    @GetMapping("/ads/sort/ascending")
+    @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
+    public Response getsortedAscending(@RequestBody SortingAdsDto sortingDto){
+        return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
+    }
+
+    @GetMapping("/ads/newest")
+    @ApiOperation(value = "sorting all ads by when they are created")
+    public Response getnewest(@RequestBody int pageSize){
+        return adService.sortByCreatedDate(pageSize);
     }
 }

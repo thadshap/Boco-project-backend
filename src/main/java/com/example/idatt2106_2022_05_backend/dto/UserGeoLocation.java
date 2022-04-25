@@ -13,8 +13,11 @@ import lombok.NoArgsConstructor;
 public class UserGeoLocation {
 
     @ApiModelProperty(notes = "latitude")
-    double lat;
+    private double lat;
 
     @ApiModelProperty(notes = "longitude")
-    double lng;
+    private double lng;
+
+    @ApiModelProperty(notes = "amount of ads requested")
+    private int amount;
 }
