@@ -22,6 +22,9 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "classname")
+    private String classname;
+
     /**
      * Recursive one-to-many relationship
      */

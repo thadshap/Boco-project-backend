@@ -157,4 +157,10 @@ public class AdController {
     public Response getoldest(@RequestBody int pagesize){
         return adService.sortByCreatedDateDescending(pagesize);
     }
+
+    @GetMapping("/search")
+    @ApiOperation(value = "method to search through")
+    public Response searchInAdsAndCategories(@RequestBody String searchword){
+        return adService.searchThroughAds(searchword);
+    }
 }

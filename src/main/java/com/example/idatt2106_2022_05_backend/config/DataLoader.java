@@ -94,9 +94,9 @@ public class DataLoader implements ApplicationRunner {
             Category category3 = Category.builder().id(7L).name("Equipment").build();
 
             // Persist main-categories
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
-            categoryRepository.save(category3);
+            //categoryRepository.save(category1);
+            //categoryRepository.save(category2);
+            //categoryRepository.save(category3);
 
             // Create sub-categories
             Category category4 = Category.builder().id(8L).name("Fruits").
@@ -125,9 +125,9 @@ public class DataLoader implements ApplicationRunner {
             category3.setSubCategories(subCategories3);
 
             // Persist (update) the categories
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
-            categoryRepository.save(category3);
+            //categoryRepository.save(category1);
+            //categoryRepository.save(category2);
+            //categoryRepository.save(category3);
 
 
             // Create ad
@@ -175,8 +175,8 @@ public class DataLoader implements ApplicationRunner {
                     build();
 
             // Persist the 3 ads
-            adRepository.save(pants);
-            adRepository.save(fruit);
-            adRepository.save(pc);
+            //adRepository.save(pants);
+            //adRepository.save(fruit);
+            //adRepository.save(pc);
         }
 }

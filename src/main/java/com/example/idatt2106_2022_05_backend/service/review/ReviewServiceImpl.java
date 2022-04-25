@@ -37,18 +37,16 @@ public class ReviewServiceImpl implements ReviewService{
 
     /**
      * Method validate creation of a new review
-     * @param newReviewDto
+     * @param newReviewDto reviewDto
      */
     private void validate(ReviewDto newReviewDto){
         if(newReviewDto.getDescription().length()>200){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description exceeds maximum lenght");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Beskrivelsen kan ikke være mere enn 200 tegn");
 
         }if(0>newReviewDto.getRating() && newReviewDto.getRating()>10){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating outside of scale");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skalaen for rangering er 1-10");
         }
     }
-
-
 
     /**
      * Method to validate that a user only posts once per ad
@@ -60,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService{
         List<Review> allreviews = reviewRepository.getAllByAd(ad);
         for(Review r: allreviews){
             if(r.getUser().getId() == newPostingUser.getId()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A user can only post once per ad");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "En bruker kan kun poste én omtale per annonse");
             }
         }
     }
@@ -84,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService{
         review.setAd(adRepository.getById(newReviewDto.getAd_id()));
 
         reviewRepository.save(review);
-        return new Response(null, HttpStatus.OK);
+        return new Response("Omtalen ble lagret", HttpStatus.OK);
     }
 
 
@@ -101,10 +99,10 @@ public class ReviewServiceImpl implements ReviewService{
         List<ReviewDto> reviews = reviewRepository.getAllByAd(ad).stream()
                 .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
         //Returns reviews if found
-        if(reviews!=null) {
+        if(reviews.size()!=0) {
             return new Response(reviews, HttpStatus.OK);
         }
-        return new Response(null, HttpStatus.NOT_FOUND);
+        return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -116,10 +114,10 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public Response deleteReview(long ad_id, long user_id){
         Optional<Review> review = reviewRepository.getByAdAndUser(adRepository.getById(ad_id), userRepository.getById(user_id));
-        if(review.get()==null){
-            return new Response(null, HttpStatus.NOT_FOUND);
+        if(review.isPresent()){
+            reviewRepository.delete(review.get());
+            return new Response("Omtalen ble slettet", HttpStatus.OK);
         }
-        reviewRepository.delete(review.get());
-        return new Response("Review was successfully deleted", HttpStatus.OK);
+        return new Response("fant ikke omtalen", HttpStatus.NOT_FOUND);
     }
 }

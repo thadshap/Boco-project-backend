@@ -68,5 +68,8 @@ public interface AdService {
 
     //get oldest ads
     Response sortByCreatedDateDescending(int pageSize);
+
+    //Search in database
+    Response searchThroughAds(String searchword);
 }
 
