@@ -37,6 +37,7 @@ public interface AdService {
     // Get all ads by rental type
     Response getAllAdsByRentalType(boolean rentalType);
 
+    //post new add
     Response postNewAd(AdDto adDto) throws IOException;
 
     // get all reviews for an add with owner = user id
