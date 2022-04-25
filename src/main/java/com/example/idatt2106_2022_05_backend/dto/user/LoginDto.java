@@ -1,11 +1,13 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.Email;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 @ApiModel(description = "data transfer object for logging and authenticating in a user")
 public class LoginDto {
 

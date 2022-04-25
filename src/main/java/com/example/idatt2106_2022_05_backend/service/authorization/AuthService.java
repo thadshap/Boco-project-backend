@@ -1,10 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.authorization;
 
-import com.example.idatt2106_2022_05_backend.dto.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
+import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
 import com.example.idatt2106_2022_05_backend.util.Response;
 
 import javax.mail.MessagingException;

@@ -1,11 +1,9 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
+import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
-import com.example.idatt2106_2022_05_backend.security.JWTUtil;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
@@ -15,7 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;

@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.UserUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
