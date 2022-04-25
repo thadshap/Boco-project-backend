@@ -41,7 +41,6 @@ class AdServiceTest {
      * us to create all possible variants of constructors for the object.
      * To create an ad, a user and a category must also be created.
      */
-    /*
     @BeforeEach
     void setUp() { // description, rental (boolean), rented_out,
                    // duration_type, duration, price, street_address, postal_code
@@ -95,7 +94,7 @@ class AdServiceTest {
         // We want to use this ad-object when we call on methods later on.
         Mockito.when(adRepository.findByPostalCode(7234)).thenReturn(ads);
     }
-*/
+
 
 
     @Test
