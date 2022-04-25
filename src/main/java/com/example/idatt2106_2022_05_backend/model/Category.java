@@ -31,11 +31,12 @@ public class Category {
      */
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "mainCategory")
     private Set<Category> subCategories;
+
     private boolean parent;
 
     private String parentName;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ad_id")
     private Set<Ad> ads;
 

@@ -72,5 +72,5 @@ public class AdDto {
     private long adId;
 
     @ApiModelProperty(notes = "id of user creating the ad")
-    private long user_id;
+    private long userId;
 }
