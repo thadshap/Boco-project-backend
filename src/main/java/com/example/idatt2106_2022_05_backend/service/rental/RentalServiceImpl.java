@@ -12,12 +12,14 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private CalendarDateRepository dayDateRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -70,7 +75,7 @@ public class RentalServiceImpl implements RentalService {
                 dayDateRepository.save(calDate);
             }
         }
-        rentalDto.setActive(true);
+        rentalDto.setActive(false);
         User owner = userRepository.getById(rentalDto.getOwner());
         User borrower = userRepository.getById(rentalDto.getBorrower());
         Rental rental = Rental.builder()
@@ -95,7 +100,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public Response activateRental(Long rentalId, Long ownerId) {
+    public Response activateRental(Long rentalId, Long ownerId) throws MessagingException {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
@@ -103,7 +108,10 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setActive(true);
         rentalRepository.save(rental);
-        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
+        //TODO check if right user gets confirm email
+        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
+                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
+        return new Response("Rental has been activated", HttpStatus.ACCEPTED);
     }
 
     /**

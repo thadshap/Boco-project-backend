@@ -5,10 +5,12 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
 
+import javax.mail.MessagingException;
+
 public interface RentalService {
     Response createRental(RentalDto rentalDto);
 
-    Response activateRental(Long rentalId, Long ownerId);
+    Response activateRental(Long rentalId, Long ownerId) throws MessagingException;
 
     Response deleteRental(Long rentalId, RentalReviewDto rentalDto);
 
