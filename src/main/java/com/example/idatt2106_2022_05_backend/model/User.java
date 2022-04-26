@@ -76,7 +76,7 @@ public class User {
     @ToString.Exclude
     private Set<Ad> ads;
 
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "user")
+    @OneToMany(cascade = {CascadeType.REMOVE})
     @JoinColumn(name="message_id", referencedColumnName = "message_id")
     private Set<Message> messages;
 

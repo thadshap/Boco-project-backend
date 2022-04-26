@@ -43,14 +43,13 @@ public class ChatController {
 
     //STOMP,
     @MessageMapping("/group/{groupId}")
-    public void sendMessage(@DestinationVariable long groupId, MessageDto message) {
-
-        chatService.sendMessageGroup(groupId, message);
+    public void sendMessage(MessageDto message) {
+        chatService.saveMessage(message);
 
     }
 
     @GetMapping("group/messages/{groupId}")
-    public Set<Message> getAllMessagesByGroupId(@PathVariable("groupId") long groupId) {
+    public Response getAllMessagesByGroupId(@PathVariable("groupId") long groupId) {
         return chatService.getAllMessagesByGroupId(groupId);
     }
 }

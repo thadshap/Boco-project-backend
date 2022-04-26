@@ -37,6 +37,6 @@ public class Group {
     )
     private Set<User> users;
 
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "group")
+    @OneToMany(cascade = {CascadeType.REMOVE})
     private Set<Message> messages;
 }

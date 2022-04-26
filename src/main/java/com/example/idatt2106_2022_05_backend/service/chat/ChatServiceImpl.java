@@ -11,6 +11,7 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,6 +32,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -71,6 +75,9 @@ public class ChatServiceImpl implements ChatService {
         message1.setTimestamp(current);
 
         messageRepository.save(message1);
+
+        simpMessagingTemplate.convertAndSend("/topic/group/" + message.getGroupId(), message);
+
         return new Response("Meldingen ble lagret", HttpStatus.OK);
     }
 

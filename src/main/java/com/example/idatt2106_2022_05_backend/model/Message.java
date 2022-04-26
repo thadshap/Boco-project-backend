@@ -29,11 +29,11 @@ public class Message {
     private Timestamp timestamp;
 
     @ManyToOne()
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name = "groupId")
+    @JoinColumn(name = "group_id")
     private Group group;
 
 
