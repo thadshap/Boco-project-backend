@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="group")
+@Table(name="groups")
 public class Group {
 
     @Id
@@ -37,6 +37,6 @@ public class Group {
     )
     private Set<User> users;
 
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "group")
+    @OneToMany(cascade = {CascadeType.REMOVE})
     private Set<Message> messages;
 }
