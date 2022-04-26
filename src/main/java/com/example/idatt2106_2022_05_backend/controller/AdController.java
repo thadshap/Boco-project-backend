@@ -117,14 +117,14 @@ public class AdController {
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
     public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getFile().getBytes());
+        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getMultipartFile().getBytes());
     }
 
     @PostMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class)
     public Response uploadNewPicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getAd_id());
-        return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getFile());
+        return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getMultipartFile());
     }
 
     @PostMapping("/ads/page")

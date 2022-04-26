@@ -385,9 +385,9 @@ public class AdServiceImpl implements AdService {
      */
     private Response savePicture(MultipartFile file, Ad ad) throws IOException {
 
-        // Ensures that content of file is present
+        // Ensures that content of multipartFile is present
         if(file.isEmpty()){
-            return new Response("Picture file is empty", HttpStatus.NO_CONTENT);
+            return new Response("Picture multipartFile is empty", HttpStatus.NO_CONTENT);
         }
 
         // Ensure that the ad exists
@@ -535,14 +535,14 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
-            if(adUpdateDto.getRentedOut() != null){
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
-                    ad.setRentedOut(false);
-                }
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
-                    ad.setRentedOut(true);
-                }
+
+            if (adUpdateDto.getRentedOut() == true){
+                ad.setRentedOut(false);
             }
+            if (adUpdateDto.getRentedOut() == false){
+                ad.setRentedOut(true);
+            }
+
             adRepository.save(ad);
         }
         else {
@@ -616,17 +616,17 @@ public class AdServiceImpl implements AdService {
     }
 
     /**
-     * method to add a new  picture to an ad
-     * @param ad_id ad_id
-     * @param file file containing picture
+     * method to add a new picture to an ad
+     * @param adId ad_id
+     * @param file multipartFile containing picture
      * @return response with status ok
-     * @throws IOException if compression of file fails
+     * @throws IOException if compression of multipartFile fails
      */
     @Override
-    public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
+    public Response uploadNewPicture(long adId, MultipartFile file) throws IOException {
 
         //Getting the ad to connect to the picture
-        Optional<Ad> ad = adRepository.findById(ad_id);
+        Optional<Ad> ad = adRepository.findById(adId);
 
         if(ad.isPresent()) {
 

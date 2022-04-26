@@ -13,4 +13,9 @@ public class AdUpdateDto {
     private int price;
     private String streetAddress;
     private int postalCode;
+    private boolean rentedOut;
+
+    public boolean getRentedOut() {
+        return rentedOut;
+    }
 }
