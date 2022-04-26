@@ -53,8 +53,18 @@ public class AdServiceImpl implements AdService {
 
     // Get all ads
     @Override
-    public Response getAllAds() {
-        return new Response(adRepository.findAll(), HttpStatus.OK);
+    public Response getAllAds() throws IOException {
+        List<Ad> allAds = adRepository.findAll();
+
+        List<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : allAds) {
+            AdDto newAd = castObject(ad);
+            adsToBeReturned.add(newAd);
+        }
+
+        return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
     // Get all ads in category by category id
@@ -101,6 +111,7 @@ public class AdServiceImpl implements AdService {
         else{
             return new Response("Fant ikke annonser i databasen",HttpStatus.NOT_FOUND);
         }
+        return null;
     }
 
     // Get all ads for user
@@ -136,12 +147,12 @@ public class AdServiceImpl implements AdService {
 
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -151,21 +162,59 @@ public class AdServiceImpl implements AdService {
         List<AdDto> availableAds = adRepository.getAvailableAdsByUserId(userId).stream()
                 .map(ad ->modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
         }
     }
 
     // Get all ads by postal code
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
-        return new Response(adRepository.findByPostalCode(postalCode), HttpStatus.OK);
+        Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
+
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : availableAds) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
+        // If the db contains any available ads
+        if(availableAds.size() != 0) {
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -179,11 +228,26 @@ public class AdServiceImpl implements AdService {
         Set<AdDto> ads = adRepository.findByRental(rentalType).stream()
                 .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toSet());
 
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all ads and create dtos
+        for(Ad ad : ads) {
+
+            AdDto newAd = null;
+            try {
+                newAd = castObject(ad);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            adsToBeReturned.add(newAd);
+        }
+
         if(ads != null) {
-            return new Response(ads, HttpStatus.OK);
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response(null, HttpStatus.NO_CONTENT);
+            return new Response("Could not find ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -231,7 +295,7 @@ public class AdServiceImpl implements AdService {
             return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
         }
 
-        Optional<User> user = userRepository.findById(adDto.getUserId()); //todo id should be renamed
+        Optional<User> user = userRepository.findById(adDto.getUserId());
 
         if(user.isPresent()) {
             // Set foreign key
@@ -347,7 +411,7 @@ public class AdServiceImpl implements AdService {
      * support method to decompress pictures
      * @param ad ad object from database
      * @param adDto dto object to be returned
-      * @throws IOException if decompression fails
+     * @throws IOException if decompression fails
      */
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
@@ -391,15 +455,17 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response updateAd(Long adId, AdUpdateDto adUpdateDto) {
-        Optional<Ad> adOptional = adRepository.findById(adId);
-        Ad ad;
-        if(adOptional.isPresent()) {
-            ad = adOptional.get();
+
+        Optional<Ad> foundAd = adRepository.findById(adId);
+
+        if(foundAd.isPresent()) {
+            Ad ad = foundAd.get();
+
             // Update the ad
-            if (!adUpdateDto.getTitle().isBlank()){
+            if (adUpdateDto.getTitle() != null){
                 ad.setTitle(adUpdateDto.getTitle());
             }
-            if (!adUpdateDto.getDescription().isBlank()){
+            if (adUpdateDto.getDescription() != null){
                 ad.setDescription(adUpdateDto.getDescription());
             }
             if (adUpdateDto.getDuration() > 0){
@@ -411,20 +477,20 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPrice() > 0){
                 ad.setPrice(adUpdateDto.getPrice());
             }
-            if (!adUpdateDto.getStreetAddress().isBlank()){
+            if (adUpdateDto.getStreetAddress() != null){
                 ad.setStreetAddress(adUpdateDto.getStreetAddress());
             }
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
-            if(!adUpdateDto.getRentedOut().isBlank()){
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
-                    ad.setRentedOut(false);
-                }
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
-                    ad.setRentedOut(true);
-                }
-            }
+//            if(adUpdateDto.getRentedOut() != null){
+//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
+//                    ad.setRentedOut(false);
+//                }
+//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
+//                    ad.setRentedOut(true);
+//                }
+//            }
             adRepository.save(ad);
         }
         else {
@@ -440,6 +506,24 @@ public class AdServiceImpl implements AdService {
 
         // If the ad exists
         if(ad.isPresent()) {
+
+            // Delete the ad's pictures
+            ad.get().setPictures(null);
+
+            // Delete the ad from its category
+            ad.get().getCategory().getAds().remove(ad.get());
+
+            // Delete the ad from its user
+            ad.get().getUser().getAds().remove(ad.get());
+
+            // Delete its rentals
+            ad.get().setRentals(null);
+
+            // Delete the reviews todo save these somewhere else during next iteration!
+            ad.get().setReviews(null);
+
+            // Delete the dates
+            ad.get().setDates(null);
 
             // Delete the ad
             adRepository.deleteById(adId);

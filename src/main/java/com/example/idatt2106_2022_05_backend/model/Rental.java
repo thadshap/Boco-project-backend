@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 @Entity
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @ToString
 @RequiredArgsConstructor
 @SuperBuilder
+@Transactional
 @AllArgsConstructor
 public class Rental {
 
@@ -41,15 +43,30 @@ public class Rental {
 
     private boolean active;
 
+    private double rating;
+
     @ManyToOne
-    @JoinColumn(referencedColumnName = "userId", nullable = false)
+    @JoinColumn(referencedColumnName = "user_id")
     private User owner;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "userId", nullable = false)
+    @JoinColumn(referencedColumnName = "user_id")
     private User borrower;
 
     @ManyToOne
-    @JoinColumn(name = "adId", nullable = false)
+    @JoinColumn(name = "ad_id")
     private Ad ad;
+
+    @PreRemove
+    private void removeRelationships(){
+        if(ad != null){
+            setAd(null);
+        }
+        if(borrower != null){
+            setBorrower(null);
+        }
+        if (owner != null) {
+            setOwner(null);
+        }
+    }
 }

@@ -18,8 +18,8 @@ import java.util.Set;
 public interface AdRepository extends JpaRepository<Ad, Long> {
 
     // Get all available ads
-    @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
-    Set<Ad> getAllAvailableAds();
+//    @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
+//    Set<Ad> getAllAvailableAds();
 
     // Get all available ads by user id
     @Query("SELECT a FROM Ad a WHERE a.user.id= :id")
@@ -39,7 +39,7 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     // Get all ads with items that are either being rented or given away
     Set<Ad> findByRental(boolean rental);
 
-    //search in ad title
-    Set<Ad> findByTitleContaining(String searchWord);
-
+    // Get all available ads
+    @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
+    Set<Ad> getAllAvailableAds();
 }

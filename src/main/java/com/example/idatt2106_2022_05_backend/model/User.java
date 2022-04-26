@@ -26,7 +26,7 @@ public class User {
     @Id
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "userId") //todo change to auto
+    @Column(name = "user_id") //todo change to auto
     private Long id;
 
     @NotBlank
@@ -74,7 +74,7 @@ public class User {
     // One to many relationship w/ ad
     @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
     @ToString.Exclude
-    private Set<Ad> ads = new HashSet<>();
+    private Set<Ad> ads;
 
     public void setAd(Ad newAd) {
         ads.add(newAd);

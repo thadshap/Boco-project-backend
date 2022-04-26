@@ -25,7 +25,7 @@ public class Ad {
     @Id
     @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
     @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "adId")
+    @Column(name = "ad_id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -61,11 +61,11 @@ public class Ad {
     private int postalCode;
 
     // Coordinates latitude
-    @Column(name="LAT")
+    @Column(name="lat")
     private double lat;
 
     // Coordinates longitude
-    @Column(name="LNG")
+    @Column(name="lng")
     private double lng;
 
     // Created timestamp --> for use in calculating ad-expiration
@@ -83,7 +83,7 @@ public class Ad {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
