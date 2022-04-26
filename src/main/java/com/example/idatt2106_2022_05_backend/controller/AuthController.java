@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.controller;
 import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -57,9 +58,9 @@ public class AuthController {
     @PostMapping("/renewPassword")
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
     public Response renewPassword(@RequestParam("token") String token,
-            @RequestBody UserForgotPasswordDto forgotPasswordDto) {
+            @RequestBody UserRenewPasswordDto renewPasswordDto) {
         log.debug("[X] Call to renew the password");
-        return authService.validatePasswordThroughToken(token, forgotPasswordDto);
+        return authService.validatePasswordThroughToken(token, renewPasswordDto);
     }
 
     @PostMapping("/register")

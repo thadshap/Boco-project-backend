@@ -1,8 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.rental;
 
-import com.example.idatt2106_2022_05_backend.dto.RentalDto;
-import com.example.idatt2106_2022_05_backend.dto.RentalListDto;
-import com.example.idatt2106_2022_05_backend.dto.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalListDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Rental;
@@ -81,6 +82,7 @@ public class RentalServiceImpl implements RentalService {
                 .rentTo(rentalDto.getRentTo())
                 .deadline(rentalDto.getDeadline())
                 .active(rentalDto.isActive())
+                .price(rentalDto.getPrice())
                 .build();
         borrower.getRentalsBorrowed().add(rental);
         owner.getRentalsOwned().add(rental);
@@ -90,6 +92,18 @@ public class RentalServiceImpl implements RentalService {
         adRepository.save(ad);
         rentalRepository.save(rental);
         return new Response("Rental object is now created", HttpStatus.OK);
+    }
+
+    @Override
+    public Response activateRental(Long rentalId, Long ownerId) {
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
+        }
+        Rental rental = rentalOptional.get();
+        rental.setActive(true);
+        rentalRepository.save(rental);
+        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -125,18 +139,24 @@ public class RentalServiceImpl implements RentalService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateRental(RentalDto rentalDto, Long rentalId) {
+    public Response updateRental(RentalUpdateDto rentalDto, Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
 
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
         Rental rental = rentalOptional.get();
+        if (rentalDto.getRentFrom() != null){
+            rental.setRentFrom(rentalDto.getRentFrom());
+        }
         if (rentalDto.getRentTo() != null){
             rental.setRentTo(rentalDto.getRentTo());
         }
         if (rentalDto.getDeadline() != null){
             rental.setDeadline(rentalDto.getDeadline());
+        }
+        if (rentalDto.getPrice() <= 0){
+            rental.setPrice(rentalDto.getPrice());
         }
         return new Response("Rental", HttpStatus.ACCEPTED);
     }

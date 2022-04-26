@@ -1,5 +1,6 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.rental;
 
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

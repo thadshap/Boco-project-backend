@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.service.authorization;
 import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.ResetPasswordToken;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
@@ -125,8 +126,10 @@ public class AuthServiceImpl implements AuthService {
             ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
             resetPasswordTokenRepository.save(resetToken);
             emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewPassword?token="
-                            + token);
+                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword?token="
+                            + token);//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
+            log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword?token="
+                    + token);
             return new Response("Reset passord link sent til mail.", HttpStatus.ACCEPTED);
         }
 
@@ -134,7 +137,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Response validatePasswordThroughToken(String token, UserForgotPasswordDto forgotPasswordDto) {
+    public Response validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto) {
         ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
 
         if (resetPasswordToken == null) {
