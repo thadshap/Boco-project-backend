@@ -8,11 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> getAllByUser(User user);
     List<Review> getAllByAd(Ad ad);
     Optional<Review> getByAdAndUser(Ad ad, User user);
+    Set<Review> getAllByAd_Id(long adId);
 
 }

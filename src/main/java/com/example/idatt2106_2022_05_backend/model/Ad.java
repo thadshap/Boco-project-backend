@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -94,7 +95,7 @@ public class Ad {
     // When ad is persisted, the reviews are also updated
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @ToString.Exclude
-    private Set<Review> reviews; // todo create a rating for user such taht the rating does not get removed from the user
+    private Set<Review> reviews; // todo create a rating for user such that the rating does not get removed from the user
 
     // Many-to-many connection with Date. Date is parent in this case.
     @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
