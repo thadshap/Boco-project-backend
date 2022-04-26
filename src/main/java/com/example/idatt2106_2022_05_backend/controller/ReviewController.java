@@ -18,26 +18,24 @@ public class ReviewController {
     @Autowired
     ReviewService reviewService;
 
-    @GetMapping("/reviews/ad")
+    @GetMapping("/reviews/{adId}")
     @ApiOperation(value = "Endpoint to get reviews by ad id", response = Response.class)
-    public Response getReviewsByAdId(@RequestBody long ad_id){
-        log.debug("[X] Call to get all reviews of ad by id = {}", ad_id);
-        return reviewService.getReviewsByAdId(ad_id);
+    public Response getReviewsByAdId(@PathVariable long adId){
+        log.debug("[X] Call to get all reviews of ad by id = {}", adId);
+        return reviewService.getReviewsByAdId(adId);
     }
 
     @PostMapping("/new/review")
     @ApiOperation(value = "Endpoint to create a new review", response = Response.class)
     public Response createNewReview(@RequestBody ReviewDto newReview){
-        log.debug("[X] Call to create new review for ad with id = {}", newReview.getAd_id());
+        log.debug("[X] Call to create new review for ad with id = {}", newReview.getAdId());
         return reviewService.createNewReview(newReview);
     }
 
     @DeleteMapping("/delete/review")
     @ApiOperation(value = "Endpoint to delete a review", response = Response.class)
     public Response deleteReview(@RequestBody ReviewDto reviewDto){
-        log.debug("[X] Call to delete review of ad with id = {}", reviewDto.getAd_id());
-        return reviewService.deleteReview(reviewDto.getAd_id(), reviewDto.getUser_id());
+        log.debug("[X] Call to delete review of ad with id = {}", reviewDto.getAdId());
+        return reviewService.deleteReview(reviewDto.getAdId(), reviewDto.getUserId());
     }
-
-
 }

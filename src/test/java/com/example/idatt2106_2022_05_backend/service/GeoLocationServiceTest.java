@@ -1,10 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service;
 
-import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeoLocationServiceTest {

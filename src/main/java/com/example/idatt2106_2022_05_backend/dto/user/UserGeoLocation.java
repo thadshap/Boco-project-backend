@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto.user;
+package com.example.idatt2106_2022_05_backend.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,5 +16,8 @@ public class UserGeoLocation {
     double lat;
 
     @ApiModelProperty(notes = "longitude")
-    double lng;
+    private double lng;
+
+    @ApiModelProperty(notes = "amount of ads requested")
+    private int amount;
 }

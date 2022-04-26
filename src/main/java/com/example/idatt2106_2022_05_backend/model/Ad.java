@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class Ad {
     @Id
     @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
     @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "ad_id")
+    @Column(name = "ad_id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -82,7 +83,7 @@ public class Ad {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})

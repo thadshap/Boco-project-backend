@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +55,6 @@ class AdRepositoryTest {
                 title("Shoes").
                 description("Renting out a pair of shoes in size 36").
                 rental(true).
-                rentedOut(false).
                 durationType(AdType.WEEK).
                 duration(2).
                 price(100).

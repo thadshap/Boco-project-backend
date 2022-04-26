@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    @PostMapping("/login/outside/service")
+    @PostMapping("/login/outside")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
     public Response loginWithOutsideService(Principal principal) {
         log.debug("[X] Call to login with facebook or google");

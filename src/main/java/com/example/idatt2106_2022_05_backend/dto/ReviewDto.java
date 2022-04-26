@@ -19,8 +19,8 @@ public class ReviewDto {
     private String description;
 
     @ApiModelProperty(notes = "id of user writing the review")
-    private long user_id;
+    private long userId;
 
     @ApiModelProperty(notes = "id of the ad the user writes a review on")
-    private long ad_id;
+    private long adId;
 }

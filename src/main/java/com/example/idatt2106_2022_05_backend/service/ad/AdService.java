@@ -1,14 +1,12 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-
 @Service
 public interface AdService {
     // Get all ads
@@ -41,6 +39,7 @@ public interface AdService {
     // Get all ads by rental type
     Response getAllAdsByRentalType(boolean rentalType);
 
+    //post new add
     Response postNewAd(AdDto adDto) throws IOException;
 
     // get all reviews for an add with owner = user id
@@ -49,14 +48,34 @@ public interface AdService {
     // update ad title
     Response updateAd(Long adId, AdUpdateDto adUpdateDto);
 
+    //getting all ads with calculated distance
     Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
+
     // delete ad
-
     Response deleteAd(long adId);
-    //delete picture
 
+    //delete picture
     Response deletePicture(long ad_id, byte[] chosenPicture);
 
+    //upload a new picture
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
+
+    //get nearest ads
+    Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException;
+
+    //generic sorting descending
+    Response sortByDescending(int pageSize, String sortBy);
+
+    //generic sort ascending
+    Response sortByAscending(int pageSize, String sortBy);
+
+    //get newest ads
+    Response sortByCreatedDateAscending(int pageSize);
+
+    //get oldest ads
+    Response sortByCreatedDateDescending(int pageSize);
+
+    //Search in database
+    Response searchThroughAds(String searchword);
 }
 
