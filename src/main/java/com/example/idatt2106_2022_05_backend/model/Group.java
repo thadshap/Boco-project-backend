@@ -24,7 +24,7 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="group_id", nullable=false)
-    private Long groupId;
+    private Long id;
 
     @Column(name = "name")
     private String name;

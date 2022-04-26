@@ -1,6 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Group;
 import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.User;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
 
     //private support method
     private Group getGroup(long id) {
-        return groupRepository.findByGroupId(id)
+        return groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke gruppechat"));
     }
 
@@ -74,14 +77,20 @@ public class ChatServiceImpl implements ChatService {
         return new Response("Meldingen ble lagret", HttpStatus.OK);
     }
 
-    public Response sortChat(long id){
-        Set<MessageDto> messageDtos = (Set<MessageDto>) getAllMessagesByGroupId(id).getBody();
-
+    @Override
+    public Response getChat(long id){
+        Group group = getGroup(id);
+        List<Message> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
+        messageDtos.sort(Comparator.comparing(Message::getTimestamp));
+        return new Response(messageDtos.stream()
+                .map(message -> modelMapper.map(message, MessageDto.class))
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
         /**
          * 1. Metode til å sende melding
          * 3. Metode til å hente en chat
          * TODO: paginate og sorter chat
+         * 4. Get all groupchats on user
          */
     }

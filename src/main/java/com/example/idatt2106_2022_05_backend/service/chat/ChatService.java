@@ -14,4 +14,6 @@ public interface ChatService {
 
     Response saveMessage(MessageDto message);
 
+    Response getChat(long id);
+
 }
