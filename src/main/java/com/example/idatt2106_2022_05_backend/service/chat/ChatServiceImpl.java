@@ -37,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
     UserRepository userRepository;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    SimpMessagingTemplate simpMessagingTemplate;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -79,7 +79,7 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message1);
 
-        simpMessagingTemplate.convertAndSend("/topic/group/" + message.getGroupId(), message);
+        simpMessagingTemplate.convertAndSend("/topic/group/" + message1.getGroup().getId(), message1);
 
         return new Response("Meldingen ble lagret", HttpStatus.OK);
     }
