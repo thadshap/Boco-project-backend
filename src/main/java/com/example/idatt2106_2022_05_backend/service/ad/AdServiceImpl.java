@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
@@ -482,9 +483,20 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getReviewsByUserId(long userId) {
 
+        Set<Review> reviews = adRepository.getReviewsByUserId(userId);
+        Set<ReviewDto> dtos = new HashSet<>();
+        for(Review review : reviews) {
+            ReviewDto newDto = new ReviewDto();
+
+            newDto.setDescription(review.getDescription());
+            newDto.setRating(review.getRating());
+
+            dtos.add(newDto);
+        }
+
         // If the reviews-list contains anything
         if(adRepository.getReviewsByUserId(userId) != null) {
-            return new Response(adRepository.getReviewsByUserId(userId), HttpStatus.OK);
+            return new Response(dtos, HttpStatus.OK);
         }
         else {
             return new Response("The user was not found", HttpStatus.NOT_FOUND);
