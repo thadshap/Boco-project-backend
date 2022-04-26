@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.authorization;
 
+import com.example.idatt2106_2022_05_backend.dto.LoginResponse;
 import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
@@ -162,8 +163,8 @@ public class AuthServiceImpl implements AuthService {
     public Response login(LoginDto loginDto) throws Exception {
 
         System.out.println(loginDto.getEmail() + " " + loginDto.getPassword());
-
-        if (userRepository.findByEmail(loginDto.getEmail()) == null) {
+        User user = userRepository.findByEmail(loginDto.getEmail());
+        if (user == null) {
             // throw exception
             log.info("Did not find user with email {} ", loginDto.getEmail());
             return new Response("Email er feil", HttpStatus.NOT_FOUND);
@@ -177,7 +178,12 @@ public class AuthServiceImpl implements AuthService {
 
         final String token = jwtUtil.generateToken(userDetails);
 
-        return new Response(token, HttpStatus.ACCEPTED);
+        LoginResponse jwt = LoginResponse.builder()
+                .id(user.getId())
+                .token(token)
+                .build();
+
+        return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
     @Override

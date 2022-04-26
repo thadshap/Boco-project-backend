@@ -27,7 +27,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
   security:
     oauth2:
       client:
@@ -44,3 +43,13 @@ spring:
             scope:
               - email
               - profile_profile
+server:
+  ssl:
+    key-store-password: password
+    protocol: TLS
+    key-store-type: PKCS12
+    enabled-protocols: TLSv1.2
+    enabled: true
+    key-store: src/main/resources/keystore/BOCO.p12
+    client-auth: need
+  port: 8443

@@ -69,10 +69,12 @@ public class RentalServiceImpl implements RentalService {
                 return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
             }
         }
-        for (CalendarDate calDate: cld) {
-            if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
-                calDate.setAvailable(false);
-                dayDateRepository.save(calDate);
+        if (rentalDto.isActive()){
+            for (CalendarDate calDate: cld) {
+                if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
+                    calDate.setAvailable(false);
+                    dayDateRepository.save(calDate);
+                }
             }
         }
         rentalDto.setActive(false);
@@ -100,13 +102,20 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public Response activateRental(Long rentalId, Long ownerId) throws MessagingException {
+    public Response activateRental(Long rentalId) throws MessagingException {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
         }
         Rental rental = rentalOptional.get();
         rental.setActive(true);
+        Set<CalendarDate> cld = rental.getAd().getDates();
+        for (CalendarDate calDate: cld) {
+            if(calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())){
+                calDate.setAvailable(false);
+                dayDateRepository.save(calDate);
+            }
+        }
         rentalRepository.save(rental);
         //TODO check if right user gets confirm email
         emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",

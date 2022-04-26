@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+
 @Slf4j
 @RestController()
 @RequestMapping("rental")
@@ -27,11 +29,11 @@ public class RentalController {
         return rentalService.createRental(rentalDto);
     }
 
-    @PutMapping("/activate/{rentalId}/{ownerId}")
+    @PutMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public Response activateRental(@PathVariable Long rentalId, @PathVariable Long ownerId) {
+    public Response activateRental(@PathVariable Long rentalId) throws MessagingException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        return rentalService.activateRental(rentalId, ownerId);
+        return rentalService.activateRental(rentalId);
     }
 
     @DeleteMapping("/delete/{rentalId}")

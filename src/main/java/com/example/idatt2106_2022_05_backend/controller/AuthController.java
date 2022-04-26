@@ -72,7 +72,7 @@ public class AuthController {
             return new Response("Mail is already registered", HttpStatus.IM_USED);
         }
         publisher.publishEvent(new RegistrationComplete(user, url(url)));
-        return new Response("Registration mail is created", HttpStatus.CREATED);
+        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")
@@ -83,7 +83,7 @@ public class AuthController {
         String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?"
                 + token;
         if (result.equalsIgnoreCase("valid email")) {
-            return new Response("Kontoen er nå verifisert!\n:" + authService.getUserJWT(token), HttpStatus.ACCEPTED);
+            return new Response("Kontoen er nå verifisert!\n:", HttpStatus.ACCEPTED);
         }
         return new Response(result + "\n" + resendVerificationMail, HttpStatus.NOT_FOUND);
     }
