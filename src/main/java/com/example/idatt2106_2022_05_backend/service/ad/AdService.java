@@ -60,5 +60,7 @@ public interface AdService {
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
 
     Response uploadPictureToAd(long adId, MultipartFile file);
+
+    Response storeImageForAd(long adId, MultipartFile file) throws IOException;
 }
 

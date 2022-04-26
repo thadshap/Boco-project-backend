@@ -92,6 +92,7 @@ public class AdController {
         return adService.postNewAd(adDto);
     }
 
+
     @GetMapping("/users/ads/reviews/{userId}")
     @ApiOperation(value = "Endpoint to retrieve all reviews on an ad of a user", response = Response.class)
     public Response getReviewsByUserId(@PathVariable("userId") long id) {
@@ -115,23 +116,32 @@ public class AdController {
 
     @DeleteMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
+    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
         return adService.deletePicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile().getBytes());
     }
 
+    // Not in use
+    /**
     @PostMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class)
     public Response uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId());
         return adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile());
     }
+     */
+
 
     @PostMapping("/ads/newPicture")
-    public Response uploadPictureToAd(@ModelAttribute UpdatePictureDto dto)  {
-
-        return adService.uploadPictureToAd(dto.getId(), dto.getMultipartFile());
+    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto)  {
+        try {
+            return adService.storeImageForAd(dto.getId(), dto.getMultipartFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
 
     @PostMapping("/ads/page")
     public Response getPageOfAds(@RequestBody AdDto sizeOfPage){

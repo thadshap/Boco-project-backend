@@ -3,14 +3,8 @@ package com.example.idatt2106_2022_05_backend.service.ad;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.util.FileUploadUtility;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -22,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,7 +37,13 @@ public class AdServiceImpl implements AdService {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private CalendarDateRepository calendarDateRepository;
+
+    @Autowired
     private PictureRepository pictureRepository;
+
+    @Autowired
+    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -353,26 +352,10 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response("could not find user", HttpStatus.NOT_FOUND);
         }
-        /**
-        //Getting user
-        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
-
-        // Checking user
-        user.ifPresent(newAd::setUser);
-         */
 
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());
-        }
-
-        if(adDto.getPicturesIn() != null) {
-
-            //Creating and saving each picture connected to the ad
-            for(MultipartFile m : adDto.getPicturesIn()){
-                savePicture(m, newAd);
-            }
         }
 
         // Persisting the entities
@@ -402,7 +385,7 @@ public class AdServiceImpl implements AdService {
             Picture picture = Picture.builder()
                     .type(file.getContentType())
                     .filename(file.getOriginalFilename())
-                    .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build();
+                    .ad(ad).data(PictureUtility.compressImage(file.getBytes())).build();
 
             // Save picture object
             pictureRepository.save(picture);
@@ -473,7 +456,7 @@ public class AdServiceImpl implements AdService {
 
         Set<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
-            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
+            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData()));
             Image image = ImageIO.read(bis);
             images.add(image);
         }
@@ -577,7 +560,12 @@ public class AdServiceImpl implements AdService {
             // Delete the reviews todo save these somewhere else during next iteration!
             ad.get().setReviews(null);
 
-            // Delete the dates
+            // Delete the ad from the dates
+            for(CalendarDate date : ad.get().getDates()) {
+                date.getAds().remove(ad.get());
+            }
+
+            // Delete the dates from the ad
             ad.get().setDates(null);
 
             // Delete the ad
@@ -603,19 +591,31 @@ public class AdServiceImpl implements AdService {
 
         // If present
         if(ad.isPresent()) {
-            List<Picture> pictures = pictureRepository.findByAd(ad.get());
+            Set<Picture> pictures = ad.get().getPictures();
             if(pictures != null) {
                 for (Picture picture : pictures) {
-                    if (Arrays.equals(PictureUtility.decompressImage(picture.getContent()), chosenPicture))
-                    {
+                    if(Arrays.equals(picture.getData(), chosenPicture)) {
+                        // Remove this picture from ad
+                        ad.get().getPictures().remove(picture);
+
+                        // Set the foreign keys of the picture equal to null
+                        picture.setAd(null);
+
+                        // Delete the ad
                         pictureRepository.delete(picture);
-                        return new Response("Deleted pictures", HttpStatus.OK);
+
+                        // Update the ad
+                        adRepository.save(ad.get());
+
+                        return new Response("Deleted picture", HttpStatus.OK);
                     }
                 }
             }
+            // If we get here, pictures are equal to null
+            return new Response("This ad has no pictures", HttpStatus.NOT_FOUND);
         }
 
-        return new Response("Picture not found", HttpStatus.NOT_FOUND);
+        return new Response("Ad with specified id not found", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -637,7 +637,7 @@ public class AdServiceImpl implements AdService {
             pictureRepository.save(Picture.builder()
                     .filename(file.getOriginalFilename())
                     .ad(ad.get()).type(file.getContentType()).
-                    content(PictureUtility.compressImage(file.getBytes())).build());
+                    data(PictureUtility.compressImage(file.getBytes())).build());
 
             // Return OK response
             return new Response("Picture saved", HttpStatus.OK);
@@ -657,7 +657,6 @@ public class AdServiceImpl implements AdService {
         Optional<Ad> ad = adRepository.findById(adId);
 
         String uploadDirectory = "";
-
 
         if(ad.isPresent()) {
 
@@ -686,5 +685,66 @@ public class AdServiceImpl implements AdService {
             return new Response("Ad with specified ad id not found", HttpStatus.NOT_FOUND);
         }
         return null;
+    }
+
+    @Override
+    public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
+        return pictureService.savePicture(file, adId, 0);
+        /**
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        // Create Picture entity
+        Picture filePicture = new Picture();
+
+        // Find the ad
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        if(ad.isPresent()) {
+            // Set the ad as FK
+            filePicture.setAd(ad.get());
+        }
+        else {
+            return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
+        }
+
+        // Set attributes for the new entity
+        filePicture.setFilename(fileName);
+        filePicture.setType(file.getContentType());
+        filePicture.setData(file.getBytes());
+
+        // Persist the Picture
+        pictureRepository.save(filePicture);
+
+        // Add the Picture as FK to the ad as well
+        ad.get().addPicture(filePicture);
+
+        // Persist the ad
+        adRepository.save(ad.get());
+
+        // Return OK
+        return new Response("Successfully added new photo to ad", HttpStatus.OK);
+         */
+    }
+
+    public Response getPicture(long pictureId) {
+        Optional<Picture> picture = pictureRepository.findById(pictureId);
+
+        if(picture.isPresent()) {
+            return new Response(picture.get(), HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find picture with specified id", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public Response getAllPicturesForAd(long adId) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        if(ad.isPresent()) {
+            return new Response(ad.get().getPictures().stream(), HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
+        }
     }
 }
