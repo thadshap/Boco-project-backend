@@ -535,14 +535,14 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
-            if(adUpdateDto.getRentedOut() != null){
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
-                    ad.setRentedOut(false);
-                }
-                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
-                    ad.setRentedOut(true);
-                }
-            }
+//            if(adUpdateDto.getRentedOut() != null){
+//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
+//                    ad.setRentedOut(false);
+//                }
+//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
+//                    ad.setRentedOut(true);
+//                }
+//            }
             adRepository.save(ad);
         }
         else {
