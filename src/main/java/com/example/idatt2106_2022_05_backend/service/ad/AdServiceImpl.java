@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AdServiceImpl implements AdService {
@@ -527,7 +528,10 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response sortByDescending(int pageSize, String sortBy){
         Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-        return new Response(adRepository.findAll(pageable).get(), HttpStatus.OK);
+        List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
+        return new Response(list.stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
+
     }
 
     /**
@@ -539,7 +543,9 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response sortByAscending(int pageSize, String sortBy){
         Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-        return new Response(adRepository.findAll(pageable).get(), HttpStatus.OK);
+        List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
+        return new Response(list.stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     /**

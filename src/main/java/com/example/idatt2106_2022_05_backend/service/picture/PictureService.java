@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.service.Picture;
+package com.example.idatt2106_2022_05_backend.service.picture;
 
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;

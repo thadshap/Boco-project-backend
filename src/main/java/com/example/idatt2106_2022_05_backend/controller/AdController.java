@@ -164,4 +164,6 @@ public class AdController {
     public Response searchInAdsAndCategories(@PathVariable String searchWord){
         return adService.searchThroughAds(searchWord);
     }
+
+
 }
