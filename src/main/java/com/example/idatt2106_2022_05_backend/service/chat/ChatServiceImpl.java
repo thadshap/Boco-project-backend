@@ -74,11 +74,14 @@ public class ChatServiceImpl implements ChatService {
         return new Response("Meldingen ble lagret", HttpStatus.OK);
     }
 
+    public Response sortChat(long id){
+        Set<MessageDto> messageDtos = (Set<MessageDto>) getAllMessagesByGroupId(id).getBody();
+
+    }
+
         /**
          * 1. Metode til å sende melding
-         * 2. Metode til å lagre melding
          * 3. Metode til å hente en chat
-         * 4. Metode til å slette melding?
          * TODO: paginate og sorter chat
          */
     }

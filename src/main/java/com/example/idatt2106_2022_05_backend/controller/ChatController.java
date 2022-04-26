@@ -12,21 +12,19 @@ import javax.websocket.server.PathParam;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api")
 public class ChatController {
 
-    @Autowired
-    private WebSocket webSocket;
 
     @Autowired
     private ChatService chatService;
 
-    @RequestMapping("/")
+    @RequestMapping("/message")
     public Response onMessage(Message message){
 
     }
 
-    @RequestMapping("/{id}")
+    @RequestMapping("/group/{id}")
     public Response onOpen(@PathParam("id") long id){
         return chatService.getAllMessagesByGroupId(id);
     }
