@@ -104,14 +104,14 @@ public class AdServiceImpl implements AdService {
     // Get ad by id
     @Override
     public Response getAdById(long id) {
-        List<AdDto> ads = adRepository.findById(id).stream().map(adDto -> modelMapper.map(adDto, AdDto.class)).collect(Collectors.toList());
+        List<AdDto> ads = adRepository.findById(id).stream()
+                .map(adDto -> modelMapper.map(adDto, AdDto.class)).collect(Collectors.toList());
         if(ads.size()!=0) {
             return new Response(ads, HttpStatus.OK);
         }
         else{
             return new Response("Fant ikke annonser i databasen",HttpStatus.NOT_FOUND);
         }
-        return null;
     }
 
     // Get all ads for user
@@ -147,12 +147,12 @@ public class AdServiceImpl implements AdService {
 
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(adsToBeReturned, HttpStatus.OK);
+            return new Response(availableAds, HttpStatus.OK);
         }
 
         // The db did not contain any available ads
         else {
-            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
+            return new Response("Fant ingen annonser", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -162,26 +162,10 @@ public class AdServiceImpl implements AdService {
         List<AdDto> availableAds = adRepository.getAvailableAdsByUserId(userId).stream()
                 .map(ad ->modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
 
-        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
-
-        // Iterate over all ads and create dtos
-        for(Ad ad : availableAds) {
-
-            AdDto newAd = null;
-            try {
-                newAd = castObject(ad);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            adsToBeReturned.add(newAd);
-        }
-
         // If the db contains any available ads
         if(availableAds.size() != 0) {
-            return new Response(adsToBeReturned, HttpStatus.OK);
+            return new Response(availableAds, HttpStatus.OK);
         }
-
         // The db did not contain any available ads
         else {
             return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
@@ -189,6 +173,8 @@ public class AdServiceImpl implements AdService {
     }
 
     // Get all ads by postal code
+
+    //TODO: Do we need this??
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
         Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
@@ -228,23 +214,8 @@ public class AdServiceImpl implements AdService {
         Set<AdDto> ads = adRepository.findByRental(rentalType).stream()
                 .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toSet());
 
-        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
-
-        // Iterate over all ads and create dtos
-        for(Ad ad : ads) {
-
-            AdDto newAd = null;
-            try {
-                newAd = castObject(ad);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            adsToBeReturned.add(newAd);
-        }
-
-        if(ads != null) {
-            return new Response(adsToBeReturned, HttpStatus.OK);
+        if(ads.size() != 0) {
+            return new Response(ads, HttpStatus.OK);
         }
         else {
             return new Response("Could not find ads", HttpStatus.NO_CONTENT);
@@ -269,7 +240,7 @@ public class AdServiceImpl implements AdService {
      *              - picture (pictures of the item to be rented out)
      *              - rentedOut (true if the item is rented out, which it should be at initialization)
      *
-     * @return
+     * @return response
      */
     @Override
     public Response postNewAd(AdDto adDto) throws IOException {
