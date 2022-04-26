@@ -58,5 +58,7 @@ public interface AdService {
     Response deletePicture(long ad_id, byte[] chosenPicture);
 
     Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
+
+    Response uploadPictureToAd(long adId, MultipartFile file);
 }
 

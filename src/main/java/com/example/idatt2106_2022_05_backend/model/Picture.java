@@ -31,7 +31,7 @@ public class Picture {
     private byte[] content;
 
     @ManyToOne
-    @JoinColumn(name = "ad_id")
+    @JoinColumn(name = "id")
     private Ad ad;
 
     @Override

@@ -116,15 +116,21 @@ public class AdController {
     @DeleteMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
     public Response deletePicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
-        log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getAd_id());
-        return adService.deletePicture(updatePictureDto.getAd_id(), updatePictureDto.getMultipartFile().getBytes());
+        log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
+        return adService.deletePicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile().getBytes());
     }
 
     @PostMapping("/ads/picture")
     @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class)
-    public Response uploadNewPicture(@RequestBody UpdatePictureDto updatePictureDto) throws IOException {
-        log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getAd_id());
-        return adService.uploadNewPicture(updatePictureDto.getAd_id(), updatePictureDto.getMultipartFile());
+    public Response uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
+        log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId());
+        return adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile());
+    }
+
+    @PostMapping("/ads/newPicture")
+    public Response uploadPictureToAd(@ModelAttribute UpdatePictureDto dto)  {
+
+        return adService.uploadPictureToAd(dto.getId(), dto.getMultipartFile());
     }
 
     @PostMapping("/ads/page")

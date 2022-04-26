@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdatePictureDto {
 
     @ApiModelProperty(notes = "id of the ad the picture belongs to")
-    private long ad_id;
+    private long id;
 
     @ApiModelProperty(notes = "multipartFile containing the new picture")
     private MultipartFile multipartFile;

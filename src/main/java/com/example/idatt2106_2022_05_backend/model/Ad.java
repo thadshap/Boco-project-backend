@@ -24,7 +24,7 @@ public class Ad {
     @Id
     @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
     @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "ad_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -72,6 +72,10 @@ public class Ad {
     @Column(name = "created")
     private LocalDate created;
 
+    // Replacing picture table (photos == fileName)
+    @Column(length = 64)
+    private String photos;
+
     // Is nullable
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
     @ToString.Exclude
@@ -100,6 +104,19 @@ public class Ad {
     @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
     @ToString.Exclude
     private Set<CalendarDate> dates = new HashSet<>();
+
+    // Add a new picture
+    public void addPicture(Picture picture) {
+        pictures.add(picture);
+    }
+
+    // Adding a getter to retrieve the image path of the photos of this specific ad
+    @Transient
+    public String getPhotosImagePath() {
+        if (photos == null || id == null) return null;
+
+        return "/ad-photos/" + id + "/" + photos;
+    }
 
     @Override
     public boolean equals(Object o) {

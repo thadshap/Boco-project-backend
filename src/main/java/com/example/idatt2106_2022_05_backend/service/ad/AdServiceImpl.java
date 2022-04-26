@@ -11,6 +11,7 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.util.FileUploadUtility;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -19,7 +20,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -590,7 +593,7 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     * @param ad_id ad_id
+     * @param ad_id id
      * @param chosenPicture picture_id
      * @return response with status ok or not found
      */
@@ -617,7 +620,7 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to add a new picture to an ad
-     * @param adId ad_id
+     * @param adId id
      * @param file multipartFile containing picture
      * @return response with status ok
      * @throws IOException if compression of multipartFile fails
@@ -639,8 +642,49 @@ public class AdServiceImpl implements AdService {
             // Return OK response
             return new Response("Picture saved", HttpStatus.OK);
         }
+        else {
+            // The ad was not found
+            return new Response("Ad not found", HttpStatus.NOT_FOUND);
+        }
+    }
 
-        // The ad was not found
-        return new Response("Ad not found", HttpStatus.NOT_FOUND);
+    @Override
+    public Response uploadPictureToAd(long adId, MultipartFile multipartFile){
+        // Get the filename
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+        // Get the ad
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        String uploadDirectory = "";
+
+
+        if(ad.isPresent()) {
+
+            // Give the picture object to the ad
+            ad.get().setPhotos(fileName);
+
+            // Persist the change
+            Ad savedAd = adRepository.save(ad.get());
+
+            // The upload directory is ad-photos, and the id is to create the specific file
+            uploadDirectory = "src/main/resources/ad-photos/" + savedAd.getId();
+
+            try {
+                // Save the file
+                FileUploadUtility.saveFile(uploadDirectory, fileName, multipartFile);
+
+                // Return OK if the file was saved successfully
+                return new Response("Photo saved", HttpStatus.OK);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            // If we get here, the ad was not found
+            return new Response("Ad with specified ad id not found", HttpStatus.NOT_FOUND);
+        }
+        return null;
     }
 }
