@@ -16,12 +16,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry
                                                registry) {
         registry.addEndpoint("/websockets")
-                .setAllowedOrigins("*").withSockJS();
+                .setAllowedOrigins("http://localhost:8081", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/topic/");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/topic/queue");
+        config.setApplicationDestinationPrefixes("/websocket");
     }
 }

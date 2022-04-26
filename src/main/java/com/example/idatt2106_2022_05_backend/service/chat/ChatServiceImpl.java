@@ -63,11 +63,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Response saveMessage(MessageDto message) {
+    public MessageDto saveMessage(MessageDto message) {
         Message message1 = new Message();
 
         if(message.getContent().length()>280){
-            return new Response("Innholdet i meldingen er for langt", HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meldingen er for lang");
         }
         message1.setContent(message.getContent());
         message1.setUser(getUser(message.getToUserId()));
@@ -81,7 +81,7 @@ public class ChatServiceImpl implements ChatService {
 
         simpMessagingTemplate.convertAndSend("/topic/group/" + message1.getGroup().getId(), message1);
 
-        return new Response("Meldingen ble lagret", HttpStatus.OK);
+        return message;
     }
 
     @Override
