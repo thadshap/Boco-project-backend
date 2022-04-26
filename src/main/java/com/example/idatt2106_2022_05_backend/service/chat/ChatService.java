@@ -9,9 +9,9 @@ import java.util.Set;
 
 @Service
 public interface ChatService {
-    Set<Message> getAllMessagesByGroupId(long groupId);
 
-    void saveMessage(Message message);
+    Response getAllMessagesByGroupId(long groupId);
 
-    void sendMessageGroup(long groupId, MessageDto message);
+    Response saveMessage(MessageDto message);
+
 }

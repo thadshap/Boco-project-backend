@@ -31,13 +31,12 @@ public class ChatController {
     //ikke stomp?
     /**
     @RequestMapping("/")
-    public void onMessage(Message message){
-        chatService.saveMessage(message);
-        webSocket.sendAllMessage(message);
+    public Response onMessage(Message message){
+
     }
 
     @RequestMapping("/{id}")
-    public Set<Message> onOpen(@PathParam("id") long id){
+    public Response onOpen(@PathParam("id") long id){
         return chatService.getAllMessagesByGroupId(id);
     }
     **/
