@@ -160,9 +160,20 @@ public class AdController {
     }
 
     // Get all ads for specific category id
-    // Get sub-categories for main category
-    @GetMapping("/categories/{categoryId}")
-    public Response getAllAdsInCategory(@PathVariable String categoryId){
+    @GetMapping("/categories/ads/{categoryId}")
+    public Response getAllAdsInCategory(@PathVariable long categoryId){
         return adService.getAllAdsInCategory(categoryId);
+    }
+
+    // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
+    @GetMapping("/categoriesRecursive/{categoryName}")
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName){
+        return adService.getAllAdsInCategoryAndSubCategories(categoryName);
+    }
+
+    // Get all parent categories
+    @GetMapping("/categories/parent")
+    public Response getAllParentCategories(){
+        return adService.getAllParentCategories();
     }
 }

@@ -66,6 +66,12 @@ public class AdDto {
     // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
     private Set<Image> picturesOut;
 
+    @ApiModelProperty(notes = "latitude of the ad")
+    private double lat;
+
+    @ApiModelProperty(notes = "longitude of the ad")
+    private double lng;
+
     // Upon update-methods
     @ApiModelProperty(notes = "Id of ad")
     private long adId;

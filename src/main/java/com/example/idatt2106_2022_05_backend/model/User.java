@@ -72,7 +72,7 @@ public class User {
     private List<Review> reviews;
 
     // One to many relationship w/ ad
-    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads;
 

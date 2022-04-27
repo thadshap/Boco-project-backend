@@ -21,6 +21,10 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
+    Response getAllAdsInCategoryAndSubCategories(String name);
+
+    Response getAllParentCategories();
+
     // Get ad by id
     Response getAdById(long id);
 

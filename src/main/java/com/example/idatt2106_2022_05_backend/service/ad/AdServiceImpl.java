@@ -19,9 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -34,6 +31,10 @@ public class AdServiceImpl implements AdService {
 
     @Autowired
     private UserRepository userRepository;
+
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -66,6 +67,36 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
+    // Get all ads in category by category name
+    @Override
+    public Response getAllAdsInCategory(String name) {
+        Optional<Category> category = categoryRepository.findByName(name);
+
+        List<AdDto> adsToReturn = new ArrayList<>();
+
+        // If category exists
+        if(category.isPresent()) {
+            Set<Ad> adsFound = category.get().getAds();
+
+            for(Ad ad : adsFound) {
+                try {
+                    AdDto newDto = castObject(ad);
+                    newDto.setLat(ad.getLat());
+                    newDto.setLng(ad.getLng());
+                    adsToReturn.add(newDto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Return the ads
+            return new Response(adsToReturn, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
+    }
+
     // Get all ads in category by category id
     @Override
     public Response getAllAdsInCategory(Long categoryId)  {
@@ -82,7 +113,8 @@ public class AdServiceImpl implements AdService {
                 try {
                     // Convert to dto
                     AdDto dto = castObject(ad);
-
+                    dto.setLat(ad.getLat());
+                    dto.setLng(ad.getLng());
                     // Add dto to list of ads to be returned
                     adsToBeReturned.add(dto);
                 } catch (IOException e) {
@@ -109,29 +141,34 @@ public class AdServiceImpl implements AdService {
         // Iterate over all categories
         for(Category category : categories) {
 
-            // Using null-safe equals
-            if(Objects.equals(category.getParentName(), parentName)) {
+            // Ensure null-safety by skipping the category if it does not have a parent
+            if(category.getParentName() != null) {
 
-                // Generate a new list that holds only the ids --> avoids recursive stackOverflow
-                ArrayList<Long> ids = new ArrayList<Long>();
+                // Using equals w/ignore case() to ensure equality
+                if(parentName.equalsIgnoreCase(category.getParentName())) {
 
-                // If this category has any ads
-                if(category.getAds().size() > 0) {
-                    for(Ad ad: category.getAds()) {
-                        ids.add(ad.getId());
+                    // Generate a new list that holds only the ids --> avoids recursive stackOverflow
+                    ArrayList<Long> ids = new ArrayList<>();
+
+                    // If this category has any ads
+                    if(category.getAds().size() > 0) {
+                        for(Ad ad: category.getAds()) {
+                            ids.add(ad.getId());
+                        }
                     }
+
+                    // Create dto
+                    CategoryDto dto = CategoryDto.builder().
+                            id(category.getId()).
+                            name(category.getName()).
+                            parentName(parentName).
+                            adIds(ids).
+                            build();
+
+
+                    // Add to list of sub-categories to return
+                    subCategories.add(dto);
                 }
-
-                // Create dto
-                CategoryDto dto = CategoryDto.builder().
-                        name(category.getName()).
-                        parentName(parentName).
-                        adIds(ids).
-                        build();
-
-
-                // Add to list of sub-categories to return
-                subCategories.add(dto);
             }
         }
 
@@ -168,6 +205,7 @@ public class AdServiceImpl implements AdService {
 
             // Create dto
             CategoryDto dto = CategoryDto.builder().
+                    id(category.getId()).
                     name(category.getName()).
                     parentName(category.getParentName()).
                     adIds(ids).
@@ -188,20 +226,163 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all ads in category by category name
+    /**
+     * Retrieves the ads of this category and all categories that have this category as parentCategory
+     *
+     * @param name is the name of this category
+     * @return a list of ads
+     */
     @Override
-    public Response getAllAdsInCategory(String name) {
-        Optional<Category> category = categoryRepository.findByName(name);
+    public Response getAllAdsInCategoryAndSubCategories(String name) {
+        System.out.println("number of categories:" + categoryRepository.findAll().size());
 
-        // If category exists
-        if(category.isPresent()) {
-            Set<Ad> adsFound = category.get().getAds();
+        System.out.println("number of categories:" + categoryRepository.findAll().size());
 
-            // Return the ads
-            return new Response(adsFound, HttpStatus.OK);
+        // Retrieve all categories from database
+        ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+
+        // List of subCategories found using recursive function
+        List<Category> subCategories = findSubCategories(categories, new ArrayList<>(),
+                             name,0);
+
+        System.out.println("sub categories found size: " + subCategories.size());
+
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all sub-categories found
+        for(Category category : subCategories) {
+            // Iterate over all ads in category
+            if(category.getAds() != null) {
+                for(Ad ad : category.getAds()) {
+                    try {
+                        // Create dto
+                        AdDto dto = castObject(ad);
+                        // Add to list
+                        adsToBeReturned.add(dto);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        // Now all ads are returned
+        return new Response(adsToBeReturned, HttpStatus.OK);
+    }
+
+
+    /**
+     * Recursive function that finds all sub-categories belonging
+     * to a category (including the sub-categories of sub-categories and so on)
+     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories
+     *                as the method recursively iterates
+     * @param start is a measure of incrementation-depth that ends when recursions == listIn.size()
+     * @return listOut
+     *
+    private List<Category> findAllSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, int start) {
+        // Base-case
+        int arrayLength = start;
+
+        // If the position in the array is equal to the size of the array we are at the end
+        if(arrayLength == listIn.size()) {
+            // Return the list that now contains all sub-categories
+            return listOut;
+        }
+        else{
+            // get a hold of all subcategories
+            String nameOfCurrentCategory = listIn.get(arrayLength).getName();
+
+            // Iterate through all categories
+            for(Category category : listIn) {
+                if(category.getParentName() != null) {
+                    // If a category has current category as parent category
+                    if(category.getParentName().equalsIgnoreCase(nameOfCurrentCategory)) {
+                        listOut.add(category);
+                    }
+                }
+            }
+        }
+        // Increment the starting point from the list
+        return findSubCategories(listIn, listOut, start + 1);
+    }
+    */
+
+    /**
+     * Recursive function that finds all sub-categories belonging
+     * to a category (including the sub-categories of sub-categories and so on)
+     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories
+     *                as the method recursively iterates
+     * @return listOut
+     */
+    private List<Category> findSubCategories(ArrayList<Category> listIn,
+                                                       ArrayList<Category> listOut,
+                                                       String parentName, int start) {
+
+        // Position in array == start
+        int arrayLength = start;
+
+        // Make a counter and if it is not == 1 && base case is not reached when the loop ends,
+        // call on the function again from parentName == arrayLength.getName
+        int loopCounter = 0;
+
+        // Base case: If the position in the array is equal to the size of the array
+        if(arrayLength == listIn.size()) {
+            System.out.println("Array length equals list in --> finished");
+            // Return the list that now contains all sub-categories
+            return listOut;
+        }
+        else{
+            // Iterate through all categories
+            for (int i = start; i < listIn.size(); i++) {
+                Category category = listIn.get(i);
+
+                // If the category is a sub-class
+                if(category.getParentName() != null) {
+
+                    // If a category has current category as parent category
+                    if(category.getParentName().equalsIgnoreCase(parentName)) {
+
+                        // Add the category to the list to be returned
+                        listOut.add(category);
+
+                        // This category is now the new parent
+                        parentName = category.getName();
+
+                        // Call on the function recursively from the start for this category
+                        findSubCategories(listIn,listOut, parentName,
+                                start);
+                    }
+                }
+                System.out.println("parent name is null");
+            }
+            // Increment the list and call on the function recursively
+            return findSubCategories(listIn,listOut, parentName, start);
+        }
+    }
+
+    @Override
+    public Response getAllParentCategories() {
+        List<Category> allCategories = categoryRepository.findAll();
+        List<CategoryDto> categoriesToReturn = new ArrayList<>();
+
+        for(Category category : allCategories) {
+            if (category.isParent()) {
+                CategoryDto dto = CategoryDto.builder().
+                        id(category.getId()).
+                        name(category.getName()).
+                        build();
+                categoriesToReturn.add(dto);
+            }
+        }
+        if(categoriesToReturn.size() > 0) {
+            // Return all the DTOs
+            return new Response(categoriesToReturn,HttpStatus.OK);
         }
         else {
-            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+            return new Response("Could not find any parent categories", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -270,14 +451,14 @@ public class AdServiceImpl implements AdService {
         // Iterate over all ads and create dtos
         for(Ad ad : ads) {
 
-            AdDto newAd = null;
             try {
-                newAd = castObject(ad);
+                AdDto newAd = castObject(ad);
+                newAd.setLat(ad.getLat());
+                newAd.setLng(ad.getLng());
+                adsToBeReturned.add(newAd);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            adsToBeReturned.add(newAd);
         }
 
         return new Response(adsToBeReturned , HttpStatus.OK);
@@ -316,32 +497,38 @@ public class AdServiceImpl implements AdService {
     // Get all available ads by user id
     @Override
     public Response getAllAvailableAdsByUser(long userId) {
-        Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
+        if(userRepository.existsById(userId)) {
+            Set<Ad> availableAds = adRepository.getAvailableAdsByUserId(userId);
 
-        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+            ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
-        // Iterate over all ads and create dtos
-        for(Ad ad : availableAds) {
+            // Iterate over all ads and create dtos
+            for(Ad ad : availableAds) {
 
-            AdDto newAd = null;
-            try {
-                newAd = castObject(ad);
-            } catch (IOException e) {
-                e.printStackTrace();
+                AdDto newAd = null;
+                try {
+                    newAd = castObject(ad);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                adsToBeReturned.add(newAd);
             }
 
-            adsToBeReturned.add(newAd);
+            // If the db contains any available ads
+            if(availableAds.size() != 0) {
+                return new Response(adsToBeReturned, HttpStatus.OK);
+            }
+
+            // The db did not contain any available ads
+            else {
+                return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
+            }
+        }
+        else{
+            throw new NoSuchElementException();
         }
 
-        // If the db contains any available ads
-        if(availableAds.size() != 0) {
-            return new Response(adsToBeReturned, HttpStatus.OK);
-        }
-
-        // The db did not contain any available ads
-        else {
-            return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
-        }
     }
 
     // Get all ads by postal code
@@ -353,15 +540,12 @@ public class AdServiceImpl implements AdService {
 
         // Iterate over all ads and create dtos
         for(Ad ad : availableAds) {
-
-            AdDto newAd = null;
             try {
-                newAd = castObject(ad);
+                AdDto newAd = castObject(ad);
+                adsToBeReturned.add(newAd);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            adsToBeReturned.add(newAd);
         }
 
         // If the db contains any available ads
@@ -398,12 +582,7 @@ public class AdServiceImpl implements AdService {
             adsToBeReturned.add(newAd);
         }
 
-        if(ads != null) {
-            return new Response(adsToBeReturned, HttpStatus.OK);
-        }
-        else {
-            return new Response("Could not find ads", HttpStatus.NO_CONTENT);
-        }
+        return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
 
@@ -470,7 +649,7 @@ public class AdServiceImpl implements AdService {
         user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        return new Response("everything went well", HttpStatus.OK);
+        return new Response(newAd.getId(), HttpStatus.OK);
     }
 
     /**
@@ -547,8 +726,8 @@ public class AdServiceImpl implements AdService {
         adDto.setStreetAddress(ad.getStreetAddress());
         adDto.setTitle(ad.getTitle());
 
-        //decompressing and converting images in support method
-        convertPictures(ad, adDto);
+        // decompressing and converting images in support method
+        // convertPictures(ad, adDto);
         return adDto;
     }
 
@@ -557,7 +736,7 @@ public class AdServiceImpl implements AdService {
      * @param ad ad object from database
      * @param adDto dto object to be returned
      * @throws IOException if decompression fails
-     */
+     *
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
 
@@ -569,6 +748,7 @@ public class AdServiceImpl implements AdService {
         }
         adDto.setPicturesOut(images);
     }
+    */
 
     /**
      * Method that calculates distance between two geolocations
@@ -674,6 +854,16 @@ public class AdServiceImpl implements AdService {
 
             // Delete its rentals
             ad.get().setRentals(null);
+
+            Set<Review> reviews = ad.get().getReviews();
+
+            if(reviews != null) {
+                for(Review review : reviews) {
+                    review.setAd(null);
+                    reviewRepository.save(review);
+                }
+            }
+
 
             // Delete the reviews todo save these somewhere else during next iteration!
             ad.get().setReviews(null);

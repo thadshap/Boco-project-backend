@@ -118,10 +118,15 @@ public class DataLoader implements ApplicationRunner {
             Category category6 = Category.builder().name("IT").
                     parentName(category3.getName()).build();
 
+            // Add a new category as well for testing!
+            Category category7 = Category.builder().name("Shoes").
+                    parentName(category1.getName()).build();
+
             // Persist sub-categories
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
+            categoryRepository.save(category7);
 
 
             // Create ad
