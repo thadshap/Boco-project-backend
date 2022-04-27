@@ -80,6 +80,11 @@ public class User {
         ads.add(newAd);
     }
 
+    @PreRemove
+    void remove(){
+        ads = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
