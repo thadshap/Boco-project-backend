@@ -1,27 +1,115 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import org.springframework.context.annotation.Bean;
+import com.example.idatt2106_2022_05_backend.security.JWTUtil;
+import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.ChannelInterceptorAdapter;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import springfox.documentation.spi.service.contexts.SecurityContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.List;
 
 @Configuration
+@EnableScheduling
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    private Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
+
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket")
-                .setAllowedOrigins("chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/topic/queue");
-        config.setApplicationDestinationPrefixes("/websocket");
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws").withSockJS();
     }
+
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                logger.info("recieved a message");
+                StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+                List<String> tokenList = headerAccessor.getNativeHeader("Authorization");
+                logger.info("tokenlist:" +tokenList.toString());
+                headerAccessor.removeHeader("Authorization");
+
+                String email = null;
+                String token = null;
+
+                if ( tokenList.size() > 0) {
+                    String auth = tokenList.get(0);
+                    logger.info("auth looks like this: " + auth);
+
+                    if ( auth.startsWith("Bearer ")) {
+                        token = auth.substring(7);
+                        email = jwtUtil.getEmailFromToken(token);
+                    }
+
+                    if (email!=null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                        logger.info("set security context");
+
+                        if (jwtUtil.validateToken(token, userDetails)) {
+                            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+
+                            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+                            usernamePasswordAuthenticationToken
+                                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
+                            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+                            logger.info("Retrieving principal");
+                            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                            Principal myAuth = (Principal) authentication.getPrincipal();
+                            headerAccessor.setUser(myAuth);
+                            //Not sure why, but necessary otherwise NPE in StompSubProtocolHandler!
+                            headerAccessor.setLeaveMutable(true);
+
+                            return MessageBuilder.createMessage(message.getPayload(), headerAccessor.getMessageHeaders());
+                        }
+                    }
+                }
+                return message;
+            }
+        });
+        }
+
 }

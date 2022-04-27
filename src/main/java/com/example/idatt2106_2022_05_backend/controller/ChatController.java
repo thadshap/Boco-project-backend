@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -35,12 +36,16 @@ public class ChatController {
     }
 */
 
-    @MessageMapping("/group")
-    public String sendMessage(@Payload MessageDto messageDto) {
-        logger.info("got to this method");
-        return "lol";
-                //chatService.saveMessage();
+    @MessageMapping("/group/{groupId}")
+    public MessageDto sendMessage(@PathVariable long groupId, @Payload MessageDto messageDto ) {
+        logger.info("got to controller");
+        //headerAccessor.getSessionAttributes().put("userid", messageDto.getFromUserId());
+        //headerAccessor.getSessionAttributes().put("groupId", groupId);
+        chatService.saveMessage(messageDto, groupId);
+        return messageDto;
     }
+
+
 
     @RequestMapping("/group/{id}")
     public Response onOpen(@PathVariable long id){

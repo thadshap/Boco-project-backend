@@ -49,9 +49,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cors.setAllowedOrigins(List.of("*"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
-            return cors;
+            return cors;// .ignoringAntMatchers("/ws/**").and() TODO: ADD THESE
+            //.antMatchers("/ws/**").permitAll() allow anonymous requests to
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers("/**", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                // Allow anonymous access to websocket
+                .antMatchers("/ws/**").permitAll()
+
+                .antMatchers("/", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
                 .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
@@ -60,6 +64,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
                 .permitAll().anyRequest().authenticated()
                 .and()
+
+                // Relax CSRF on the WebSocket due to needing direct access from apps
+                .csrf().ignoringAntMatchers("/ws/**").and()
+
 //                .formLogin().permitAll().loginPage("/auth/login")
 //                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
@@ -72,7 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-        //httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

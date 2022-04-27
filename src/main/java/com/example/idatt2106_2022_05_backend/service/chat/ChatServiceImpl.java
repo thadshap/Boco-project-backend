@@ -63,15 +63,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public MessageDto saveMessage(MessageDto message) {
+    public MessageDto saveMessage(MessageDto message, long groupId) {
         Message message1 = new Message();
 
         if(message.getContent().length()>280){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meldingen er for lang");
         }
         message1.setContent(message.getContent());
-        message1.setUser(getUser(message.getToUserId()));
-        message1.setGroup(getGroup(message.getGroupId()));
+        message1.setUser(getUser(message.getFromUserId()));
+        message1.setGroup(getGroup(groupId));
 
         //setting timestamp
         Timestamp current = Timestamp.from(Instant.now());
@@ -79,7 +79,7 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message1);
 
-        simpMessagingTemplate.convertAndSend("/topic/group" + message1.getGroup().getId(), message1);
+        this.simpMessagingTemplate.convertAndSend("/topic/group" + message1.getGroup().getId(), message1);
 
         return message;
     }

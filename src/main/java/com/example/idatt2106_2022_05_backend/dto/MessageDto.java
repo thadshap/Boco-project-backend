@@ -12,8 +12,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class MessageDto {
     private long fromUserId;
-    private long groupId;  //Maybe we will
+    //private long groupId;  //Maybe we wont need this
     private String content;
-    private long toUserId;
     private Timestamp timestamp;
 }

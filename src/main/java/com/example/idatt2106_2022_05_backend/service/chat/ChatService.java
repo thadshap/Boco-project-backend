@@ -12,7 +12,7 @@ public interface ChatService {
 
     Response getAllMessagesByGroupId(long groupId);
 
-    MessageDto saveMessage(MessageDto message);
+    MessageDto saveMessage(MessageDto message, long groupId);
 
     Response getChat(long id);
 
