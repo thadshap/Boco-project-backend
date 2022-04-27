@@ -16,4 +16,6 @@ public interface ChatService {
 
     Response getChat(long id);
 
+    //Response getGroupChatsBasedOnUserId(long id);
+
 }

@@ -76,6 +76,14 @@ public class User {
     @ToString.Exclude
     private Set<Ad> ads;
 
+    @ManyToMany()
+    @JoinTable(
+            name="user_group",
+            joinColumns = {@JoinColumn(name = "group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    )
+    private Set<Group> groupChats;
+
     @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "user")
     @ToString.Exclude
     private Set<Message> messages;

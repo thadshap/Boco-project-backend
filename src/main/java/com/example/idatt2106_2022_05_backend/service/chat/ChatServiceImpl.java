@@ -79,7 +79,7 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message1);
 
-        simpMessagingTemplate.convertAndSend("/topic/group/" + message1.getGroup().getId(), message1);
+        simpMessagingTemplate.convertAndSend("/topic/group" + message1.getGroup().getId(), message1);
 
         return message;
     }
@@ -93,7 +93,14 @@ public class ChatServiceImpl implements ChatService {
                 .map(message -> modelMapper.map(message, MessageDto.class))
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
-
+/*
+    public Response getGroupChatsBasedOnUserId(long id){
+        User user = getUser(id);
+        Set<Group> groups = groupRepository.findAllByUser(user);
+        List<Long> groupId = groups.stream().map(Group::getId).collect(Collectors.toList());
+        return new Response(groupId, HttpStatus.OK);
+    }
+*/
         /**
          * 1. Metode til å sende melding
          * 3. Metode til å hente en chat

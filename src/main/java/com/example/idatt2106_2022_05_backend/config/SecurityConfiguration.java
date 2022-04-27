@@ -72,7 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-//        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        //httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired
