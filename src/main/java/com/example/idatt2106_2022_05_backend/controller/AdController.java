@@ -133,7 +133,7 @@ public class AdController {
 
 
     @PostMapping("/ads/newPicture")
-    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto)  {
+    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto) {
         try {
             return adService.storeImageForAd(dto.getId(), dto.getMultipartFile());
         } catch (IOException e) {
@@ -142,9 +142,27 @@ public class AdController {
         return null;
     }
 
-
     @PostMapping("/ads/page")
     public Response getPageOfAds(@RequestBody AdDto sizeOfPage){
         return adService.getPageOfAds(sizeOfPage.getSizeOfPage());
+    }
+
+    // Get all categories
+    @GetMapping("/categories")
+    public Response getAllCategories(){
+        return adService.getAllCategories();
+    }
+
+    // Get sub-categories for main category
+    @GetMapping("/categories/{parentCategoryName}")
+    public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName){
+        return adService.getAllSubCategories(parentCategoryName);
+    }
+
+    // Get all ads for specific category id
+    // Get sub-categories for main category
+    @GetMapping("/categories/{categoryId}")
+    public Response getAllAdsInCategory(@PathVariable String categoryId){
+        return adService.getAllAdsInCategory(categoryId);
     }
 }

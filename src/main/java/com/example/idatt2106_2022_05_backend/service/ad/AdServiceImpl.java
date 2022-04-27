@@ -68,18 +68,33 @@ public class AdServiceImpl implements AdService {
 
     // Get all ads in category by category id
     @Override
-    public Response getAllAdsInCategory(Long categoryId) {
+    public Response getAllAdsInCategory(Long categoryId)  {
         Optional<Category> category = categoryRepository.findById(categoryId);
+
+        // List to return
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
         // If category exists
         if(category.isPresent()) {
             Set<Ad> adsFound = category.get().getAds();
 
-            // Return the ads
-            return new Response(adsFound, HttpStatus.OK);
+            for(Ad ad : adsFound) {
+                try {
+                    // Convert to dto
+                    AdDto dto = castObject(ad);
+
+                    // Add dto to list of ads to be returned
+                    adsToBeReturned.add(dto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Return the adDto-list
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find category", HttpStatus.NOT_FOUND);
+            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
         }
     }
 
