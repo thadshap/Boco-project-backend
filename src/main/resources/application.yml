@@ -46,7 +46,7 @@ spring:
 server:
   ssl:
     key-store-password: Password
-    key-store: src/main/resources/keystore/keystore
+    key-store: src/main/resources/keystore/keys
     protocol: TLS
     enabled-protocols: TLSv1.2
     enabled: true
