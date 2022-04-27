@@ -10,6 +10,7 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -348,181 +350,157 @@ public class AdIntegrationTest {
         }
     }
 
-    @Test
-    public void handles_invalid_page_args(){
-        //This method is called by multiple methods, testing one will test all cases.
-        try{
-            Page<Post> posts = postService.getByUser(-5, 5, 1L);
-            fail();
-        }catch(IllegalArgumentException e){
-            //pass test
-        }
-    }
-
     @Nested
-    class getByUser{
-        @Test
-        public void handles_existing_user(){
-            //Save post
-            Post post = new Post("Hammer", 40, categoryRepository.findAll().get(0), "", "Trondheim", userRepository.findAll().get(0), new HashSet<>());
-            postRepository.save(post);
-
-            //Get posts for user
-            Long userId = userRepository.findAll().get(0).getId();
-            Page<Post> posts = postService.getByUser(0, 5, userId);
-
-            assertEquals(1, posts.getTotalElements());
-            assertEquals("Hammer", posts.get().toList().get(0).getTitle());
-        }
+    class UserRelatedAdTests {
 
         @Test
-        public void handles_invalid_user(){
-            Long correctUserId = userRepository.findAll().get(0).getId();
-            Long wrongUserId = correctUserId + 1;
-
-            try {
-                Page<Post> posts = postService.getByUser(0, 5, wrongUserId);
-                fail();
-            }catch(NoSuchElementException e){
-                //pass test
-            }
-        }
-
-        @Test
-        public void correct_pagination(){
-            //Create new objects
-            User user = new User("johan@normann.no", "abc", "Johan", "Normann", "Trondheim",
-                    Date.valueOf("2001-01-01"), null, null);
-            userRepository.save(user);
-            User user1 = userRepository.findAll().get(0);
-            User user2 = userRepository.findAll().get(1);
-            Category category1 = categoryRepository.findAll().get(0);
-            Category category2 = categoryRepository.findAll().get(1);
-
-            //Save 10 new posts
-            for(int i=0; i<6; i++){
-                Post post = new Post("Hammer " + (i+1), 40, category1, "", "Trondheim", user1, new HashSet<>());
-                postRepository.save(post);
-            }
-            for(int i=0; i<6; i++){
-                Post post = new Post("Sag " + (i+1), 50, category2, "", "Oslo", user2, new HashSet<>());
-                postRepository.save(post);
-            }
-
-            //Ensure correct result size and correct objects found for user 1
-            Page<Post> posts1 = postService.getByUser(0, 6, user1.getId());
-            assertEquals(6, posts1.toList().size());
-            for(Post aPost : posts1){
-                assertTrue(aPost.getTitle().contains("Hammer"));
-                assertFalse(aPost.getTitle().contains("Sag"));
-            }
-
-            //Ensure correct result size and correct objects found for user 2
-            Page<Post> posts2 = postService.getByUser(0, 6, user2.getId());
-            assertEquals(6, posts2.toList().size());
-            for(Post aPost : posts2){
-                assertTrue(aPost.getTitle().contains("Sag"));
-                assertFalse(aPost.getTitle().contains("Hammer"));
-            }
-
-            //Ensure correct page size when splitting
-            posts1 = postService.getByUser(0, 3, user1.getId());
-            posts2 = postService.getByUser(1, 3, user1.getId());
-            assertEquals(3, posts1.toList().size());
-            assertEquals(3, posts2.toList().size());
-
-            //Ensure no duplicates in the two pages
-            for(Post post1 : posts1){
-                for(Post post2 : posts2){
-                    assertNotEquals(post1.getPostId(), post2.getPostId());
-                }
-            }
-        }
-    }
-
-    @Nested
-    class getByOrganization{
-        @Test
-        public void handles_existing_organization(){
-            //Save post
-            Post post = new Post("Hammer", 40, categoryRepository.findAll().get(0), "", "Trondheim", userRepository.findAll().get(0), orgRepository.findAll().get(0), new HashSet<>());
-            postRepository.save(post);
-
-            //Get posts for organization
-            Long orgNum = orgRepository.findAll().get(0).getOrgNum();
-            Page<Post> posts = postService.getByOrganization(0, 5, orgNum);
-
-            assertEquals(1, posts.getTotalElements());
-            assertEquals("Hammer", posts.get().toList().get(0).getTitle());
-        }
-
-        @Test
-        public void handles_invalid_organization(){
-            Long correctOrgNum = orgRepository.findAll().get(0).getOrgNum();
-            Long wrongOrgNum = correctOrgNum + 1;
-
-            try {
-                Page<Post> posts = postService.getByOrganization(0, 5, wrongOrgNum);
-                fail();
-            }catch(NoSuchElementException e){
-                //pass test
-            }
-        }
-
-        @Test
-        public void correct_pagination(){
-            //Create new objects
-            Organization org = new Organization(50L, "IKEA Leangen");
-            orgRepository.save(org);
-            Organization org1 = orgRepository.findAll().get(0);
-            Organization org2 = orgRepository.findAll().get(1);
+        public void whenUserExists_retrieveAds(){
+            // Retrieve the user and category
             User user = userRepository.findAll().get(0);
+            Category category = categoryRepository.findAll().get(0);
+
+            // Building an ad without persisting it
+            Ad newAd = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Save the ad with the foreign keys
+            newAd = adRepository.save(newAd);
+
+            // Due to the foreign keys, the user now also has this ad
+            Response response = adService.getAllAdsByUser(user.getId());
+
+            // Assert that the response and the ad is equal
+            assertEquals(newAd, response.getObject());
+            assertEquals(newAd, response.getBody());
+            assertEquals(HttpStatus.OK, response.getStatus());
+        }
+
+        @Test
+        public void whenUserDoesNotExist_adsAreNotReturned(){
+            User user = userRepository.findAll().get(0);
+
+            // Random id
+            Long wrongUserId = 101L;
+
+            try {
+                // The method will fail when wrong id is used
+                adService.getAllAvailableAdsByUser(wrongUserId);
+                fail();
+
+            }catch(NoSuchElementException e){
+                // Method works correctly if this exception is caught
+            }
+        }
+
+        @Test
+        public void paginationWorks(){
+
+            // Build new user and category
+            User user = User.builder().
+                    firstName("firstName").
+                    lastName("lastName").
+                    email("user.name@hotmail.com").
+                    password("pass1word").
+                    build();
+
+
+            // Persist the user --> we now have two users
+            userRepository.save(user);
+
+            // Fetch the two users
+            User user1 = userRepository.findAll().get(0);
+
+            // Fetch the two categories
             Category category1 = categoryRepository.findAll().get(0);
-            Category category2 = categoryRepository.findAll().get(1);
 
-            //Save 10 new posts
-            for(int i=0; i<6; i++){
-                Post post = new Post("Hammer " + (i+1), 40, category1, "", "Trondheim", user, org1, new HashSet<>());
-                postRepository.save(post);
-            }
-            for(int i=0; i<6; i++){
-                Post post = new Post("Sag " + (i+1), 50, category2, "", "Oslo", user, org2, new HashSet<>());
-                postRepository.save(post);
-            }
+            // Create and save 15 new posts
+            for(int i = 0; i < 15; i++){
 
-            //Ensure correct result size and correct objects found for organization 1
-            Page<Post> posts1 = postService.getByOrganization(0, 6, org1.getOrgNum());
-            assertEquals(6, posts1.toList().size());
-            for(Post aPost : posts1){
-                assertTrue(aPost.getTitle().contains("Hammer"));
-                assertFalse(aPost.getTitle().contains("Sag"));
-            }
+                // Building an ad
+                Ad newAd = Ad.builder().
+                        title("title").
+                        description("").
+                        rental(true).
+                        rentedOut(false).
+                        durationType(AdType.HOUR).
+                        duration(2).
+                        price(100).
+                        streetAddress("address").
+                        postalCode(7999).
+                        user(user1).
+                        category(category1).
+                        build();
 
-            //Ensure correct result size and correct objects found for organization 2
-            Page<Post> posts2 = postService.getByOrganization(0, 6, org2.getOrgNum());
-            assertEquals(6, posts2.toList().size());
-            for(Post aPost : posts2){
-                assertTrue(aPost.getTitle().contains("Sag"));
-                assertFalse(aPost.getTitle().contains("Hammer"));
+                // Save the new ad
+                adRepository.save(newAd);
             }
+            // Pagination with all 15 ads
+            Response response = adService.getPageOfAds(15);
+            assertEquals(response.getStatus(), HttpStatus.OK);
+        }
 
-            //Ensure correct page size when splitting
-            posts1 = postService.getByOrganization(0, 3, org1.getOrgNum());
-            posts2 = postService.getByOrganization(1, 3, org2.getOrgNum());
-            assertEquals(3, posts1.toList().size());
-            assertEquals(3, posts2.toList().size());
+        @Test
+        public void paginationDoesNotWork_WhenNotEnoughAds(){
 
-            //Ensure no duplicates in the two pages
-            for(Post post1 : posts1){
-                for(Post post2 : posts2){
-                    assertNotEquals(post1.getPostId(), post2.getPostId());
-                }
+            // Build new user and category
+            User user = User.builder().
+                    firstName("firstName").
+                    lastName("lastName").
+                    email("user.name@hotmail.com").
+                    password("pass1word").
+                    build();
+
+
+            // Persist the user --> we now have two users
+            userRepository.save(user);
+
+            // Fetch the two users
+            User user1 = userRepository.findAll().get(0);
+
+            // Fetch the two categories
+            Category category1 = categoryRepository.findAll().get(0);
+
+            // Create and save 15 new posts
+            for(int i = 0; i < 15; i++){
+
+                // Building an ad
+                Ad newAd = Ad.builder().
+                        title("title").
+                        description("").
+                        rental(true).
+                        rentedOut(false).
+                        durationType(AdType.HOUR).
+                        duration(2).
+                        price(100).
+                        streetAddress("address").
+                        postalCode(7999).
+                        user(user1).
+                        category(category1).
+                        build();
+
+                // Save the new ad
+                adRepository.save(newAd);
             }
+            // Pagination with all 16 ads (only 15 present in db)
+            Response response = adService.getPageOfAds(16);
+            assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST); //TODO this is not the actual
         }
     }
 
+
     @Nested
-    class getPosts{
+    class AdGetRelatedTests{
         @Test
         public void correct_pagination(){
             //Create new objects
