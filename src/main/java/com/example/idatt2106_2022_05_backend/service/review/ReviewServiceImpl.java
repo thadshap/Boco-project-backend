@@ -76,15 +76,24 @@ public class ReviewServiceImpl implements ReviewService{
 
         review.setDescription(newReviewDto.getDescription());
         review.setRating(newReviewDto.getRating());
+
         //checking that the same user does not post twice per ad
         User user = userRepository.getById(newReviewDto.getUser_id());
         validateUser(newReviewDto.getAd_id(), user);
         review.setUser(user);
+
         //Setting ad
         review.setAd(adRepository.getById(newReviewDto.getAd_id()));
 
         reviewRepository.save(review);
-        return new Response(null, HttpStatus.OK);
+
+        // Increment the number of reviews for the user
+        user.setNumberOfReviews(user.getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
+
+        // Add the rating to the total rating of the user
+        user.setRating(user.getRating() + newReviewDto.getRating());
+
+        return new Response("Review successfully added.", HttpStatus.CREATED);
     }
 
 
@@ -109,17 +118,60 @@ public class ReviewServiceImpl implements ReviewService{
 
     /**
      * method to delete a review
+     *
      * @param ad_id id of ad to be deleted
      * @param user_id user who wrote the review
+     *
      * @return response
      */
     @Override
     public Response deleteReview(long ad_id, long user_id){
-        Optional<Review> review = reviewRepository.getByAdAndUser(adRepository.getById(ad_id), userRepository.getById(user_id));
-        if(review.get()==null){
-            return new Response(null, HttpStatus.NOT_FOUND);
+        Optional<Review> review = reviewRepository.getByAdAndUser(adRepository.getById(ad_id),
+                             userRepository.getById(user_id));
+        if(review.isPresent()){
+
+            // Remove the rating from the original ad and user
+            Optional<User> userFound = userRepository.findById(review.get().getUser().getId());
+            Optional<Ad> adFound = adRepository.findById(ad_id);
+            if(userFound.isPresent() && adFound.isPresent()) {
+
+                // If the user who wrote the review is the user trying to delete it
+                if(userFound.get().getId().equals(user_id)) {
+
+                    // Remove the review from the user that created it
+                    userFound.get().getReviews().remove(review.get());
+                    adFound.get().getReviews().remove(review.get());
+
+                    // Find the user that owns the ad
+                    User adOwner = adFound.get().getUser();
+
+                    // Remove the rating from that users total rating
+                    adOwner.getReviews().remove(review.get());
+                    adOwner.setRating(adOwner.getRating() - review.get().getRating());
+
+                    // Decrement that users total number of ratings
+                    adOwner.setNumberOfReviews(adOwner.getNumberOfReviews() - 1);
+
+                    // Persist the user that owns the ad
+                    userRepository.save(adOwner);
+
+                    // Persist the user that deleted the ad and the ad
+                    userRepository.save(userFound.get());
+                    adRepository.save(adFound.get());
+
+                    // Remove the foreign keys from the review
+                    review.get().setUser(null);
+                    review.get().setAd(null);
+
+                    // Delete the review
+                    reviewRepository.delete(review.get());
+                }
+            }
+            return new Response("Review was successfully deleted", HttpStatus.OK);
         }
-        reviewRepository.delete(review.get());
-        return new Response("Review was successfully deleted", HttpStatus.OK);
+        else {
+            return new Response("There was no review with the specified ad id and user id",
+                          HttpStatus.NOT_FOUND);
+        }
     }
 }

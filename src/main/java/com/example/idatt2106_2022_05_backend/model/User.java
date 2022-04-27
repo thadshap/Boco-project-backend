@@ -9,10 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -48,6 +45,8 @@ public class User {
     private boolean verified = false;
 
     private double rating;
+
+    private int numberOfReviews;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private UserVerificationToken userVerificationToken;

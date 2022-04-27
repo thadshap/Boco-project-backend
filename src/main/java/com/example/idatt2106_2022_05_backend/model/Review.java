@@ -27,11 +27,11 @@ public class Review {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne()
     @JoinColumn(name = "id")
     private Ad ad;
 

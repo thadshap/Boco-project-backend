@@ -867,6 +867,7 @@ public class AdServiceImpl implements AdService {
 
 
             // Delete the reviews todo save these somewhere else during next iteration!
+            
             ad.get().setReviews(null);
 
             // Delete the ad from the dates
