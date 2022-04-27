@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull
     private boolean parent;
 
     private String parentName;

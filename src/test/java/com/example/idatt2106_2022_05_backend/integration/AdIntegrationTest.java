@@ -5,9 +5,11 @@ import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
+import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
+import com.example.idatt2106_2022_05_backend.repository.ReviewRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -25,7 +27,9 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,6 +51,8 @@ public class AdIntegrationTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    ReviewRepository reviewRepository;
     @BeforeEach
     public void setUp() {
         // Building a user
@@ -63,10 +69,12 @@ public class AdIntegrationTest {
         // Building categories
         Category clothes = Category.builder().
                 name("Shoes").
+                parent(true).
                 build();
 
         Category it = Category.builder().
                 name("IT").
+                parent(true).
                 build();
 
         // Saving the categories
@@ -418,10 +426,10 @@ public class AdIntegrationTest {
             // Persist the user --> we now have two users
             userRepository.save(user);
 
-            // Fetch the two users
+            // Fetch the user
             User user1 = userRepository.findAll().get(0);
 
-            // Fetch the two categories
+            // Fetch the category
             Category category1 = categoryRepository.findAll().get(0);
 
             // Create and save 15 new posts
@@ -465,10 +473,10 @@ public class AdIntegrationTest {
             // Persist the user --> we now have two users
             userRepository.save(user);
 
-            // Fetch the two users
+            // Fetch the user
             User user1 = userRepository.findAll().get(0);
 
-            // Fetch the two categories
+            // Fetch the category
             Category category1 = categoryRepository.findAll().get(0);
 
             // Create and save 15 new posts
@@ -501,134 +509,479 @@ public class AdIntegrationTest {
 
     @Nested
     class AdGetRelatedTests{
+        // get all available ads
         @Test
-        public void correct_pagination(){
-            //Create new objects
-            User user = new User("johan@normann.no", "abc", "Johan", "Normann", "Trondheim",
-                    Date.valueOf("2001-01-01"), null, null);
-            userRepository.save(user);
-            User user1 = userRepository.findAll().get(0);
-            User user2 = userRepository.findAll().get(1);
-            Category category1 = categoryRepository.findAll().get(0);
-            Category category2 = categoryRepository.findAll().get(1);
-
-            //Save 10 new posts
-            for(int i=0; i<10; i++){
-                Post post = new Post("Hammer " + (i+1), 40, category1, "", "Trondheim", user1, new HashSet<>());
-                postRepository.save(post);
-            }
-
-            //Ensure correct result size and correct objects found
-            Page<Post> posts = postService.getPosts(0, 10);
-            assertEquals(10, posts.toList().size());
-            for(Post aPost : posts){
-                assertTrue(aPost.getTitle().contains("Hammer"));
-            }
-
-            //Ensure correct page size when splitting
-            Page<Post> posts1 = postService.getPosts(0, 5);
-            Page<Post> posts2 = postService.getPosts(1, 5);
-            assertEquals(5, posts1.toList().size());
-            assertEquals(5, posts2.toList().size());
-
-            //Ensure no duplicates in the two pages
-            for(Post post1 : posts1){
-                for(Post post2 : posts2){
-                    assertNotEquals(post1.getPostId(), post2.getPostId());
-                }
-            }
-        }
-    }
-
-    @Nested
-    class searchPosts{
-        private void fill_test_data(){
+        public void whenAdsAreAvailable_allAvailableAdsAreReturned() {
+            // Fetch the user
             User user = userRepository.findAll().get(0);
-            Category category1 = categoryRepository.findAll().get(0);
-            Category category2 = categoryRepository.findAll().get(1);
-            Category[] categories = new Category[]{category1, category2};
-            String[] titles = new String[]{"Hammer", "Sag", "Høgtalar"};
-            String[] locations = new String[]{"Trondheim", "Bergen", "Oslo"};
 
-            for(Category category : categories){
-                for(String title : titles){
-                    for(String location : locations){
-                        Post post = new Post(title, 40, category, "", location, user, new HashSet<>());
-                        postRepository.save(post);
-                    }
-                }
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create available ads
+            Ad availableAd1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad availableAd2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist them
+            adRepository.save(availableAd1);
+            adRepository.save(availableAd2);
+
+            // Create unavailable ads
+            Ad unavailableAd1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(true).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad unavailableAd2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(true).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist them
+            adRepository.save(unavailableAd1);
+            adRepository.save(unavailableAd2);
+
+            // Repository size should be 4
+            assertEquals(adRepository.findAll().size(), 4);
+
+            // Repository call should return two ads
+            assertEquals(adRepository.getAllAvailableAds().size(), 2);
+
+            // Service call should return HttpResponse.OK
+            Response response = adService.getAllAvailableAds();
+            System.out.println(response.getBody()); //todo remove after
+            assertEquals(response.getStatus(), HttpStatus.OK);
+        }
+
+        // get available ads by user id
+        @Test
+        public void allAvailableAdsAreReturned_WhenUserIdCorrect() {
+
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create available ads
+            Ad availableAd1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad availableAd2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Repository call should return two ads
+            assertEquals(adRepository.getAvailableAdsByUserId(user.getId()).size(), 2);
+
+            // Service call should return HttpResponse.OK
+            Response response = adService.getAllAvailableAdsByUser(user.getId());
+            assertEquals(response.getStatus(), HttpStatus.OK);
+        }
+
+        // get ads by postal code
+        @Test
+        public void allAdsWithPostalCodeAreReturned() {
+
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ads
+            Ad ad1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad ad2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad ad3 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist them
+            adRepository.save(ad1);
+            adRepository.save(ad2);
+            adRepository.save(ad3);
+
+
+            // Repository call should return 3
+            assertEquals(adRepository.findByPostalCode(7999).size(), 3);
+
+            // Service call should return HttpResponse.OK
+            assertEquals(adService.getAllAdsByPostalCode(7999).getStatus(), HttpStatus.OK);
+        }
+
+        // get ads by rental type
+        @Test
+        public void allAdsForRentAreReturned() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ads with rental == true
+            Ad ad1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad ad2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist
+            adRepository.save(ad1);
+            adRepository.save(ad2);
+
+
+            // Repository call should return 2
+            assertEquals(adRepository.findByRental(true).size(), 2);
+
+            // Service call should return HttpResponse.OK
+            assertEquals(adService.getAllAdsByRentalType(true).getStatus(), HttpStatus.OK);
+        }
+
+        @Test
+        public void allAdsGivenAwayAreReturned() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ads with rental == false
+            Ad ad1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(false).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            Ad ad2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(false).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist
+            adRepository.save(ad1);
+            adRepository.save(ad2);
+
+            // Repository call should return 2
+            assertEquals(adRepository.findByRental(false).size(), 2);
+
+            // Service call should return HttpResponse.OK
+            assertEquals(adService.getAllAdsByRentalType(false).getStatus(), HttpStatus.OK);
+        }
+
+        // get all ads nearby
+        @Test
+        public void allNearbyAdsAreReturned_WhenAdsExistNearby() {
+
+        }
+        // get reviews by user id
+        @Test
+        public void allReviewsAreReturned_WhenUserIdCorrect() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ad
+            Ad ad = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist the ad
+            adRepository.save(ad);
+
+            // Create Review entity
+            Review review = Review.builder().
+                    description("Great shoes!").
+                    rating(5).
+                    ad(ad).
+                    user(user).
+                    build();
+
+            // Retrieve reviews for user
+            List<Review> reviews = reviewRepository.getAllByUser(user);
+
+            // List should be size == 2
+            assertEquals(reviews.size(), 2);
+
+            // Service class should return HttpResponse.OK
+            assertEquals(adService.getReviewsByUserId(user.getId()).getStatus(),
+                    HttpStatus.OK);
+        }
+
+        @Test
+        public void noReviewsAreReturned_WhenUserIdWrong() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Create Review entity
+            Review review = Review.builder().
+                    id(5L).
+                    description("Great shoes!").
+                    rating(5).
+                    user(user).
+                            build();
+
+            // Retrieve reviews for user  // TODO does this return null?
+            List<Review> reviews = reviewRepository.getAllByUser(user);
+
+            // List should be size == 0
+            assertEquals(reviews.size(), 0);
+
+            // Service class should return HttpResponse.NOT_FOUND //TODO correct response or other response?
+            assertEquals(adService.getReviewsByUserId(user.getId()).getStatus(),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // get all categories
+        @Test
+        public void allCategoriesAreReturned() {
+
+            // Building categories
+            Category category3 = Category.builder().
+                    name("new category").
+                    build();
+
+            Category category4 = Category.builder().
+                    name("even newer category").
+                    build();
+
+            // Persist categories
+            categoryRepository.save(category3);
+            categoryRepository.save(category4);
+
+            // There should be 4 categories in category-repository now
+            assertEquals(categoryRepository.findAll().size(), 4);
+
+            // Service method should return HttpStatus.OK
+            assertEquals(adService.getAllCategories().getStatus(), HttpStatus.OK); //todo create method
+        }
+
+        // get all sub categories
+        @Test
+        public void onlySubClassesAreReturned() {
+
+            // Building categories
+            Category category1 = Category.builder().
+                    name("new category").
+                    parent(true).
+                    build();
+
+            // Building 2 sub-categories for category1
+            Category subCategory1 = Category.builder().
+                    name("new category").
+                    parent(false).
+                    parentName(category1.getName()).
+                    build();
+
+            Category subCategory2 = Category.builder().
+                    name("even newer category").
+                    parent(false).
+                    parentName(category1.getName()).
+                    build();
+
+            // Persist categories
+            Category mainCategory = categoryRepository.save(category1);
+            categoryRepository.save(subCategory1);
+            categoryRepository.save(subCategory2);
+
+            // There should be 5 categories in category-repository now
+            assertEquals(categoryRepository.findAll().size(), 5);
+
+            // Service method should return HttpStatus.OK
+            assertEquals(adService.getAllSubCategories(mainCategory.getName()).getStatus(), HttpStatus.OK); //todo create method
+        }
+
+        // get all ads within specified category
+        @Test
+        public void onlyAdsWithinCategoryAreReturned() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ad
+            Ad ad = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(7999).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist the ad
+            Ad savedAd = adRepository.save(ad);
+
+            // Retrieve all ads within category
+            Optional<Category> categoryFound = categoryRepository.findByName(category.getName());
+            if(categoryFound.isPresent()) {
+
+                // Assert that the ad was added to the category
+                assertEquals(categoryFound.get().getAds().size(), 1);
             }
-        }
-
-        @Test
-        public void handles_empty_search(){
-            fill_test_data();
-
-            //Send empty search request
-            PostRequest request = new PostRequest("","","");
-            List<Post> posts1 = postService.searchPosts(0, 10, request).toList();
-            List<Post> posts2 = postService.searchPosts(1, 10, request).toList();
-
-            //Ensure correct response size
-            assertEquals(posts1.size(), 10);
-            assertEquals(posts2.size(), 8);
-        }
-
-        @Test
-        public void handles_search_by_one_arg(){
-            fill_test_data();
-
-            //Search by title
-            PostRequest request = new PostRequest("Hammer","","");
-            Page<Post> posts = postService.searchPosts(0, 10, request);
-            List<Post> postList = posts.toList();
-
-            assertEquals(postList.size(), 6);
-
-            //Ensure only title got filtered
-            for(Post post : postList){
-                assertEquals(post.getTitle(), "Hammer");
+            else{
+                // If no category was found, the test fails
+                fail();
             }
-        }
-
-        @Test
-        public void handles_search_by_all_args(){
-            fill_test_data();
-
-            //Search by all args
-            PostRequest request = new PostRequest("Hammer", "Trondheim", "Tools");
-            Page<Post> posts = postService.searchPosts(0, 10, request);
-
-            //Ensure correct response size
-            assertEquals(posts.toList().size(), 1);
-
-            //Ensure correct response
-            Post post = posts.toList().get(0);
-            assertEquals(post.getTitle(), "Hammer");
-            assertEquals(post.getLocation(), "Trondheim");
-            assertEquals(post.getCategory().getName(), "Tools");
-        }
-
-        @Test
-        public void handles_invalid_args(){
-            fill_test_data();
-
-            //Search by incorrect title
-            PostRequest request1 = new PostRequest("Trillebår","","");
-            Page<Post> posts1 = postService.searchPosts(0, 10, request1);
-
-            //Search by incorrect location
-            PostRequest request2 = new PostRequest("","Molde","");
-            Page<Post> posts2 = postService.searchPosts(0, 10, request2);
-
-            //Search by incorrect category
-            PostRequest request3 = new PostRequest("","","Toys");
-            Page<Post> posts3 = postService.searchPosts(0, 10, request3);
-
-            //Ensure all results are empty
-            assertEquals(posts1.toList().size(), 0);
-            assertEquals(posts2.toList().size(), 0);
-            assertEquals(posts3.toList().size(), 0);
+            // Assert that the service response is OK
+            Response response = adService.getAllAdsInCategory(savedAd.getId());
+            assertEquals(response.getStatus(), HttpStatus.OK);
         }
     }
 }
