@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.controller;
 import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -57,9 +58,9 @@ public class AuthController {
     @PostMapping("/renewPassword")
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
     public Response renewPassword(@RequestParam("token") String token,
-            @RequestBody UserForgotPasswordDto forgotPasswordDto) {
+            @RequestBody UserRenewPasswordDto renewPasswordDto) {
         log.debug("[X] Call to renew the password");
-        return authService.validatePasswordThroughToken(token, forgotPasswordDto);
+        return authService.validatePasswordThroughToken(token, renewPasswordDto);
     }
 
     @PostMapping("/register")
@@ -71,7 +72,7 @@ public class AuthController {
             return new Response("Mail is already registered", HttpStatus.IM_USED);
         }
         publisher.publishEvent(new RegistrationComplete(user, url(url)));
-        return new Response("Registration mail is created", HttpStatus.CREATED);
+        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")
@@ -82,7 +83,7 @@ public class AuthController {
         String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?"
                 + token;
         if (result.equalsIgnoreCase("valid email")) {
-            return new Response("Kontoen er nå verifisert!\n:" + authService.getUserJWT(token), HttpStatus.ACCEPTED);
+            return new Response("Kontoen er nå verifisert!\n:", HttpStatus.ACCEPTED);
         }
         return new Response(result + "\n" + resendVerificationMail, HttpStatus.NOT_FOUND);
     }

@@ -1,7 +1,8 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.RentalDto;
-import com.example.idatt2106_2022_05_backend.dto.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -9,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
 
 @Slf4j
 @RestController()
@@ -26,6 +29,13 @@ public class RentalController {
         return rentalService.createRental(rentalDto);
     }
 
+    @PutMapping("/activate/{rentalId}")
+    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
+    public Response activateRental(@PathVariable Long rentalId) throws MessagingException {
+        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
+        return rentalService.activateRental(rentalId);
+    }
+
     @DeleteMapping("/delete/{rentalId}")
     @ApiOperation(value = "Endpoint to delete a rental", response = Response.class)
     public Response deleteRental(@PathVariable Long rentalId, @RequestBody RentalReviewDto rentalDto) {
@@ -35,7 +45,7 @@ public class RentalController {
 
     @PutMapping("/update/{rentalId}")
     @ApiOperation(value = "Endpoint to update a rental", response = Response.class)
-    public Response updateRental(@RequestBody RentalDto rentalDto, @PathVariable Long rentalId) {
+    public Response updateRental(@RequestBody RentalUpdateDto rentalDto, @PathVariable Long rentalId) {
         log.debug("[X] Call to update rental with id = {}", rentalId);
         return rentalService.updateRental(rentalDto, rentalId);// TODO real objects to return
     }
