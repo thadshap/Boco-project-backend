@@ -45,9 +45,9 @@ spring:
               - profile_profile
 server:
   ssl:
-    key-alias: https-boco
-    key-store-type: JKS
-    key-store: src/main/resources/keystore/https-boco.jks
+    key-alias: boco
+    key-store-type: PKCS12
+    key-store: src/main/resources/keystore/keystores/cert_key.p12
     key-store-password: password
     protocol: TLS
     enabled: true
