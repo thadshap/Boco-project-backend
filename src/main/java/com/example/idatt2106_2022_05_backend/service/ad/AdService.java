@@ -66,6 +66,8 @@ public interface AdService {
 
     Response uploadPictureToAd(long adId, MultipartFile file);
 
+    Response getAllPicturesForAd(long adId);
+
     Response storeImageForAd(long adId, MultipartFile file) throws IOException;
 
     Response getAllSubCategories(String parentName);

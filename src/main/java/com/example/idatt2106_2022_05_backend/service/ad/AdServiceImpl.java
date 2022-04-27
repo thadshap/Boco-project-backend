@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
 import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.PictureDto;
 import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -996,42 +997,43 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Response getAllPicturesForAd(long adId) {
+        Optional<Ad> adFound = adRepository.findById(adId);
+
+        if(adFound.isPresent()) {
+
+            // Retrieve the pictures this ad has
+            Set<Picture> pictures = adFound.get().getPictures();
+
+            // Create a list to hold the DTOs
+            Set<PictureDto> picturesToReturn = new HashSet<>();
+
+            // If the ad has any pictures
+            if(pictures != null) {
+
+                // Iterate over the pictures
+                for(Picture picture : pictures) {
+                    // Create a picture dto
+                    PictureDto dto = PictureDto.builder().
+                            adId(picture.getId()).
+                            data(picture.getData()).
+                            type(picture.getType()).build();
+
+                    // Add to DTO-list
+                    picturesToReturn.add(dto);
+                }
+            }
+            return new Response(picturesToReturn, HttpStatus.OK);
+        }
+        // If the ad was not found
+        else {
+            return new Response("There was no ad with specified id in db.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
     public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
         return pictureService.savePicture(file, adId, 0);
-        /**
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        // Create Picture entity
-        Picture filePicture = new Picture();
-
-        // Find the ad
-        Optional<Ad> ad = adRepository.findById(adId);
-
-        if(ad.isPresent()) {
-            // Set the ad as FK
-            filePicture.setAd(ad.get());
-        }
-        else {
-            return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
-        }
-
-        // Set attributes for the new entity
-        filePicture.setFilename(fileName);
-        filePicture.setType(file.getContentType());
-        filePicture.setData(file.getBytes());
-
-        // Persist the Picture
-        pictureRepository.save(filePicture);
-
-        // Add the Picture as FK to the ad as well
-        ad.get().addPicture(filePicture);
-
-        // Persist the ad
-        adRepository.save(ad.get());
-
-        // Return OK
-        return new Response("Successfully added new photo to ad", HttpStatus.OK);
-         */
     }
 
     public Response getPicture(long pictureId) {
@@ -1045,6 +1047,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
     public Response getAllPicturesForAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
 
@@ -1055,4 +1058,5 @@ public class AdServiceImpl implements AdService {
             return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
         }
     }
+     */
 }

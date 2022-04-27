@@ -60,12 +60,6 @@ public class AdDto {
     @ApiModelProperty(notes = "distance between user and the location of ad in km")
     private double distance;
 
-    // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private Set<MultipartFile> picturesIn;
-
-    // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private Set<Image> picturesOut;
-
     @ApiModelProperty(notes = "latitude of the ad")
     private double lat;
 
@@ -79,5 +73,9 @@ public class AdDto {
     @ApiModelProperty(notes = "id of user creating the ad")
     private long userId;
 
+    @ApiModelProperty(notes = "is the number of ads to present using pagination")
     private int sizeOfPage;
+
+    @ApiModelProperty(notes = "array of files for posting pictures in ad")
+    Set<MultipartFile> pictures;
 }

@@ -4,6 +4,7 @@ import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -11,9 +12,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -142,6 +146,27 @@ public class AdController {
         return null;
     }
 
+    // Post multiple images --> dto contains adId and file array
+    @PostMapping(value = "/ads/newPictures",
+                 consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+                 produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public Response uploadPictures(AdDto dto) {
+        Set<MultipartFile> files = dto.getPictures();
+        for(MultipartFile file : files) {
+            try {
+                adService.storeImageForAd(dto.getAdId(), file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new Response("Pictures are saved", HttpStatus.OK);
+    }
+
+    @GetMapping("/ads/pictures/{adId}")
+    public Response getPicturesForAd(@PathVariable long adId) {
+        return adService.getAllPicturesForAd(adId);
+    }
+
     @PostMapping("/ads/page")
     public Response getPageOfAds(@RequestBody AdDto sizeOfPage){
         return adService.getPageOfAds(sizeOfPage.getSizeOfPage());
@@ -176,4 +201,6 @@ public class AdController {
     public Response getAllParentCategories(){
         return adService.getAllParentCategories();
     }
+
+
 }
