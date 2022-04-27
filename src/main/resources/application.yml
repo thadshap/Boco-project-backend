@@ -45,9 +45,10 @@ spring:
               - profile_profile
 server:
   ssl:
-    key-store-password: Password
-    key-store: src/main/resources/keystore/keys
+    key-alias: https-boco
+    key-store-type: JKS
+    key-store: src/main/resources/keystore/https-boco.jks
+    key-store-password: password
     protocol: TLS
-    enabled-protocols: TLSv1.2
     enabled: true
   port: 8443
