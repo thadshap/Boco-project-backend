@@ -50,5 +50,7 @@ server:
     key-store: src/main/resources/keystore/keystores/cert_key.p12
     key-store-password: password
     protocol: TLS
-    enabled: true
+    enabled: false
+    enabled-protocols: TLSv1.2
+    client-auth: want
   port: 8443
