@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -35,6 +36,7 @@ public class AdController {
         return new Response("Could not get ads", HttpStatus.NOT_FOUND);
     }
 
+    //TODO: GetMapping?
     @PostMapping("/ads/available/true")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
@@ -170,5 +172,33 @@ public class AdController {
         return adService.searchThroughAds(searchWord);
     }
 
+    @PostMapping("/sort/list/price/ascending")
+    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByPriceAscending(list);
+    }
 
+    @PostMapping("/sort/list/price/descending")
+    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByPriceDescending(list);
+    }
+
+    @PostMapping("/sort/list/distance/ascending")
+    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByDistanceAscending(list);
+    }
+
+    @PostMapping("/sort/list/distance/descending")
+    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByDistanceDescending(list);
+    }
+
+    @PostMapping("/filterByDistance")
+    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getListWithinDistanceIntervall(filterListOfAds.getList(), filterListOfAds.getUpperLimit());
+    }
+
+    @PostMapping("/getListWithinPriceRange")
+    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
+    }
 }
