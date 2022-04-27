@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -59,7 +58,7 @@ public class AdServiceImpl implements AdService {
 
         List<AdDto> adsToBeReturned = new ArrayList<>();
 
-        // Iterate over all ads and create dtos
+        // Iterate over all ads and create DTOs
         for(Ad ad : allAds) {
             AdDto newAd = castObject(ad);
             adsToBeReturned.add(newAd);
@@ -607,14 +606,14 @@ public class AdServiceImpl implements AdService {
      * @return
      */
     @Override
-    public Response postNewAd(AdDto adDto) throws IOException {
+    public Response postNewAd(AdDto adDto) {
         Ad newAd = new Ad();
 
         // Required attributes
         newAd.setRental(adDto.isRental());
         newAd.setRentedOut(false);
         newAd.setDuration(adDto.getDuration());
-        newAd.setDurationType(adDto.getDurationType()); //todo check
+        newAd.setDurationType(adDto.getDurationType());
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
@@ -650,12 +649,12 @@ public class AdServiceImpl implements AdService {
         user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        return new Response(newAd.getId(), HttpStatus.OK);
+        return new Response(newAd.getId(), HttpStatus.CREATED);
     }
 
     /**
      * Support-method to create and save Picture
-     */
+     *
     private Response savePicture(MultipartFile file, Ad ad) throws IOException {
 
         // Ensures that content of multipartFile is present
@@ -688,6 +687,7 @@ public class AdServiceImpl implements AdService {
         }
         return new Response("Ad not found", HttpStatus.NOT_FOUND);
     }
+     */
 
     /**
      * method that goes through all ads and returns the with the calculated distance
@@ -909,6 +909,7 @@ public class AdServiceImpl implements AdService {
 
                         // Set the foreign keys of the picture equal to null
                         picture.setAd(null);
+                        picture.setUser(null);
 
                         // Delete the ad
                         pictureRepository.delete(picture);
@@ -930,10 +931,10 @@ public class AdServiceImpl implements AdService {
     /**
      * method to add a new picture to an ad
      * @param adId id
-     * @param file multipartFile containing picture
+     * @param //file multipartFile containing picture
      * @return response with status ok
      * @throws IOException if compression of multipartFile fails
-     */
+     *
     @Override
     public Response uploadNewPicture(long adId, MultipartFile file) throws IOException {
 
@@ -957,6 +958,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
     @Override
     public Response uploadPictureToAd(long adId, MultipartFile multipartFile){
         // Get the filename
@@ -995,6 +997,8 @@ public class AdServiceImpl implements AdService {
         }
         return null;
     }
+
+    */
 
     @Override
     public Response getAllPicturesForAd(long adId) {

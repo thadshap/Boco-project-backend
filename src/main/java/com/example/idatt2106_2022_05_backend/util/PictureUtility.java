@@ -113,7 +113,7 @@ public class PictureUtility {
                 adRepository.save(adFound.get());
 
                 // Return OK
-                return new Response("Successfully added new photo to ad", HttpStatus.OK);
+                return new Response("Successfully added new photo to ad", HttpStatus.CREATED);
             } else {
                 return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
             }
@@ -144,7 +144,7 @@ public class PictureUtility {
                 userRepository.save(userFound.get());
 
                 // Return OK
-                return new Response("Successfully added new photo to ad", HttpStatus.OK);
+                return new Response("Successfully added new photo to ad", HttpStatus.CREATED);
             }
             else {
                 return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
