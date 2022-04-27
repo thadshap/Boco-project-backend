@@ -25,8 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -178,40 +176,6 @@ public class AdIntegrationTest {
                 // The test fails if this exception is caught
                 fail();
                 e.printStackTrace();
-            }
-        }
-
-        @Test
-        public void user_in_org_can_add_post_to_org(){
-            //Add user to organization
-            User user = userRepository.findAll().get(0);
-            Organization organization = orgRepository.findAll().get(0);
-            UserOrganization userOrg = new UserOrganization(user, organization, OrganizationRole.EMPLOYEE);
-            userOrgRepository.save(userOrg);
-
-            //Add post in organization from user
-            Post post = new Post("Hammer", 40, categoryRepository.findAll().get(0), "", "Trondheim", user, organization, new HashSet<>());
-            try{
-                postService.add(post, user);
-            }catch(IllegalAccessException | NoSuchElementException e){
-                fail();
-            }
-        }
-
-        @Test
-        public void user_out_of_org_cant_add_post_to_org(){
-            User user = userRepository.findAll().get(0);
-            Organization organization = orgRepository.findAll().get(0);
-
-            //Try to add post in organization from user
-            Post post = new Post("Hammer", 40, categoryRepository.findAll().get(0), "", "Trondheim", user, organization, new HashSet<>());
-            try{
-                postService.add(post, user);
-                fail();
-            }catch(IllegalAccessException e){
-                //pass test
-            }catch(NoSuchElementException e){
-                fail();
             }
         }
     }

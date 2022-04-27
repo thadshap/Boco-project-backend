@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
 import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -79,6 +80,96 @@ public class AdServiceImpl implements AdService {
         }
         else {
             return new Response("Could not find category", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Response getAllSubCategories(String parentName) {
+        // List that will be returned
+        ArrayList<CategoryDto> subCategories = new ArrayList<>();
+
+        // Retrieve all categories from database
+        List<Category> categories = categoryRepository.findAll();
+
+        // Iterate over all categories
+        for(Category category : categories) {
+
+            // Using null-safe equals
+            if(Objects.equals(category.getParentName(), parentName)) {
+
+                // Generate a new list that holds only the ids --> avoids recursive stackOverflow
+                ArrayList<Long> ids = new ArrayList<Long>();
+
+                // If this category has any ads
+                if(category.getAds().size() > 0) {
+                    for(Ad ad: category.getAds()) {
+                        ids.add(ad.getId());
+                    }
+                }
+
+                // Create dto
+                CategoryDto dto = CategoryDto.builder().
+                        name(category.getName()).
+                        parentName(parentName).
+                        adIds(ids).
+                        build();
+
+
+                // Add to list of sub-categories to return
+                subCategories.add(dto);
+            }
+        }
+
+        // Return the list if any subcategories were added
+        if(subCategories.size() > 0) {
+            return new Response(subCategories, HttpStatus.OK);
+        }
+        // Return NOT_FOUND if there
+        else {
+            return new Response("No sub categories found with the specified parent-name",
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Response getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+
+        // List that will be returned
+        ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
+
+        // Create all dto
+        for(Category category : categories) {
+
+            // Generate a new list that holds only the ids --> avoids recursive stackOverflow
+            ArrayList<Long> ids = new ArrayList<>();
+
+            // If this category has any ads
+            if(category.getAds().size() > 0) {
+                for(Ad ad: category.getAds()) {
+                    ids.add(ad.getId());
+                }
+            }
+
+            // Create dto
+            CategoryDto dto = CategoryDto.builder().
+                    name(category.getName()).
+                    parentName(category.getParentName()).
+                    adIds(ids).
+                    build();
+
+
+            // Add to list of sub-categories to return
+            categoriesToReturn.add(dto);
+        }
+
+        // Return the list if any subcategories were added
+        if(categoriesToReturn.size() > 0) {
+            return new Response(categoriesToReturn, HttpStatus.OK);
+        }
+        // Return NOT_FOUND if there
+        else {
+            return new Response("No categories found", HttpStatus.NOT_FOUND);
         }
     }
 

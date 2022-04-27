@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.PixelGrabber;
 import java.io.IOException;
 
 @Service
@@ -62,5 +63,9 @@ public interface AdService {
     Response uploadPictureToAd(long adId, MultipartFile file);
 
     Response storeImageForAd(long adId, MultipartFile file) throws IOException;
+
+    Response getAllSubCategories(String parentName);
+
+    Response getAllCategories();
 }
 
