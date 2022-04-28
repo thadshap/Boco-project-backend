@@ -51,12 +51,12 @@ public class Rental {
     @JoinColumn(referencedColumnName = "user_id")
     private User owner;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(referencedColumnName = "user_id")
     private User borrower;
 
-    @ManyToOne
-    @JoinColumn(name = "id")
+    @ManyToOne()
+    @JoinColumn(name = "ad_id")
     private Ad ad;
 
     @PreRemove

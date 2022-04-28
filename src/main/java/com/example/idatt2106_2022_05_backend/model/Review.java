@@ -32,7 +32,7 @@ public class Review {
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "ad_id")
     private Ad ad;
 
     @Override

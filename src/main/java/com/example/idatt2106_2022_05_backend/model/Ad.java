@@ -25,7 +25,7 @@ public class Ad {
     @Id
     @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
     @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @Column(name = "ad_id", nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -82,7 +82,7 @@ public class Ad {
     private String photos;
 
     // Is nullable
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ad")
     @ToString.Exclude
     private Set<Picture> pictures;
 
@@ -94,21 +94,25 @@ public class Ad {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private Set<Rental> rentals;
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = {CascadeType.REMOVE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private Set<Review> reviews;
 
-    // Many-to-many connection with Date. Date is parent in this case.
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ads")
-    @ToString.Exclude
-    private Set<CalendarDate> dates = new HashSet<>();
+    // Many to many connection to CalendarDate modelled by the "calendar" table (not modelled)
+    @ManyToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "calendar",
+            joinColumns = { @JoinColumn(name = "ad_id") },
+            inverseJoinColumns = { @JoinColumn(name = "date_id") }
+    )
+    private Set<CalendarDate> dates;
 
     // Add a new picture
     public void addPicture(Picture picture) {
@@ -121,6 +125,28 @@ public class Ad {
         if (photos == null || id == null) return null;
 
         return "/ad-photos/" + id + "/" + photos;
+    }
+
+    @PreRemove
+    private void removeRelationships(){
+        if(pictures != null){
+            setPictures(null);
+        }
+        if(reviews != null){
+            setReviews(null);
+        }
+        if (rentals != null) {
+            setRentals(null);
+        }
+        if(dates != null) {
+            setDates(null);
+        }
+        if(user != null) {
+            setUser(null);
+        }
+        if(category != null) {
+            setCategory(null);
+        }
     }
 
     @Override

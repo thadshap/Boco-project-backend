@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
-import com.example.idatt2106_2022_05_backend.controller.AdController;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -38,6 +36,8 @@ public class AdIntegrationTest {
     @Autowired
     AdRepository adRepository;
 
+    @Autowired
+    RentalRepository rentalRepository;
     @Autowired
     UserRepository userRepository;
 
@@ -80,9 +80,11 @@ public class AdIntegrationTest {
 
     @AfterEach
     public void emptyDatabase() {
+        /**
         // get all ads
         List<Ad> ads = adRepository.findAll();
         for(Ad ad : ads) {
+
             Set<CalendarDate> dates = ad.getDates();
             if(dates != null) {
                 for(CalendarDate date : dates) {
@@ -90,11 +92,22 @@ public class AdIntegrationTest {
                     calendarDateRepository.save(date);
                 }
             }
+
             Set<Review> reviews = ad.getReviews();
             if(reviews != null) {
                 for(Review review : reviews) {
                     review.setAd(null);
                     reviewRepository.save(review);
+                }
+            }
+
+            Set<Rental> rentals = ad.getRentals();
+            if(rentals != null) {
+                for(Rental rental : rentals) {
+                    rental.setAd(null);
+                    rental.setBorrower(null);
+                    rental.setOwner(null);
+                    rentalRepository.save(rental);
                 }
             }
             ad.setCategory(null);
@@ -103,6 +116,7 @@ public class AdIntegrationTest {
             ad.setDates(null);
             ad.setPhotos(null);
             ad.setReviews(null);
+
             adRepository.delete(ad);
         }
         List<User> users = userRepository.findAll();
@@ -123,7 +137,12 @@ public class AdIntegrationTest {
             category.setAds(null);
             categoryRepository.delete(category);
         }
-
+         */
+        reviewRepository.deleteAll();
+        rentalRepository.deleteAll();
+        adRepository.deleteAll();
+        userRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     @Nested
