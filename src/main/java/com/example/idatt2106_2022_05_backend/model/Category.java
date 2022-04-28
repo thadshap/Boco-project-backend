@@ -29,7 +29,7 @@ public class Category {
 
     private String parentName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST,  mappedBy = "category")
+    @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
     private Set<Ad> ads;
 
     @Override

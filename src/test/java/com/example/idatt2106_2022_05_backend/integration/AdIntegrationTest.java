@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import com.example.idatt2106_2022_05_backend.controller.AdController;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -88,11 +90,6 @@ public class AdIntegrationTest {
                     calendarDateRepository.save(date);
                 }
             }
-            ad.setCategory(null);
-            ad.setRentals(null);
-            ad.setUser(null);
-            ad.setDates(null);
-            ad.setPhotos(null);
             Set<Review> reviews = ad.getReviews();
             if(reviews != null) {
                 for(Review review : reviews) {
@@ -100,6 +97,11 @@ public class AdIntegrationTest {
                     reviewRepository.save(review);
                 }
             }
+            ad.setCategory(null);
+            ad.setRentals(null);
+            ad.setUser(null);
+            ad.setDates(null);
+            ad.setPhotos(null);
             ad.setReviews(null);
             adRepository.delete(ad);
         }
@@ -332,14 +334,14 @@ public class AdIntegrationTest {
             adService.deleteAd(newAd.getId());
 
             // Assert that the ad was deleted
-            assertEquals(1, adRepository.findAll().size());
+            assertEquals(0, adRepository.findAll().size());
         }
 
         @Test
         public void whenPostDoesNotExist_postIsNotDeleted(){
 
             // The cleanup should have erased ads from this repo
-            assertEquals(15, adRepository.findAll().size());
+            assertEquals(0, adRepository.findAll().size());
 
             assertEquals(adService.deleteAd(100L).getStatus(), HttpStatus.NOT_FOUND);
         }
@@ -928,8 +930,8 @@ public class AdIntegrationTest {
             categoryRepository.save(subCategory2);
 
             // There should be 12 categories in category-repository now
-            // 2 (setUp) + 7 (dataLoader) + 3 (this method) = 12
-            assertEquals(categoryRepository.findAll().size(),12);
+            // 2 (setUp) + 8 (dataLoader) + 3 (this method) = 12
+            assertEquals(categoryRepository.findAll().size(),13);
 
             // Service method should return HttpStatus.OK
             assertEquals(HttpStatus.OK,

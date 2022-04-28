@@ -94,19 +94,19 @@ public class Ad {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE})
     @ToString.Exclude
     private Set<Rental> rentals;
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = {CascadeType.REMOVE})
     @ToString.Exclude
-    private Set<Review> reviews; // todo create a rating for user such taht the rating does not get removed from the user
+    private Set<Review> reviews;
 
     // Many-to-many connection with Date. Date is parent in this case.
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ads")
     @ToString.Exclude
     private Set<CalendarDate> dates = new HashSet<>();
 
