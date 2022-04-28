@@ -17,14 +17,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 
 @RestController
 @RequestMapping("/signin")
+@CrossOrigin(value = "*", allowedHeaders = "*")
 public class SocialController {
 
-    private FacebookConnectionFactory factory = new FacebookConnectionFactory("3598318360302645",
-            "689ea09632fa57397b5981faabab9ad6"
+    private FacebookConnectionFactory factory = new FacebookConnectionFactory("1181763609285094",
+            "822eef3823b53888eb4dd9f0c1a09463"
             );
 
 
@@ -33,8 +35,7 @@ public class SocialController {
 //	}
 
     @GetMapping(value = "/facebook")
-    @CrossOrigin("*")
-    public ModelAndView producer() {
+    public void producer(HttpServletResponse httpServletResponse) {
 
         OAuth2Operations operations = factory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
@@ -45,8 +46,8 @@ public class SocialController {
         String url = operations.buildAuthenticateUrl(params);
         System.out.println("The URL is: " + url);
 
-
-        return new ModelAndView("redirect:" + url);
+        httpServletResponse.setHeader("Location", url);
+        httpServletResponse.setStatus(302);
     }
 
     @RequestMapping(value = "/forwardLogin")
