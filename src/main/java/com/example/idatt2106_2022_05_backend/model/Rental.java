@@ -56,7 +56,7 @@ public class Rental {
     private User borrower;
 
     @ManyToOne
-    @JoinColumn(name = "ad_id")
+    @JoinColumn(name = "id")
     private Ad ad;
 
     @PreRemove

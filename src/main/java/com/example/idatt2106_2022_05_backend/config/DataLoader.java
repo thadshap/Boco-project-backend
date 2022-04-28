@@ -119,10 +119,21 @@ public class DataLoader implements ApplicationRunner {
             Category category6 = Category.builder().name("IT").
                     parentName(category3.getName()).build();
 
+            // Add a new category as well for testing!
+            Category category7 = Category.builder().name("Shoes").
+                    parentName(category1.getName()).build();
+
             // Persist sub-categories
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
+            categoryRepository.save(category7);
+
+            // Create sub category of sub-category
+            Category category8 = Category.builder().name("Chargers").
+                    parentName(category6.getName()).build();
+
+            categoryRepository.save(category8);
 
 
             // Create ad
@@ -135,6 +146,7 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project Road 4").
                     postalCode(7200).
+                    city("Trondheim").
                     user(user1).
                     category(category5).
                     build();
@@ -148,6 +160,7 @@ public class DataLoader implements ApplicationRunner {
                     price(150).
                     streetAddress("Project Road 5").
                     postalCode(7000).
+                    city("Trondheim").
                     user(user2).
                     category(category4).
                     build();
@@ -161,8 +174,36 @@ public class DataLoader implements ApplicationRunner {
                     price(800).
                     streetAddress("Project Road 6").
                     postalCode(7800).
+                    city("Trondheim").
                     user(user3).
                     category(category6).
+                    build();
+
+            Ad charger = Ad.builder().
+                    title("Pc charger").
+                    description("Renting out a new lenovo charger").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category8).
+                    build();
+            Ad motherBoard = Ad.builder().
+                    title("Mother board").
+                    description("Renting out a new lenovo motherboard").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category3).
                     build();
 
             Ad p = Ad.builder().
@@ -234,6 +275,10 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);
+            adRepository.save(charger);
+            adRepository.save(motherBoard);
+
+
             adRepository.save(p);
             adRepository.save(pa);
             adRepository.save(pan);

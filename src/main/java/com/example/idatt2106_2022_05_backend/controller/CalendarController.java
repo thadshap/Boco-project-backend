@@ -19,7 +19,7 @@ public class CalendarController {
     CalendarService calendarService;
 
     // sends all unavailable dates for the remaining span of the ad
-    // dto contains adId
+    // dto contains id
     @PostMapping("/get")
     @ApiOperation(value = "Endpoint to get al unavailable dates for an ad", response = Response.class)
     public Response getUnavailableDates(@RequestBody CalendarDto dto) {

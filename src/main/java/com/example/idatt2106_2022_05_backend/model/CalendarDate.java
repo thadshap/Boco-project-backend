@@ -33,11 +33,11 @@ public class CalendarDate {
     private boolean available;
 
     // Many to many connection to ads modelled by the "calendar" table (not modelled)
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "calendar",
             joinColumns = { @JoinColumn(name = "date_id") },
-            inverseJoinColumns = { @JoinColumn(name = "adId") }
+            inverseJoinColumns = { @JoinColumn(name = "id") }
     )
     private Set<Ad> ads;
 }

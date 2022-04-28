@@ -9,10 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -49,6 +46,8 @@ public class User {
 
     private double rating;
 
+    private int numberOfReviews;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private UserVerificationToken userVerificationToken;
 
@@ -72,7 +71,7 @@ public class User {
     private List<Review> reviews;
 
     // One to many relationship w/ ad
-    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads;
 
@@ -83,6 +82,10 @@ public class User {
     @PreRemove
     void remove(){
         ads = null;
+    }
+
+    public void addReview(Review newReview) {
+        reviews.add(newReview);
     }
 
     @Override

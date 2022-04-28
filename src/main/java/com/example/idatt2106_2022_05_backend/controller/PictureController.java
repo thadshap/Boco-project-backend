@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+/**
 @RestController
 @RequestMapping("/api")
 @Api(tags = "CRUD for picture")
@@ -36,4 +37,6 @@ public class PictureController {
     public Response deletePicture(@PathVariable String filename){
         return pictureService.deletePicture(filename);
     }
+
 }
+ */

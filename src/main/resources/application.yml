@@ -27,6 +27,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
   security:
     oauth2:
       client:

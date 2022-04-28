@@ -1,9 +1,13 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.PictureDto;
 import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
@@ -22,16 +26,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class AdServiceImpl implements AdService {
@@ -42,11 +40,21 @@ public class AdServiceImpl implements AdService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private CalendarDateRepository calendarDateRepository;
+
+    @Autowired
     private PictureRepository pictureRepository;
+
+    @Autowired
+    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -58,7 +66,7 @@ public class AdServiceImpl implements AdService {
 
         List<AdDto> adsToBeReturned = new ArrayList<>();
 
-        // Iterate over all ads and create dtos
+        // Iterate over all ads and create DTOs
         for(Ad ad : allAds) {
             AdDto newAd = castObject(ad);
             adsToBeReturned.add(newAd);
@@ -67,59 +75,396 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
-    // Get all ads in category by category id
+    // Get all ads in category by category name
     @Override
-    public Response getAllAdsInCategory(Long categoryId) {
-        Optional<Category> category = categoryRepository.findById(categoryId);
+    public Response getAllAdsInCategory(String name) {
+        Optional<Category> category = categoryRepository.findByName(name);
+
+        List<AdDto> adsToReturn = new ArrayList<>();
 
         // If category exists
         if(category.isPresent()) {
             Set<Ad> adsFound = category.get().getAds();
 
+            for(Ad ad : adsFound) {
+                try {
+                    AdDto newDto = castObject(ad);
+                    newDto.setLat(ad.getLat());
+                    newDto.setLng(ad.getLng());
+                    adsToReturn.add(newDto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             // Return the ads
-            return new Response(adsFound, HttpStatus.OK);
+            return new Response(adsToReturn, HttpStatus.OK);
         }
         else {
             return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
         }
     }
 
-    // Get all ads in category by category name
+    // Get all ads in category by category id
     @Override
-    public Response getAllAdsInCategory(String name) {
-        Optional<Category> category = categoryRepository.findByName(name);
+    public Response getAllAdsInCategory(Long categoryId)  {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        // List to return
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
         // If category exists
         if(category.isPresent()) {
             Set<Ad> adsFound = category.get().getAds();
 
-            // Return the ads
-            return new Response(adsFound, HttpStatus.OK);
+            for(Ad ad : adsFound) {
+                try {
+                    // Convert to dto
+                    AdDto dto = castObject(ad);
+                    dto.setLat(ad.getLat());
+                    dto.setLng(ad.getLng());
+                    // Add dto to list of ads to be returned
+                    adsToBeReturned.add(dto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Return the adDto-list
+            return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
+            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Response getAllSubCategories(String parentName) {
+        // List that will be returned
+        ArrayList<CategoryDto> subCategories = new ArrayList<>();
+
+        // Retrieve all categories from database
+        List<Category> categories = categoryRepository.findAll();
+
+        // Iterate over all categories
+        for(Category category : categories) {
+
+            // Ensure null-safety by skipping the category if it does not have a parent
+            if(category.getParentName() != null) {
+
+                // Using equals w/ignore case() to ensure equality
+                if(parentName.equalsIgnoreCase(category.getParentName())) {
+
+                    // Generate a new list that holds only the ids --> avoids recursive stackOverflow
+                    ArrayList<Long> ids = new ArrayList<>();
+
+                    // If this category has any ads
+                    if(category.getAds().size() > 0) {
+                        for(Ad ad: category.getAds()) {
+                            ids.add(ad.getId());
+                        }
+                    }
+
+                    // Create dto
+                    CategoryDto dto = CategoryDto.builder().
+                            id(category.getId()).
+                            name(category.getName()).
+                            parentName(parentName).
+                            adIds(ids).
+                            build();
+
+
+                    // Add to list of sub-categories to return
+                    subCategories.add(dto);
+                }
+            }
+        }
+
+        // Return the list if any subcategories were added
+        if(subCategories.size() > 0) {
+            return new Response(subCategories, HttpStatus.OK);
+        }
+        // Return NOT_FOUND if there
+        else {
+            return new Response("No sub categories found with the specified parent-name",
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Response getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+
+        // List that will be returned
+        ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
+
+        // Create all dto
+        for(Category category : categories) {
+
+            // Generate a new list that holds only the ids --> avoids recursive stackOverflow
+            ArrayList<Long> ids = new ArrayList<>();
+
+            // If this category has any ads
+            if(category.getAds().size() > 0) {
+                for(Ad ad: category.getAds()) {
+                    ids.add(ad.getId());
+                }
+            }
+
+            // Create dto
+            CategoryDto dto = CategoryDto.builder().
+                    id(category.getId()).
+                    name(category.getName()).
+                    parentName(category.getParentName()).
+                    adIds(ids).
+                    build();
+
+
+            // Add to list of sub-categories to return
+            categoriesToReturn.add(dto);
+        }
+
+        // Return the list if any subcategories were added
+        if(categoriesToReturn.size() > 0) {
+            return new Response(categoriesToReturn, HttpStatus.OK);
+        }
+        // Return NOT_FOUND if there
+        else {
             return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    /**
+     * Get each category and their subCategories.
+     * A new list is created for each parent.
+     * Each parent's child also is iterated over
+     *
+    public void getCategoryHierarchies() {
+        List<Category> allCategories = categoryRepository.findAll();
+        List<Category> mainCategories = new ArrayList<>();
+
+         // List of parents contains list of children which contains list of children's children
+        List<List<List<Category>>> listsToReturn = new ArrayList<>();
+
+        int placementOfParent = 0;
+
+        // Find all the parent categories
+        for(Category category : allCategories) {
+            if(category.isParent()) {
+                mainCategories.add(category);
+            }
+            placementOfParent ++;
+        }
+
+        // From main categories, find all the children
+        for(Category parentCategory : mainCategories) {
+            // Create a list for each category
+            ArrayList<Category> children = new ArrayList<>();
+            // Add the list to the list of all lists
+            listsToReturn.add(children);
+
+            // Iterate over all categories for each parentCategory
+            for (Category aCategory : allCategories) {
+                // Create a list for each sub-category
+                ArrayList<Category> childrenOfChildren = new ArrayList<>();
+
+                // Add the list to the list of all lists
+                listsToReturn.add(children);
+                // Counter to retrieve the placement in list of lists (due to enhanced for loop)
+                placementOfCurrentList ++;
+                // If the category is not a parent
+                if(!aCategory.isParent()) {
+                    // If the parentName of the category is the parentCategory
+                    if(aCategory.getParentName().equalsIgnoreCase(parentCategory.getName())) {
+                        // Add the category to the parent's list of children (inside the list of lists)
+                        listsToReturn.get(placementOfCurrentList - 1).add(aCategory);
+                    }
+                }
+            }
+        }
+    }
+     */
+
+    /**
+     * Retrieves the ads of this category and all categories that have this category as parentCategory
+     *
+     * @param name is the name of this category
+     * @return a list of ads
+     */
+    @Override
+    public Response getAllAdsInCategoryAndSubCategories(String name) {
+
+        // Retrieve all categories from database
+        ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+
+        // List of subCategories found using recursive function
+        List<Category> subCategories = findSubCategories(categories, new ArrayList<>(),
+                             name,0);
+
+        System.out.println("sub categories found size: " + subCategories.size());
+
+        ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+        // Iterate over all sub-categories found
+        for(Category category : subCategories) {
+            // Iterate over all ads in category
+            if(category.getAds() != null) {
+                for(Ad ad : category.getAds()) {
+                    try {
+                        // Create dto
+                        AdDto dto = castObject(ad);
+                        // Add to list
+                        adsToBeReturned.add(dto);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        // Now all ads are returned
+        return new Response(adsToBeReturned, HttpStatus.OK);
+    }
+
+
+    /**
+     * Recursive function that finds all sub-categories belonging
+     * to a category (including the sub-categories of sub-categories and so on)
+     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories
+     *                as the method recursively iterates
+     * @param start is a measure of incrementation-depth that ends when recursions == listIn.size()
+     * @return listOut
+     *
+    private List<Category> findAllSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, int start) {
+        // Base-case
+        int arrayLength = start;
+
+        // If the position in the array is equal to the size of the array we are at the end
+        if(arrayLength == listIn.size()) {
+            // Return the list that now contains all sub-categories
+            return listOut;
+        }
+        else{
+            // get a hold of all subcategories
+            String nameOfCurrentCategory = listIn.get(arrayLength).getName();
+
+            // Iterate through all categories
+            for(Category category : listIn) {
+                if(category.getParentName() != null) {
+                    // If a category has current category as parent category
+                    if(category.getParentName().equalsIgnoreCase(nameOfCurrentCategory)) {
+                        listOut.add(category);
+                    }
+                }
+            }
+        }
+        // Increment the starting point from the list
+        return findSubCategories(listIn, listOut, start + 1);
+    }
+    */
+
+    /**
+     * Recursive function that finds all sub-categories belonging
+     * to a category (including the sub-categories of sub-categories and so on)
+     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories
+     *                as the method recursively iterates
+     * @return listOut
+     */
+    private List<Category> findSubCategories(ArrayList<Category> listIn,
+                                                       ArrayList<Category> listOut,
+                                                       String parentName, int start) {
+
+        // Position in array == start
+        int arrayLength = start;
+
+        // Make a counter and if it is not == 1 && base case is not reached when the loop ends,
+        // call on the function again from parentName == arrayLength.getName
+        int loopCounter = 0;
+
+        // Base case: If the position in the array is equal to the size of the array
+        if(arrayLength == listIn.size()) {
+            System.out.println("Array length equals list in --> finished");
+            // Return the list that now contains all sub-categories
+            return listOut;
+        }
+        else{
+            // Iterate through all categories
+            for (int i = start; i < listIn.size(); i++) {
+                Category category = listIn.get(i);
+
+                // If the category is a sub-class
+                if(category.getParentName() != null) {
+
+                    // If a category has current category as parent category
+                    if(category.getParentName().equalsIgnoreCase(parentName)) {
+
+                        // Add the category to the list to be returned
+                        listOut.add(category);
+
+                        // This category is now the new parent
+                        parentName = category.getName();
+
+                        // Call on the function recursively from the start for this category
+                        findSubCategories(listIn,listOut, parentName,
+                                start);
+                    }
+                }
+                System.out.println("parent name is null");
+            }
+            // Increment the list and call on the function recursively
+            return findSubCategories(listIn,listOut, parentName, start + 1);
+        }
+    }
+
+    @Override
+    public Response getAllParentCategories() {
+        List<Category> allCategories = categoryRepository.findAll();
+        List<CategoryDto> categoriesToReturn = new ArrayList<>();
+
+        for(Category category : allCategories) {
+            if (category.isParent()) {
+                CategoryDto dto = CategoryDto.builder().
+                        id(category.getId()).
+                        name(category.getName()).
+                        build();
+                categoriesToReturn.add(dto);
+            }
+        }
+        if(categoriesToReturn.size() > 0) {
+            // Return all the DTOs
+            return new Response(categoriesToReturn,HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find any parent categories", HttpStatus.NOT_FOUND);
         }
     }
 
     // Get ad by id
     @Override
     public Response getAdById(long id) {
-        List<AdDto> ads = adRepository.findById(id).stream()
-                .map(adDto -> modelMapper.map(adDto, AdDto.class)).collect(Collectors.toList());
-        if(ads.size()!=0) {
-            return new Response(ads, HttpStatus.OK);
+        Optional<Ad> ad = adRepository.findById(id);
+        if(ad.isPresent()) {
+            AdDto adDto = modelMapper.map(adRepository.findById(id), AdDto.class);
+            return new Response(adDto, HttpStatus.OK);
         }
         else{
-            return new Response("Fant ikke annonser i databasen",HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen i databasen",HttpStatus.NOT_FOUND);
         }
     }
 
     // Get all ads for user
     @Override
     public Response getAllAdsByUser(long userId) {
-        if(userRepository.getAdsByUserId(userId) != null) {
-            return new Response(userRepository.getAdsByUserId(userId).stream()
-                    .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
+        Set<Ad> adsFound = userRepository.getAdsByUserId(userId);
+
+        if(adsFound != null) {
+            return new Response(adsFound.stream()
+                    .map(ad -> modelMapper.map(ad, AdDto.class)).
+                    collect(Collectors.toList()), HttpStatus.OK);
         }
         else {
             return new Response("Fant ingen annonser på brukeren", HttpStatus.NO_CONTENT);
@@ -135,7 +480,8 @@ public class AdServiceImpl implements AdService {
     public Response getPageOfAds(int sizeOfPage){
         Pageable pageOf = PageRequest.of(0,sizeOfPage);
         List<AdDto> ads = adRepository.findAll(pageOf).stream()
-                .map( ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+                .map( ad -> modelMapper.map(ad, AdDto.class)).
+                collect(Collectors.toList());
         return new Response(ads, HttpStatus.OK);
     }
 
@@ -143,7 +489,8 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAllAvailableAds() {
         List<AdDto> availableAds = adRepository.getAllAvailableAds().stream()
-                .map(ad -> modelMapper.map(ad,AdDto.class)).collect(Collectors.toList());
+                .map(ad -> modelMapper.map(ad,AdDto.class)).
+                collect(Collectors.toList());
 
         // If the db contains any available ads
         if(availableAds.size() != 0) {
@@ -159,22 +506,24 @@ public class AdServiceImpl implements AdService {
     // Get all available ads by user id
     @Override
     public Response getAllAvailableAdsByUser(long userId) {
-        List<AdDto> availableAds = adRepository.getAvailableAdsByUserId(userId).stream()
-                .map(ad ->modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
-
-        // If the db contains any available ads
-        if(availableAds.size() != 0) {
-            return new Response(availableAds, HttpStatus.OK);
+        if(userRepository.existsById(userId)) {
+            List<AdDto> availableAds = adRepository.getAvailableAdsByUserId(userId).stream()
+                    .map(ad ->modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+            // If the db contains any available ads
+            if(availableAds.size() != 0) {
+                return new Response(availableAds, HttpStatus.OK);
+            }
+            // The db did not contain any available ads
+            else {
+                return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
+            }
         }
-        // The db did not contain any available ads
-        else {
-            return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
+        else{
+            return new Response("Could not find user with specified id", HttpStatus.NOT_FOUND);
         }
     }
 
     // Get all ads by postal code
-
-    //TODO: Do we need this??
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
         Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
@@ -183,14 +532,7 @@ public class AdServiceImpl implements AdService {
 
         // Iterate over all ads and create dtos
         for(Ad ad : availableAds) {
-
-            AdDto newAd = null;
-            try {
-                newAd = castObject(ad);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            AdDto newAd = modelMapper.map(ad, AdDto.class);
             adsToBeReturned.add(newAd);
         }
 
@@ -222,6 +564,32 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    @Override
+    public Response getAllAdsInCity(String city) {
+
+        // Retrieve all ads with specified city
+        Set<Ad> adsFound = adRepository.findByCity(city);
+
+        // Create list of DTOs to return
+        Set<AdDto> adsToReturn = new HashSet<>();
+
+        if(adsFound != null) {
+            for(Ad ad : adsFound) {
+                // Cast to DTO
+                try {
+                    AdDto newDto = castObject(ad);
+                    adsToReturn.add(newDto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            // Return list of DTOs
+            return new Response(adsToReturn, HttpStatus.OK);
+        }
+        // If no ads were found in city
+        return new Response("No ads found in specified city", HttpStatus.NOT_FOUND);
+    }
+
 
     /**
      * Posts new ad
@@ -243,18 +611,19 @@ public class AdServiceImpl implements AdService {
      * @return response
      */
     @Override
-    public Response postNewAd(AdDto adDto) throws IOException {
+    public Response postNewAd(AdDto adDto) {
         Ad newAd = new Ad();
 
         // Required attributes
         newAd.setRental(adDto.isRental());
         newAd.setRentedOut(false);
         newAd.setDuration(adDto.getDuration());
-        newAd.setDurationType(adDto.getDurationType()); //todo check
+        newAd.setDurationType(adDto.getDurationType());
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
         newAd.setPostalCode(adDto.getPostalCode());
+        newAd.setCity(adDto.getCity());
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -275,27 +644,10 @@ public class AdServiceImpl implements AdService {
         else {
             return new Response("could not find user", HttpStatus.NOT_FOUND);
         }
-        /**
-        //Getting user
-        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUser_id())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren")));
-        //checking user
-        Optional<User> user = Optional.ofNullable(userRepository.findById(adDto.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user")));
-
-        // Checking user
-        user.ifPresent(newAd::setUser);
-         */
 
         // Checking if dto contains any of the nullable attributes
         if(adDto.getDescription() != null) {
             newAd.setDescription(adDto.getDescription());
-        }
-        if(adDto.getPicturesIn() != null) {
-            //Creating and saving each picture connected to ad
-            for(MultipartFile m : adDto.getPicturesIn()){
-                savePicture(m, newAd);
-            }
         }
 
         // Persisting the entities
@@ -303,17 +655,17 @@ public class AdServiceImpl implements AdService {
         user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        return new Response("everything went well", HttpStatus.OK);
+        return new Response(newAd.getId(), HttpStatus.CREATED);
     }
 
-    /*
-    support method to create and save Picture
-     */
+    /**
+     * Support-method to create and save Picture
+     *
     private Response savePicture(MultipartFile file, Ad ad) throws IOException {
 
-        // Ensures that content of file is present
+        // Ensures that content of multipartFile is present
         if(file.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Bildefilen er tom");
+            return new Response("Picture multipartFile is empty", HttpStatus.NO_CONTENT);
         }
 
         // Ensure that the ad exists
@@ -325,7 +677,7 @@ public class AdServiceImpl implements AdService {
             Picture picture = Picture.builder()
                     .type(file.getContentType())
                     .filename(file.getOriginalFilename())
-                    .ad(ad).content(PictureUtility.compressImage(file.getBytes())).build();
+                    .ad(ad).data(PictureUtility.compressImage(file.getBytes())).build();
 
             // Save picture object
             pictureRepository.save(picture);
@@ -341,6 +693,7 @@ public class AdServiceImpl implements AdService {
         }
         return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
     }
+     */
 
     /**
      * method that goes through all ads and returns the with the calculated distance
@@ -372,29 +725,31 @@ public class AdServiceImpl implements AdService {
      */
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = modelMapper.map(ad, AdDto.class);
+    ;
 
-        //decompressing and converting images in support method
-        convertPictures(ad, adDto);
+        // decompressing and converting images in support method
+        // convertPictures(ad, adDto);
         return adDto;
     }
 
     /**
      * support method to decompress pictures
-     * @param ad ad object from database
-     * @param adDto dto object to be returned
+     * @param // ad ad object from database
+     * @param // adDto dto object to be returned
      * @throws IOException if decompression fails
-     */
+     *
     private void convertPictures(Ad ad, AdDto adDto) throws IOException {
         Set<Picture> pictures = ad.getPictures();
 
         Set<Image> images = adDto.getPicturesOut();
         for(Picture picture : pictures){
-            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
+            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData()));
             Image image = ImageIO.read(bis);
             images.add(image);
         }
         adDto.setPicturesOut(images);
     }
+    */
 
     /**
      * Method that calculates distance between two geolocations
@@ -454,14 +809,17 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
-//            if(adUpdateDto.getRentedOut() != null){
-//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("true")){
-//                    ad.setRentedOut(false);
-//                }
-//                if (!adUpdateDto.getRentedOut().equalsIgnoreCase("false")){
-//                    ad.setRentedOut(true);
-//                }
-//            }
+            if(adUpdateDto.getCity() != null) {
+                ad.setCity(adUpdateDto.getCity());
+            }
+
+            if (adUpdateDto.getRentedOut() == true){
+                ad.setRentedOut(false);
+            }
+            if (adUpdateDto.getRentedOut() == false){
+                ad.setRentedOut(true);
+            }
+
             adRepository.save(ad);
         }
         else {
@@ -490,10 +848,25 @@ public class AdServiceImpl implements AdService {
             // Delete its rentals
             ad.get().setRentals(null);
 
+            Set<Review> reviews = ad.get().getReviews();
+
+            if(reviews != null) {
+                for(Review review : reviews) {
+                    review.setAd(null);
+                    reviewRepository.save(review);
+                }
+            }
+
+
             // Delete the reviews todo save these somewhere else during next iteration!
             ad.get().setReviews(null);
 
-            // Delete the dates
+            // Delete the ad from the dates
+            for(CalendarDate date : ad.get().getDates()) {
+                date.getAds().remove(ad.get());
+            }
+
+            // Delete the dates from the ad
             ad.get().setDates(null);
 
             // Delete the ad
@@ -509,7 +882,7 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     * @param ad_id ad_id
+     * @param ad_id id
      * @param chosenPicture picture_id
      * @return response with status ok or not found
      */
@@ -519,33 +892,45 @@ public class AdServiceImpl implements AdService {
 
         // If present
         if(ad.isPresent()) {
-            List<Picture> pictures = pictureRepository.findByAd(ad.get());
+            Set<Picture> pictures = ad.get().getPictures();
             if(pictures != null) {
                 for (Picture picture : pictures) {
-                    if (Arrays.equals(PictureUtility.decompressImage(picture.getContent()), chosenPicture))
-                    {
+                    if(Arrays.equals(picture.getData(), chosenPicture)) {
+                        // Remove this picture from ad
+                        ad.get().getPictures().remove(picture);
+
+                        // Set the foreign keys of the picture equal to null
+                        picture.setAd(null);
+                        picture.setUser(null);
+
+                        // Delete the PICTURE
                         pictureRepository.delete(picture);
+
+                        // Update the ad
+                        adRepository.save(ad.get());
+
                         return new Response("Slettet bildet", HttpStatus.OK);
                     }
                 }
             }
+            // If we get here, pictures are equal to null
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
         }
-
-        return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
     }
 
     /**
-     * method to add a new  picture to an ad
-     * @param ad_id ad_id
-     * @param file file containing picture
+     * method to add a new picture to an ad
+     * @param //adId id
+     * @param //file multipartFile containing picture
      * @return response with status ok
-     * @throws IOException if compression of file fails
-     */
+     * @throws IOException if compression of multipartFile fails
+     *
     @Override
-    public Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException {
+    public Response uploadNewPicture(long adId, MultipartFile file) throws IOException {
 
         //Getting the ad to connect to the picture
-        Optional<Ad> ad = adRepository.findById(ad_id);
+        Optional<Ad> ad = adRepository.findById(adId);
 
         if(ad.isPresent()) {
 
@@ -553,14 +938,15 @@ public class AdServiceImpl implements AdService {
             pictureRepository.save(Picture.builder()
                     .filename(file.getOriginalFilename())
                     .ad(ad.get()).type(file.getContentType()).
-                    content(PictureUtility.compressImage(file.getBytes())).build());
+                    data(PictureUtility.compressImage(file.getBytes())).build());
 
             // Return OK response
             return new Response("Bildet ble lagret", HttpStatus.OK);
         }
-
-        // The ad was not found
-        return new Response("Annonsen ble ikke funnet", HttpStatus.NOT_FOUND);
+        else {
+            // The ad was not found
+            return new Response("Ad not found", HttpStatus.NOT_FOUND);
+        }
     }
     /**
      * Method to get ads sorted on distance to user
@@ -690,4 +1076,111 @@ public class AdServiceImpl implements AdService {
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
     }
+
+
+    /**
+    @Override
+    public Response uploadPictureToAd(long adId, MultipartFile multipartFile){
+        // Get the filename
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+        // Get the ad
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        String uploadDirectory = "";
+
+        if(ad.isPresent()) {
+
+            // Give the picture object to the ad
+            ad.get().setPhotos(fileName);
+
+            // Persist the change
+            Ad savedAd = adRepository.save(ad.get());
+
+            // The upload directory is ad-photos, and the id is to create the specific file
+            uploadDirectory = "src/main/resources/ad-photos/" + savedAd.getId();
+
+            try {
+                // Save the file
+                FileUploadUtility.saveFile(uploadDirectory, fileName, multipartFile);
+
+                // Return OK if the file was saved successfully
+                return new Response("Photo saved", HttpStatus.OK);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            // If we get here, the ad was not found
+            return new Response("Ad with specified ad id not found", HttpStatus.NOT_FOUND);
+        }
+        return null;
+    }
+
+    */
+
+    @Override
+    public Response getAllPicturesForAd(long adId) {
+        Optional<Ad> adFound = adRepository.findById(adId);
+
+        if(adFound.isPresent()) {
+
+            // Retrieve the pictures this ad has
+            Set<Picture> pictures = adFound.get().getPictures();
+
+            // Create a list to hold the DTOs
+            Set<PictureDto> picturesToReturn = new HashSet<>();
+
+            // If the ad has any pictures
+            if(pictures != null) {
+
+                // Iterate over the pictures
+                for(Picture picture : pictures) {
+                    // Create a picture dto
+                    PictureDto dto = PictureDto.builder().
+                            adId(picture.getId()).
+                            data(picture.getData()).
+                            type(picture.getType()).build();
+
+                    // Add to DTO-list
+                    picturesToReturn.add(dto);
+                }
+            }
+            return new Response(picturesToReturn, HttpStatus.OK);
+        }
+        // If the ad was not found
+        else {
+            return new Response("There was no ad with specified id in db.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
+        return pictureService.savePicture(file, adId, 0);
+    }
+
+    public Response getPicture(long pictureId) {
+        Optional<Picture> picture = pictureRepository.findById(pictureId);
+
+        if(picture.isPresent()) {
+            return new Response(picture.get(), HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find picture with specified id", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+    public Response getAllPicturesForAd(long adId) {
+        Optional<Ad> ad = adRepository.findById(adId);
+
+        if(ad.isPresent()) {
+            return new Response(ad.get().getPictures().stream(), HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
+        }
+    }
+     */
 }
