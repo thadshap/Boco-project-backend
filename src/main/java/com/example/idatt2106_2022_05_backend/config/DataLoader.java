@@ -139,6 +139,7 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project Road 4").
                     postalCode(7200).
+                    city("Trondheim").
                     user(user1).
                     category(category5).
                     build();
@@ -152,6 +153,7 @@ public class DataLoader implements ApplicationRunner {
                     price(150).
                     streetAddress("Project Road 5").
                     postalCode(7000).
+                    city("Trondheim").
                     user(user2).
                     category(category4).
                     build();
@@ -165,6 +167,7 @@ public class DataLoader implements ApplicationRunner {
                     price(800).
                     streetAddress("Project Road 6").
                     postalCode(7800).
+                    city("Trondheim").
                     user(user3).
                     category(category6).
                     build();

@@ -38,6 +38,8 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     // Get all ads with items that are either being rented or given away
     Set<Ad> findByRental(boolean rental);
 
+    Set<Ad> findByCity(String city);
+
     // Get all available ads
     @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
     Set<Ad> getAllAvailableAds();

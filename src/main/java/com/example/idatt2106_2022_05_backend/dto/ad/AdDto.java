@@ -45,11 +45,14 @@ public class AdDto {
     @ApiModelProperty(notes = "price of renting item")
     private int price;
 
-    @ApiModelProperty(notes = "location streetaddress of item")
+    @ApiModelProperty(notes = "location streetAddress of item")
     private String streetAddress;
 
-    @ApiModelProperty(notes = "postalcode of items location")
+    @ApiModelProperty(notes = "postalCode of items location")
     private int postalCode;
+
+    @ApiModelProperty(notes = "city postalCode belongs to ")
+    private String city;
 
     @ApiModelProperty(notes = "title of ad")
     private String title; // title/header

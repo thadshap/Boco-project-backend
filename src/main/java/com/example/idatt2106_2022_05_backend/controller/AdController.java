@@ -202,5 +202,4 @@ public class AdController {
         return adService.getAllParentCategories();
     }
 
-
 }

@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,15 +50,19 @@ public class Ad {
     private boolean rentedOut;
 
     // Is nullable
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
     // Is nullable
     @Column(name = "street_address")
     private String streetAddress;
+
     // Is nullable
-    @Column(name = "postal_code")
+    @Column(name = "postal_code", nullable = false)
     private int postalCode;
+
+    @NotNull
+    private String city;
 
     // Coordinates latitude
     @Column(name="lat")
@@ -82,7 +87,7 @@ public class Ad {
     private Set<Picture> pictures;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToOne

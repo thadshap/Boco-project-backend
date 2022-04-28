@@ -585,6 +585,32 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
+    // TODO
+    public Response getAllAdsInCity(String city) {
+
+        // Retrieve all ads with specified city
+        Set<Ad> adsFound = adRepository.findByCity(city);
+
+        // Create list of DTOs to return
+        Set<AdDto> adsToReturn = new HashSet<>();
+
+        if(adsFound != null) {
+            for(Ad ad : adsFound) {
+                // Cast to DTO
+                try {
+                    AdDto newDto = castObject(ad);
+                    adsToReturn.add(newDto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            // Return list of DTOs
+            return new Response(adsToReturn, HttpStatus.OK);
+        }
+        // If no ads were found in city
+        return new Response("No ads found in specified city", HttpStatus.NOT_FOUND);
+    }
+
 
     /**
      * Posts new ad
@@ -618,6 +644,7 @@ public class AdServiceImpl implements AdService {
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
         newAd.setPostalCode(adDto.getPostalCode());
+        newAd.setCity(adDto.getCity());
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -723,6 +750,7 @@ public class AdServiceImpl implements AdService {
         adDto.setDuration(ad.getDuration());
         adDto.setDurationType(ad.getDurationType());
         adDto.setPostalCode(ad.getPostalCode());
+        adDto.setCity(ad.getCity());
         adDto.setPrice(ad.getPrice());
         adDto.setStreetAddress(ad.getStreetAddress());
         adDto.setTitle(ad.getTitle());
@@ -820,6 +848,9 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getPostalCode() > 0){
                 ad.setPostalCode(adUpdateDto.getPostalCode());
             }
+            if(adUpdateDto.getCity() != null) {
+                ad.setCity(adUpdateDto.getCity());
+            }
 
             if (adUpdateDto.getRentedOut() == true){
                 ad.setRentedOut(false);
@@ -867,7 +898,7 @@ public class AdServiceImpl implements AdService {
 
 
             // Delete the reviews todo save these somewhere else during next iteration!
-            
+
             ad.get().setReviews(null);
 
             // Delete the ad from the dates
