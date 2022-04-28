@@ -29,8 +29,8 @@ public class Review {
     @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "adId")
+    @ManyToOne()
+    @JoinColumn(name = "ad_id")
     private Ad ad;
 
     @Override

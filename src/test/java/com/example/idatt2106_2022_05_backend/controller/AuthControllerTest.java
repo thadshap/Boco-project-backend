@@ -211,7 +211,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Forgot password failed")
-    void passwordRenewalAccepted() throws Exception {
+    void passwordRenewalFailed() throws Exception {
         forgotPasswordDto = new UserRenewPasswordDto(password, "19newPassword");
 
         forgotDto = UserForgotPasswordDto.builder().email("andetel@stud.ntnu.no")
@@ -227,7 +227,7 @@ class AuthControllerTest {
         mvc.perform(post("/auth/renewPassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + rawAccessToken))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -46,5 +46,8 @@ public class RentalDto {
     private Long borrower;
 
     @ApiModelProperty(notes = "id of ad")
-    private Long ad;
+    private Long adId;
+
+    @ApiModelProperty(notes = "id of rental")
+    private Long id;
 }
