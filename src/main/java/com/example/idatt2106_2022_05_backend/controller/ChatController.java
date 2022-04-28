@@ -36,7 +36,7 @@ public class ChatController {
     }
 */
 
-    @MessageMapping("/group/{groupId}")
+    @MessageMapping("/topic")
     public MessageDto sendMessage(@PathVariable long groupId, @Payload MessageDto messageDto ) {
         logger.info("got to controller");
         //headerAccessor.getSessionAttributes().put("userid", messageDto.getFromUserId());

@@ -55,12 +55,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        config.setApplicationDestinationPrefixes("/topic");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp","chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
     }
 
 
@@ -72,13 +72,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 logger.info("recieved a message");
                 StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
                 List<String> tokenList = headerAccessor.getNativeHeader("Authorization");
-                logger.info("tokenlist:" +tokenList.toString());
+                logger.info("removing header");
+                logger.info("Message: " + message.getPayload().toString() + message.toString());
                 headerAccessor.removeHeader("Authorization");
 
                 String email = null;
                 String token = null;
 
-                if ( tokenList.size() > 0) {
+                if ( tokenList!=null && tokenList.size() > 0) {
                     String auth = tokenList.get(0);
                     logger.info("auth looks like this: " + auth);
 
@@ -111,11 +112,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             headerAccessor.setUser(myAuth);
                             //Not sure why, but necessary otherwise NPE in StompSubProtocolHandler!
                             headerAccessor.setLeaveMutable(true);
+                            logger.info("Message is: "+ message.getPayload());
 
                             return MessageBuilder.createMessage(message.getPayload(), headerAccessor.getMessageHeaders());
                         }
                     }
-
                 }
                 return message;
             }
