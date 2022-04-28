@@ -34,7 +34,7 @@ public class SocialController {
 
     @GetMapping(value = "/facebook")
     @CrossOrigin("*")
-    public ResponseEntity<Void> producer() {
+    public ModelAndView producer() {
 
         OAuth2Operations operations = factory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
@@ -46,9 +46,7 @@ public class SocialController {
         System.out.println("The URL is: " + url);
 
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .location(java.net.URI.create((url)))
-                .build();
+        return new ModelAndView("redirect:" + url);
     }
 
     @RequestMapping(value = "/forwardLogin")
