@@ -61,14 +61,14 @@ public class RentalServiceImpl implements RentalService {
         if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
             return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
         }
-        Ad ad = adRepository.getById(rentalDto.getAd());
+        Ad ad = adRepository.getById(rentalDto.getAdId());
         Set<CalendarDate> cld = ad.getDates();
-        for (CalendarDate calDate : cld) {
-            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
-                    && calDate.isAvailable())){
-                return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
-            }
-        }
+//        for (CalendarDate calDate : cld) {
+//            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
+//                    && calDate.isAvailable())){
+//                return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
+//            }
+//        }
         if (rentalDto.isActive()){
             for (CalendarDate calDate: cld) {
                 if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
@@ -196,7 +196,7 @@ public class RentalServiceImpl implements RentalService {
         System.out.println("returning the rental");
         Rental rental = rentalOptional.get();
         RentalDto rentalReturn = RentalDto.builder()
-                .ad(rental.getAd().getId())
+                .adId(rental.getAd().getId())
                 .borrower(rental.getBorrower().getId())
                 .owner(rental.getOwner().getId())
                 .active(rental.isActive())
@@ -229,7 +229,8 @@ public class RentalServiceImpl implements RentalService {
         }
         for (int i = 0; i < rental.size(); i++) {
             RentalDto rentalReturn = RentalDto.builder()
-                    .ad(rental.get(i).getAd().getId())
+                    .id(rental.get(i).getId())
+                    .adId(rental.get(i).getAd().getId())
                     .borrower(rental.get(i).getBorrower().getId())
                     .owner(rental.get(i).getOwner().getId())
                     .active(rental.get(i).isActive())

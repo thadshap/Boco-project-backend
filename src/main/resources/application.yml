@@ -53,4 +53,4 @@ server:
     enabled: false
     enabled-protocols: TLSv1.2
     client-auth: want
-  port: 8443
+#  port: 8443

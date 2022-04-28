@@ -128,10 +128,10 @@ class RentalServiceImplTest {
                 .deadline(rental.getDeadline())
                 .owner(user.getId())
                 .borrower(user2.getId())
-                .ad(ad.getId())
+                .adId(ad.getId())
                 .build();
 
-        Mockito.when(adRepository.getById(rentalDto.getAd())).thenReturn(rental.getAd());
+        Mockito.when(adRepository.getById(rentalDto.getAdId())).thenReturn(rental.getAd());
         Mockito.when(userRepository.getById(rentalDto.getOwner())).thenReturn(rental.getOwner());
         Mockito.when(userRepository.getById(rentalDto.getBorrower())).thenReturn(rental.getBorrower());
         response = new Response("Rental object is now created", HttpStatus.OK);
