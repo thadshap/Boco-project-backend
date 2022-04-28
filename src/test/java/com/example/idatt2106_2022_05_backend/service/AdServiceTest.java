@@ -121,7 +121,6 @@ class AdServiceTest {
             ad.setDescription("text:" + i);
             ad.setDuration(i);
             ad.setDurationType(AdType.HOUR);
-            ad.setPicturesIn(null);
             ad.setPostalCode(1234+i);
             ad.setPrice(10*i);
             ad.setRental(false);

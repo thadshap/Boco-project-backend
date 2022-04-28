@@ -178,7 +178,7 @@ public class AdController {
         return adService.getAllCategories();
     }
 
-    // Get sub-categories for main category
+    // Get sub-categories for a category
     @GetMapping("/categories/{parentCategoryName}")
     public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName){
         return adService.getAllSubCategories(parentCategoryName);
@@ -200,6 +200,12 @@ public class AdController {
     @GetMapping("/categories/parent")
     public Response getAllParentCategories(){
         return adService.getAllParentCategories();
+    }
+
+    // Get all ads in city
+    @GetMapping("/ads/city/{cityName}")
+    public Response getAllAdsInCity(@PathVariable String cityName){
+        return adService.getAllAdsInCity(cityName);
     }
 
 }

@@ -8,7 +8,6 @@ import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
-import com.example.idatt2106_2022_05_backend.util.FileUploadUtility;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -226,6 +225,58 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+
+    /**
+     * Get each category and their subCategories.
+     * A new list is created for each parent.
+     * Each parent's child also is iterated over
+     *
+    public void getCategoryHierarchies() {
+        List<Category> allCategories = categoryRepository.findAll();
+        List<Category> mainCategories = new ArrayList<>();
+
+         // List of parents contains list of children which contains list of children's children
+        List<List<List<Category>>> listsToReturn = new ArrayList<>();
+
+        int placementOfParent = 0;
+
+        // Find all the parent categories
+        for(Category category : allCategories) {
+            if(category.isParent()) {
+                mainCategories.add(category);
+            }
+            placementOfParent ++;
+        }
+
+        // From main categories, find all the children
+        for(Category parentCategory : mainCategories) {
+            // Create a list for each category
+            ArrayList<Category> children = new ArrayList<>();
+            // Add the list to the list of all lists
+            listsToReturn.add(children);
+
+            // Iterate over all categories for each parentCategory
+            for (Category aCategory : allCategories) {
+                // Create a list for each sub-category
+                ArrayList<Category> childrenOfChildren = new ArrayList<>();
+
+                // Add the list to the list of all lists
+                listsToReturn.add(children);
+                // Counter to retrieve the placement in list of lists (due to enhanced for loop)
+                placementOfCurrentList ++;
+                // If the category is not a parent
+                if(!aCategory.isParent()) {
+                    // If the parentName of the category is the parentCategory
+                    if(aCategory.getParentName().equalsIgnoreCase(parentCategory.getName())) {
+                        // Add the category to the parent's list of children (inside the list of lists)
+                        listsToReturn.get(placementOfCurrentList - 1).add(aCategory);
+                    }
+                }
+            }
+        }
+    }
+     */
+
     /**
      * Retrieves the ads of this category and all categories that have this category as parentCategory
      *
@@ -234,9 +285,6 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public Response getAllAdsInCategoryAndSubCategories(String name) {
-        System.out.println("number of categories:" + categoryRepository.findAll().size());
-
-        System.out.println("number of categories:" + categoryRepository.findAll().size());
 
         // Retrieve all categories from database
         ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
@@ -359,7 +407,7 @@ public class AdServiceImpl implements AdService {
                 System.out.println("parent name is null");
             }
             // Increment the list and call on the function recursively
-            return findSubCategories(listIn,listOut, parentName, start);
+            return findSubCategories(listIn,listOut, parentName, start + 1);
         }
     }
 
@@ -584,8 +632,7 @@ public class AdServiceImpl implements AdService {
 
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
-
-    // TODO
+    @Override
     public Response getAllAdsInCity(String city) {
 
         // Retrieve all ads with specified city
