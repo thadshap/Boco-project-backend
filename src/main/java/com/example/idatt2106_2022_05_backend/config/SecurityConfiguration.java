@@ -54,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Allow anonymous access to websocket
                 .antMatchers("/ws/**").permitAll()
 
-                .antMatchers("/", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                .antMatchers("/**", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
                 .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
@@ -79,7 +79,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        //httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

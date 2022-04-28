@@ -28,7 +28,14 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -89,10 +96,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
 
-                            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                            HttpServletRequest request =
+                                    ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes())
+                                            .getRequest();
 
                             usernamePasswordAuthenticationToken
-                                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
@@ -106,6 +115,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             return MessageBuilder.createMessage(message.getPayload(), headerAccessor.getMessageHeaders());
                         }
                     }
+
                 }
                 return message;
             }
