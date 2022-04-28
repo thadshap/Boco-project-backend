@@ -2,9 +2,10 @@ package com.example.idatt2106_2022_05_backend.service.user;
 
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Service
 @Builder
+@Data
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired

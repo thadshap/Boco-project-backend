@@ -1,9 +1,10 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.*;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -40,6 +42,7 @@ public class AdController {
         return new Response("Could not get ads", HttpStatus.NOT_FOUND);
     }
 
+    //TODO: GetMapping?
     @PostMapping("/ads/available/true")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
@@ -95,7 +98,6 @@ public class AdController {
         log.debug("[X] Call to create a new ad");
         return adService.postNewAd(adDto);
     }
-
 
     @GetMapping("/users/ads/reviews/{userId}")
     @ApiOperation(value = "Endpoint to retrieve all reviews on an ad of a user", response = Response.class)
@@ -167,9 +169,78 @@ public class AdController {
         return adService.getAllPicturesForAd(adId);
     }
 
-    @PostMapping("/ads/page")
-    public Response getPageOfAds(@RequestBody AdDto sizeOfPage){
-        return adService.getPageOfAds(sizeOfPage.getSizeOfPage());
+    @GetMapping("/ads/page/{sizeOfPage}")
+    @ApiOperation(value = "Endpoint to request a page of ads")
+    public Response getPageOfAds(@PathVariable int sizeOfPage){
+        return adService.getPageOfAds(sizeOfPage);
+    }
+
+    @PostMapping("/ads/sort/distance")
+    @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
+    public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
+        return adService.sortByDistance(userGeoLocation);
+    }
+
+    @PostMapping("/ads/sort/descending")
+    @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
+    public Response getsorteddescending(@RequestBody SortingAdsDto sortingDto){
+        return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
+    }
+
+    @PostMapping("/ads/sort/ascending")
+    @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
+    public Response getsortedAscending(@RequestBody SortingAdsDto sortingDto){
+        return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
+    }
+
+    @GetMapping("/ads/newest/{pageSize}")
+    @ApiOperation(value = "sorting all ads by when they are created")
+    public Response getnewest(@PathVariable int pageSize){
+
+        return adService.sortByCreatedDateAscending(pageSize);
+    }
+
+    @GetMapping("/ads/oldest/{pageSize}")
+    @ApiOperation(value = "sorting all ads by creation oldest")
+    public Response getoldest(@PathVariable int pageSize){
+
+        return adService.sortByCreatedDateDescending(pageSize);
+    }
+
+    @GetMapping("/search/{searchWord}")
+    @ApiOperation(value = "method to search through")
+    public Response searchInAdsAndCategories(@PathVariable String searchWord){
+        return adService.searchThroughAds(searchWord);
+    }
+
+    @PostMapping("/sort/list/price/ascending")
+    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByPriceAscending(list);
+    }
+
+    @PostMapping("/sort/list/price/descending")
+    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByPriceDescending(list);
+    }
+
+    @PostMapping("/sort/list/distance/ascending")
+    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByDistanceAscending(list);
+    }
+
+    @PostMapping("/sort/list/distance/descending")
+    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list){
+        return adService.sortArrayByDistanceDescending(list);
+    }
+
+    @PostMapping("/filterByDistance")
+    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getListWithinDistanceIntervall(filterListOfAds.getList(), filterListOfAds.getUpperLimit());
+    }
+
+    @PostMapping("/getListWithinPriceRange")
+    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
     }
 
     // Get all categories

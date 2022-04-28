@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.rental;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -37,6 +37,8 @@ public class RentalDto {
 
     private boolean active;
 
+    private int price;
+
     @ApiModelProperty(notes = "id of owner of item")
     private Long owner;
 
@@ -44,5 +46,8 @@ public class RentalDto {
     private Long borrower;
 
     @ApiModelProperty(notes = "id of ad")
-    private Long ad;
+    private Long adId;
+
+    @ApiModelProperty(notes = "id of rental")
+    private Long id;
 }

@@ -45,6 +45,8 @@ public class Rental {
 
     private double rating;
 
+    private int price;
+
     @ManyToOne
     @JoinColumn(referencedColumnName = "user_id")
     private User owner;

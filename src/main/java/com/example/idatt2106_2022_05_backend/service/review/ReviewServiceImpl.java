@@ -14,8 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -37,32 +39,30 @@ public class ReviewServiceImpl implements ReviewService{
 
     /**
      * Method validate creation of a new review
-     * @param newReviewDto
+     * @param newReviewDto reviewDto
      */
     private void validate(ReviewDto newReviewDto){
         if(newReviewDto.getDescription().length()>200){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description exceeds maximum lenght");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Beskrivelsen kan ikke være mere enn 200 tegn");
 
         }if(0>newReviewDto.getRating() && newReviewDto.getRating()>10){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating outside of scale");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skalaen for rangering er 1-10");
         }
     }
 
-
-
     /**
      * Method to validate that a user only posts once per ad
-     * @param ad_id ad
+     * @param ad ad
      * @param newPostingUser user
      */
-    private void validateUser(long ad_id, User newPostingUser){
-        Ad ad = adRepository.getById(ad_id);
+    private boolean validateUser(Ad ad, User newPostingUser){
         List<Review> allreviews = reviewRepository.getAllByAd(ad);
         for(Review r: allreviews){
             if(r.getUser().getId() == newPostingUser.getId()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A user can only post once per ad");
+                return false;
             }
         }
+        return true;
     }
 
     /**
@@ -78,22 +78,43 @@ public class ReviewServiceImpl implements ReviewService{
         review.setRating(newReviewDto.getRating());
 
         //checking that the same user does not post twice per ad
-        User user = userRepository.getById(newReviewDto.getUser_id());
-        validateUser(newReviewDto.getAd_id(), user);
-        review.setUser(user);
+        User user = userRepository.getById(newReviewDto.getUserId());
+        Optional<Ad> ad = adRepository.findById(newReviewDto.getAdId());
+        if(ad.isPresent()){
+            if(validateUser(ad.get(), user)) {
 
-        //Setting ad
-        review.setAd(adRepository.getById(newReviewDto.getAd_id()));
+                review.setUser(user);
 
-        reviewRepository.save(review);
+                // Setting ad
+                review.setAd(ad.get());
 
-        // Increment the number of reviews for the user
-        user.setNumberOfReviews(user.getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
+                Review reviewSaved = reviewRepository.save(review);
 
-        // Add the rating to the total rating of the user
-        user.setRating(user.getRating() + newReviewDto.getRating());
+                // Set the review to the list of reviews for the user
+                user.addReview(reviewSaved);
 
-        return new Response("Review successfully added.", HttpStatus.CREATED);
+                // Persist the change
+                userRepository.save(user);
+
+                // Retrieve the user that owns the ad
+                User ownerOfAd = ad.get().getUser();
+
+                // Increment the number of reviews for the user
+                ownerOfAd.setNumberOfReviews(user.getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
+
+                // Add the rating to the total rating of the user
+                ownerOfAd.setRating(user.getRating() + newReviewDto.getRating());
+
+                // Persist the users changes
+                userRepository.save(ownerOfAd);
+
+                return new Response("Omtalen ble lagret", HttpStatus.OK);
+            }
+            else {
+                return new Response("en bruker kan kun post 1 omtale per annonse", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new Response("Kunne ikke finne en annonse med gitt ID.", HttpStatus.BAD_REQUEST);
     }
 
 
@@ -106,14 +127,17 @@ public class ReviewServiceImpl implements ReviewService{
      */
     @Override
     public Response getReviewsByAdId(long ad_id){
-        Ad ad = adRepository.getById(ad_id);
-        List<ReviewDto> reviews = reviewRepository.getAllByAd(ad).stream()
-                .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
-        //Returns reviews if found
-        if(reviews!=null) {
+        Optional<Ad> ad = adRepository.findById(ad_id);
+        if(ad.isPresent()) {
+            List<ReviewDto> reviews = reviewRepository.getAllByAd(ad.get()).stream()
+                    .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
+
+            // Returns reviews
             return new Response(reviews, HttpStatus.OK);
         }
-        return new Response(null, HttpStatus.NOT_FOUND);
+        else {
+            return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -167,11 +191,10 @@ public class ReviewServiceImpl implements ReviewService{
                     reviewRepository.delete(review.get());
                 }
             }
-            return new Response("Review was successfully deleted", HttpStatus.OK);
+            return new Response("Omtalen ble slettet", HttpStatus.OK);
         }
         else {
-            return new Response("There was no review with the specified ad id and user id",
-                          HttpStatus.NOT_FOUND);
+            return new Response("fant ikke omtalen", HttpStatus.NOT_FOUND);
         }
     }
 }

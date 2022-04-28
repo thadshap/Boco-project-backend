@@ -79,6 +79,15 @@ public class User {
         ads.add(newAd);
     }
 
+    @PreRemove
+    void remove(){
+        ads = null;
+    }
+
+    public void addReview(Review newReview) {
+        reviews.add(newReview);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
