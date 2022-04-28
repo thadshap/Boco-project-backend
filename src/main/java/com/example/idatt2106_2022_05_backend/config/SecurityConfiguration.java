@@ -49,8 +49,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cors.setAllowedOrigins(List.of("*"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
-            return cors;// .ignoringAntMatchers("/ws/**").and() TODO: ADD THESE
-            //.antMatchers("/ws/**").permitAll() allow anonymous requests to
+            return cors;
         }).and().csrf().disable().authorizeRequests()
                 // Allow anonymous access to websocket
                 .antMatchers("/ws/**").permitAll()
