@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.rental;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -36,6 +36,8 @@ public class RentalDto {
     private LocalDate deadline;
 
     private boolean active;
+
+    private int price;
 
     @ApiModelProperty(notes = "id of owner of item")
     private Long owner;

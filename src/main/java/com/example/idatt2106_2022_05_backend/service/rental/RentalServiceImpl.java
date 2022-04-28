@@ -1,8 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.rental;
 
-import com.example.idatt2106_2022_05_backend.dto.RentalDto;
-import com.example.idatt2106_2022_05_backend.dto.RentalListDto;
-import com.example.idatt2106_2022_05_backend.dto.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalListDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.CalendarDate;
 import com.example.idatt2106_2022_05_backend.model.Rental;
@@ -11,12 +12,14 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private CalendarDateRepository dayDateRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -63,13 +69,15 @@ public class RentalServiceImpl implements RentalService {
                 return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
             }
         }
-        for (CalendarDate calDate: cld) {
-            if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
-                calDate.setAvailable(false);
-                dayDateRepository.save(calDate);
+        if (rentalDto.isActive()){
+            for (CalendarDate calDate: cld) {
+                if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
+                    calDate.setAvailable(false);
+                    dayDateRepository.save(calDate);
+                }
             }
         }
-        rentalDto.setActive(true);
+        rentalDto.setActive(false);
         User owner = userRepository.getById(rentalDto.getOwner());
         User borrower = userRepository.getById(rentalDto.getBorrower());
         Rental rental = Rental.builder()
@@ -81,6 +89,7 @@ public class RentalServiceImpl implements RentalService {
                 .rentTo(rentalDto.getRentTo())
                 .deadline(rentalDto.getDeadline())
                 .active(rentalDto.isActive())
+                .price(rentalDto.getPrice())
                 .build();
         borrower.getRentalsBorrowed().add(rental);
         owner.getRentalsOwned().add(rental);
@@ -90,6 +99,28 @@ public class RentalServiceImpl implements RentalService {
         adRepository.save(ad);
         rentalRepository.save(rental);
         return new Response("Rental object is now created", HttpStatus.OK);
+    }
+
+    @Override
+    public Response activateRental(Long rentalId) throws MessagingException {
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
+        }
+        Rental rental = rentalOptional.get();
+        rental.setActive(true);
+        Set<CalendarDate> cld = rental.getAd().getDates();
+        for (CalendarDate calDate: cld) {
+            if(calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())){
+                calDate.setAvailable(false);
+                dayDateRepository.save(calDate);
+            }
+        }
+        rentalRepository.save(rental);
+        //TODO check if right user gets confirm email
+        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
+                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
+        return new Response("Rental has been activated", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -125,18 +156,24 @@ public class RentalServiceImpl implements RentalService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateRental(RentalDto rentalDto, Long rentalId) {
+    public Response updateRental(RentalUpdateDto rentalDto, Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
 
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
         Rental rental = rentalOptional.get();
+        if (rentalDto.getRentFrom() != null){
+            rental.setRentFrom(rentalDto.getRentFrom());
+        }
         if (rentalDto.getRentTo() != null){
             rental.setRentTo(rentalDto.getRentTo());
         }
         if (rentalDto.getDeadline() != null){
             rental.setDeadline(rentalDto.getDeadline());
+        }
+        if (rentalDto.getPrice() <= 0){
+            rental.setPrice(rentalDto.getPrice());
         }
         return new Response("Rental", HttpStatus.ACCEPTED);
     }

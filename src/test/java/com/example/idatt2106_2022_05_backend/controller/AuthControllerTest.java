@@ -2,27 +2,19 @@ package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
-import com.example.idatt2106_2022_05_backend.util.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(AdController.class)
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc
 class AuthControllerTest {
 
     @Autowired
@@ -31,13 +23,13 @@ class AuthControllerTest {
     @MockBean
     private AuthService authService;
 
-    private String url = "http://localhost:8080/auth";
+    private final String url = "http://localhost:8080/auth";
 
     private CreateAccountDto createAccountDto;
 
     private LoginDto loginDto;
 
-    private UserForgotPasswordDto forgotPasswordDto;
+    private UserRenewPasswordDto forgotPasswordDto;
 
     @BeforeEach
     void setUp() {
@@ -54,8 +46,8 @@ class AuthControllerTest {
                 .email("KenRobin@mail.com")
                 .build();
 
-        forgotPasswordDto = UserForgotPasswordDto.builder()
-                .email("KenRobin@mail.com")
+        forgotPasswordDto = UserRenewPasswordDto.builder()
+//                .email("KenRobin@mail.com")
                 .password("ken23")
                 .confirmPassword("ken23")
                 .build();

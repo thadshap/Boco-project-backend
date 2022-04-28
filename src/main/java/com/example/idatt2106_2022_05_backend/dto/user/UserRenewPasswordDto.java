@@ -9,14 +9,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "Data transfer object to update forgotten password")
-public class UserForgotPasswordDto {
+@NoArgsConstructor
+@Builder
+@ApiModel(description = "data transfer object to update forgotten password")
+public class UserRenewPasswordDto {
 
-    @Email
-    @ApiModelProperty(notes = "users email")
-    private String email;
+    @ApiModelProperty(notes = "new password")
+    private String password;
 
+    @ApiModelProperty(notes = "confirmation of new password")
+    private String confirmPassword;
 }

@@ -654,4 +654,40 @@ public class AdServiceImpl implements AdService {
         return new Response(ads.stream()
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
+
+    @Override
+    public Response sortArrayByPriceAscending(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getPrice));
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response sortArrayByPriceDescending(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getPrice).reversed());
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response sortArrayByDistanceAscending(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getDistance));
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response sortArrayByDistanceDescending(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
+        list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
+        list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
+        return new Response(list, HttpStatus.OK);
+    }
 }

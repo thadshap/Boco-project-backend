@@ -7,6 +7,8 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.List;
+
 @Service
 public interface AdService {
     // Get all ads
@@ -77,5 +79,23 @@ public interface AdService {
 
     //Search in database
     Response searchThroughAds(String searchword);
+
+    //Sort an array by price
+    Response sortArrayByPriceAscending(List<AdDto> list);
+
+    //Sort an array by price descending
+    Response sortArrayByPriceDescending(List<AdDto> list);
+
+    //Sort an array based on distance ascending
+    Response sortArrayByDistanceAscending(List<AdDto> list);
+
+    //Sort an array based on distance descending
+    Response sortArrayByDistanceDescending(List<AdDto> list);
+
+    //Getting ads only within a distance intervall
+    Response getListWithinDistanceIntervall(List<AdDto> list, double limit);
+
+    //Getting all ads within a priceRange
+    Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit);
 }
 
