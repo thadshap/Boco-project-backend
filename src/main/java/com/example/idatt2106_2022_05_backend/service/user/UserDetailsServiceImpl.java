@@ -18,7 +18,6 @@ import java.util.ArrayList;
  */
 @Slf4j
 @NoArgsConstructor
-@Builder
 @Service
 @Data
 public class UserDetailsServiceImpl implements UserDetailsService {

@@ -52,13 +52,15 @@ public class AuthController {
     public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url)
             throws MessagingException {
         log.debug("[X] Call to reset password");
-        return authService.resetPassword(forgotPasswordDto, url(url));
+        return authService.resetPassword(forgotPasswordDto, "https://" + url.getServerName() + ":" + 8080 + url.getContextPath());
     }
 
     @PostMapping("/renewPassword")
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
     public Response renewPassword(@RequestParam("token") String token,
             @RequestBody UserRenewPasswordDto renewPasswordDto) {
+        System.out.println(renewPasswordDto.getPassword() + " " + renewPasswordDto.getConfirmPassword());
+        System.out.println(token);
         log.debug("[X] Call to renew the password");
         return authService.validatePasswordThroughToken(token, renewPasswordDto);
     }

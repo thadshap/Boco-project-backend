@@ -127,11 +127,9 @@ public class AuthServiceImpl implements AuthService {
             ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
             resetPasswordTokenRepository.save(resetToken);
             emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword?token="
-                            + token);//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
-            log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword?token="
-                    + token);
-            return new Response("Reset passord link sent til mail.", HttpStatus.ACCEPTED);
+                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
+            log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword");
+            return new Response(token, HttpStatus.ACCEPTED);
         }
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
