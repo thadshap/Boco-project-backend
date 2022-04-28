@@ -1,5 +1,8 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.sun.xml.messaging.saaj.soap.name.NameImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.User;
@@ -8,11 +11,16 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/signin")
@@ -28,7 +36,7 @@ public class SocialController {
 //	}
 
     @GetMapping(value = "/facebook")
-    public String producer() {
+    public ResponseEntity<Void> producer() {
 
         OAuth2Operations operations = factory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
@@ -37,9 +45,12 @@ public class SocialController {
         params.setScope("email,public_profile");
 
         String url = operations.buildAuthenticateUrl(params);
-        System.out.println("The URL is" + url);
-        return "redirect:" + url;
+        System.out.println("The URL is: " + url);
 
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(java.net.URI.create((url)))
+                .build();
     }
 
     @RequestMapping(value = "/forwardLogin")
