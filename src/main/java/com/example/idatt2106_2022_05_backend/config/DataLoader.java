@@ -128,6 +128,12 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category6);
             categoryRepository.save(category7);
 
+            // Create sub category of sub-category
+            Category category8 = Category.builder().name("Chargers").
+                    parentName(category6.getName()).build();
+
+            categoryRepository.save(category8);
+
 
             // Create ad
             Ad pants = Ad.builder().
@@ -172,10 +178,41 @@ public class DataLoader implements ApplicationRunner {
                     category(category6).
                     build();
 
+            Ad charger = Ad.builder().
+                    title("Pc charger").
+                    description("Renting out a new lenovo charger").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category8).
+                    build();
+            Ad motherBoard = Ad.builder().
+                    title("Mother board").
+                    description("Renting out a new lenovo motherboard").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category3).
+                    build();
+
             // Persist the 3 ads
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);
+            adRepository.save(charger);
+            adRepository.save(motherBoard);
+
+
 
             // Add dates to the ads // todo might not work due to id
             List<Ad> ads =  adRepository.findAll();
