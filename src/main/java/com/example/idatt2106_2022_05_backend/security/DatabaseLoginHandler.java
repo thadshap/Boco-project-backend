@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.security;
 
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
+import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,9 @@ public class DatabaseLoginHandler extends SavedRequestAwareAuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws ServletException, IOException {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        // authService.updateAuthenticationType(userDetails.getUsername(), "database");
-        // JWT token return
-        super.onAuthenticationSuccess(request, response, authentication);
+                                        Authentication authentication) throws ServletException, IOException {
+//        UserDetailsServiceImpl userDetails = (UserDetailsServiceImpl) authentication.getPrincipal();
+//        authService.updateAuthenticationType(userDetails., "database");
+//        super.onAuthenticationSuccess(request, response, authentication);
     }
-
 }

@@ -27,22 +27,24 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 666906861821-bgcml5e7bq5pt5ptj9b33ir02n5hd0b9.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
-          facebook:
-            client-id: 1181763609285094
-            client-secret: 822eef3823b53888eb4dd9f0c1a09463
-            scope:
-              - email
-              - profile_profile
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+  social:
+    social:
+      google:
+        client-id: 666906861821-bgcml5e7bq5pt5ptj9b33ir02n5hd0b9.apps.googleusercontent.com
+        client-secret: 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
+        scope:
+          - email
+          - profile
+      facebook:
+        client-id: 1181763609285094
+        client-secret: 822eef3823b53888eb4dd9f0c1a09463
+        scope:
+          - email
+          - profile_profile
 server:
   ssl:
     key-alias: boco
@@ -53,4 +55,4 @@ server:
     enabled: false
     enabled-protocols: TLSv1.2
     client-auth: want
-#  port: 8443
+  port: 8443

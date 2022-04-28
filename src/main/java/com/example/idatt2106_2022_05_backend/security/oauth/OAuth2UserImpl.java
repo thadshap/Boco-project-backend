@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
-public class OAuth2UserImpl implements org.springframework.security.oauth2.core.user.OAuth2User {
+public class OAuth2UserImpl implements OAuth2User {
     private String oauth2ClientName;
     private OAuth2User oauth2User;
 

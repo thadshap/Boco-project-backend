@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
+import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.ResetPasswordToken;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
@@ -186,7 +187,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void updateAuthenticationType(String username, String oauth2ClientName) {
-        // userRepository.
+        AuthenticationType authType = AuthenticationType.valueOf(oauth2ClientName.toUpperCase());
+        User user = userRepository.findByEmail(username);
+        user.setAuthType(authType);
+        userRepository.save(user);
         // TODO verify user logging in by facebook and google and put them in repo
     }
 

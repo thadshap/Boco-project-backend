@@ -17,13 +17,16 @@ import java.util.ArrayList;
  * UserDetailsService instance personalized
  */
 @Slf4j
-@NoArgsConstructor
 @Service
 @Data
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    public UserDetailsServiceImpl() {
+        super();
+    }
 
     /**
      * this method retrieves a user by their email
