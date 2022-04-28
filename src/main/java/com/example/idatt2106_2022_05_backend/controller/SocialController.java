@@ -18,8 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/signin")
 public class SocialController {
 
-    private FacebookConnectionFactory factory = new FacebookConnectionFactory("1181763609285094",
-            "822eef3823b53888eb4dd9f0c1a09463"
+    private FacebookConnectionFactory factory = new FacebookConnectionFactory("3598318360302645",
+            "689ea09632fa57397b5981faabab9ad6"
             );
 
 
