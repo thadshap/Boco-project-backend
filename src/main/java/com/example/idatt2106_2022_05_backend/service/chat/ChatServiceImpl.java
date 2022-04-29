@@ -1,8 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
+import com.example.idatt2106_2022_05_backend.dto.GroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
 import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.User;
@@ -19,9 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,18 +45,35 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke gruppechat"));
     }
 
-    private User getUser(long userId){
+    private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
     }
 
+    /*
+        @Override
+        public Response getAllMessagesByGroupId(long groupId){
+            Group group = getGroup(groupId);
+                List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream()
+                        .map(message -> modelMapper.map(message, MessageDto.class))
+                        .collect(Collectors.toList());
+
+            return new Response(messageDtoList, HttpStatus.OK);
+        }
+    */
 
     @Override
-    public Response getAllMessagesByGroupId(long groupId){
+    public Response getAllMessagesByGroupId(long groupId) {
         Group group = getGroup(groupId);
-            List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream()
-                    .map(message -> modelMapper.map(message, MessageDto.class))
-                    .collect(Collectors.toList());
+
+        Set<Message> messages = messageRepository.findAllByGroup(group);
+        List<Message> msL = new ArrayList<>(messages);
+        List<MessageDto> messageDtoList = new ArrayList<>();
+
+        for (int i = 0; i < msL.size(); i++) {
+            messageDtoList.add(new MessageDto(msL.get(i).getUser().getId(), msL.get(i).getContent(), msL.get(i).getTimestamp()));
+        }
+
         return new Response(messageDtoList, HttpStatus.OK);
     }
 
@@ -66,11 +81,11 @@ public class ChatServiceImpl implements ChatService {
     public MessageDto saveMessage(MessageDto message, long groupId) {
         Message message1 = new Message();
 
-        if(message.getContent().length()>280){
+        if (message.getContent().length() > 280) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meldingen er for lang");
         }
         message1.setContent(message.getContent());
-        message1.setUser(getUser(message.getFromUserId()));
+        message1.setUser(getUser(message.getUser_id()));
         message1.setGroup(getGroup(groupId));
 
         //setting timestamp
@@ -85,13 +100,46 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Response getChat(long id){
+    public Response getChat(long id) {
         Group group = getGroup(id);
         List<Message> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
         messageDtos.sort(Comparator.comparing(Message::getTimestamp));
         return new Response(messageDtos.stream()
                 .map(message -> modelMapper.map(message, MessageDto.class))
                 .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @Override
+    public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
+        //TODO check if group with the users already exists
+        //TODO check if users exist
+        Group newGroup = new Group();
+        newGroup.setName(privateGroupDto.getGroupName());
+
+        User userOne = userRepository.getById(privateGroupDto.getUserOneId());
+        User userTwo = userRepository.getById(privateGroupDto.getUserTwoId());
+        HashSet<User> users = new HashSet<>();
+        users.add(userOne);
+        users.add(userTwo);
+        newGroup.setUsers(users);
+
+        groupRepository.save(newGroup);
+
+        return new Response("Group object has been created", HttpStatus.OK);
+    }
+
+    public Response getGroupChatsBasedOnUserId(long id) {
+        User user = getUser(id);
+
+        Set<Group> groups = user.getGroupChats();
+        List<Group> groupsL = new ArrayList<>(groups);
+        List<GroupDto> grps = new ArrayList<>();
+
+        for (int i = 0; i < groupsL.size(); i++) {
+            grps.add(new GroupDto(groupsL.get(i).getId(), groupsL.get(i).getName()));
+        }
+
+        return new Response(grps, HttpStatus.OK);
     }
 /*
     public Response getGroupChatsBasedOnUserId(long id){
@@ -101,10 +149,10 @@ public class ChatServiceImpl implements ChatService {
         return new Response(groupId, HttpStatus.OK);
     }
 */
-        /**
-         * 1. Metode til å sende melding
-         * 3. Metode til å hente en chat
-         * TODO: paginate og sorter chat
-         * 4. Get all groupchats on user
-         */
-    }
+    /**
+     * 1. Metode til å sende melding
+     * 3. Metode til å hente en chat
+     * TODO: paginate og sorter chat
+     * 4. Get all groupchats on user
+     */
+}
