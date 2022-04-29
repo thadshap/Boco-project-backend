@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name="message")
 public class Message {
