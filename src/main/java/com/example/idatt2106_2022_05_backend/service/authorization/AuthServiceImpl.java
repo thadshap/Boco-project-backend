@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String forwardToFacebook(String authorizationCode) {
+    public RedirectView forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
         AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/facebook",
                 null);
@@ -108,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
-        return "https://localhost:8080/";
+        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
     }
 
     @Override
@@ -124,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String forwardToGoogle(String authorizationCode) {
+    public RedirectView forwardToGoogle(String authorizationCode) {
         OAuth2Operations operations = googleFactory.getOAuthOperations();
         AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/google",
                 null);
@@ -142,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getDisplayName() + ", " + userProfile.getEmailAddresses().iterator().next());
 
-        return "https://localhost:8080/";
+        return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
     }
 
     @Override
