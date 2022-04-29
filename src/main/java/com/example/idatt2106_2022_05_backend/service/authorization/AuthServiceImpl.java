@@ -34,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.*;
 
 @Service
@@ -74,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
 
-        params.setRedirectUri("http://localhost:8080/forwardLogin");
+        params.setRedirectUri("http://localhost:8443/auth/forwardLogin");
         params.setScope("email,public_profile");
         //TODO thymeleaf
 
@@ -84,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ModelAndView forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
-        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8080/auth/forwardLogin",
+        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin",
                 null);
 
         Connection<Facebook> connection = facebookFactory.createConnection(accessToken);
@@ -97,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
 
         model.addObject("user", userProfile);
 
-        System.out.println(userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
+        System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
         return model;
     }

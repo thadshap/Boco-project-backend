@@ -42,15 +42,16 @@ public class AuthController {
     public String signinFacebook(HttpServletResponse httpServletResponse) {
         log.debug("[X] Call to login with facebook");
         String url = authService.getFacebookUrl();
-        System.out.println("The URL is: " + url);
+        log.info("Url: " + url);
         return url;
 //        httpServletResponse.setHeader("Location", url);
 //        httpServletResponse.setStatus(302);
     }
 
-    @RequestMapping(value = "/forwardLogin")
+    @GetMapping(value = "/forwardLogin")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook", response = ModelAndView.class)
     public ModelAndView forwardFacebook(@RequestParam("code") String authorizationCode) {
+//        log.info(principal.toString());
         log.debug("[X] Call to forward login with facebook to facebook");
         return authService.forwardToFacebook(authorizationCode);
     }
