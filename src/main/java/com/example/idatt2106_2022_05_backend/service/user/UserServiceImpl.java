@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RentalRepository rentalRepository;
+
+    @Autowired
+    private PictureRepository pictureRepository;
 
     @Autowired
     private AdService adService;
@@ -105,6 +109,51 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
 
         return new Response("User deleted", HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * method to delete a picture on an ad
+     *
+     * @param userId the id of the user that wished to change their profile picture
+     * @param chosenPicture the picture to remove (converted to bytes)
+     *
+     * @return response with status ok or not found
+     */
+    @Override
+    public Response deleteProfilePicture(long userId, byte[] chosenPicture){
+        Optional<User> user = userRepository.findById(userId);
+
+        // If present
+        if(user.isPresent()) {
+            Picture profilePicture = user.get().getPicture();
+            if(profilePicture != null) {
+                if(Arrays.equals(profilePicture.getData(), chosenPicture)) {
+
+                    // Remove this picture from user
+                    user.get().setPicture(null);
+                    userRepository.save(user.get());
+
+                    // Set the foreign keys of the picture equal to null
+                    profilePicture.setAd(null);
+                    profilePicture.setUser(null);
+                    pictureRepository.save(profilePicture);
+
+                    // Remove this picture from user
+                    user.get().setPicture(null);
+
+                    // Delete the PICTURE
+                    pictureRepository.delete(profilePicture);
+
+                    // Update the user //todo or take this first
+                    userRepository.save(user.get());
+
+                    return new Response("Slettet bildet", HttpStatus.OK);
+                }
+            }
+            // If we get here, pictures are equal to null
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+        }
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
     }
 
     /**
