@@ -91,7 +91,8 @@ public class ReviewServiceImpl implements ReviewService{
                 Review reviewSaved = reviewRepository.save(review);
 
                 // Set the review to the list of reviews for the user
-                user.addReview(reviewSaved);
+                user.getReviews().add(reviewSaved);
+                //user.addReview(reviewSaved);
 
                 // Persist the change
                 userRepository.save(user);

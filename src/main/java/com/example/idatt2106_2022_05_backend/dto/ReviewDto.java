@@ -3,12 +3,14 @@ package com.example.idatt2106_2022_05_backend.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @ApiModel(description = "data transfer object to create and return reviews on an ad")
 public class ReviewDto {
 

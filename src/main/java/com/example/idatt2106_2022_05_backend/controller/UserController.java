@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
@@ -8,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -26,6 +28,18 @@ public class UserController {
     public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
         return userService.updateUser(userId, userUpdateDto);
+    }
+
+    @DeleteMapping("/profilePicture")
+    public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
+        try {
+            return userService.deleteProfilePicture(updatePictureDto.getUserId(),
+                    updatePictureDto.getMultipartFile().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
+
     }
 
     @DeleteMapping("/{userId}")

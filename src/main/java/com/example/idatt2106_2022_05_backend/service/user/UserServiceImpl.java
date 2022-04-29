@@ -2,10 +2,9 @@ package com.example.idatt2106_2022_05_backend.service.user;
 
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -15,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,6 +31,21 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PictureUtility pictureService;
 
+    @Autowired
+    private AdRepository adRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private RentalRepository rentalRepository;
+
+    @Autowired
+    private PictureRepository pictureRepository;
+
+    @Autowired
+    private AdService adService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -44,9 +60,100 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Response deleteUser(Long userId) {
+        // Find the user
+        Optional<User> userFound = userRepository.findById(userId);
+        if(userFound.isPresent()) {
+            // Get the ads
+            Set<Ad> ads = userFound.get().getAds();
+            if(ads != null) { //todo set user == null if this does not work
+                // Iterate over all the ads and delete them
+                for(Ad ad : ads) {
+                    adService.deleteAd(ad.getId());
+                }
+            }
+        }
+        // Get the rentals
+        List<Rental> rentals = userFound.get().getRentalsOwned();
+        if(rentals != null) {
+            for(Rental rental : rentals) {
+                rental.setOwner(null);
+                rentalRepository.save(rental);
+            }
+        }
+
+        // Delete rentals from user
+        userFound.get().setRentalsOwned(null);
+
+        List<Rental> rentals2 = userFound.get().getRentalsBorrowed();
+        if(rentals != null) {
+            for(Rental rental : rentals2) {
+                rental.setBorrower(null);
+                rentalRepository.save(rental);
+            }
+        }
+
+        // Delete rentals from user
+        userFound.get().setRentalsBorrowed(null);
+
+        // Get the reviews
+        List<Review> reviews = userFound.get().getReviews();
+        if(reviews != null) {
+            for(Review review : reviews) {
+                review.setUser(null);
+                reviewRepository.save(review);
+            }
+        }
+        userFound.get().setReviews(null);
+
+        // Delete the user
         userRepository.deleteById(userId);
 
         return new Response("User deleted", HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * method to delete a picture on an ad
+     *
+     * @param userId the id of the user that wished to change their profile picture
+     * @param chosenPicture the picture to remove (converted to bytes)
+     *
+     * @return response with status ok or not found
+     */
+    @Override
+    public Response deleteProfilePicture(long userId, byte[] chosenPicture){
+        Optional<User> user = userRepository.findById(userId);
+
+        // If present
+        if(user.isPresent()) {
+            Picture profilePicture = user.get().getPicture();
+            if(profilePicture != null) {
+                if(Arrays.equals(profilePicture.getData(), chosenPicture)) {
+
+                    // Remove this picture from user
+                    user.get().setPicture(null);
+                    userRepository.save(user.get());
+
+                    // Set the foreign keys of the picture equal to null
+                    profilePicture.setAd(null);
+                    profilePicture.setUser(null);
+                    pictureRepository.save(profilePicture);
+
+                    // Remove this picture from user
+                    user.get().setPicture(null);
+
+                    // Delete the PICTURE
+                    pictureRepository.delete(profilePicture);
+
+                    // Update the user //todo or take this first
+                    userRepository.save(user.get());
+
+                    return new Response("Slettet bildet", HttpStatus.OK);
+                }
+            }
+            // If we get here, pictures are equal to null
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+        }
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -66,19 +173,19 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
         User user = userFromDB.get();
-        if (!userUpdateDto.getFirstName().isBlank()) {
+        if (userUpdateDto.getFirstName() != null) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
-        if (!userUpdateDto.getLastName().isBlank()) {
+        if (userUpdateDto.getLastName() != null) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if (!userUpdateDto.getEmail().isBlank()) {
+        if (userUpdateDto.getEmail() != null) {
             user.setEmail(userUpdateDto.getEmail());
         }
-        if (!userUpdateDto.getPassword().isBlank()) {
+        if (userUpdateDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
-        if(!userUpdateDto.getPicture().isEmpty()) {
+        if(userUpdateDto.getPicture() != null) {
             pictureService.savePicture(userUpdateDto.getPicture(),0,userId);
         }
         userRepository.save(user);

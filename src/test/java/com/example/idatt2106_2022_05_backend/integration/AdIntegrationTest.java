@@ -1,13 +1,11 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
-import com.example.idatt2106_2022_05_backend.controller.AdController;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
-import com.example.idatt2106_2022_05_backend.util.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -15,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -38,6 +36,8 @@ public class AdIntegrationTest {
     @Autowired
     AdRepository adRepository;
 
+    @Autowired
+    RentalRepository rentalRepository;
     @Autowired
     UserRepository userRepository;
 
@@ -80,9 +80,11 @@ public class AdIntegrationTest {
 
     @AfterEach
     public void emptyDatabase() {
+        /**
         // get all ads
         List<Ad> ads = adRepository.findAll();
         for(Ad ad : ads) {
+
             Set<CalendarDate> dates = ad.getDates();
             if(dates != null) {
                 for(CalendarDate date : dates) {
@@ -90,11 +92,22 @@ public class AdIntegrationTest {
                     calendarDateRepository.save(date);
                 }
             }
+
             Set<Review> reviews = ad.getReviews();
             if(reviews != null) {
                 for(Review review : reviews) {
                     review.setAd(null);
                     reviewRepository.save(review);
+                }
+            }
+
+            Set<Rental> rentals = ad.getRentals();
+            if(rentals != null) {
+                for(Rental rental : rentals) {
+                    rental.setAd(null);
+                    rental.setBorrower(null);
+                    rental.setOwner(null);
+                    rentalRepository.save(rental);
                 }
             }
             ad.setCategory(null);
@@ -103,6 +116,7 @@ public class AdIntegrationTest {
             ad.setDates(null);
             ad.setPhotos(null);
             ad.setReviews(null);
+
             adRepository.delete(ad);
         }
         List<User> users = userRepository.findAll();
@@ -123,7 +137,12 @@ public class AdIntegrationTest {
             category.setAds(null);
             categoryRepository.delete(category);
         }
-
+         */
+        reviewRepository.deleteAll();
+        rentalRepository.deleteAll();
+        adRepository.deleteAll();
+        userRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     @Nested
@@ -339,11 +358,13 @@ public class AdIntegrationTest {
 
         @Test
         public void whenPostDoesNotExist_postIsNotDeleted(){
-
             // The cleanup should have erased ads from this repo
             assertEquals(0, adRepository.findAll().size());
 
-            assertEquals(adService.deleteAd(100L).getStatus(), HttpStatus.NOT_FOUND);
+            ResponseEntity<Object> res = adService.deleteAd(100L);
+
+            // Service class should return HttpResponse.NOT_FOUND
+            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
         }
     }
 
@@ -375,27 +396,21 @@ public class AdIntegrationTest {
             newAd = adRepository.save(newAd);
 
             // Due to the foreign keys, the user now also has this ad
-            Response response = adService.getAllAdsByUser(user.getId());
+            ResponseEntity<Object> res = adService.getAllAdsByUser(user.getId());
 
-            // Assert that the response and the ad is equal
-            assertEquals(HttpStatus.OK, response.getStatus());
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         @Test
         public void whenUserDoesNotExist_adsAreNotReturned(){
-            User user = userRepository.findAll().get(0);
-
             // Random id
-            Long wrongUserId = 101L;
+            long wrongUserId = 101L;
 
-            try {
-                // The method will fail when wrong id is used
-                adService.getAllAvailableAdsByUser(wrongUserId);
-                fail();
+            // The method will fail when wrong id is used
+            ResponseEntity<Object> res = adService.getAllAvailableAdsByUser(wrongUserId);
 
-            }catch(NoSuchElementException e){
-                // Method works correctly if this exception is caught
-            }
+            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
         }
 
         @Test
@@ -441,21 +456,21 @@ public class AdIntegrationTest {
                 adRepository.save(newAd);
             }
             // Pagination with all 15 ads
-            Response response = adService.getPageOfAds(14);
-            assertEquals(response.getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getPageOfAds(15);
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         @Test
-        public void paginationDoesNotWork_WhenNotEnoughAds(){
-
-            // Build new user and category
+        public void paginationDoesNotWork_WhenNotEnoughAds() {
+            // Build new user
             User user = User.builder().
                     firstName("firstName").
                     lastName("lastName").
                     email("user.name@hotmail.com").
                     password("pass1word").
                     build();
-
 
             // Persist the user --> we now have two users
             userRepository.save(user);
@@ -468,7 +483,6 @@ public class AdIntegrationTest {
 
             // Create and save 15 new posts
             for(int i = 0; i < 15; i++){
-
                 // Building an ad
                 Ad newAd = Ad.builder().
                         title("title").
@@ -487,9 +501,13 @@ public class AdIntegrationTest {
                 // Save the new ad
                 adRepository.save(newAd);
             }
+            assertEquals(15, adRepository.findAll().size());
+
             // Pagination with all 16 ads (only 15 present in db)
-            Response response = adService.getPageOfAds(16);
-            assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST); //TODO this is not the actual
+            ResponseEntity<Object> res = adService.getPageOfAds(16);
+
+            // Service class should return HttpResponse.NOT_FOUND
+            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
         }
     }
 
@@ -577,10 +595,10 @@ public class AdIntegrationTest {
             // Repository call should return two ads
             assertEquals(adRepository.getAllAvailableAds().size(), 2);
 
-            // Service call should return HttpResponse.OK
-            Response response = adService.getAllAvailableAds();
-            System.out.println(response.getBody()); //todo remove after
-            assertEquals(response.getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getAllAvailableAds();
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get available ads by user id
@@ -628,9 +646,10 @@ public class AdIntegrationTest {
             // Repository call should return two ads
             assertEquals(adRepository.getAvailableAdsByUserId(user.getId()).size(), 2);
 
-            // Service call should return HttpResponse.OK
-            Response response = adService.getAllAvailableAdsByUser(user.getId());
-            assertEquals(response.getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getAllAvailableAdsByUser(user.getId());
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get ads by postal code
@@ -695,8 +714,10 @@ public class AdIntegrationTest {
             // Repository call should return 3
             assertEquals(3, adRepository.findByPostalCode(8000).size());
 
-            // Service call should return HttpResponse.OK
-            assertEquals(adService.getAllAdsByPostalCode(8000).getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getAllAdsByPostalCode(8000);
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get ads by rental type
@@ -745,8 +766,10 @@ public class AdIntegrationTest {
             // Repository call should return 2
             assertEquals(adRepository.findByRental(true).size(), 2);
 
-            // Service call should return HttpResponse.OK
-            assertEquals(adService.getAllAdsByRentalType(true).getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getAllAdsByRentalType(true);
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         @Test
@@ -793,8 +816,10 @@ public class AdIntegrationTest {
             // Repository call should return 2
             assertEquals(adRepository.findByRental(false).size(), 2);
 
-            // Service call should return HttpResponse.OK
-            assertEquals(adService.getAllAdsByRentalType(false).getStatus(), HttpStatus.OK);
+            ResponseEntity<Object> res = adService.getAllAdsByRentalType(false);
+
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get all ads nearby
@@ -849,9 +874,10 @@ public class AdIntegrationTest {
             // List should be size == 1
             assertEquals(reviews.size(), 1);
 
+            ResponseEntity<Object> res = adService.getReviewsByUserId(user.getId());
+
             // Service class should return HttpResponse.OK
-            assertEquals(adService.getReviewsByUserId(user.getId()).getStatus(),
-                    HttpStatus.OK);
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         @Test
@@ -873,8 +899,10 @@ public class AdIntegrationTest {
             // List should be size == 0
             assertEquals(reviews.size(), 0);
 
+            ResponseEntity<Object> res = adService.getReviewsByUserId(user.getId());
+
             // Service class should return HttpResponse.NOT_FOUND
-            assertNull(adService.getReviewsByUserId(user.getId()).getStatus());
+            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
         }
 
         // get all categories
@@ -897,8 +925,10 @@ public class AdIntegrationTest {
             // There should be 4 categories in category-repository now
             assertEquals(categoryRepository.findAll().size(), 4);
 
-            // Service method should return HttpStatus.OK
-            assertEquals(adService.getAllCategories().getStatus(), HttpStatus.OK); //todo create method
+            ResponseEntity<Object> res = adService.getAllCategories();
+
+            assertEquals(HttpStatus.OK.value(),
+                    res.getStatusCodeValue());
         }
 
         // get all sub categories
@@ -934,8 +964,12 @@ public class AdIntegrationTest {
             assertEquals(categoryRepository.findAll().size(),13);
 
             // Service method should return HttpStatus.OK
-            assertEquals(HttpStatus.OK,
-                    adService.getAllSubCategories(mainCategory.getName()).getStatus());
+
+
+            ResponseEntity<Object> res = adService.getAllSubCategories(mainCategory.getName());
+
+            assertEquals(HttpStatus.OK.value(),
+                    res.getStatusCodeValue());
         }
 
         // get all ads within specified category
@@ -963,7 +997,10 @@ public class AdIntegrationTest {
                     build();
 
             // Persist the ad
-            Ad savedAd = adRepository.save(ad);
+            adRepository.save(ad);
+
+            // Persist the category
+            categoryRepository.save(category);
 
             // Retrieve category with name
             Optional<Category> categoryFound = categoryRepository.findByName(category.getName());
@@ -971,14 +1008,15 @@ public class AdIntegrationTest {
 
                 // Assert that the ad was added to the category
                 assertEquals(categoryFound.get().getAds().size(), 1);
+
+                // Assert that the service response is OK
+                ResponseEntity<Object> res = adService.getAllAdsInCategory(category.getId());
+                assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
             }
             else{
                 // If no category was found, the test fails
                 fail();
             }
-            // Assert that the service response is OK
-            Response response = adService.getAllAdsInCategory(savedAd.getId());
-            assertEquals(response.getStatus(), HttpStatus.OK);
         }
     }
 }

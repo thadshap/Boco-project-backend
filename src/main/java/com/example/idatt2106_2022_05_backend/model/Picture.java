@@ -33,10 +33,10 @@ public class Picture {
     private byte[] data;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "ad_id")
     private Ad ad;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.EAGER)
     private User user;
 
     @Override
