@@ -84,7 +84,7 @@ public class Ad {
     // Is nullable
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ad")
     @ToString.Exclude
-    private Set<Picture> pictures;
+    private Set<Picture> pictures = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
