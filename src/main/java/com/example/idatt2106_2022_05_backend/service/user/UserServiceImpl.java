@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         if (!userUpdateDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
-        if(!userUpdateDto.getPicture().isEmpty()) {
+        if(userUpdateDto.getPicture() != null) {
             pictureService.savePicture(userUpdateDto.getPicture(),0,userId);
         }
         userRepository.save(user);
