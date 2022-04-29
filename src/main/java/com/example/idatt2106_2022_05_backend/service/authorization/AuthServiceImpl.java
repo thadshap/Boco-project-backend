@@ -108,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
-        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());;
+        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
     }
 
     @Override
