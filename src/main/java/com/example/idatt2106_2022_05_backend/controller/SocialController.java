@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -25,10 +26,8 @@ import java.net.URI;
 @CrossOrigin(value = "*", allowedHeaders = "*")
 public class SocialController {
 
-
-
-    private FacebookConnectionFactory factory = new FacebookConnectionFactory("1181763609285094",
-            "822eef3823b53888eb4dd9f0c1a09463"
+    private FacebookConnectionFactory factory = new FacebookConnectionFactory("3598318360302645",
+            "689ea09632fa57397b5981faabab9ad6"
             );
 
 
@@ -37,27 +36,30 @@ public class SocialController {
 //	}
 
     @GetMapping(value = "/facebook")
-    public void producer(HttpServletResponse httpServletResponse) {
+    public String producer(HttpServletResponse httpServletResponse) throws IOException {
 
 
 
         OAuth2Operations operations = factory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
 
-        params.setRedirectUri("http://localhost:8080/forwardLogin");
+        params.setRedirectUri("http://localhost:8443/signin/forwardLogin");
         params.setScope("email,public_profile");
 
         String url = operations.buildAuthenticateUrl(params);
         System.out.println("The URL is: " + url);
 
-        httpServletResponse.setHeader("Location", url);
-        httpServletResponse.setStatus(302);
+        return url;
+
+//        httpServletResponse.setHeader("Location", url);
+//        httpServletResponse.setStatus(302);
+//        httpServletResponse.sendRedirect(url);
     }
 
     @RequestMapping(value = "/forwardLogin")
     public ModelAndView prodducer(@RequestParam("code") String authorizationCode) {
         OAuth2Operations operations = factory.getOAuthOperations();
-        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8080/forwardLogin",
+        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/signin/forwardLogin",
                 null);
 
         Connection<Facebook> connection = factory.createConnection(accessToken);
