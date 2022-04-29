@@ -71,7 +71,10 @@ public class ChatServiceImpl implements ChatService {
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (int i = 0; i < msL.size(); i++) {
-            messageDtoList.add(new MessageDto(msL.get(i).getUser().getId(), msL.get(i).getContent(), msL.get(i).getTimestamp()));
+            Message ms = msL.get(i);
+            String ts = ms.getTimestamp().toString().split("\\.")[0];
+
+            messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
         }
 
         return new Response(messageDtoList, HttpStatus.OK);

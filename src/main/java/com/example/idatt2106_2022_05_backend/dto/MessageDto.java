@@ -13,5 +13,5 @@ public class MessageDto {
     private long user_id;
     //private long groupId;  //Maybe we wont need this
     private String content;
-    private Timestamp timestamp;
+    private String timestamp;
 }
