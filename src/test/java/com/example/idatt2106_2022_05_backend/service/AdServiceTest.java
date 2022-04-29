@@ -7,27 +7,28 @@ import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {Ad.class})
+@ExtendWith(SpringExtension.class)
 class AdServiceTest {
 
-    @Autowired
+    @MockBean
     private AdService adService;
 
     // @Autowired
@@ -96,7 +97,7 @@ class AdServiceTest {
         // We want to use this ad-object when we call on methods later on.
         Mockito.when(adRepository.findByPostalCode(7234)).thenReturn(ads);
         Mockito.when(adRepository.findById(1L)).thenReturn(Optional.of(ad));
-        Mockito.when(adRepository.getAvailableAdsByUserId(2L)).thenReturn((Set<Ad>) ad);
+        Mockito.when(adRepository.getAvailableAdsByUserId(2L)).thenReturn(Collections.singleton((ad)));
     }
 
 
@@ -120,7 +121,6 @@ class AdServiceTest {
             ad.setDescription("text:" + i);
             ad.setDuration(i);
             ad.setDurationType(AdType.HOUR);
-            ad.setPicturesIn(null);
             ad.setPostalCode(1234+i);
             ad.setPrice(10*i);
             ad.setRental(false);
@@ -197,24 +197,5 @@ class AdServiceTest {
     @Test
     void adIsUpdated() {
 
-    }
-
-
-    @Test
-    void whenAdWithPostalCodeDoesNotExist_returnTrue() {
-
-        // Postal code that does not exist in db
-        int postalCode = 1235;
-        Set<Ad> foundAds = (Set<Ad>) adService.getAllAdsByPostalCode(postalCode).getBody();
-
-        boolean equalAdFound = false;
-        for(Ad ad : foundAds) {
-            if(ad.getPostalCode() == postalCode) {
-                equalAdFound = true;
-            }
-        }
-
-        // If equalAdFound --> test failed
-        assertFalse(equalAdFound);
     }
 }

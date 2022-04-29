@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private PictureRepository pictureRepository;
+    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -36,10 +36,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to delete user from repository.
-     * 
+     *
      * @param userId
      *            user id to delete user.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -51,12 +51,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to update User object in the repository.
-     * 
+     *
      * @param userId
      *            id of the user to update.
      * @param userUpdateDto
      *            {@link UserUpdateDto} object with variables to update user.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -78,11 +78,8 @@ public class UserServiceImpl implements UserService {
         if (!userUpdateDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
-        if (userUpdateDto.getPicture() != null) {
-            Picture picture = Picture.builder().filename("PB")
-                    .content(PictureUtility.compressImage(userUpdateDto.getPicture().getBytes())).build();
-            pictureRepository.save(picture);
-            user.setPicture(picture);
+        if(!userUpdateDto.getPicture().isEmpty()) {
+            pictureService.savePicture(userUpdateDto.getPicture(),0,userId);
         }
         userRepository.save(user);
         return new Response("User updated", HttpStatus.OK);
@@ -90,10 +87,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to retrieve user from the database.
-     * 
+     *
      * @param userId
      *            id of user to retrieve.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override

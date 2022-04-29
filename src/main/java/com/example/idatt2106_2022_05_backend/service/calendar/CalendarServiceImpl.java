@@ -69,7 +69,7 @@ public class CalendarServiceImpl implements CalendarService {
 
             if(ad.isPresent()) {
 
-                // Get all dates with requested adId
+                // Get all dates with requested id
                 Set<CalendarDate> dates = adRepository.getDatesForAd(dto.getAdId());
 
                 // Get all dates between startDate and endDate
@@ -165,7 +165,7 @@ public class CalendarServiceImpl implements CalendarService {
     /**
      *
      * @param dto contains:
-     *            adId
+     *            id
      *
      * @return the dates that are unavailable up until the ad expires (12 months past creation timestamp)
      */

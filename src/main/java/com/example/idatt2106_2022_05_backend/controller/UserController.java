@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @ApiOperation(value = "Endpoint to delete user", response = UserReturnDto.class)
+    @ApiOperation(value = "Endpoint to get user", response = UserReturnDto.class)
     public Response getUser(@PathVariable Long userId) {
         log.debug("[X] Call to get user with id = {}", userId);
         return userService.getUser(userId);

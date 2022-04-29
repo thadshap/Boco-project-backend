@@ -1,14 +1,8 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.CalendarDate;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -37,6 +31,10 @@ public class DataLoader implements ApplicationRunner {
 
         private CalendarDateRepository calDateRepository;
 
+        private RentalRepository rentalRepository;
+
+        private ReviewRepository reviewRepository;
+
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         @Autowired
@@ -52,12 +50,15 @@ public class DataLoader implements ApplicationRunner {
      * @param calDateRepository repository of the {@link CalendarDate} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository) {
+                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
+                      RentalRepository rentalRepository, ReviewRepository reviewRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
             this.categoryRepository = categoryRepository;
             this.calDateRepository = calDateRepository;
+            this.rentalRepository = rentalRepository;
+            this.reviewRepository = reviewRepository;
         }
 
         public void run(ApplicationArguments args) {
@@ -118,10 +119,21 @@ public class DataLoader implements ApplicationRunner {
             Category category6 = Category.builder().name("IT").
                     parentName(category3.getName()).build();
 
+            // Add a new category as well for testing!
+            Category category7 = Category.builder().name("Shoes").
+                    parentName(category1.getName()).build();
+
             // Persist sub-categories
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
+            categoryRepository.save(category7);
+
+            // Create sub category of sub-category
+            Category category8 = Category.builder().name("Chargers").
+                    parentName(category6.getName()).build();
+
+            categoryRepository.save(category8);
 
 
             // Create ad
@@ -134,6 +146,7 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project Road 4").
                     postalCode(7200).
+                    city("Trondheim").
                     user(user1).
                     category(category5).
                     build();
@@ -147,6 +160,7 @@ public class DataLoader implements ApplicationRunner {
                     price(150).
                     streetAddress("Project Road 5").
                     postalCode(7000).
+                    city("Trondheim").
                     user(user2).
                     category(category4).
                     build();
@@ -160,14 +174,214 @@ public class DataLoader implements ApplicationRunner {
                     price(800).
                     streetAddress("Project Road 6").
                     postalCode(7800).
+                    city("Trondheim").
                     user(user3).
                     category(category6).
+                    build();
+
+            Ad charger = Ad.builder().
+                    title("Pc charger").
+                    description("Renting out a new lenovo charger").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category8).
+                    build();
+            Ad motherBoard = Ad.builder().
+                    title("Mother board").
+                    description("Renting out a new lenovo motherboard").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(800).
+                    streetAddress("Project Road 6").
+                    postalCode(7800).
+                    city("Trondheim").
+                    user(user3).
+                    category(category3).
+                    build();
+
+            Ad p = Ad.builder().
+                    title("Pets").
+                    description("Renting out my pet").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("Road 4").
+                    postalCode(7202).
+                    user(user1).
+                    category(category5).
+                    build();
+
+            Ad pa = Ad.builder().
+                    title("New p").
+                    description("pushing p").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("Project P").
+                    postalCode(7201).
+                    user(user1).
+                    category(category4).
+                    build();
+
+            Ad pan = Ad.builder().
+                    title("New news").
+                    description("Renting out news").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("4 fourty four").
+                    postalCode(7200).
+                    user(user1).
+                    category(category3).
+                    build();
+
+            Ad pant = Ad.builder().
+                    title("New new").
+                    description("Renting out new").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("Project Road").
+                    postalCode(7200).
+                    user(user1).
+                    category(category2).
+                    build();
+
+            Ad pantss = Ad.builder().
+                    title("New pantsss").
+                    description("Renting out a pair of pantsss in size 52").
+                    rental(true).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("Project 4").
+                    postalCode(7200).
+                    user(user1).
+                    category(category1).
                     build();
 
             // Persist the 3 ads
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);
+            adRepository.save(charger);
+            adRepository.save(motherBoard);
+
+
+            adRepository.save(p);
+            adRepository.save(pa);
+            adRepository.save(pan);
+            adRepository.save(pant);
+            adRepository.save(pantss);
+
+            Rental rental = Rental.builder()
+                    .ad(pants)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(10000)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(1))
+                    .rentTo(LocalDate.now().plusDays(5))
+                    .rentFrom(LocalDate.now().plusDays(2))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pant)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(1000)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(3))
+                    .rentTo(LocalDate.now().plusDays(7))
+                    .rentFrom(LocalDate.now().plusDays(4))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pan)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(100)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(5))
+                    .rentTo(LocalDate.now().plusDays(9))
+                    .rentFrom(LocalDate.now().plusDays(6))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pa)
+                    .owner(user3)
+                    .borrower(user1)
+                    .price(3000)
+                    .active(true)
+                    .deadline(LocalDate.now().plusDays(7))
+                    .rentTo(LocalDate.now().plusDays(12))
+                    .rentFrom(LocalDate.now().plusDays(8))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(p)
+                    .owner(user3)
+                    .borrower(user1)
+                    .price(3000)
+                    .active(true)
+                    .deadline(LocalDate.now().plusDays(9))
+                    .rentTo(LocalDate.now().plusDays(15))
+                    .rentFrom(LocalDate.now().plusDays(10))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            Review review = Review.builder()
+                    .ad(pants)
+                    .user(user3)
+                    .description("veldig bra anbefaler dette produktet!")
+                    .rating(9)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user2)
+                    .description("Elendig produkt")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user3)
+                    .description("ten out of ten would buy again")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user4)
+                    .description("two out of ten would never buy again")
+                    .rating(1)
+                    .build();
+            reviewRepository.save(review);
 
             // Add dates to the ads // todo might not work due to id
             List<Ad> ads =  adRepository.findAll();

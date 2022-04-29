@@ -25,7 +25,7 @@ public class RentalController {
     @PostMapping("/create")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response createRental(@RequestBody RentalDto rentalDto) {
-        log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAd());
+        log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
         return rentalService.createRental(rentalDto);
     }
 
