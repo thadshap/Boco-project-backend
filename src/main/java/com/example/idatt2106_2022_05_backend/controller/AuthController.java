@@ -12,9 +12,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.oauth2.AccessGrant;
@@ -39,18 +41,16 @@ public class AuthController {
 
     @GetMapping(value = "/signin/facebook")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook")
-    public String signinFacebook(HttpServletResponse httpServletResponse) {
+    public String signinFacebook() {
         log.debug("[X] Call to login with facebook");
         String url = authService.getFacebookUrl();
         log.info("Url: " + url);
         return url;
-//        httpServletResponse.setHeader("Location", url);
-//        httpServletResponse.setStatus(302);
     }
 
-    @GetMapping(value = "/forwardLogin")
+    @GetMapping(value = "/forwardLogin/facebook")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook", response = ModelAndView.class)
-    public ModelAndView forwardFacebook(@RequestParam("code") String authorizationCode) {
+    public String forwardFacebook(@RequestParam("code") String authorizationCode) {
 //        log.info(principal.toString());
         log.debug("[X] Call to forward login with facebook to facebook");
         return authService.forwardToFacebook(authorizationCode);
@@ -58,26 +58,23 @@ public class AuthController {
 
     @GetMapping(value = "/signin/google")
     @ApiOperation(value = "Endpoint to handle user logging in with Google")
-    public String producer(HttpServletResponse httpServletResponse) {
+    public String signinGoogle() {
         log.debug("[X] Call to login with google");
         String url = authService.getGoogleUrl();
         System.out.println("The URL is: " + url);
         return url;
-//        httpServletResponse.setHeader("Location", url);
-//        httpServletResponse.setStatus(302);
     }
 
     @RequestMapping(value = "/forwardLogin/google")
     @ApiOperation(value = "Endpoint to handle user logging in with Google", response = ModelAndView.class)
-    public ModelAndView prodducer(@RequestParam("code") String authorizationCode) {
+    public String forwardGoogle(@RequestParam("code") String authorizationCode) {
         log.debug("[X] Call to forward login with facebook to Google");
         return authService.forwardToGoogle(authorizationCode);
     }
 
     @PostMapping("/login/outside")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
-    public Response loginWithOutsideService(Principal principal) {
-
+    public Response loginWithOutsideService() {
         return null;
     }
 

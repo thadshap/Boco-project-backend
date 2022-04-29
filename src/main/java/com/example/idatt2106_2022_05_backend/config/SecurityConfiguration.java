@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
@@ -96,7 +97,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             return cors;
         }).and().csrf().disable().authorizeRequests()
                 .antMatchers("/login*","/signin/**","/signup/**").permitAll()
-                .antMatchers("/**", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                .antMatchers("/", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
                 .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
@@ -120,6 +121,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-//        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 }

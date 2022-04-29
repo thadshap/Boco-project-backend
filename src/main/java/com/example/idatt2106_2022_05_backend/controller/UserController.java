@@ -7,7 +7,10 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -37,7 +40,9 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ApiOperation(value = "Endpoint to get user", response = UserReturnDto.class)
-    public Response getUser(@PathVariable Long userId) {
+    public Response getUser(@PathVariable Long userId, Authentication auth) {
+        UserDetails user = (UserDetails)auth.getPrincipal();
+        System.out.println(user.getUsername());
         log.debug("[X] Call to get user with id = {}", userId);
         return userService.getUser(userId);
     }
