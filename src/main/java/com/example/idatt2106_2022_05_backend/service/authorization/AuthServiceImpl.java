@@ -103,6 +103,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public String getGoogleUrl() {
+        return null;
+    }
+
+    @Override
+    public ModelAndView forwardToGoogle(String authorizationCode) {
+        return null;
+    }
+
+    @Override
     public Response createUser(CreateAccountDto createAccount, String url) {
         if (userRepository.findByEmail(createAccount.getEmail()) != null) {
             return new Response("Mail is already registered", HttpStatus.IM_USED);

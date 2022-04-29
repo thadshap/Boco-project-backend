@@ -39,20 +39,38 @@ public class AuthController {
 
     @GetMapping(value = "/signin/facebook")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook")
-    public void producer(HttpServletResponse httpServletResponse) {
+    public String signinFacebook(HttpServletResponse httpServletResponse) {
         log.debug("[X] Call to login with facebook");
         String url = authService.getFacebookUrl();
         System.out.println("The URL is: " + url);
-
-        httpServletResponse.setHeader("Location", url);
-        httpServletResponse.setStatus(302);
+        return url;
+//        httpServletResponse.setHeader("Location", url);
+//        httpServletResponse.setStatus(302);
     }
 
     @RequestMapping(value = "/forwardLogin")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook", response = ModelAndView.class)
-    public ModelAndView prodducer(@RequestParam("code") String authorizationCode) {
+    public ModelAndView forwardFacebook(@RequestParam("code") String authorizationCode) {
         log.debug("[X] Call to forward login with facebook to facebook");
         return authService.forwardToFacebook(authorizationCode);
+    }
+
+    @GetMapping(value = "/signin/google")
+    @ApiOperation(value = "Endpoint to handle user logging in with Google")
+    public String producer(HttpServletResponse httpServletResponse) {
+        log.debug("[X] Call to login with google");
+        String url = authService.getGoogleUrl();
+        System.out.println("The URL is: " + url);
+        return url;
+//        httpServletResponse.setHeader("Location", url);
+//        httpServletResponse.setStatus(302);
+    }
+
+    @RequestMapping(value = "/forwardLogin/google")
+    @ApiOperation(value = "Endpoint to handle user logging in with Google", response = ModelAndView.class)
+    public ModelAndView prodducer(@RequestParam("code") String authorizationCode) {
+        log.debug("[X] Call to forward login with facebook to Google");
+        return authService.forwardToGoogle(authorizationCode);
     }
 
     @PostMapping("/login/outside")
