@@ -13,6 +13,9 @@ public class CalendarDto {
     // AdId
     private long adId;
 
+    // Needed when cancelling a rental
+    private long rentalId;
+
     // Date from
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;

@@ -10,10 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -27,7 +24,7 @@ public class User {
     @Id
     @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "user_id") //todo change to auto
+    @Column(name = "user_id")
     private Long id;
 
     @NotBlank
@@ -50,6 +47,8 @@ public class User {
 
     private double rating;
 
+    private int numberOfReviews;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_type")
     private AuthenticationType authType;
@@ -60,7 +59,7 @@ public class User {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private ResetPasswordToken resetPasswordToken;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     private Picture picture;
 
@@ -73,11 +72,12 @@ public class User {
     private List<Rental> rentalsBorrowed;
 
     // PS: These reviews are those that are WRITTEN by this user (not owned)
+    // todo check out this logic --> should the reviews be deleted?
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Review> reviews;
 
     // One to many relationship w/ ad
-    @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads;
 
@@ -87,7 +87,31 @@ public class User {
 
     @PreRemove
     void remove(){
-        ads = null;
+        if(ads != null) {
+            setAds(null);
+        }
+        if(reviews != null) {
+            setReviews(null);
+        }
+        if(rentalsBorrowed != null) {
+            setRentalsBorrowed(null); //todo talk about this logic
+        }
+        if(rentalsOwned != null) {
+            setRentalsOwned(null);
+        }
+        if(picture != null) {
+            setPicture(null);
+        }
+        if(resetPasswordToken != null) {
+            setResetPasswordToken(null);
+        }
+        if(userVerificationToken != null) {
+            setUserVerificationToken(null);
+        }
+    }
+
+    public void addReview(Review newReview) {
+        reviews.add(newReview);
     }
 
     @Override

@@ -16,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 @ApiModel(description = "data transfer object to update user info")
 public class UserUpdateDto {
 
+    @ApiModelProperty(notes = "id of the user") //todo necessary? hilsen karoline..
+    private long id;
+
     @ApiModelProperty(notes = "first name of user")
     private String firstName;
 

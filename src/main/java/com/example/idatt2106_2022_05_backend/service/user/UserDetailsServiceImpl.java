@@ -17,7 +17,10 @@ import java.util.ArrayList;
  * UserDetailsService instance personalized
  */
 @Slf4j
+@NoArgsConstructor
+@AllArgsConstructor
 @Service
+@Builder
 @Data
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -30,10 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * this method retrieves a user by their email
-     * 
+     *
      * @param email
      *            email of the user
-     * 
+     *
      * @return returns a {@link UserDetails} object
      */
     @Override

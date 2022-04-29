@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -50,15 +50,19 @@ public class Ad {
     private boolean rentedOut;
 
     // Is nullable
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
     // Is nullable
     @Column(name = "street_address")
     private String streetAddress;
+
     // Is nullable
-    @Column(name = "postal_code")
+    @Column(name = "postal_code", nullable = false)
     private int postalCode;
+
+    @NotNull
+    private String city;
 
     // Coordinates latitude
     @Column(name="lat")
@@ -73,34 +77,77 @@ public class Ad {
     @Column(name = "created")
     private LocalDate created;
 
+    // Replacing picture table (photos == fileName)
+    @Column(length = 64)
+    private String photos;
+
     // Is nullable
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ad")
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ad")
     @ToString.Exclude
-    private Set<Picture> pictures;
+    private Set<Picture> pictures = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne()
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private Set<Rental> rentals;
+    private Set<Rental> rentals = new HashSet<>();
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
-    @OneToMany(mappedBy = "ad", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private Set<Review> reviews; // todo create a rating for user such that the rating does not get removed from the user
+    private Set<Review> reviews = new HashSet<>();
 
-    // Many-to-many connection with Date. Date is parent in this case.
-    @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "ads")
-    @ToString.Exclude
+    // Many to many connection to CalendarDate modelled by the "calendar" table (not modelled)
+    @ManyToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "calendar",
+            joinColumns = { @JoinColumn(name = "ad_id") },
+            inverseJoinColumns = { @JoinColumn(name = "date_id") }
+    )
     private Set<CalendarDate> dates = new HashSet<>();
+
+    // Add a new picture
+    public void addPicture(Picture picture) {
+        pictures.add(picture);
+    }
+
+    // Adding a getter to retrieve the image path of the photos of this specific ad
+    @Transient
+    public String getPhotosImagePath() {
+        if (photos == null || id == null) return null;
+
+        return "/ad-photos/" + id + "/" + photos;
+    }
+
+    @PreRemove
+    private void removeRelationships(){
+        if(pictures != null){
+            setPictures(null);
+        }
+        if(category != null) {
+            setCategory(null);
+        }
+        if(reviews != null){
+            setReviews(null);
+        }
+        if (rentals != null) {
+            setRentals(null);
+        }
+        if(dates != null) {
+            setDates(null);
+        }
+        if(user != null) {
+            setUser(null);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -3,14 +3,17 @@ package com.example.idatt2106_2022_05_backend.service.calendar;
 import com.example.idatt2106_2022_05_backend.dto.CalendarDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.CalendarDate;
+import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
+import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -22,7 +25,8 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private CalendarDateRepository dateRepository;
 
-    // autowire repo for rental
+    @Autowired
+    private RentalRepository rentalRepository;
 
     @Autowired
     private AdRepository adRepository;
@@ -65,57 +69,90 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public Response markDatesFromToAs(CalendarDto dto) {
 
-        //TODO if rental is made unavailable (cancelled) -->
-        // delete rental using some type of id that has to be sent through the dto......
+        // If there exists a rental with the specified id
+        Optional<Rental> rental = rentalRepository.findById(dto.getRentalId());
+        if(rental.isPresent()) {
 
-        // Because we want to change availability, we check for the OPPOSITE of dto.isAvailable()
-        if(datesAre(dto.getStartDate(),dto.getEndDate(), !dto.isAvailable())) {
+            // If isAvailable == true, a cancellation has been made
+            if (dto.isAvailable()) {
+                // Get the creation timestamp for the rental
+                LocalDateTime created = rental.get().getCreated();
+                LocalDateTime createdPlusOneDay = created.plusHours(24);
+
+                // If 24 hrs hasn't passed yet
+                if (LocalDateTime.now().isBefore(createdPlusOneDay)) {
+                    return setDates(dto);
+                    }
+
+                // If 24 hrs has passed, the cancellation cannot be made
+                else {
+                    return new Response("More than 24hrs after rental has passed",
+                            HttpStatus.NOT_ACCEPTABLE);
+                }
+            }
+            // isAvailable cannot be false when a rental has not yet been made
+            else {
+                return new Response("isAvailable cannot be false when a rental is present",
+                        HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        // If a rental is not present, the dates may be set to unavailable or available
+        else {
+            return setDates(dto);
+        }
+    }
+
+    private Response setDates(CalendarDto dto) {
+        // Verify that all dates in the specified span are the opposite of what is specified in dto
+        if (datesAre(dto.getStartDate(), dto.getEndDate(), !dto.isAvailable())) {
 
             // Get the ad the dto points to
             Optional<Ad> ad = adRepository.findById(dto.getAdId());
 
-            if(ad.isPresent()) {
+            if (ad.isPresent()) {
 
-                // Get all dates with requested adId
+                // Get all dates with requested id
                 Set<CalendarDate> dates = adRepository.getDatesForAd(dto.getAdId());
 
                 // Get all dates between startDate and endDate
                 for (CalendarDate date : dates) {
 
                     // PS: plus/minus days because we want to include the start and end dates in our search
-                    if(date.getDate().isAfter(dto.getStartDate().minusDays(1))
-                            && date.getDate().isBefore(dto.getEndDate().plusDays(1)))
-                    {
+                    if (date.getDate().isAfter(dto.getStartDate().minusDays(1))
+                            && date.getDate().isBefore(dto.getEndDate().plusDays(1))) {
+
                         // Change the availability
                         date.setAvailable(dto.isAvailable());
 
                         // Persist the change to the specific date from the CalendarDate table
                         Optional<CalendarDate> dateFound = dateRepository.findById(date.getId());
 
-                        if(dateFound.isPresent()) {
+                        if (dateFound.isPresent()) {
                             dateFound.get().setAvailable(dto.isAvailable());
                             dateRepository.save(dateFound.get());
                         }
-
-                        // If the date found is not present something very wrong happened :p
-                        return new Response(null, HttpStatus.NOT_FOUND);
+                        else {
+                            // If the date found is not present something very wrong happened :p
+                            return new Response(null, HttpStatus.NOT_FOUND);
+                        }
                     }
                 }
+
                 // Persist the new list of dates to the ad
                 ad.get().setDates(dates);
                 adRepository.save(ad.get());
 
                 // Return true inside response
-                return new Response(true, HttpStatus.OK);
+                return new Response("Changed the dates to: " + dto.isAvailable(), HttpStatus.OK);
             }
 
             // If ad not found, return false
-            return new Response(false, HttpStatus.NOT_FOUND);
+            return new Response("Could not find the ad", HttpStatus.NOT_FOUND);
         }
+        // Not all dates in the span were of the same availability
+        return new Response("Not all dates in the span were of the same availability",
+                HttpStatus.NOT_ACCEPTABLE);
 
-        // If somehow the user was able to choose dates that did not have correct availability, then
-        // a mistake has happened when sending unavailable dates to frontend
-        return new Response(null, HttpStatus.I_AM_A_TEAPOT);
     }
 
     /**
@@ -177,7 +214,7 @@ public class CalendarServiceImpl implements CalendarService {
     /**
      *
      * @param dto contains:
-     *            adId
+     *            id
      *
      * @return the dates that are unavailable up until the ad expires (12 months past creation timestamp)
      */

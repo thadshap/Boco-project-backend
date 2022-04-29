@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Getter
@@ -16,7 +17,9 @@ import java.util.Objects;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "review_sequence", sequenceName = "review_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "review_sequence", strategy = GenerationType.SEQUENCE)
+    @Column(name = "review_id", nullable = false)
     private Long id;
 
     @Column(name = "rating")
@@ -25,7 +28,7 @@ public class Review {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;
 

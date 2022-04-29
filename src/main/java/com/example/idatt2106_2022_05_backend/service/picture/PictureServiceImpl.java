@@ -17,6 +17,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+/**
 @Service
 public class PictureServiceImpl implements PictureService{
 
@@ -59,7 +60,7 @@ public class PictureServiceImpl implements PictureService{
 
         ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getContent()));
         Image image = ImageIO.read(bis);
-        pictureDto.setFile(image);
+        pictureDto.set(image);
         pictureDto.setFilename(picture.getFilename());
         return new Response(pictureDto, HttpStatus.OK);
     }
@@ -96,3 +97,4 @@ public class PictureServiceImpl implements PictureService{
         return new Response("bildet ble slettet", HttpStatus.OK);
     }
 }
+ */

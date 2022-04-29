@@ -3,31 +3,55 @@ package com.example.idatt2106_2022_05_backend.controller;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.repository.AdRepository;
+import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
+import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AdController.class)
+@SpringBootTest(webEnvironment = MOCK)
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class AdControllerTest {
+
+    private final String requestMapping = "/api/";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private AdRepository adRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @MockBean
     private AdService adService;
@@ -35,6 +59,7 @@ class AdControllerTest {
     // Creating an uninitialized Ad-object
     private Ad ad;
     private User user;
+    private Category category;
 
     private Set<Ad> ads;
 
@@ -64,14 +89,47 @@ class AdControllerTest {
                 password("pass1word").
                 build();
 
+        // Persist add
+        userRepository.save(user);
+
+        // Create category
+        category = Category.builder().id(3L).name("category").build();
+
+        // Save category
+        categoryRepository.save(category);
+
         // Set the foreign key for the ad
         ad.setUser(user);
+        ad.setCategory(category);
+
+        // Save ad
+        adRepository.save(ad);
 
         // Add the new ad to the list of ads
+        ads = new HashSet<>();
         ads.add(ad);
 
         // Add the list of ads to the user
         user.setAds(ads);
+
+        // Save the user
+        userRepository.save(user);
+    }
+
+    @AfterEach
+    public void cleanup(){
+        List<User> users = userRepository.findAll();
+        for(User user : users){
+            user.setAds(null);
+        }
+        List<Ad> allAds = adRepository.findAll();
+        for(Ad ad : allAds){
+            ad.setUser(null);
+            ad.setCategory(null);
+            adRepository.delete(ad);
+        }
+        userRepository.deleteAll(users);
+        categoryRepository.deleteAll();
     }
 
     @Test
@@ -149,41 +207,55 @@ class AdControllerTest {
                 andExpect(status().isOk());
     }
 
+    @WithMockUser(value = "spring")
     @Test
     void postAd() throws Exception {
-        // Simulating input dto from frontend contain new ad
-        AdDto inputAd = AdDto.builder().
+        Ad ad = Ad.builder().
                 title("Pants").
                 description("Renting out a pair of pants in size 36").
                 rental(true).
-                rentedOut(false).
                 durationType(AdType.MONTH).
                 duration(2).
                 price(100).
                 streetAddress("Project Road 4").
                 postalCode(7200).
+                user(user).
+                category(category).
+                build();
+        adRepository.save(ad);
+
+        // Simulating input dto from frontend contain new ad
+        AdDto inputAd = AdDto.builder().
+                title("Pants").
+                description("Renting out a pair of pants in size 37").
+                rental(true).
+                durationType(AdType.MONTH).
+                duration(2).
+                price(100).
+                streetAddress("Project Road 4").
+                postalCode(7200).
+                userId(2).
+                categoryId(3).
                 build();
 
-        Mockito.
-                when(adService.postNewAd(inputAd)).
-                thenReturn(new Response(null, HttpStatus.OK));
-
-        // Performing the post request of the controller endpoint
-        mockMvc.perform(post("/ads/newAd").
-                contentType(MediaType.APPLICATION_JSON).
-                content("{\n" +
-                        "\t\"title\" : \"Pants\",\n" +
-                        "\t\"description\" : \"Renting out a pair of pants in size 36\",\n" +
-                        "\t\"rental\" : true,\n" +
-                        "\t\"rentedOut\" : false,\n" +
-                        "\t\"durationType\" : \"MONTH\",\n" +
-                        "\t\"duration\" : 2,\n" +
-                        "\t\"price\" : 100,\n" +
-                        "\t\"streetAddress\" : \"Project Road 4\",\n" +
-                        "\t\"postalCode\" : 7200\n" +
-                        "}")).andExpect(status().isOk());
+        this.mockMvc.perform(post(requestMapping + "/ads/newAd").
+                         with(user("USER")).
+                         contentType(MediaType.APPLICATION_JSON).
+                         content("\t\"title\" : \"Pants\",\n" +
+                                "\t\"description\" : \"Renting out a pair of pants in size 37\",\n" +
+                                "\t\"rental\" : true,\n" +
+                                "\t\"durationType\" : \"MONTH\",\n" +
+                                "\t\"duration\" : 2,\n" +
+                                "\t\"price\" : 100,\n" +
+                                "\t\"streetAddress\" : \"Project Road 4\",\n" +
+                                "\t\"postalCode\" : 7200,\n" +
+                                "\t\"userId\" : 2,\n" +
+                                "\t\"categoryId\" : 3")).
+                andExpect(status().isOk()).
+                andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
+    @WithMockUser(value = "spring")
     @Test
     void getReviewsByUserId() throws Exception {
         Set<Review> reviews = new HashSet<>();
@@ -192,7 +264,6 @@ class AdControllerTest {
                 id(5L).
                 description("Great shoes!").
                 rating(5).
-                user(user).
                 build();
 
         reviews.add(review);
@@ -201,135 +272,39 @@ class AdControllerTest {
                 thenReturn(new Response(reviews,HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get("users/ads/reviews/2").
+        mockMvc.perform(get(requestMapping +"users/ads/reviews/" + 2).
                         contentType(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk());
     }
 
+    @WithMockUser(value = "spring")
     @Test
     void updateTitle() throws Exception {
-//        Mockito.when(adService.updateTitle(1L, "newTitle")).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateTitle").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
+        this.mockMvc.perform(put(requestMapping + "ads/" + 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
                                 "\t\"title\" : \"newTitle\"\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.title").value(ad.getTitle()));;
+                                "}"))
+                .andExpect(status().isOk());
     }
 
+    @WithMockUser(value = "spring")
     @Test
     void updateDescription() throws Exception {
-//        Mockito.when(adService.updateDescription(1L, "new description")).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateDescription").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"description\" : \"new description\"\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.description").value(ad.getDescription()));
+        this.mockMvc.perform(put(requestMapping + "ads/" + 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "\t\"description\" : \"newDescription\"\n" +
+                                "}"))
+                .andExpect(status().isOk());
     }
 
+
+    @WithMockUser(value = "spring")
     @Test
-    void updateDuration() throws Exception {
-//        Mockito.when(adService.updateDuration(1L, 10)).
-//                thenReturn(new Response(null,HttpStatus.OK));
+    void deleteAdReturnsDeleteSuccessMessage() throws Exception {
 
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateDuration").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"duration\" : 10\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.duration").value(ad.getDuration()));
-    }
-
-    @Test
-    void updateDurationType() throws Exception {
-//        Mockito.when(adService.updateDurationType(1L, AdType.DAY)).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateDurationType").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"durationType\" : DAY\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.durationType").
-                        value(ad.getDurationType()));    }
-
-    @Test
-    void updatePrice() throws Exception {
-//        Mockito.when(adService.updatePrice(1L, 300)).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updatePrice").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"price\" : 300\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.price").value(ad.getPrice()));
-    }
-
-    @Test
-    void updateStreetAddress() throws Exception {
-//        Mockito.when(adService.updateStreetAddress(1L, "new address 4")).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateStreetAddress").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"streetAddress\" : \"new address 4\"\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.streetAddress").
-                        value(ad.getStreetAddress()));
-    }
-
-    @Test
-    void updatePostalCode() throws Exception {
-//        Mockito.when(adService.updatePostalCode(1L, 1111)).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updatePostalCode").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"postalCode\" : 1111\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.postalCode").
-                        value(ad.getPostalCode()));
-    }
-
-    @Test
-    void updateRentedOut() throws Exception {
-//        Mockito.when(adService.updateRentedOut(1L, true)).
-//                thenReturn(new Response(null,HttpStatus.OK));
-
-        // Performing the post operation
-        mockMvc.perform(post("/ads/updateRentedOut").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"rentedOut\" : true\n" +
-                                "}")).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.duration").exists());
-    }
-
-    @Test
-    void deleteAd() {
-
+        this.mockMvc.perform(delete(requestMapping + "ads/" + ad.getId()))
+                .andExpect(status().isOk());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
@@ -36,6 +37,18 @@ public class UserController {
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
         return userService.updateUser(userId, userUpdateDto);
+    }
+
+    @DeleteMapping("/profilePicture")
+    @ApiOperation(value = "Endpoint to delete profile picture", response = UserReturnDto.class)
+    public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
+        try {
+            return userService.deleteProfilePicture(updatePictureDto.getUserId(),
+                    updatePictureDto.getMultipartFile().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{userId}")

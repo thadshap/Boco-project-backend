@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,12 +24,20 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull
     private boolean parent;
 
     private String parentName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST,  mappedBy = "category")
+    @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
     private Set<Ad> ads;
+
+    @PreRemove
+    private void removeRelationships(){
+        if(ads != null) {
+            setAds(null);
+        }
+    }
 
     @Override
     public String toString() {
