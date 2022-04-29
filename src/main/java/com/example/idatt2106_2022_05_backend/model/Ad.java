@@ -90,20 +90,20 @@ public class Ad {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne // Should be nullable false
+    @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private Set<Rental> rentals;
+    private Set<Rental> rentals = new HashSet<>();
 
     // one-to-many connection with review.
     // When an ad is removed, its corresponding reviews are also removed.
     // When ad is persisted, the reviews are also updated
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private Set<Review> reviews;
+    private Set<Review> reviews = new HashSet<>();
 
     // Many to many connection to CalendarDate modelled by the "calendar" table (not modelled)
     @ManyToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
@@ -112,7 +112,7 @@ public class Ad {
             joinColumns = { @JoinColumn(name = "ad_id") },
             inverseJoinColumns = { @JoinColumn(name = "date_id") }
     )
-    private Set<CalendarDate> dates;
+    private Set<CalendarDate> dates = new HashSet<>();
 
     // Add a new picture
     public void addPicture(Picture picture) {

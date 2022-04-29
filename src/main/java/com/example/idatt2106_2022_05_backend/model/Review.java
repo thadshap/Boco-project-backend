@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Getter

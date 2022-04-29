@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class PictureIntegrationTest {
 
-
     @Autowired
     AdService adService;
 
