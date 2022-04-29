@@ -30,7 +30,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController()
-@RequestMapping("auth")
+@RequestMapping("/auth")
 @Api(tags = "Authorization class to handle users logging in and verifying themselves")
 public class AuthController {
 
