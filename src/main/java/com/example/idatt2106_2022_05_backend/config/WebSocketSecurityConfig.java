@@ -18,7 +18,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
         messages
                 .simpTypeMatchers(SimpMessageType.CONNECT,
                         SimpMessageType.DISCONNECT, SimpMessageType.OTHER).permitAll()
-                .anyMessage().authenticated();
+                .anyMessage();
     }
 
     @Override

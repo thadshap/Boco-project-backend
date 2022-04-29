@@ -76,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message1);
 
-        this.simpMessagingTemplate.convertAndSend("/topic" + message1.getGroup().getId(), message1);
+        this.simpMessagingTemplate.convertAndSend("/topic/messages", message);
 
         return message;
     }
