@@ -1,14 +1,8 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.CalendarDate;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -16,6 +10,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +35,10 @@ public class DataLoader implements ApplicationRunner {
 
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+        private GroupRepository groupRepository;
+
+        private MessageRepository messageRepository;
+
         @Autowired
         CalendarService calendarService;
 
@@ -50,14 +50,19 @@ public class DataLoader implements ApplicationRunner {
      * @param adRepository repository of the {@link Ad} object
      * @param categoryRepository repository of the {@link Category} object
      * @param calDateRepository repository of the {@link CalendarDate} object
+     * @param groupRepository repository of the {@link Group} object
+     * @param messageRepository repository of the {@link Message} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository) {
+                      CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
+                      GroupRepository groupRepository, MessageRepository messageRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
             this.categoryRepository = categoryRepository;
             this.calDateRepository = calDateRepository;
+            this.groupRepository = groupRepository;
+            this.messageRepository = messageRepository;
         }
 
         public void run(ApplicationArguments args) {
@@ -191,5 +196,77 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
+
+            Group group1 = Group.builder()
+                    .name("gruppechat1")
+                    .build();
+
+            Group group2 = Group.builder()
+                    .name("gruppechat2")
+                    .build();
+
+            Group group3 = Group.builder()
+                    .name("gruppechat3")
+                    .build();
+
+            Set<User> users1 = new HashSet<>();
+            users1.add(user1);
+            users1.add(user2);
+            group1.setUsers(users1);
+
+            Set<User> users2 = new HashSet<>();
+            users2.add(user1);
+            users2.add(user3);
+            group2.setUsers(users2);
+
+            Set<User> users3 = new HashSet<>();
+            users3.add(user3);
+            users3.add(user4);
+            group3.setUsers(users3);
+
+            groupRepository.save(group1);
+            groupRepository.save(group2);
+            groupRepository.save(group3);
+
+            Message message1 = Message.builder()
+                    .content("Hei!")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message2 = Message.builder()
+                    .content("Halo")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message3 = Message.builder()
+                    .content("Så fint vær idag.")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message4 = Message.builder()
+                    .content("Nei")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message5 = Message.builder()
+                    .content("-(^__^)-")
+                    .group(group2)
+                    .user(user3)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            messageRepository.save(message1);
+            messageRepository.save(message2);
+            messageRepository.save(message3);
+            messageRepository.save(message4);
+            messageRepository.save(message5);
         }
 }
