@@ -54,16 +54,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/topic");
+        config.enableSimpleBroker("/topic");//This is the endpoint where clients can subscribe
+        config.setApplicationDestinationPrefixes("/app");//Endpoint passes messages to endpoints in controllers, using message mapping annotation
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        //addEndpoint is the endpoint where clients requests connection, handshake happens here
         registry.addEndpoint("/ws").setAllowedOrigins("chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp","chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
     }
 
-
+/*
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -117,10 +118,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             return MessageBuilder.createMessage(message.getPayload(), headerAccessor.getMessageHeaders());
                         }
                     }
+
                 }
                 return message;
             }
         });
         }
+
+ */
 
 }

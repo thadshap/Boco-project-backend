@@ -47,6 +47,7 @@ public class ChatController {
 
 
 
+
     @RequestMapping("/group/{id}")
     public Response onOpen(@PathVariable long id){
         return chatService.getChat(id);

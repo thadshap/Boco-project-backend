@@ -30,6 +30,9 @@ spring:
 
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://dev-.....okta.com/oauth2/default
       client:
         registration:
           google:
@@ -44,6 +47,7 @@ spring:
             scope:
               - email
               - profile_profile
+
 server:
   ssl:
     key-alias: boco
@@ -54,5 +58,5 @@ server:
     enabled: false
     enabled-protocols: TLSv1.2
     client-auth: want
-  port: 8080
+  port: 8443
 
