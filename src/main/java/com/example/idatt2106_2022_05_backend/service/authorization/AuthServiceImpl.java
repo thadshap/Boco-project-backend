@@ -32,14 +32,15 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.*;
 
+/**
+ * Service class to handle authorization of different user requests
+ */
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
@@ -78,6 +79,10 @@ public class AuthServiceImpl implements AuthService {
             "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"
     );
 
+    /**
+     * Method to return the url to login with facebook.
+     * @return url to login with facebook.
+     */
     @Override
     public String getFacebookUrl() {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
@@ -90,6 +95,11 @@ public class AuthServiceImpl implements AuthService {
         return  operations.buildAuthenticateUrl(params);
     }
 
+    /**
+     * Method to retrieve user information from facebook.
+     * @param authorizationCode authorization code from facebook login.
+     * @return redirection view to frontend.
+     */
     @Override
     public RedirectView forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
@@ -111,6 +121,10 @@ public class AuthServiceImpl implements AuthService {
         return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
     }
 
+    /**
+     * Method to return the url to login with google.
+     * @return url to login with google.
+     */
     @Override
     public String getGoogleUrl() {
         OAuth2Operations operations = googleFactory.getOAuthOperations();
@@ -123,6 +137,11 @@ public class AuthServiceImpl implements AuthService {
         return  operations.buildAuthenticateUrl(params);
     }
 
+    /**
+     * Method to retrieve user information from google.
+     * @param authorizationCode authorization code from google login.
+     * @return redirection view to frontend.
+     */
     @Override
     public RedirectView forwardToGoogle(String authorizationCode) {
         OAuth2Operations operations = googleFactory.getOAuthOperations();
@@ -145,6 +164,12 @@ public class AuthServiceImpl implements AuthService {
         return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
     }
 
+    /**
+     * Method to create an account.
+     * @param createAccount Dto to create an account.
+     * @param url url to send in the mail to user.
+     * @return response.
+     */
     @Override
     public Response createUser(CreateAccountDto createAccount, String url) {
         if (userRepository.findByEmail(createAccount.getEmail()) != null) {
@@ -160,6 +185,11 @@ public class AuthServiceImpl implements AuthService {
         return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
+    /**
+     * Method to save user verification.
+     * @param token token to verify user after creation.
+     * @param user user to add token to.
+     */
     @Override
     public void saveUserVerificationTokenForUser(String token, User user) {
         UserVerificationToken userVerificationToken = new UserVerificationToken(user, token);
@@ -167,6 +197,11 @@ public class AuthServiceImpl implements AuthService {
         userVerificationTokenRepository.save(userVerificationToken);
     }
 
+    /**
+     * Method to validate email by their token.
+     * @param token token to validate email by.
+     * @return string response if valid or not.
+     */
     @Override
     public String validateEmailThroughToken(String token) {
         Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(token);
@@ -189,6 +224,13 @@ public class AuthServiceImpl implements AuthService {
         return "valid email";
     }
 
+    /**
+     * Method to create new token if the previous is expired.
+     * @param prevToken previous token.
+     * @param url url to send mail to.
+     * @return response.
+     * @throws MessagingException throws exception if messaging fails.
+     */
     @Override
     public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
         Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(prevToken);
@@ -213,6 +255,13 @@ public class AuthServiceImpl implements AuthService {
         return new Response("Verifikasjons mail er sendt til din email!", HttpStatus.ACCEPTED);
     }
 
+    /**
+     * Method to handle request of resetting password.
+     * @param forgotPasswordDto dto containing email.
+     * @param url url to send in the mail of the user.
+     * @return response if mail is sent.
+     * @throws MessagingException throws exception if messaging fails.
+     */
     @Override
     public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException {
         User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
@@ -244,6 +293,12 @@ public class AuthServiceImpl implements AuthService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
     }
 
+    /**
+     * Method to validate the password wanted to change by token created.
+     * @param token token to verify the user.
+     * @param forgotPasswordDto dto containing password to change.
+     * @return response.
+     */
     @Override
     public Response validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto) {
         ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
@@ -266,8 +321,13 @@ public class AuthServiceImpl implements AuthService {
         return new Response("valid token", HttpStatus.CREATED);
     }
 
+    /**
+     * Method to handle user logging in.
+     * @param loginDto dto containing login credentials.
+     * @return response.
+     */
     @Override
-    public Response login(LoginDto loginDto) throws Exception {
+    public Response login(LoginDto loginDto) {
 
         System.out.println(loginDto.getEmail() + " " + loginDto.getPassword());
         User user = userRepository.findByEmail(loginDto.getEmail());
@@ -293,15 +353,25 @@ public class AuthServiceImpl implements AuthService {
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
+    /**
+     * Method to update auth type of user logging in.
+     * @param email email.
+     * @param oauth2ClientName name of auth type.
+     */
     @Override
-    public void updateAuthenticationType(String username, String oauth2ClientName) {
+    public void updateAuthenticationType(String email, String oauth2ClientName) {
         AuthenticationType authType = AuthenticationType.valueOf(oauth2ClientName.toUpperCase());
-        User user = userRepository.findByEmail(username);
+        User user = userRepository.findByEmail(email);
         user.setAuthType(authType);
         userRepository.save(user);
         // TODO verify user logging in by facebook and google and put them in repo
     }
 
+    /**
+     * Method to generate a JWToken for a user logging in.
+     * @param token token to verify user.
+     * @return JWToken.
+     */
     @Override
     public String getUserJWT(String token) {
         UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(token).get();

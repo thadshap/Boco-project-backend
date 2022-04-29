@@ -113,10 +113,10 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     /**
-     * method to delete a review
-     * @param ad_id id of ad to be deleted
-     * @param user_id user who wrote the review
-     * @return response
+     * Method to delete a review.
+     * @param ad_id id of ad to be deleted.
+     * @param user_id user who wrote the review.
+     * @return response.
      */
     @Override
     public Response deleteReview(long ad_id, long user_id){
@@ -130,12 +130,21 @@ public class ReviewServiceImpl implements ReviewService{
 
     //Private support methods:
 
-
+    /**
+     * Helper method to retrieve user by id.
+     * @param id id of user.
+     * @return user found.
+     */
     private User getUser(long id){
         return userRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
     }
 
+    /**
+     * Helper method to retrieve Ad by id.
+     * @param id id of ad
+     * @return ad found.
+     */
     private Ad getAd(long id){
         return adRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "fant ikke annonsen"));

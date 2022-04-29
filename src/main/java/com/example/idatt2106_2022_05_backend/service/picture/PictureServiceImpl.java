@@ -26,16 +26,32 @@ public class PictureServiceImpl implements PictureService{
     @Autowired
     AdRepository adRepository;
 
+    /**
+     * TODO
+     * @param id
+     * @return
+     */
     private Picture getPictureById(long id){
         return pictureRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "fant ikke bildet"));
     }
 
+    /**
+     * TODO
+     * @param id
+     * @return
+     */
     private Ad getAd(long id){
         return adRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "fant ikke annonsen"));
     }
 
+    /**
+     * TODO
+     * @param id
+     * @return
+     * @throws IOException
+     */
     @Override
     public Response getPicture(long id) throws IOException {
         Picture picture = getPictureById(id);
@@ -48,6 +64,13 @@ public class PictureServiceImpl implements PictureService{
         return new Response(pictureDto, HttpStatus.OK);
     }
 
+    /**
+     * TODO
+     * @param file
+     * @param adId
+     * @return
+     * @throws IOException
+     */
     @Override
     public Response postNewPicture(MultipartFile file, long adId) throws IOException {
         Ad ad = getAd(adId);
@@ -60,6 +83,11 @@ public class PictureServiceImpl implements PictureService{
         return new Response("Opplasting av bildet vellykket", HttpStatus.OK);
     }
 
+    /**
+     * TODO
+     * @param filename
+     * @return
+     */
     @Override
     public Response deletePicture(String filename){
         Picture picture = pictureRepository.findByFilename(filename)
