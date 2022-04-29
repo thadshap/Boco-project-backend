@@ -33,6 +33,7 @@ import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String forwardToFacebook(String authorizationCode) {
+    public RedirectView forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
         AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/facebook",
                 null);
@@ -107,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
-        return "https://localhost:8080/";
+        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
     }
 
     @Override
@@ -116,14 +117,14 @@ public class AuthServiceImpl implements AuthService {
         OAuth2Parameters params = new OAuth2Parameters();
 
         params.setRedirectUri("http://localhost:8443/auth/forwardLogin/google");
-        params.setScope("email,profile");
+        params.setScope("email");
         //TODO thymeleaf
 
         return  operations.buildAuthenticateUrl(params);
     }
 
     @Override
-    public String forwardToGoogle(String authorizationCode) {
+    public RedirectView forwardToGoogle(String authorizationCode) {
         OAuth2Operations operations = googleFactory.getOAuthOperations();
         AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/google",
                 null);
@@ -141,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getDisplayName() + ", " + userProfile.getEmailAddresses().iterator().next());
 
-        return "https://localhost:8080/";
+        return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
     }
 
     @Override
