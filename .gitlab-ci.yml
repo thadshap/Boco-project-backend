@@ -33,7 +33,15 @@ test:
     - merge_requests
   script:
     - echo "Running tests"
-    - mvn test
+    - mvn clean test
+  artifacts:
+    when: always
+    paths:
+      - target/site/jacoco # We need to save the HTML-reports that Jacoco produces, so we can serve it on Gitlab Pages in the next stage
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
 
 pages:
   stage: pages

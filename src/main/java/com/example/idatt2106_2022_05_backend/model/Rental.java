@@ -4,10 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -58,6 +60,11 @@ public class Rental {
     @ManyToOne()
     @JoinColumn(name = "ad_id")
     private Ad ad;
+
+    // Created timestamp --> for use in cancelling a rental within 24 hrs
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDateTime created;
 
     @PreRemove
     private void removeRelationships(){
