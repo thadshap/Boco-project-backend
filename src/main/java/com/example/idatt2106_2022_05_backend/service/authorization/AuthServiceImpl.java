@@ -108,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
-        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
+        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
         OAuth2Parameters params = new OAuth2Parameters();
 
         params.setRedirectUri("http://localhost:8443/auth/forwardLogin/google");
-        params.setScope("email,profile");
+        params.setScope("email");
         //TODO thymeleaf
 
         return  operations.buildAuthenticateUrl(params);
