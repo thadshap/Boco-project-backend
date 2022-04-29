@@ -1,10 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Group;
-import com.example.idatt2106_2022_05_backend.model.Message;
+import com.example.idatt2106_2022_05_backend.model.MessageObjectModel;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
@@ -21,7 +19,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +61,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public MessageDto saveMessage(MessageDto message, long groupId) {
-        Message message1 = new Message();
+        MessageObjectModel message1 = new MessageObjectModel();
 
         if(message.getContent().length()>280){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meldingen er for lang");
@@ -79,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message1);
 
-        this.simpMessagingTemplate.convertAndSend("/topic/group" + message1.getGroup().getId(), message1);
+        this.simpMessagingTemplate.convertAndSend("/topic" + message1.getGroup().getId(), message1);
 
         return message;
     }
@@ -87,8 +84,8 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response getChat(long id){
         Group group = getGroup(id);
-        List<Message> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
-        messageDtos.sort(Comparator.comparing(Message::getTimestamp));
+        List<MessageObjectModel> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
+        messageDtos.sort(Comparator.comparing(MessageObjectModel::getTimestamp));
         return new Response(messageDtos.stream()
                 .map(message -> modelMapper.map(message, MessageDto.class))
                 .collect(Collectors.toList()), HttpStatus.OK);

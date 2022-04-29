@@ -10,10 +10,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,7 +63,74 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         //addEndpoint is the endpoint where clients requests connection, handshake happens here
-        registry.addEndpoint("/ws").setAllowedOrigins("chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp","chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
+    }
+
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+                logger.info("in client inbound channel");
+                logger.info(headerAccessor.getCommand().toString());
+                logger.info(message.toString());
+
+                if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+                    logger.info("inside if");
+
+                    List<String> authorization = headerAccessor.getNativeHeader("Authorization");
+                    logger.debug("Authorization: " + authorization);
+
+                    String accessToken = authorization.get(0).split(" ")[1];
+
+                    String email = jwtUtil.getEmailFromToken(accessToken);
+
+                    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                        logger.info("set security context");
+
+                        if (jwtUtil.validateToken(accessToken, userDetails)) {
+                            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+
+                            HttpServletRequest request =
+                                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                                            .getRequest();
+
+                            usernamePasswordAuthenticationToken
+                                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+                            logger.info("Retrieving principal");
+                            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                            logger.info("have authentication");
+                            Principal myAuth = (Principal) authentication.getPrincipal();
+                            logger.info("have principal");
+                            headerAccessor.setUser(myAuth);
+                            //Not sure why, but necessary otherwise NPE in StompSubProtocolHandler!
+                            headerAccessor.setLeaveMutable(true);
+                            logger.info("Message is: " + message.getPayload());
+                        }
+
+                        //Jwt jwt = jwtDecoder.decode(accessToken);
+
+
+                        //JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+                        //Authentication authentication = converter.convert(jwt);
+
+                        //accessor.setUser(authentication);
+
+                        //accessor.setLeaveMutable(true);
+                    }
+                }
+
+                return message;
+            }
+        });
     }
 
 /*

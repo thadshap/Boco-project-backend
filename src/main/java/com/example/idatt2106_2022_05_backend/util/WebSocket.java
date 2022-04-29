@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.util;
 
-import com.example.idatt2106_2022_05_backend.model.Message;
+import com.example.idatt2106_2022_05_backend.model.MessageObjectModel;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;
@@ -35,7 +35,7 @@ public class WebSocket {
     public void onMessage(String message) {
     }
 
-    public void sendAllMessage(Message message) {
+    public void sendAllMessage(MessageObjectModel message) {
         for(WebSocket webSocket : webSockets) {
             try {
                 webSocket.session.getAsyncRemote().sendText(message.getContent());
@@ -45,7 +45,7 @@ public class WebSocket {
         }
     }
 
-    public void sendOneMessage(String shopId, Message message) {
+    public void sendOneMessage(String shopId, MessageObjectModel message) {
         javax.websocket.Session session = sessionPool.get(shopId);
         if (session != null) {
             try {
