@@ -40,7 +40,7 @@ public class SecurityService {
         return user != null && user.getId().equals(userId);
     }
 
-    private boolean isAdOwner(Long adId){
+    public boolean isAdOwner(Long adId){
         Ad ad = adRepository.findById(adId).orElse(null);
         User user = getUser();
         if(ad != null && user != null  && ad.getUser() != null){
@@ -49,12 +49,37 @@ public class SecurityService {
         return false;
     }
 
-    public  boolean userRentalAccess(Long userId){
+    public boolean isVerifiedUser(Long userId){
         User user = getUser();
-//        Rental activity = rentalRepository.findById(activityId).orElse(null);
-//        if(activity != null && user != null ){
-//            return hasActivityAccess(activity,user);
-//        }
+        return user.isVerified();
+    }
+
+    public boolean isRentalOwner(Long rentalId) {
+        Rental rental = rentalRepository.findById(rentalId).orElse(null);
+        User user = getUser();
+        if(rental != null && user != null  && rental.getOwner() != null){
+            return rental.getOwner().equals(user);
+        }
         return false;
     }
+
+    public boolean isRentalBorrower(Long rentalId) {
+        Rental rental = rentalRepository.findById(rentalId).orElse(null);
+        User user = getUser();
+        if(rental != null && user != null  && rental.getBorrower() != null){
+            return rental.getBorrower().equals(user);
+        }
+        return false;
+    }
+
+//    public boolean userRentalAccess(Long userId){
+//        User user = getUser();
+//        Rental rental = rentalRepository.findByOwner(activityId);
+//        if(rental != null && user != null ){
+//            return hasActivityAccess(rental,user);
+//        }
+//        return false;
+//    }
+
+
 }

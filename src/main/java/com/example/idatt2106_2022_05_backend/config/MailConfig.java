@@ -37,13 +37,11 @@ public class MailConfig {
     private ApplicationContext applicationContext;
 
     /**
-     *
-     * @return
-     * 
-     * @throws IOException
+     * Bean to configure sending of mail
+     * @return {@link JavaMailSender} object
      */
     @Bean
-    public JavaMailSender mailSender() throws IOException {
+    public JavaMailSender mailSender() {
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(EMAIL_HOST);
         mailSender.setPort(EMAIL_PORT);

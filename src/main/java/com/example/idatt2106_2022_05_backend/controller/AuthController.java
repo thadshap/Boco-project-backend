@@ -4,31 +4,20 @@ import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
 import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
-import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
 
 @Slf4j
 @RestController()
@@ -38,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @GetMapping(value = "/signin/facebook")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook")
@@ -108,11 +100,6 @@ public class AuthController {
     public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) {
         log.debug("[X] Call to get create a user");
         return authService.createUser(createAccount, url(url));
-//        if (user == null) {
-//            return new Response("Mail is already registered", HttpStatus.IM_USED);
-//        }
-//        publisher.publishEvent(new RegistrationComplete(user, url(url)));
-//        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")
