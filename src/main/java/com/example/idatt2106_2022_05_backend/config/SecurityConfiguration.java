@@ -65,19 +65,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll().antMatchers(HttpMethod.GET, "/auth/**")
-                .permitAll().antMatchers(HttpMethod.POST, "/users/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
-                .permitAll().anyRequest().authenticated()
+                .antMatchers(WHITELIST_DOCS).permitAll()
+                .antMatchers(WHITELIST_URLS).permitAll()
+//                .antMatchers(HttpMethod.POST, "/user/").permitAll()
+//                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").permitAll()
+//                .formLogin().loginPage("/login").permitAll()
 //                .usernameParameter("email")
 //                .passwordParameter("pass")
 //                .successHandler(databaseLoginHandler)
 //                .and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
 //                .userService(oauth2UserService).and().successHandler(oauthLoginHandler)
-                .and()
+//                .and()
                 .logout()
                 .logoutSuccessUrl("/").permitAll().and().exceptionHandling().authenticationEntryPoint((req, res, e) -> {
                     res.setContentType("application/json");
