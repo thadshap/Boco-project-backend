@@ -25,6 +25,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
+import org.springframework.social.google.api.Google;
+import org.springframework.social.google.connect.GoogleConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -71,12 +73,17 @@ public class AuthServiceImpl implements AuthService {
             "822eef3823b53888eb4dd9f0c1a09463"
     );
 
+    private GoogleConnectionFactory googleFactory = new GoogleConnectionFactory(
+            "292543393372-pafvrt6kltssgf27g4p6safka8oqmgud.apps.googleusercontent.com",
+            "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"
+    );
+
     @Override
     public String getFacebookUrl() {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
 
-        params.setRedirectUri("http://localhost:8443/auth/forwardLogin");
+        params.setRedirectUri("http://localhost:8443/auth/forwardLogin/facebook");
         params.setScope("email,public_profile");
         //TODO thymeleaf
 
@@ -84,9 +91,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RedirectView forwardToFacebook(String authorizationCode) {
+    public String forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
-        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin",
+        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/facebook",
                 null);
 
         Connection<Facebook> connection = facebookFactory.createConnection(accessToken);
@@ -95,19 +102,47 @@ public class AuthServiceImpl implements AuthService {
 
         org.springframework.social.facebook.api.User userProfile =
                 facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
+//        ModelAndView model = new ModelAndView("details");
+//
+//        model.addObject("user", userProfile);
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
-        return new RedirectView("https://localhost:8080/login/" + userProfile.getFirstName());
+
+        return "https://localhost:8080/";
     }
 
     @Override
     public String getGoogleUrl() {
-        return null;
+        OAuth2Operations operations = googleFactory.getOAuthOperations();
+        OAuth2Parameters params = new OAuth2Parameters();
+
+        params.setRedirectUri("http://localhost:8443/auth/forwardLogin/google");
+        params.setScope("email,profile");
+        //TODO thymeleaf
+
+        return  operations.buildAuthenticateUrl(params);
     }
 
     @Override
-    public ModelAndView forwardToGoogle(String authorizationCode) {
-        return null;
+    public String forwardToGoogle(String authorizationCode) {
+        OAuth2Operations operations = googleFactory.getOAuthOperations();
+        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/google",
+                null);
+
+        Connection<Google> connection = googleFactory.createConnection(accessToken);
+        Google google = connection.getApi();
+        String[] fields = { "id", "email", "first_name", "last_name" };
+
+        org.springframework.social.google.api.plus.Person userProfile =
+                google.plusOperations().getGoogleProfile();
+//                        .fetchObject("me", org.springframework.social.google.api.userinfo.implclass, fields);
+//        ModelAndView model = new ModelAndView("details");
+
+//        model.addObject("user", userProfile);
+
+        System.out.println(userProfile.getId() + " " + userProfile.getDisplayName() + ", " + userProfile.getEmailAddresses().iterator().next());
+
+        return "https://localhost:8080/";
     }
 
     @Override
