@@ -2,14 +2,8 @@ package com.example.idatt2106_2022_05_backend.service.user;
 
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.Rental;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -38,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AdRepository adRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private RentalRepository rentalRepository;
@@ -90,10 +87,22 @@ public class UserServiceImpl implements UserService {
                 rentalRepository.save(rental);
             }
         }
-        userRepository.deleteById(userId);
 
         // Delete rentals from user
         userFound.get().setRentalsBorrowed(null);
+
+        // Get the reviews
+        List<Review> reviews = userFound.get().getReviews();
+        if(reviews != null) {
+            for(Review review : reviews) {
+                review.setUser(null);
+                reviewRepository.save(review);
+            }
+        }
+        userFound.get().setReviews(null);
+
+        // Delete the user
+        userRepository.deleteById(userId);
 
         return new Response("User deleted", HttpStatus.ACCEPTED);
     }

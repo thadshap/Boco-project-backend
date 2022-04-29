@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
 @SpringBootTest
@@ -54,8 +54,9 @@ public class AuthIntegrationTests {
 
     @Nested
     class CreateUserTests {
+
         @Test
-        public void saveUser_WhenCorrectInput() {
+        public void userSaved_WhenCorrectInput() {
             CreateAccountDto newUser = CreateAccountDto.builder().
                     firstName("new user").
                     lastName("last name").
@@ -74,7 +75,62 @@ public class AuthIntegrationTests {
 
         @Test
         public void userNotSaved_WhenWrongInput() {
+            // Missing the matching password attribute
+            CreateAccountDto newUser = CreateAccountDto.builder().
+                    firstName("new user").
+                    lastName("last name").
+                    email("e.mail@hotmail.com").
+                    password("Tulling").
+                    build();
+
+            // Save the user
+            User result = authService.createUser(newUser);
+
+            // Assert that the user returned is null
+            assertNull(result);
+        }
+    }
+
+    @Nested
+    class TokenCreationTests {
+
+        @Test
+        public void tokenCreatedSuccessful_WhenCorrectInput() {
+
+        }
+
+        @Test
+        public void tokenCreationFails_WhenWrongInput() {
 
         }
     }
+
+    @Nested
+    class LoginAuthenticationTests {
+
+        @Test
+        public void loginSuccessful_whenAuthenticated() {
+
+        }
+
+        @Test
+        public void loginFailed_whenNotAuthenticated() {
+
+        }
+    }
+
+    @Nested
+    class PasswordResetTests {
+
+        @Test
+        public void passwordResetSuccessful_WhenCorrectInput() {
+
+        }
+
+        @Test
+        public void passwordResetFails_WhenWrongInput() {
+
+        }
+    }
+
 }

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -307,12 +308,12 @@ public class UserIntegrationTest {
 
         @Test
         public void userDeleted_WhenIdCorrect() {
-            User user = userRepository.findAll().get(0);
+            User user = userRepository.findAll().get(1);
 
             ResponseEntity<Object> response = userService.deleteUser(user.getId());
 
             // Assert that the method passed
-            assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            assertEquals(response.getStatusCodeValue(), HttpStatus.ACCEPTED.value());
 
             // Assert that the user does not exist in db
             Optional<User> userFound = userRepository.findById(user.getId());
@@ -329,10 +330,9 @@ public class UserIntegrationTest {
                 // Assert that the method passed but received a status code == NOT_FOUND
                 assertEquals(response.getStatusCodeValue(),
                         HttpStatus.NOT_FOUND.value());
-            }catch (EmptyResultDataAccessException e) {
+            }catch (EmptyResultDataAccessException |NoSuchElementException e) {
+                // Passing the test
             }
-
-
         }
     }
 }

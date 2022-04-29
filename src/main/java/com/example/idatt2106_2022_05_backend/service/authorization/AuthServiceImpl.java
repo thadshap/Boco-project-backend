@@ -57,14 +57,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User createUser(CreateAccountDto createAccount) {
+        // Verifying email
         if (userRepository.findByEmail(createAccount.getEmail()) != null) {
             return null;
         }
-
-        User user = modelMapper.map(createAccount, User.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return user;
+        // Checking everything except email
+        if(createAccount.getPassword()!= null && createAccount.getFirstName() != null
+        && createAccount.getLastName() != null && createAccount.getMatchingPassword() != null) {
+            User user = modelMapper.map(createAccount, User.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            return user;
+        }
+        else {
+            // A field is missing
+            return null;
+        }
     }
 
     @Override
