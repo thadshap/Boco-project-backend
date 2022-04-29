@@ -79,8 +79,8 @@ public class User {
     @ManyToMany()
     @JoinTable(
             name="user_group",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")}
     )
     private Set<Group> groupChats;
 
