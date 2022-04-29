@@ -6,9 +6,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
-import com.example.idatt2106_2022_05_backend.model.ResetPasswordToken;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.model.UserVerificationToken;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
@@ -16,19 +14,27 @@ import com.example.idatt2106_2022_05_backend.security.JWTUtil;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -56,16 +62,59 @@ public class AuthServiceImpl implements AuthService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
+    private FacebookConnectionFactory facebookFactory = new FacebookConnectionFactory("1181763609285094",
+            "822eef3823b53888eb4dd9f0c1a09463"
+    );
+
     @Override
-    public User createUser(CreateAccountDto createAccount) {
+    public String getFacebookUrl() {
+        OAuth2Operations operations = facebookFactory.getOAuthOperations();
+        OAuth2Parameters params = new OAuth2Parameters();
+
+        params.setRedirectUri("http://localhost:8080/forwardLogin");
+        params.setScope("email,public_profile");
+        //TODO thymeleaf
+
+        return  operations.buildAuthenticateUrl(params);
+    }
+
+    @Override
+    public ModelAndView forwardToFacebook(String authorizationCode) {
+        OAuth2Operations operations = facebookFactory.getOAuthOperations();
+        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8080/auth/forwardLogin",
+                null);
+
+        Connection<Facebook> connection = facebookFactory.createConnection(accessToken);
+        Facebook facebook = connection.getApi();
+        String[] fields = { "id", "email", "first_name", "last_name" };
+
+        org.springframework.social.facebook.api.User userProfile =
+                facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
+        ModelAndView model = new ModelAndView("details");
+
+        model.addObject("user", userProfile);
+
+        System.out.println(userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
+
+        return model;
+    }
+
+    @Override
+    public Response createUser(CreateAccountDto createAccount, String url) {
         if (userRepository.findByEmail(createAccount.getEmail()) != null) {
-            return null;
+            return new Response("Mail is already registered", HttpStatus.IM_USED);
         }
 
         User user = modelMapper.map(createAccount, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return user;
+
+        publisher.publishEvent(new RegistrationComplete(user, url));
+
+        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
     @Override
@@ -77,11 +126,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String validateEmailThroughToken(String token) {
-        UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(token).get();
+        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(token);
 
-        if (verificationToken == null) {
+        if (verificationTokenOpt.isEmpty()) {
             return "Invalid email";
         }
+        UserVerificationToken verificationToken = verificationTokenOpt.get();
 
         User user = verificationToken.getUser();
         Calendar cal = Calendar.getInstance();
@@ -98,11 +148,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
-        UserVerificationToken verificationToken = userVerificationTokenRepository.findByToken(prevToken).get();
+        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(prevToken);
 
-        // if (verificationToken == null) {
-        // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
-        // } TODO exception
+        if (verificationTokenOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
+        }
+        UserVerificationToken verificationToken = verificationTokenOpt.get();
 
         verificationToken.setToken(UUID.randomUUID().toString());
         userVerificationTokenRepository.save(verificationToken);
@@ -127,9 +178,23 @@ public class AuthServiceImpl implements AuthService {
             String token = UUID.randomUUID().toString();
             ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
             resetPasswordTokenRepository.save(resetToken);
-            emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
+
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("name", user.getFirstName() + " " + user.getLastName());
+            variables.put("url", url + "/auth/renewYourPassword");
+
+            Email email = Email.builder()
+                    .from("BOCO@gmail.com")
+                    .to(user.getEmail())
+                    .template(new ThymeleafTemplate("reset_your_password", variables))
+                    .subject("Forespørsel om å endre passord")
+                    .build();
+            emailService.sendEmail(email);
+
+//            emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
+//                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
             log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword");
+
             return new Response(token, HttpStatus.ACCEPTED);
         }
 
@@ -202,4 +267,5 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtUtil.generateToken(userDetails);
     }
+
 }

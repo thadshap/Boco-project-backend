@@ -6,13 +6,18 @@ import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 public interface AuthService {
 
-    User createUser(CreateAccountDto createAccount);
+    String getFacebookUrl();
+
+    ModelAndView forwardToFacebook(String authorizationCode);
+
+    Response createUser(CreateAccountDto createAccount, String url);
 
     void saveUserVerificationTokenForUser(String token, User user);
 

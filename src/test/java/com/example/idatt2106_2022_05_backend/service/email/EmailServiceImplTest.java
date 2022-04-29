@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import com.example.idatt2106_2022_05_backend.config.MailConfig;
 import com.example.idatt2106_2022_05_backend.model.Email;
+import com.example.idatt2106_2022_05_backend.model.ThymeleafTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,11 +48,15 @@ class EmailServiceImplTest {
         "Testing" + "Min test" +
         "url" + "https://bocotest.web.com/";
 
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", "Test Testesen");
+        variables.put("url", "https://bocotest.web.com/");
+
         mail = Email.builder()
                 .from("hassano19988991@gmail.com")
-                .to("ken@robin.no")
-                .message(message)
-                .subject("Activity closed")
+                .to("andetel@stud.ntnu.no")
+                .template(new ThymeleafTemplate("reset_your_password", variables))
+                .subject("testing")
                 .build();
 
         Mockito.doNothing().when(mailSender).send(any(MimeMessage.class));

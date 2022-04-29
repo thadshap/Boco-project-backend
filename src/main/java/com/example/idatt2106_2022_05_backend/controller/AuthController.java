@@ -15,10 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 @Slf4j
@@ -30,13 +37,28 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    @GetMapping(value = "/signin/facebook")
+    @ApiOperation(value = "Endpoint to handle user logging in with Facebook")
+    public void producer(HttpServletResponse httpServletResponse) {
+        log.debug("[X] Call to login with facebook");
+        String url = authService.getFacebookUrl();
+        System.out.println("The URL is: " + url);
+
+        httpServletResponse.setHeader("Location", url);
+        httpServletResponse.setStatus(302);
+    }
+
+    @RequestMapping(value = "/forwardLogin")
+    @ApiOperation(value = "Endpoint to handle user logging in with Facebook", response = ModelAndView.class)
+    public ModelAndView prodducer(@RequestParam("code") String authorizationCode) {
+        log.debug("[X] Call to forward login with facebook to facebook");
+        return authService.forwardToFacebook(authorizationCode);
+    }
 
     @PostMapping("/login/outside")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
     public Response loginWithOutsideService(Principal principal) {
-        log.debug("[X] Call to login with facebook or google");
+
         return null;
     }
 
@@ -52,7 +74,7 @@ public class AuthController {
     public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url)
             throws MessagingException {
         log.debug("[X] Call to reset password");
-        return authService.resetPassword(forgotPasswordDto, "https://" + url.getServerName() + ":" + 8080 + url.getContextPath());
+        return authService.resetPassword(forgotPasswordDto, url(url));
     }
 
     @PostMapping("/renewPassword")
@@ -69,12 +91,12 @@ public class AuthController {
     @ApiOperation(value = "Endpoint where user can create an account", response = Response.class)
     public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) {
         log.debug("[X] Call to get create a user");
-        User user = authService.createUser(createAccount);
-        if (user == null) {
-            return new Response("Mail is already registered", HttpStatus.IM_USED);
-        }
-        publisher.publishEvent(new RegistrationComplete(user, url(url)));
-        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
+        return authService.createUser(createAccount, url(url));
+//        if (user == null) {
+//            return new Response("Mail is already registered", HttpStatus.IM_USED);
+//        }
+//        publisher.publishEvent(new RegistrationComplete(user, url(url)));
+//        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")

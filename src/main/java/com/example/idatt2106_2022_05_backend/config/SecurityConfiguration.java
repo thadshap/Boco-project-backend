@@ -1,14 +1,10 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 import com.example.idatt2106_2022_05_backend.config.social.FacebookSignInAdapter;
-import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
 import com.example.idatt2106_2022_05_backend.service.social.FacebookConnectionSignup;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -126,13 +122,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.headers().frameOptions().disable();
 //        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
-
-    @Autowired
-    private OAuth2UserServiceImpl oauth2UserService;
-
-    @Autowired
-    private OAuthLoginHandler oauthLoginHandler;
-
-    @Autowired
-    private DatabaseLoginHandler databaseLoginHandler;
 }

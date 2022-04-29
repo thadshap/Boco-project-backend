@@ -25,6 +25,8 @@ import java.net.URI;
 @CrossOrigin(value = "*", allowedHeaders = "*")
 public class SocialController {
 
+
+
     private FacebookConnectionFactory factory = new FacebookConnectionFactory("1181763609285094",
             "822eef3823b53888eb4dd9f0c1a09463"
             );
@@ -36,6 +38,8 @@ public class SocialController {
 
     @GetMapping(value = "/facebook")
     public void producer(HttpServletResponse httpServletResponse) {
+
+
 
         OAuth2Operations operations = factory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
