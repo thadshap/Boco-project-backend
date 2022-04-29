@@ -22,6 +22,7 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +51,7 @@ public class AuthController {
 
     @GetMapping(value = "/forwardLogin")
     @ApiOperation(value = "Endpoint to handle user logging in with Facebook", response = ModelAndView.class)
-    public ModelAndView forwardFacebook(@RequestParam("code") String authorizationCode) {
+    public RedirectView forwardFacebook(@RequestParam("code") String authorizationCode) {
 //        log.info(principal.toString());
         log.debug("[X] Call to forward login with facebook to facebook");
         return authService.forwardToFacebook(authorizationCode);

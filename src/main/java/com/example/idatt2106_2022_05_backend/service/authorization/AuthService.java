@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ public interface AuthService {
 
     String getFacebookUrl();
 
-    ModelAndView forwardToFacebook(String authorizationCode);
+    RedirectView forwardToFacebook(String authorizationCode);
 
     String getGoogleUrl();
 

@@ -31,6 +31,7 @@ import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ModelAndView forwardToFacebook(String authorizationCode) {
+    public RedirectView forwardToFacebook(String authorizationCode) {
         OAuth2Operations operations = facebookFactory.getOAuthOperations();
         AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin",
                 null);
@@ -94,13 +95,9 @@ public class AuthServiceImpl implements AuthService {
 
         org.springframework.social.facebook.api.User userProfile =
                 facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
-        ModelAndView model = new ModelAndView("details");
-
-        model.addObject("user", userProfile);
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
-
-        return model;
+        return new RedirectView("https://localhost:8080/login/" + userProfile.getFirstName());
     }
 
     @Override
