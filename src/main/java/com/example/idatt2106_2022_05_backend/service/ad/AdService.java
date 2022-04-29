@@ -21,16 +21,16 @@ public interface AdService {
     Response getAllAdsInCategory(String name);
 
     // Get ad by id
-    Response getAdById(long id);
+    Response getAdById(Long id);
 
     // Get all ads for user
-    Response getAllAdsByUser(long userId);
+    Response getAllAdsByUser(Long userId);
 
     // Get all available ads
     Response getAllAvailableAds();
 
     // Get all available ads by user id
-    Response getAllAvailableAdsByUser(long userId);
+    Response getAllAvailableAdsByUser(Long userId);
 
     //Get a page of ads
     Response getPageOfAds(int sizeOfPage);
@@ -45,7 +45,7 @@ public interface AdService {
     Response postNewAd(AdDto adDto) throws IOException;
 
     // get all reviews for an add with owner = user id
-    Response getReviewsByUserId(long userId);
+    Response getReviewsByUserId(Long userId);
 
     // update ad title
     Response updateAd(Long adId, AdUpdateDto adUpdateDto);
@@ -54,13 +54,13 @@ public interface AdService {
     Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
 
     // delete ad
-    Response deleteAd(long adId);
+    Response deleteAd(Long adId);
 
     //delete picture
-    Response deletePicture(long ad_id, byte[] chosenPicture);
+    Response deletePicture(Long ad_id, byte[] chosenPicture);
 
     //upload a new picture
-    Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
+    Response uploadNewPicture(Long ad_id, MultipartFile file) throws IOException;
 
     //get nearest ads
     Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException;

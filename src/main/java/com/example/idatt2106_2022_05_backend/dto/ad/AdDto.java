@@ -73,5 +73,6 @@ public class AdDto {
     @ApiModelProperty(notes = "id of user creating the ad")
     private long userId;
 
+    @ApiModelProperty(notes = "number of elements to return to frontend")
     private int sizeOfPage;
 }

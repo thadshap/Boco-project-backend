@@ -14,72 +14,22 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service class to
+ */
 @Service
-@AllArgsConstructor
-public class SecurityService {
+public interface SecurityService {
 
-    UserRepository userRepository;
+    boolean isUser(Long userId);
 
-    AdRepository adRepository;
+    boolean isAdOwner(Long adId);
 
-    RentalRepository rentalRepository;
+    boolean isVerifiedUser(Long userId);
 
-    ReviewRepository reviewRepository;
+    boolean isRentalOwner(Long rentalId);
 
-    PictureRepository pictureRepository;
+    boolean isRentalBorrower(Long rentalId);
 
-    private User getUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = authentication != null ? (UserDetails) authentication.getPrincipal() : null;
-        String email = userDetails != null ? userDetails.getUsername() : "";
-        return userRepository.findByEmail(email);
-    }
-
-    public boolean isUser(Long userId){
-        User user = getUser();
-        return user != null && user.getId().equals(userId);
-    }
-
-    public boolean isAdOwner(Long adId){
-        Ad ad = adRepository.findById(adId).orElse(null);
-        User user = getUser();
-        if(ad != null && user != null  && ad.getUser() != null){
-            return ad.getUser().equals(user);
-        }
-        return false;
-    }
-
-    public boolean isVerifiedUser(Long userId){
-        User user = getUser();
-        return user.isVerified();
-    }
-
-    public boolean isRentalOwner(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId).orElse(null);
-        User user = getUser();
-        if(rental != null && user != null  && rental.getOwner() != null){
-            return rental.getOwner().equals(user);
-        }
-        return false;
-    }
-
-    public boolean isRentalBorrower(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId).orElse(null);
-        User user = getUser();
-        if(rental != null && user != null  && rental.getBorrower() != null){
-            return rental.getBorrower().equals(user);
-        }
-        return false;
-    }
-
-//    public boolean userRentalAccess(Long userId){
-//        User user = getUser();
-//        Rental rental = rentalRepository.findByOwner(activityId);
-//        if(rental != null && user != null ){
-//            return hasActivityAccess(rental,user);
-//        }
-//        return false;
-//    }
-
+//    boolean userRentalAccess(Long userId);
 
 }
