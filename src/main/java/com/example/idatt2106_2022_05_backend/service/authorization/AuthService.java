@@ -17,6 +17,10 @@ public interface AuthService {
 
     ModelAndView forwardToFacebook(String authorizationCode);
 
+    String getGoogleUrl();
+
+    ModelAndView forwardToGoogle(String authorizationCode);
+
     Response createUser(CreateAccountDto createAccount, String url);
 
     void saveUserVerificationTokenForUser(String token, User user);
