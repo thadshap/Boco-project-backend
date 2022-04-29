@@ -32,6 +32,13 @@ public class Category {
     @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
     private Set<Ad> ads;
 
+    @PreRemove
+    private void removeRelationships(){
+        if(ads != null) {
+            setAds(null);
+        }
+    }
+
     @Override
     public String toString() {
         return "Category{" +

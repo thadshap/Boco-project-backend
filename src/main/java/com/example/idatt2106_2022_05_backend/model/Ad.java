@@ -90,8 +90,8 @@ public class Ad {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne // Should be nullable false
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
@@ -132,6 +132,9 @@ public class Ad {
         if(pictures != null){
             setPictures(null);
         }
+        if(category != null) {
+            setCategory(null);
+        }
         if(reviews != null){
             setReviews(null);
         }
@@ -143,9 +146,6 @@ public class Ad {
         }
         if(user != null) {
             setUser(null);
-        }
-        if(category != null) {
-            setCategory(null);
         }
     }
 

@@ -54,6 +54,9 @@ public class AdServiceImpl implements AdService {
     private PictureRepository pictureRepository;
 
     @Autowired
+    private RentalRepository rentalRepository;
+
+    @Autowired
     private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -448,7 +451,7 @@ public class AdServiceImpl implements AdService {
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
         if(ad.isPresent()) {
-            AdDto adDto = modelMapper.map(adRepository.findById(id), AdDto.class);
+            AdDto adDto = modelMapper.map(adRepository.findById(id).get(), AdDto.class);
             return new Response(adDto, HttpStatus.OK);
         }
         else{
@@ -853,6 +856,14 @@ public class AdServiceImpl implements AdService {
             // Delete the ad from its user
             ad.get().getUser().getAds().remove(ad.get());
 
+            // Get all the rentals
+            Set<Rental> rentals = ad.get().getRentals();
+            if(rentals != null) {
+                for(Rental rental : rentals) {
+                    rental.setAd(null);
+                    rentalRepository.save(rental);
+                }
+            }
             // Delete its rentals
             ad.get().setRentals(null);
 
