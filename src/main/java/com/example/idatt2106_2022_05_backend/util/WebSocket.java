@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.util;
 
-import com.example.idatt2106_2022_05_backend.model.MessageObjectModel;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;

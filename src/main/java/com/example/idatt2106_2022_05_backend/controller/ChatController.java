@@ -36,13 +36,14 @@ public class ChatController {
 
     @MessageMapping("/chat")
     //@SendTo("/topic/messages")
-    public Message sendMessage(Message message) {
+    public void sendMessage(Message message) {
         logger.info("got to controller");
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
+        logger.info("payload: "+ message.getPayload());
+        logger.info("headers: "+ message.getHeaders());
         //headerAccessor.getSessionAttributes().put("userid", messageDto.getFromUserId());
         //headerAccessor.getSessionAttributes().put("groupId", groupId);
-        chatService.saveMessage(message, groupId);
-        return new OutputMessage(message.getPayload());
+        chatService.broadcast(message);
+        //return message;
     }
 
 
