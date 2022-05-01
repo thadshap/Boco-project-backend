@@ -1,9 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -12,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -64,6 +60,12 @@ public class AuthController {
     public RedirectView forwardGoogle(@RequestParam("code") String authorizationCode) {
         log.debug("[X] Call to forward login with facebook to Google");
         return authService.forwardToGoogle(authorizationCode);
+    }
+
+    @PostMapping("/facebook/signin")
+    public Response facebookAuth(@Valid @RequestBody SocialLoginRequest facebookLoginRequest) {
+        log.info("facebook login {}", facebookLoginRequest);
+        return authService.loginUserFacebook(facebookLoginRequest.getAccessToken());
     }
 
     @PostMapping("/login")

@@ -24,6 +24,8 @@ public interface AuthService {
 
     RedirectView forwardToGoogle(String authorizationCode);
 
+    Response loginUserFacebook(String accessToken);
+
     Response login(LoginDto loginDto) throws Exception;
 
     Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException, IOException;

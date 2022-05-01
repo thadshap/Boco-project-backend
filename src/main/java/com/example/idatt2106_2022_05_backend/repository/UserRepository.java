@@ -18,5 +18,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Set<Ad> getAdsByUserId(@Param("id") long id);
 
     User findByEmail(String email);
+
+    Optional<User> findUserByEmail(String email);
+
     Optional<User> findById(long user_id);
+
+    boolean existsByEmail(String email);
+
 }

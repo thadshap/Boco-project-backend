@@ -7,12 +7,15 @@ import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
+import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
 import com.example.idatt2106_2022_05_backend.security.JWTUtil;
+import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
+import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.social.connect.Connection;
@@ -38,6 +42,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -68,6 +73,9 @@ public class AuthServiceImpl implements AuthService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private ModelMapper modelMapper = new ModelMapper();
+
+    @Autowired
+    private SecurityService securityService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -117,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
-        return new RedirectView("https://localhost:8080/login/facebook/" + userProfile.getId());
+        return new RedirectView("http://localhost:8443/auth/login/?email=" + userProfile.getEmail());
     }
 
     /**
@@ -160,6 +168,64 @@ public class AuthServiceImpl implements AuthService {
 
         return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
     }
+
+    @Autowired private FacebookClient facebookClient;
+
+    @Override
+    public Response loginUserFacebook(String accessToken) {
+        FacebookUser facebookUser = facebookClient.getUser(accessToken);
+
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
+
+        if (userDetails == null){
+            User user = User.builder()
+                    .email(facebookUser.getEmail())
+                    .firstName(facebookUser.getFirstName())
+                    .lastName(facebookUser.getLastName())
+                    .password(passwordEncoder.encode(generatePassword(8)))
+                    .build();
+            userRepository.save(user);
+            userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
+        }
+        final String token = jwtUtil.generateToken(userDetails);
+
+        User user = userRepository.findByEmail(facebookUser.getEmail());
+
+        LoginResponse jwt = LoginResponse.builder()
+                .id(user.getId())
+                .token(token)
+                .build();
+
+        return new Response(jwt, HttpStatus.ACCEPTED);
+    }
+
+
+    private String generatePassword(int length) {
+        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String specialCharacters = "!@#$";
+        String numbers = "1234567890";
+        String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
+        Random random = new Random();
+        char[] password = new char[length];
+
+        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
+        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
+        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
+        password[3] = numbers.charAt(random.nextInt(numbers.length()));
+
+        for(int i = 4; i< length ; i++) {
+            password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
+        }
+        return new String(password);
+    }
+
+
+
+
+
+
+
 
     /**
      * Method to handle user logging in.
