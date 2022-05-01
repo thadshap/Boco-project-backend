@@ -16,9 +16,14 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +63,7 @@ public class AdServiceImpl implements AdService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-
+    private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
     // Get all ads
     @Override
     public Response getAllAds() throws IOException {
@@ -1082,6 +1087,33 @@ public class AdServiceImpl implements AdService {
     public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Ad setLagLongFromAdress(Ad ad)
+            throws IOException, InterruptedException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Geocoder geocoder = new Geocoder();
+
+        String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
+        JsonNode responseJSONnode = objectMapper.readTree(response);
+        logger.info("recieved response: " + response);
+        JsonNode items = responseJSONnode.get("items");
+
+        for(JsonNode item : items){
+            JsonNode address = item.get("address");
+            String label = address.get("label").asText();
+            JsonNode position = item.get("position");
+
+            String lat = position.get("lat").asText();
+            String lng = position.get("lng").asText();
+            if(!lat.equals("") && !lng.equals("")){
+                ad.setLat(Double.parseDouble(lat));
+                ad.setLng(Double.parseDouble(lng));
+            }
+            System.out.println(label + " is located at " + lat + "," + lng + ".");
+        }
+        return ad;
     }
 
 
