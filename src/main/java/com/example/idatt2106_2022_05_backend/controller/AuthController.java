@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.user.*;
+import com.example.idatt2106_2022_05_backend.model.google.GoogleSignin;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.authorization.AuthService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -63,9 +64,17 @@ public class AuthController {
     }
 
     @PostMapping("/facebook/signin")
-    public Response facebookAuth(@Valid @RequestBody SocialLoginRequest facebookLoginRequest) {
-        log.info("facebook login {}", facebookLoginRequest);
-        return authService.loginUserFacebook(facebookLoginRequest.getAccessToken());
+    public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) {
+        log.info("facebook login {}", socialLoginRequest);
+        System.out.println(socialLoginRequest);
+        return authService.loginUserFacebook(socialLoginRequest.getId_token());
+    }
+
+    @PostMapping("/google/signin")
+    public Response googleAuth(@RequestBody GoogleSignin socialLoginRequest) {
+        log.info("facebook login {}", socialLoginRequest);
+        System.out.println(socialLoginRequest.getId_token());
+        return authService.loginUserGoogle(socialLoginRequest);
     }
 
     @PostMapping("/login")

@@ -8,6 +8,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
+import com.example.idatt2106_2022_05_backend.model.google.GoogleSignin;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
@@ -31,6 +32,9 @@ import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.google.api.Google;
 import org.springframework.social.google.connect.GoogleConnectionFactory;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -175,6 +179,8 @@ public class AuthServiceImpl implements AuthService {
     public Response loginUserFacebook(String accessToken) {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
+        System.out.println(facebookUser.getEmail());
+
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
         if (userDetails == null){
@@ -197,6 +203,72 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
+    }
+
+    @Override
+    public Response loginUserGoogle(GoogleSignin socialLoginRequest) {
+
+//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+//                // Specify the CLIENT_ID of the app that accesses the backend:
+//                .setAudience(Collections.singletonList(CLIENT_ID))
+//                // Or, if multiple clients access the backend:
+//                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+//                .build();
+//
+//// (Receive idTokenString by HTTPS POST)
+//
+//        GoogleIdToken idToken = verifier.verify(idTokenString);
+//        if (idToken != null) {
+//            Payload payload = idToken.getPayload();
+//
+//            // Print user identifier
+//            String userId = payload.getSubject();
+//            System.out.println("User ID: " + userId);
+//
+//            // Get profile information from payload
+//            String email = payload.getEmail();
+//            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+//            String name = (String) payload.get("name");
+//            String pictureUrl = (String) payload.get("picture");
+//            String locale = (String) payload.get("locale");
+//            String familyName = (String) payload.get("family_name");
+//            String givenName = (String) payload.get("given_name");
+//
+//            // Use or store profile information
+//            // ...
+//
+//        } else {
+//            System.out.println("Invalid ID token.");
+//        }
+
+
+
+
+
+//        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(socialLoginRequest.getEmail());
+
+//        if (userDetails == null){
+//            User user = User.builder()
+////                    .email(socialLoginRequest.getEmail())
+////                    .firstName(socialLoginRequest.getName().split(" ")[0])
+////                    .lastName(socialLoginRequest.getName().split(" ")[1])
+//                    //TODO img url
+//                    .password(passwordEncoder.encode(generatePassword(8)))
+//                    .build();
+//            userRepository.save(user);
+////            userDetails = userDetailsServiceImpl.loadUserByUsername(socialLoginRequest.getEmail());
+//        }
+//        final String token = jwtUtil.generateToken(userDetails);
+//
+//        User user = userRepository.findByEmail(socialLoginRequest.getEmail());
+
+//        LoginResponse jwt = LoginResponse.builder()
+//                .id(user.getId())
+//                .token(token)
+//                .build();
+
+//        return new Response(jwt, HttpStatus.ACCEPTED);
+        return new Response("OK",HttpStatus.OK);
     }
 
 

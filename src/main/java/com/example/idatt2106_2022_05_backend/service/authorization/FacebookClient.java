@@ -11,17 +11,20 @@ import java.util.Map;
 @Service
 public class FacebookClient {
 
+    @Autowired
     private RestTemplate restTemplate;
 
     private final String FACEBOOK_GRAPH_API_BASE = "https://graph.facebook.com";
 
     public FacebookUser getUser(String accessToken) {
-        var path = "/me?fields={fields}&redirect={redirect}&access_token={access_token}";
-        var fields = "email,first_name,last_name,id,picture.width(720).height(720)";
+//        var path = "/me?fields={fields}&redirect={redirect}&access_token={access_token}";
+        String fields = "email,first_name,last_name,id,picture.width(720).height(720)";
+        String path = String.format("/me?fields=%s&redirect=%s&access_token=%s", fields, false, accessToken);
         final Map<String, String> variables = new HashMap<>();
         variables.put("fields", fields);
         variables.put("redirect", "false");
         variables.put("access_token", accessToken);
+        System.out.println(path);
         return restTemplate
                 .getForObject(FACEBOOK_GRAPH_API_BASE + path, FacebookUser.class, variables);
     }

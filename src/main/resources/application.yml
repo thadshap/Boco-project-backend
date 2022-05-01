@@ -64,12 +64,15 @@ spring:
 #              - profile_profile
 server:
   ssl:
-    key-alias: boco
-    key-store-type: PKCS12
-    key-store: src/main/resources/keystore/keystores/cert_key.p12
+    key-alias: localhost
+#    key-store-type: PKCS12
+    key-store: src/main/resources/keystore/keystores/keystore.jks
+    key-password: password
     key-store-password: password
+    trust-store: src/main/resources/keystore/keystores/truststore.jks
+    trust-store-password: password
     protocol: TLS
-    enabled: false
+    enabled: true
     enabled-protocols: TLSv1.2
     client-auth: want
   port: 8443

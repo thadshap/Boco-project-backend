@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
 import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.google.GoogleSignin;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -25,6 +26,8 @@ public interface AuthService {
     RedirectView forwardToGoogle(String authorizationCode);
 
     Response loginUserFacebook(String accessToken);
+
+    Response loginUserGoogle(GoogleSignin socialLoginRequest);
 
     Response login(LoginDto loginDto) throws Exception;
 

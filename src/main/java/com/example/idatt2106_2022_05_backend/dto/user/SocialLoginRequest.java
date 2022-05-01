@@ -14,5 +14,5 @@ import javax.validation.constraints.NotBlank;
 public class SocialLoginRequest {
 
     @NotBlank
-    private String accessToken;
+    private String id_token;
 }
