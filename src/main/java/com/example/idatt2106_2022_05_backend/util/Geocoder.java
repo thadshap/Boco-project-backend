@@ -1,12 +1,7 @@
 package com.example.idatt2106_2022_05_backend.util;
 
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.service.ad.AdService;
-import com.example.idatt2106_2022_05_backend.service.ad.AdServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -15,6 +10,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+/**
+ * Class to find an ads coordinates based on an address
+ */
 public class Geocoder {
 
     private static final String GEOCODING_RESOURCE = "https://geocode.search.hereapi.com/v1/geocode";
@@ -39,5 +37,4 @@ public class Geocoder {
         logger.info("Recieved response: " + geocodingResponse.body());
         return String.valueOf(geocodingResponse.body());
     }
-
 }
