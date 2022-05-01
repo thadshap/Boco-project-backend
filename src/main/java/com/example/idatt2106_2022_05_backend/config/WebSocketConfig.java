@@ -64,7 +64,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws");
         //addEndpoint is the endpoint where clients requests connection, handshake happens here
-        registry.addEndpoint("/ws").setAllowedOrigins("chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam", "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:8080","chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam", "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp").withSockJS();
     }
 
     @Override

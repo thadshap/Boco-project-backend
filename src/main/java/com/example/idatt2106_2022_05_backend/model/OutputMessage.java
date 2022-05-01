@@ -21,4 +21,12 @@ public class OutputMessage {
 
     @Column(name = "time")
     private String time;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 }

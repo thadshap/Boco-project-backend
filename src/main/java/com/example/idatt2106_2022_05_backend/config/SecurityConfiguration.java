@@ -44,12 +44,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
-            cors.setAllowCredentials(false);
-            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowCredentials(true);
+            cors.setAllowedOrigins(List.of("http://localhost:8080/"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
