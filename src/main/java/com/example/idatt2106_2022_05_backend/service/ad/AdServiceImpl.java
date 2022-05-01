@@ -1019,25 +1019,32 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response searchThroughAds(String searchword){
-        List<Ad> ads = new ArrayList<>();
-        Set<Ad> ad = adRepository.findByTitleContaining(searchword);
-        List<Category> categories = categoryRepository.findByNameContaining(searchword);
+        //List to be filled with corresponding ads
+        List<Ad> adsContainingSearchWord = new ArrayList<>();
+
+        List<Ad> ads = adRepository.findAll();
+
+        //Checking all titles for searchword
+        for(Ad a: ads){
+            if(a.getTitle().contains(searchword)){
+                adsContainingSearchWord.add(a);
+            }
+        }
+        List<Category> categories = categoryRepository.findAll();
 
         //Adding all ads with the category
         for(Category c: categories){
-            for(Ad a: c.getAds()){
-                ads.add(a);
+            if(c.getName().contains(searchword)) {
+                for (Ad a : c.getAds()) {
+                    if(!adsContainingSearchWord.contains(a)) {
+                        adsContainingSearchWord.add(a);
+                    }
+                }
             }
         }
 
-        //Adding all ads with the searchword in the title
-        for(Ad a: ad){
-            if(!ads.contains(a)){
-                ads.add(a);
-            }
-        }
         //Casting objects to Dto and returning
-        return new Response(ads.stream()
+        return new Response(adsContainingSearchWord.stream()
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
