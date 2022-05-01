@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/profilePicture")
-    @ApiOperation(value = "Endpoint to delete profile picture", response = UserReturnDto.class)
+    @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
     public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
         try {
             return userService.deleteProfilePicture(updatePictureDto.getUserId(),

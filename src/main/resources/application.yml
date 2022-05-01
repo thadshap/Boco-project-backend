@@ -14,16 +14,18 @@ spring:
     password:
     driverClassName: org.h2.Driver
   mail:
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: 'true'
-          auth: 'true'
     host: ${EMAIL_HOST:smtp.gmail.com}
     username: ${EMAIL_USERNAME:hassano19988991@gmail.com}
     password: ${EMAIL_PASSWORD:etxkzjeuvuupkpmq}
     port: ${EMAIL_PORT:#{587}}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: 'true'
+          starttls:
+            enable: 'true'
+            required: 'true'
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @Slf4j
 @RestController()
@@ -65,12 +66,6 @@ public class AuthController {
         return authService.forwardToGoogle(authorizationCode);
     }
 
-    @PostMapping("/login/outside")
-    @ApiOperation(value = "Endpoint to handle user logging in with Facebook or Google", response = Response.class)
-    public Response loginWithOutsideService() {
-        return null;
-    }
-
     @PostMapping("/login")
     @ApiOperation(value = "Endpoint handling user login", response = Response.class)
     public Response login(@Valid @RequestBody LoginDto loginDto) throws Exception {
@@ -81,14 +76,14 @@ public class AuthController {
     @PostMapping("/forgotPassword")
     @ApiOperation(value = "Endpoint to handle forgotten password", response = Response.class)
     public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url)
-            throws MessagingException {
+            throws MessagingException, IOException {
         log.debug("[X] Call to reset password");
-        return authService.resetPassword(forgotPasswordDto, url(url));
+        return authService.resetPassword(forgotPasswordDto, "http://" + url.getServerName() + ":" + "8080" + url.getContextPath());
     }
 
     @PostMapping("/renewPassword")
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
-    public Response renewPassword(@RequestParam("token") String token,
+    public ModelAndView renewPassword(@RequestParam("token") String token,
             @RequestBody UserRenewPasswordDto renewPasswordDto) {
         System.out.println(renewPasswordDto.getPassword() + " " + renewPasswordDto.getConfirmPassword());
         System.out.println(token);
@@ -105,15 +100,22 @@ public class AuthController {
 
     @GetMapping("/verifyEmail")
     @ApiOperation(value = "Endpoint where user can create an account", response = Response.class)
-    public Response verifyRegistration(@RequestParam("token") String token) {
+    public ModelAndView verifyRegistration(@RequestParam("token") String token) {
         log.debug("[X] Call to verify user with email");
         String result = authService.validateEmailThroughToken(token);
         String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?"
                 + token;
+        ModelAndView view = new ModelAndView("verified");
         if (result.equalsIgnoreCase("valid email")) {
-            return new Response("Kontoen er nå verifisert!\n:", HttpStatus.ACCEPTED);
+            view.addObject("txt1", "Vi er glade for at du har registrert deg hos oss");
+            view.addObject("txt2", "Du er verifisert og har nå muligheten til å leie.");
+            view.addObject("txt3", "Hvis du har tidligere verifisert kontoen din, trenger du ikke å gjøre det igjen.");
+            return view;
         }
-        return new Response(result + "\n" + resendVerificationMail, HttpStatus.NOT_FOUND);
+        view.addObject("txt1", "Tidsfristen for å endre passord er gått ut!!!");
+        view.addObject("txt2", "Du kan fortsatt verifisere deg med å sende ett nytt verifikasjonsmail.");
+        view.addObject("txt3", resendVerificationMail);
+        return view;
     }
 
     @GetMapping("/resendVerification")

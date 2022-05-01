@@ -41,7 +41,7 @@ public class MailConfig {
      * @return {@link JavaMailSender} object
      */
     @Bean
-    public JavaMailSender mailSender() {
+    public JavaMailSender mailSender() throws IOException {
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(EMAIL_HOST);
         mailSender.setPort(EMAIL_PORT);
@@ -51,7 +51,9 @@ public class MailConfig {
         final Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
         javaMailProperties.put("mail.smtp.auth", "true");
-//        javaMailProperties.load(this.applicationContext.getResource("classpath:application.yml").getInputStream());
+        javaMailProperties.put("mail.smtp.starttls.required", "true");
+        javaMailProperties.put("mail.default-encoding", "UTF-8");
+        javaMailProperties.load(this.applicationContext.getResource("classpath:application.yml").getInputStream());
         mailSender.setJavaMailProperties(javaMailProperties);
 
         return mailSender;

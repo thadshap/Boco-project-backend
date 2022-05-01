@@ -11,6 +11,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.security.Principal;
 
 public interface AuthService {
@@ -23,19 +24,19 @@ public interface AuthService {
 
     RedirectView forwardToGoogle(String authorizationCode);
 
-    Response createUser(CreateAccountDto createAccount, String url);
+    Response login(LoginDto loginDto) throws Exception;
 
-    void saveUserVerificationTokenForUser(String token, User user);
+    Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException, IOException;
+
+    ModelAndView validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto);
+
+    Response createUser(CreateAccountDto createAccount, String url);
 
     String validateEmailThroughToken(String token);
 
+    void saveUserVerificationTokenForUser(String token, User user);
+
     Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException;
-
-    Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException;
-
-    Response validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto);
-
-    Response login(LoginDto loginDto) throws Exception;
 
     void updateAuthenticationType(String username, String database);
 

@@ -21,6 +21,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void testSendEmail() throws MessagingException {
+    void testSendEmail() throws MessagingException, IOException {
         emailService.sendEmail(mail);
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }

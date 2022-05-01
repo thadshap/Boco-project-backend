@@ -32,10 +32,12 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -112,9 +114,6 @@ public class AuthServiceImpl implements AuthService {
 
         org.springframework.social.facebook.api.User userProfile =
                 facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
-//        ModelAndView model = new ModelAndView("details");
-//
-//        model.addObject("user", userProfile);
 
         System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
 
@@ -157,168 +156,9 @@ public class AuthServiceImpl implements AuthService {
 //                        .fetchObject("me", org.springframework.social.google.api.userinfo.implclass, fields);
 //        ModelAndView model = new ModelAndView("details");
 
-//        model.addObject("user", userProfile);
-
         System.out.println(userProfile.getId() + " " + userProfile.getDisplayName() + ", " + userProfile.getEmailAddresses().iterator().next());
 
         return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
-    }
-
-    /**
-     * Method to create an account.
-     * @param createAccount Dto to create an account.
-     * @param url url to send in the mail to user.
-     * @return response.
-     */
-    @Override
-    public Response createUser(CreateAccountDto createAccount, String url) {
-        if (userRepository.findByEmail(createAccount.getEmail()) != null) {
-            return new Response("Mail is already registered", HttpStatus.IM_USED);
-        }
-
-        User user = modelMapper.map(createAccount, User.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-
-        publisher.publishEvent(new RegistrationComplete(user, url));
-
-        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
-    }
-
-    /**
-     * Method to save user verification.
-     * @param token token to verify user after creation.
-     * @param user user to add token to.
-     */
-    @Override
-    public void saveUserVerificationTokenForUser(String token, User user) {
-        UserVerificationToken userVerificationToken = new UserVerificationToken(user, token);
-
-        userVerificationTokenRepository.save(userVerificationToken);
-    }
-
-    /**
-     * Method to validate email by their token.
-     * @param token token to validate email by.
-     * @return string response if valid or not.
-     */
-    @Override
-    public String validateEmailThroughToken(String token) {
-        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(token);
-
-        if (verificationTokenOpt.isEmpty()) {
-            return "Invalid email";
-        }
-        UserVerificationToken verificationToken = verificationTokenOpt.get();
-
-        User user = verificationToken.getUser();
-        Calendar cal = Calendar.getInstance();
-
-        if ((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-            userVerificationTokenRepository.delete(verificationToken);
-            return "Valideringstid utløpt";
-        }
-
-        user.setVerified(true);
-        userRepository.save(user);
-        return "valid email";
-    }
-
-    /**
-     * Method to create new token if the previous is expired.
-     * @param prevToken previous token.
-     * @param url url to send mail to.
-     * @return response.
-     * @throws MessagingException throws exception if messaging fails.
-     */
-    @Override
-    public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
-        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(prevToken);
-
-        if (verificationTokenOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
-        }
-        UserVerificationToken verificationToken = verificationTokenOpt.get();
-
-        verificationToken.setToken(UUID.randomUUID().toString());
-        userVerificationTokenRepository.save(verificationToken);
-        User user = verificationToken.getUser();
-
-        String newUrl = "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
-                + "/auth/verifyRegistration?token=" + verificationToken.getToken();
-
-        emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
-                "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
-        // TODO create own mail
-
-        log.info("Click the link to verify your account: {}", newUrl);
-        return new Response("Verifikasjons mail er sendt til din email!", HttpStatus.ACCEPTED);
-    }
-
-    /**
-     * Method to handle request of resetting password.
-     * @param forgotPasswordDto dto containing email.
-     * @param url url to send in the mail of the user.
-     * @return response if mail is sent.
-     * @throws MessagingException throws exception if messaging fails.
-     */
-    @Override
-    public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException {
-        User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
-
-        if (user != null) {
-            String token = UUID.randomUUID().toString();
-            ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
-            resetPasswordTokenRepository.save(resetToken);
-
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("name", user.getFirstName() + " " + user.getLastName());
-            variables.put("url", url + "/auth/renewYourPassword");
-
-            Email email = Email.builder()
-                    .from("BOCO@gmail.com")
-                    .to(user.getEmail())
-                    .template(new ThymeleafTemplate("reset_your_password", variables))
-                    .subject("Forespørsel om å endre passord")
-                    .build();
-            emailService.sendEmail(email);
-
-//            emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-//                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
-            log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword");
-
-            return new Response(token, HttpStatus.ACCEPTED);
-        }
-
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
-    }
-
-    /**
-     * Method to validate the password wanted to change by token created.
-     * @param token token to verify the user.
-     * @param forgotPasswordDto dto containing password to change.
-     * @return response.
-     */
-    @Override
-    public Response validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto) {
-        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
-
-        if (resetPasswordToken == null) {
-            return new Response("Passord to ken ikke funnet", HttpStatus.NOT_FOUND);
-        }
-
-        User user = resetPasswordToken.getUser();
-        Calendar cal = Calendar.getInstance();
-
-        if ((resetPasswordToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-            resetPasswordTokenRepository.delete(resetPasswordToken);
-            return new Response("Passord to ken tid utgått", HttpStatus.GONE);
-        }
-
-        user.setPassword(passwordEncoder.encode(forgotPasswordDto.getPassword()));
-        userRepository.save(user);
-
-        return new Response("valid token", HttpStatus.CREATED);
     }
 
     /**
@@ -351,6 +191,169 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * Method to handle request of resetting password.
+     * @param forgotPasswordDto dto containing email.
+     * @param url url to send in the mail of the user.
+     * @return response if mail is sent.
+     * @throws MessagingException throws exception if messaging fails.
+     */
+    @Override
+    public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException, IOException {
+        User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
+
+        if (user != null) {
+            String token = UUID.randomUUID().toString();
+            ResetPasswordToken resetToken = new ResetPasswordToken(user, token);
+            resetPasswordTokenRepository.save(resetToken);
+
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("name", user.getFirstName() + " " + user.getLastName());
+            variables.put("url", url + "/auth/renewYourPassword");
+
+            Email email = Email.builder()
+                    .from("BOCO@gmail.com")
+                    .to(user.getEmail())
+                    .template(new ThymeleafTemplate("verify_mail", variables))
+                    .subject("Forespørsel om å endre passord")
+                    .build();
+            emailService.sendEmail(email);
+
+//            emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
+//                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
+            log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword");
+
+            return new Response(token, HttpStatus.ACCEPTED);
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
+    }
+
+    /**
+     * Method to validate the password wanted to change by token created.
+     * @param token token to verify the user.
+     * @param forgotPasswordDto dto containing password to change.
+     * @return ModelAndView with response.
+     */
+    @Override
+    public ModelAndView validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto) {
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
+        ModelAndView view = new ModelAndView("verified");
+        if (resetPasswordToken == null) {
+            view.addObject("txt1", "Ikke gyldig token for å bytte passord!");;
+            return view;
+        }
+
+        User user = resetPasswordToken.getUser();
+        Calendar cal = Calendar.getInstance();
+
+        if ((resetPasswordToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+            resetPasswordTokenRepository.delete(resetPasswordToken);
+            view.addObject("txt1", "Tidsfristen for å endre passord er gått ut!!!");
+            view.addObject("txt2", "Trykk på glemt passord på innloggings siden for å kunne endre på nytt.");
+            return view;
+        }
+
+        user.setPassword(passwordEncoder.encode(forgotPasswordDto.getPassword()));
+        userRepository.save(user);
+
+        view.addObject("txt1", "Vi er glade for at du har registrert deg hos oss");
+        view.addObject("txt2", "Du er verifisert og har nå muligheten til å leie.");
+        view.addObject("txt3", "Hvis du har tidligere verifisert kontoen din, trenger du ikke å gjøre det igjen.");
+        return view;
+    }
+
+    /**
+     * Method to create an account.
+     * @param createAccount Dto to create an account.
+     * @param url url to send in the mail to user.
+     * @return response.
+     */
+    @Override
+    public Response createUser(CreateAccountDto createAccount, String url) {
+        if (userRepository.findByEmail(createAccount.getEmail()) != null) {
+            return new Response("Mail is already registered", HttpStatus.IM_USED);
+        }
+
+        User user = modelMapper.map(createAccount, User.class);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        publisher.publishEvent(new RegistrationComplete(user, url));
+
+        return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
+    }
+
+    /**
+     * Method to validate email by their token.
+     * @param token token to validate email by.
+     * @return string response if valid or not.
+     */
+    @Override
+    public String validateEmailThroughToken(String token) {
+        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(token);
+
+        if (verificationTokenOpt.isEmpty()) {
+            return "Invalid email";
+        }
+        UserVerificationToken verificationToken = verificationTokenOpt.get();
+
+        User user = verificationToken.getUser();
+        Calendar cal = Calendar.getInstance();
+
+        if ((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+            userVerificationTokenRepository.delete(verificationToken);
+            return "Valideringstid utløpt";
+        }
+
+        user.setVerified(true);
+        userRepository.save(user);
+        return "valid email";
+    }
+
+    /**
+     * Method to save user verification.
+     * @param token token to verify user after creation.
+     * @param user user to add token to.
+     */
+    @Override
+    public void saveUserVerificationTokenForUser(String token, User user) {
+        UserVerificationToken userVerificationToken = new UserVerificationToken(user, token);
+
+        userVerificationTokenRepository.save(userVerificationToken);
+    }
+
+    /**
+     * Method to create new token if the previous is expired.
+     * @param prevToken previous token.
+     * @param url url to send mail to.
+     * @return response.
+     * @throws MessagingException throws exception if messaging fails.
+     */
+    @Override
+    public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
+        Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(prevToken);
+
+        if (verificationTokenOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
+        }
+        UserVerificationToken verificationToken = verificationTokenOpt.get();
+
+        verificationToken.setToken(UUID.randomUUID().toString());
+        userVerificationTokenRepository.save(verificationToken);
+        User user = verificationToken.getUser();
+
+        String newUrl = "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
+                + "/auth/verifyRegistration?token=" + verificationToken.getToken();
+
+        emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
+                "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
+        // TODO create own mail
+
+        log.info("Click the link to verify your account: {}", newUrl);
+        return new Response("Verifikasjons mail er sendt til din email!", HttpStatus.ACCEPTED);
     }
 
     /**

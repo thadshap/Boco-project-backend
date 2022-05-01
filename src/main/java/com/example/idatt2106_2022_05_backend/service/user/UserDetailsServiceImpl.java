@@ -2,6 +2,7 @@ package com.example.idatt2106_2022_05_backend.service.user;
 
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
  * UserDetailsService instance personalized
  */
 @Slf4j
-@NoArgsConstructor
 @AllArgsConstructor
 @Service
 @Builder

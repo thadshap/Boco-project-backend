@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -37,11 +38,14 @@ public class RegistrationCompleteListener implements ApplicationListener<Registr
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", user.getFirstName() + " " + user.getLastName());
         variables.put("url", url);
+        variables.put("lagd", "sant");
+//        variables.put("email", new ClassPathResource("static/images/email.jpeg"));
+//        variables.put("logo", new ClassPathResource("static/images/BoCo.jpeg"));
 
         Email email = Email.builder()
                 .from("BOCO@gmail.com")
                 .to(user.getEmail())
-                .template(new ThymeleafTemplate("reset_your_password", variables))
+                .template(new ThymeleafTemplate("verify_mail", variables))
                 .subject("Verifiser konto i BOCO")
                 .build();
         emailService.sendEmail(email);
