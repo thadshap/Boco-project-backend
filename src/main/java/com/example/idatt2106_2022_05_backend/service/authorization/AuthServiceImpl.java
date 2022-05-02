@@ -232,6 +232,7 @@ public class AuthServiceImpl implements AuthService {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
+//        "666906861821-cgtait2m7uotr9ra4bm7j6s2hndseoel.apps.googleusercontent.com"
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

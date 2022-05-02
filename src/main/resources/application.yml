@@ -39,7 +39,16 @@ server:
     trust-store: src/main/resources/keystore/keystores/truststore.jks
     trust-store-password: password
     protocol: TLS
-    enabled: true
+    enabled: false
     enabled-protocols: TLSv1.2
     client-auth: want
   port: 8443
+
+#org:
+#  apache:
+#    tomcat:
+#      websocket:
+#        SSL_TRUSTSTORE: src/main/resources/keystore/keystores/truststore.jks
+#        SSL_PROTOCOLS: TLS
+#        SSL_CONTEXT: ''
+#        SSL_TRUSTSTORE_PWD: ''
