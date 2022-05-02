@@ -16,6 +16,7 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -55,6 +56,9 @@ public class AdServiceImpl implements AdService {
 
     @Autowired
     private RentalRepository rentalRepository;
+
+    @Autowired
+    private CalendarService calendarService;
 
     @Autowired
     private PictureUtility pictureService;
@@ -660,10 +664,15 @@ public class AdServiceImpl implements AdService {
             newAd.setDescription(adDto.getDescription());
         }
 
+
         // Persisting the entities
-        adRepository.save(newAd);
+        Ad savedAd = adRepository.save(newAd);
+
         user.get().setAd(newAd);
         userRepository.save(user.get());
+
+        // Set the dates for the ad!
+        newAd.setDates(calendarService.addFutureDates(savedAd.getId()));
 
         return new Response(newAd.getId(), HttpStatus.CREATED);
     }

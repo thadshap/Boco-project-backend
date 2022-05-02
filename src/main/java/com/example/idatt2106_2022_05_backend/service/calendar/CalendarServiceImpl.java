@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CalendarServiceImpl implements CalendarService {
@@ -31,23 +28,39 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private AdRepository adRepository;
 
-    // return true if dates between start and end are "typeOfAvailability"
-    private boolean datesAre(LocalDate startDate, LocalDate endDate, boolean typeOfAvailability) {
+    // return true if dates between start and end are "typeOfAvailability" for an ad
+    private boolean datesAre(LocalDate startDate, LocalDate endDate, boolean typeOfAvailability, long adId) {
         // Get all dates between start -and endDate
         Set<CalendarDate> dates = dateRepository.findByDateBetween(startDate, endDate);
+        // Find the ad
+        Optional<Ad> adFound = adRepository.findById(adId);
 
-        // This return value changes if date.isAvailable != typeOfAvailability
-        boolean returnValue = true;
+        if(adFound.isPresent()) {
+            // Get all the dates for an ad
+            Set<CalendarDate> datesBelongingToAd = adFound.get().getDates();
 
-        // Loop through all dates
-        for(CalendarDate date : dates) {
-            if(date.isAvailable() != typeOfAvailability) {
-                returnValue = false;
+            // If the date is between startDate and endDate && has the correct typeOfAvailability do nothing
+            for(CalendarDate date : datesBelongingToAd) {
+                LocalDate date1 = date.getDate();
+                // If the date is between startDate and endDate
+                if      (date1.isEqual(startDate) ||
+                        (date1.isAfter(startDate) && date1.isBefore(endDate) ||
+                         date1.isEqual(endDate)))
+                {
+                    // If the date is in the correct span and has the wrong typeOfAvailability, return false
+                    if(date.isAvailable() != typeOfAvailability) {
+                        return false;
+                    }
+                    // If date available, do nothing
+                }
+                // If date not within correct span, do nothing
             }
-        }
 
-        // return
-        return returnValue;
+            // If iterated through all ads in span without finding wrong typeOfAvailability --> return true
+            return true;
+        }
+        // If the ad was not found, return false
+        return false;
     }
 
     /**
@@ -97,7 +110,9 @@ public class CalendarServiceImpl implements CalendarService {
 
     private Response setDates(CalendarDto dto) {
         // Verify that all dates in the specified span are the opposite of what is specified in dto
-        if (datesAre(dto.getStartDate(), dto.getEndDate(), !dto.isAvailable())) {
+
+        //if (datesAre(dto.getStartDate(), dto.getEndDate(),
+          //      !dto.isAvailable(), dto.getAdId())) {
 
             // Get the ad the dto points to
             Optional<Ad> ad = adRepository.findById(dto.getAdId());
@@ -105,7 +120,7 @@ public class CalendarServiceImpl implements CalendarService {
             if (ad.isPresent()) {
 
                 // Get all dates with requested id
-                Set<CalendarDate> dates = adRepository.getDatesForAd(dto.getAdId());
+                Set<CalendarDate> dates = ad.get().getDates();
 
                 // Get all dates between startDate and endDate
                 for (CalendarDate date : dates) {
@@ -118,6 +133,8 @@ public class CalendarServiceImpl implements CalendarService {
                         date.setAvailable(dto.isAvailable());
 
                         // Persist the change to the specific date from the CalendarDate table
+                        dateRepository.save(date);
+                        /**
                         Optional<CalendarDate> dateFound = dateRepository.findById(date.getId());
 
                         if (dateFound.isPresent()) {
@@ -128,23 +145,22 @@ public class CalendarServiceImpl implements CalendarService {
                             // If the date found is not present something very wrong happened :p
                             return new Response(null, HttpStatus.NOT_FOUND);
                         }
+                         */
                     }
-                }
-
+                //}
+            }
                 // Persist the new list of dates to the ad
                 ad.get().setDates(dates);
                 adRepository.save(ad.get());
 
                 // Return true inside response
                 return new Response("Changed the dates to: " + dto.isAvailable(), HttpStatus.OK);
-            }
-
-            // If ad not found, return false
-            return new Response("Could not find the ad", HttpStatus.NOT_FOUND);
         }
+        // If ad not found, return false
+        return new Response("Could not find the ad", HttpStatus.NOT_FOUND);
         // Not all dates in the span were of the same availability
-        return new Response("Not all dates in the span were of the same availability",
-                HttpStatus.NOT_ACCEPTABLE);
+        //return new Response("Not all dates in the span were of the same availability",
+          //      HttpStatus.NOT_ACCEPTABLE);
 
     }
 
