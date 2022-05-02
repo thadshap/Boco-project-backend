@@ -48,6 +48,9 @@ public class AdIntegrationTest {
     CalendarDateRepository calendarDateRepository;
 
     @Autowired
+    PictureRepository pictureRepository;
+
+    @Autowired
     ReviewRepository reviewRepository;
     @BeforeEach
     public void setUp() {
@@ -82,6 +85,7 @@ public class AdIntegrationTest {
     public void emptyDatabase() {
         reviewRepository.deleteAll();
         rentalRepository.deleteAll();
+        pictureRepository.deleteAll();
         adRepository.deleteAll();
         userRepository.deleteAll();
         categoryRepository.deleteAll();

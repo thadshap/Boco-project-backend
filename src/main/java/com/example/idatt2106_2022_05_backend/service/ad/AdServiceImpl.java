@@ -841,6 +841,24 @@ public class AdServiceImpl implements AdService {
             // Delete the ad from its user
             ad.get().getUser().getAds().remove(ad.get());
 
+            // Delete the pictures from the ad
+            if(ad.get().getPictures() != null) {
+                for(Picture picture : ad.get().getPictures()) {
+                    picture.setAd(null);
+                    picture.setUser(null);
+                    ad.get().getUser().setPicture(null);
+                    pictureRepository.save(picture);
+                    userRepository.save(ad.get().getUser());
+                }
+            }
+
+            for(Picture picture : pictureRepository.findAll()) {
+                if(picture.getAd().getId() == ad.get().getId()) {
+                    picture.setAd(null);
+                    pictureRepository.save(picture);
+                }
+            }
+
             // Get all the rentals
             Set<Rental> rentals = ad.get().getRentals();
             if(rentals != null) {
@@ -870,8 +888,12 @@ public class AdServiceImpl implements AdService {
                 date.getAds().remove(ad.get());
             }
 
+            ad.get().setPictures(null);
+
             // Delete the dates from the ad
             ad.get().setDates(null);
+
+            ad.get().setUser(null);
 
             // Delete the ad
             adRepository.deleteById(adId);
