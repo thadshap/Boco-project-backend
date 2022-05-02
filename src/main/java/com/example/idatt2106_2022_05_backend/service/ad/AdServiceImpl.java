@@ -16,9 +16,14 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +36,6 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Service class to handle Ad objects
- */
 @Service
 public class AdServiceImpl implements AdService {
 
@@ -64,12 +66,8 @@ public class AdServiceImpl implements AdService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-
-    /**
-     * Method to get all ads.
-     * @return List of all ads.
-     * @throws IOException if reading of image fails.
-     */
+    private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
+    // Get all ads
     @Override
     public Response getAllAds() throws IOException {
         List<Ad> allAds = adRepository.findAll();
@@ -85,11 +83,7 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
-    /**
-     * Method to get all ads in a category.
-     * @param categoryId category if.
-     * @return list of Ads in a category.
-     */
+    // Get all ads in category by category name
     @Override
     public Response getAllAdsInCategory(String name) {
         Optional<Category> category = categoryRepository.findByName(name);
@@ -119,11 +113,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to get all ads in category by category name.
-     * @param name name of the category.
-     * @return all ads in a category.
-     */
+    // Get all ads in category by category id
     @Override
     public Response getAllAdsInCategory(Long categoryId)  {
         Optional<Category> category = categoryRepository.findById(categoryId);
@@ -252,11 +242,6 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to get ad by id
-     * @param id id of the Ad.
-     * @return
-     */
 
     /**
      * Get each category and their subCategories.
@@ -466,11 +451,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to get ad by id
-     * @param id id of the Ad.
-     * @return
-     */
+    // Get ad by id
     @Override
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
@@ -519,10 +500,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to get all available ads
-     * @return all ads that are available.
-     */
+    // Get all available ads
     @Override
     public Response getAllAvailableAds() {
         List<AdDto> availableAds = adRepository.getAllAvailableAds().stream()
@@ -540,11 +518,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to get all available ads by user id.
-     * @param userId id of user.
-     * @return all ads available by user.
-     */
+    // Get all available ads by user id
     @Override
     public Response getAllAvailableAdsByUser(long userId) {
         if(userRepository.existsById(userId)) {
@@ -564,11 +538,7 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Get all ads by postal code.
-     * @param postalCode postal code to get ads by.
-     * @return all ads in a given postal code.
-     */
+    // Get all ads by postal code
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
         Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
@@ -592,11 +562,10 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Get all ads with items that are:
-     * - Being given away = false
-     * - Being rented out = true
-     * @param rentalType being given away.
-     * @return all ads by rental type.
+     *      - Being given away = false
+     *      - Being rented out = true
      */
+    // Get all ads by rental type
     @Override
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<AdDto> ads = adRepository.findByRental(rentalType).stream()
@@ -657,7 +626,7 @@ public class AdServiceImpl implements AdService {
      * @return response
      */
     @Override
-    public Response postNewAd(AdDto adDto) {
+    public Response postNewAd(AdDto adDto) throws IOException, InterruptedException {
         Ad newAd = new Ad();
 
         // Required attributes
@@ -670,6 +639,7 @@ public class AdServiceImpl implements AdService {
         newAd.setTitle(adDto.getTitle());
         newAd.setPostalCode(adDto.getPostalCode());
         newAd.setCity(adDto.getCity());
+        setCoordinatesOnAd(newAd);
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -811,11 +781,7 @@ public class AdServiceImpl implements AdService {
         return dist/1000;
     }
 
-    /**
-     * Method to get all reviews for an add with owner = user id.
-     * @param userId id of user.
-     * @return all reviews by user id
-     */
+    // get all reviews for an add with owner = user id
     @Override
     public Response getReviewsByUserId(long userId) {
 
@@ -830,12 +796,6 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    /**
-     * Method to update an ad.
-     * @param adId id of ad to update.
-     * @param adUpdateDto Ad dto to update.
-     * @return response.
-     */
     @Override
     public Response updateAd(Long adId, AdUpdateDto adUpdateDto) {
 
@@ -885,11 +845,7 @@ public class AdServiceImpl implements AdService {
         return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
 
-    /**
-     * Method to delete an ad.
-     * @param adId id of ad to delete.
-     * @return response.
-     */
+    // delete ad
     @Override
     public Response deleteAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
@@ -1086,102 +1042,97 @@ public class AdServiceImpl implements AdService {
                 .limit(pageSize), HttpStatus.OK);
     }
 
-    /**
-     * Method to search through ads.
-     * @param searchword search word.
-     * @return ads by a search word.
-     */
     @Override
     public Response searchThroughAds(String searchword){
-        List<Ad> ads = new ArrayList<>();
-        Set<Ad> ad = adRepository.findByTitleContaining(searchword);
-        List<Category> categories = categoryRepository.findByNameContaining(searchword);
+        //List to be filled with corresponding ads
+        List<Ad> adsContainingSearchWord = new ArrayList<>();
+
+        List<Ad> ads = adRepository.findAll();
+
+        //Checking all titles for searchword
+        for(Ad a: ads){
+            if(a.getTitle().contains(searchword)){
+                adsContainingSearchWord.add(a);
+            }
+        }
+        List<Category> categories = categoryRepository.findAll();
 
         //Adding all ads with the category
         for(Category c: categories){
-            for(Ad a: c.getAds()){
-                ads.add(a);
+            if(c.getName().contains(searchword)) {
+                for (Ad a : c.getAds()) {
+                    if(!adsContainingSearchWord.contains(a)) {
+                        adsContainingSearchWord.add(a);
+                    }
+                }
             }
         }
 
-        //Adding all ads with the searchword in the title
-        for(Ad a: ad){
-            if(!ads.contains(a)){
-                ads.add(a);
-            }
-        }
         //Casting objects to Dto and returning
-        return new Response(ads.stream()
+        return new Response(adsContainingSearchWord.stream()
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by ascending price.
-     * @param list list of ads to sort.
-     * @return sorted ads
-     */
     @Override
     public Response sortArrayByPriceAscending(List<AdDto> list){
         list.sort(Comparator.comparing(AdDto::getPrice));
         return new Response(list, HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by descending price.
-     * @param list list of ads to sort.
-     * @return sorted ads.
-     */
     @Override
     public Response sortArrayByPriceDescending(List<AdDto> list){
         list.sort(Comparator.comparing(AdDto::getPrice).reversed());
         return new Response(list, HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by distance ascending price.
-     * @param list list of ads to sort.
-     * @return sorted ads.
-     */
     @Override
     public Response sortArrayByDistanceAscending(List<AdDto> list){
         list.sort(Comparator.comparing(AdDto::getDistance));
         return new Response(list, HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by distance descending price.
-     * @param list list of ads to sort.
-     * @return sorted ads.
-     */
     @Override
     public Response sortArrayByDistanceDescending(List<AdDto> list){
         list.sort(Comparator.comparing(AdDto::getDistance).reversed());
         return new Response(list, HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by distance interval price.
-     * @param list list of ads to sort.
-     * @param limit distance difference.
-     * @return sorted ads.
-     */
     @Override
     public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
         list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
     }
 
-    /**
-     * Method to sort ads by distance interval price.
-     * @param list list of ads to sort.
-     * @param upperLimit upper limit  price.
-     * @param lowerLimit  lower limit  price.
-     * @return sorted ads.
-     */
     @Override
     public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
+    }
+
+
+    private void setCoordinatesOnAd(Ad ad)
+            throws IOException, InterruptedException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Geocoder geocoder = new Geocoder();
+
+        String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
+        JsonNode responseJSONnode = objectMapper.readTree(response);
+        logger.info("recieved response: " + response);
+        JsonNode items = responseJSONnode.get("items");
+
+        for(JsonNode item : items){
+            JsonNode address = item.get("address");
+            String label = address.get("label").asText();
+            JsonNode position = item.get("position");
+
+            String lat = position.get("lat").asText();
+            String lng = position.get("lng").asText();
+            System.out.println(label + " is located at " + lat + "," + lng + ".");
+           if(!lng.equals("") && !lat.equals("")) {
+               ad.setLat(Double.parseDouble(lat));
+               ad.setLng(Double.parseDouble(lng));
+           }
+        }
     }
 
 

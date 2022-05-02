@@ -2,6 +2,7 @@ package com.example.idatt2106_2022_05_backend.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jdk.jfr.Timestamp;
 import lombok.*;
 
 import javax.persistence.*;
