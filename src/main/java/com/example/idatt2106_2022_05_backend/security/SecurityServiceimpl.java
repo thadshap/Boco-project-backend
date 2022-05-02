@@ -4,6 +4,7 @@ import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +16,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityServiceimpl implements SecurityService {
 
+    @Autowired
     UserRepository userRepository;
 
+    @Autowired
     AdRepository adRepository;
 
+    @Autowired
     RentalRepository rentalRepository;
 
+    @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
     PictureRepository pictureRepository;
 
     /**
