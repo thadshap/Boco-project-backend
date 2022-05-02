@@ -118,6 +118,6 @@ public interface AdService {
 
     Response getAllCategories();
 
-    Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
+    //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
 

@@ -1088,9 +1088,12 @@ public class AdServiceImpl implements AdService {
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
     }
+/*
+    private double getLatFromAd(Ad ad){
 
-    @Override
-    public Ad setLagLongFromAdress(Ad ad)
+    }
+    */
+    private double getLongFromAd(Ad ad)
             throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
@@ -1107,13 +1110,12 @@ public class AdServiceImpl implements AdService {
 
             String lat = position.get("lat").asText();
             String lng = position.get("lng").asText();
-            if(!lat.equals("") && !lng.equals("")){
-                ad.setLat(Double.parseDouble(lat));
-                ad.setLng(Double.parseDouble(lng));
-            }
             System.out.println(label + " is located at " + lat + "," + lng + ".");
+           if(!lng.equals("")) {
+               return Double.parseDouble(lng);
+           }
         }
-        return ad;
+        return 0;
     }
 
 
