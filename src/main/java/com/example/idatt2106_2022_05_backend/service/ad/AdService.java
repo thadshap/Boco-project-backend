@@ -118,6 +118,10 @@ public interface AdService {
 
     Response getAllCategories();
 
+    Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
+
+    Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
+
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
 
