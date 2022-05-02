@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
 import com.example.idatt2106_2022_05_backend.dto.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
@@ -131,12 +132,17 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
-        //TODO check if users exist
+        //TODO check if users exist, are same
+        if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
+            return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
+        }
+
         Group newGroup = new Group();
         newGroup.setName(privateGroupDto.getGroupName());
 
         User userOne = userRepository.getById(privateGroupDto.getUserOneId());
         User userTwo = userRepository.getById(privateGroupDto.getUserTwoId());
+
         HashSet<User> users = new HashSet<>();
         users.add(userOne);
         users.add(userTwo);
@@ -144,7 +150,45 @@ public class ChatServiceImpl implements ChatService {
 
         groupRepository.save(newGroup);
 
-        return new Response("Group object has been created", HttpStatus.OK);
+        GroupDto groupDto = new GroupDto();
+        groupDto.setGroupId(newGroup.getId());
+        groupDto.setGroupName(newGroup.getName());
+
+        return new Response(groupDto, HttpStatus.OK);
+    }
+
+    @Override
+    public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
+        //TODO check if users exist, multiple of same user given
+        List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
+        Set<User> users = new HashSet<>();
+
+        for (int i = 0; i < userIds.size(); i++) {
+            users.add(getUser(userIds.get(i)));
+        }
+
+        Group newGroup = Group.builder()
+                .name(listGroupDto.getGroupName())
+                .users(users)
+                .build();
+        groupRepository.save(newGroup);
+
+        GroupDto groupDto = new GroupDto();
+        groupDto.setGroupId(newGroup.getId());
+        groupDto.setGroupName(newGroup.getName());
+
+        return new Response(groupDto, HttpStatus.OK);
+    }
+
+    @Override
+    public Response changeGroupNameFromGroupId(long groupId, String newName) {
+        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()){
+            return new Response("New name given is empty", HttpStatus.BAD_REQUEST);
+        }
+        Group group = getGroup(groupId);
+        group.setName(newName);
+        groupRepository.save(group);
+        return new Response("Group name changed", HttpStatus.OK);
     }
 
     public Response getGroupChatsBasedOnUserId(long id) {
@@ -174,7 +218,7 @@ public class ChatServiceImpl implements ChatService {
             return new Response("User removed", HttpStatus.OK);
         }
 
-        return new Response("User not found in group", HttpStatus.NOT_FOUND);
+        return new Response("User not found in group", HttpStatus.BAD_REQUEST);
 
     }
 

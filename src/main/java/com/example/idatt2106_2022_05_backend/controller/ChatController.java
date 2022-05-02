@@ -67,6 +67,17 @@ public class ChatController {
         return chatService.createTwoUserGroup(privateGroupDto);
     }
 
+    @PostMapping("/create/group/list")
+    @ApiOperation(value = "Endpoint to create a group from list of userId", response = Response.class)
+    public Response createGroupFromUserIds(@RequestBody ListGroupDto listGroupDto){
+        return chatService.createGroupFromUserIds(listGroupDto);
+    }
+    @PutMapping("/group/name/{groupId}/{newName}")
+    @ApiOperation(value = "Endpoint to change group name from groupId", response = Response.class)
+    public Response changeGroupNameFromGroupId(@PathVariable long groupId, @PathVariable String newName) {
+        return chatService.changeGroupNameFromGroupId(groupId, newName);
+    }
+
     @GetMapping("/user/groupchat/{userId}")
     @ApiOperation(value = "Endpoint to get all groups by user id", response = Response.class)
     public Response getGroupChatSubscriptions(@PathVariable long userId){
