@@ -20,6 +20,10 @@ public interface ChatService {
 
     Response getGroupChatsBasedOnUserId(long id);
 
+    Response removeUserFromGroupById(long groupId, long userId);
+
+    Response addUserToGroupById(long groupId, long userId);
+
 
     void broadcast(Message message);
 

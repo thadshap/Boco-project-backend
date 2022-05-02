@@ -67,4 +67,16 @@ public class ChatController {
         return chatService.getAllMessagesByGroupId(groupId);
     }
 
+    @PutMapping("/group/remove/user/{groupId}/{userId}")
+    @ApiOperation(value = "Endpoint remove a user from group", response = Response.class)
+    public Response removeUserFromGroupById(@PathVariable long groupId, @PathVariable long userId) {
+        return chatService.removeUserFromGroupById(groupId, userId);
+    }
+
+    @PutMapping("/group/add/user/{groupId}/{userId}")
+    @ApiOperation(value = "Endpoint to add user to existing group", response = Response.class)
+    public Response addUserToGroupById(@PathVariable long groupId, @PathVariable long userId) {
+        return chatService.addUserToGroupById(groupId, userId);
+    }
+
 }

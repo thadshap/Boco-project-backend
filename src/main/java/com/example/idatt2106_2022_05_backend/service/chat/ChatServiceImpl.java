@@ -153,6 +153,40 @@ public class ChatServiceImpl implements ChatService {
 
         return new Response(grps, HttpStatus.OK);
     }
+
+    @Override
+    public Response removeUserFromGroupById(long groupId, long userId) {
+        Group group = getGroup(groupId);
+        User user = getUser(userId);
+        Set<User> users = group.getUsers();
+
+        if (users.contains(user)) {
+            users.remove(user);
+            group.setUsers(users);
+            groupRepository.save(group);
+            return new Response("User removed", HttpStatus.OK);
+        }
+
+        return new Response("User not found in group", HttpStatus.NOT_FOUND);
+
+    }
+
+    @Override
+    public Response addUserToGroupById(long groupId, long userId) {
+        Group group = getGroup(groupId);
+        User user = getUser(userId);
+        Set<User> users = group.getUsers();
+
+        if (group.getUsers().contains(user)) {
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+        }
+
+        users.add(user);
+        group.setUsers(users);
+        groupRepository.save(group);
+
+        return new Response("User added to group", HttpStatus.OK);
+    }
 /*
     public Response getGroupChatsBasedOnUserId(long id){
         User user = getUser(id);
