@@ -123,9 +123,23 @@ public class CalendarIntegrationTest {
         @SneakyThrows
         @Test
         public void datesAreAvailable_WhenCreated() {
-            // Find a user and category
-            User user  = userRepository.findAll().get(0);
-            Category category = categoryRepository.findAll().get(0);
+            // Create a user
+            User user1 = User.builder()
+                    .firstName("Anders")
+                    .lastName("Tellefsen")
+                    .email("andetel@stud.ntnu.no")
+                    .password("passord123")
+                    .build();
+
+            User user = userRepository.save(user1);
+
+            // Create a category
+            Category category1 = Category.builder().
+                    name("category").
+                    parent(true).
+                    child(false).
+                    build();
+            Category category = categoryRepository.save(category1);
 
             // Create new ad
             AdDto speaker = AdDto.builder().
@@ -171,9 +185,48 @@ public class CalendarIntegrationTest {
         }
 
 
+        @SneakyThrows
         @Test
         public void datesAreMadeUnavailable() {
-            Ad ad = adRepository.findAll().get(1);
+            // Create a user
+            User user1 = User.builder()
+                    .firstName("Anders")
+                    .lastName("Tellefsen")
+                    .email("andetel@stud.ntnu.no")
+                    .password("passord123")
+                    .build();
+
+            User user = userRepository.save(user1);
+
+            // Create a category
+            Category category1 = Category.builder().
+                    name("category").
+                    parent(true).
+                    child(false).
+                    build();
+            Category category = categoryRepository.save(category1);
+
+            // Create new ad
+            AdDto speaker = AdDto.builder().
+                    title("New speaker").
+                    description("Renting out a brand new speaker").
+                    rental(true).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Speaker street 2").
+                    postalCode(7120).
+                    city("Trondheim").
+                    userId(user.getId()).
+                    categoryId(category.getId()).
+                    build();
+
+            // Persist the ad --> the dates are now also persisted
+            adService.postNewAd(speaker);
+            Set<Ad> adsFound = adRepository.findByTitleContaining("New speaker");
+            assertEquals(adsFound.size(),1);
+
+            Ad ad = adRepository.findAll().get(0);
             assertNotNull(ad);
 
             // Get number of unavailable dates for the ad

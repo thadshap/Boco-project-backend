@@ -85,25 +85,29 @@ public class AdServiceImpl implements AdService {
     // Get all ads in category by category name
     @Override
     public Response getAllAdsInCategory(String name) {
-        Optional<Category> category = categoryRepository.findByName(name);
+        Set<Category> categories = categoryRepository.findByName(name);
 
         List<AdDto> adsToReturn = new ArrayList<>();
 
         // If category exists
-        if(category.isPresent()) {
-            Set<Ad> adsFound = category.get().getAds();
+        if(categories != null) {
+            // Get all categories
+            for(Category category : categories) {
+                Set<Ad> adsFound = category.getAds();
 
-            for(Ad ad : adsFound) {
-                try {
-                    AdDto newDto = castObject(ad);
-                    newDto.setLat(ad.getLat());
-                    newDto.setLng(ad.getLng());
-                    adsToReturn.add(newDto);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(adsFound != null) {
+                    for(Ad ad : adsFound) {
+                        try {
+                            AdDto newDto = castObject(ad);
+                            newDto.setLat(ad.getLat());
+                            newDto.setLng(ad.getLng());
+                            adsToReturn.add(newDto);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
-
             // Return the ads
             return new Response(adsToReturn, HttpStatus.OK);
         }
@@ -313,7 +317,6 @@ public class AdServiceImpl implements AdService {
         List<Category> subCategories = findSubCategories(categories, new ArrayList<>(),
                              name,0);
 
-        System.out.println("sub categories found size: " + subCategories.size());
 
         ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
@@ -398,7 +401,6 @@ public class AdServiceImpl implements AdService {
 
         // Base case: If the position in the array is equal to the size of the array
         if(arrayLength == listIn.size()) {
-            System.out.println("Array length equals list in --> finished");
             // Return the list that now contains all sub-categories
             return listOut;
         }
@@ -424,7 +426,6 @@ public class AdServiceImpl implements AdService {
                                 start);
                     }
                 }
-                System.out.println("parent name is null");
             }
             // Increment the list and call on the function recursively
             return findSubCategories(listIn,listOut, parentName, start + 1);

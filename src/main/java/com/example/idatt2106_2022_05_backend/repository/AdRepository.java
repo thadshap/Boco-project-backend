@@ -44,6 +44,6 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
     Set<Ad> findByCity(String city);
 
     // Get all available ads
-    @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
+    @Query("SELECT a FROM Ad a WHERE a.rentedOut = false")
     Set<Ad> getAllAvailableAds();
 }

@@ -107,8 +107,6 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category2);
             categoryRepository.save(category3);
 
-            System.out.println("categories: " + categoryRepository.findAll());
-
             // Create sub-categories
             Category category4 = Category.builder().name("Fruits").
                     parentName(category1.getName()).parent(false).child(true).build();

@@ -935,6 +935,8 @@ public class AdIntegrationTest {
         @Test
         public void onlySubClassesAreReturned() {
 
+            int previousCategoriesCount = categoryRepository.findAll().size();
+
             // Building categories
             Category category1 = Category.builder().
                     name("new category").
@@ -961,7 +963,7 @@ public class AdIntegrationTest {
 
             // There should be 12 categories in category-repository now
             // 2 (setUp) + 8 (dataLoader) + 3 (this method) = 12
-            assertEquals(categoryRepository.findAll().size(),13);
+            assertEquals(previousCategoriesCount + 3,categoryRepository.findAll().size());
 
             // Service method should return HttpStatus.OK
 
@@ -1003,15 +1005,16 @@ public class AdIntegrationTest {
             categoryRepository.save(category);
 
             // Retrieve category with name
-            Optional<Category> categoryFound = categoryRepository.findByName(category.getName());
-            if(categoryFound.isPresent()) {
+            Set<Category> categoriesFound = categoryRepository.findByName(category.getName());
+            if(categoriesFound != null) {
+                for(Category category1 : categoriesFound) {
+                    // Assert that the ad was added to the category
+                    assertEquals(category1.getAds().size(), 1);
 
-                // Assert that the ad was added to the category
-                assertEquals(categoryFound.get().getAds().size(), 1);
-
-                // Assert that the service response is OK
-                ResponseEntity<Object> res = adService.getAllAdsInCategory(category.getId());
-                assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
+                    // Assert that the service response is OK
+                    ResponseEntity<Object> res = adService.getAllAdsInCategory(category.getId());
+                    assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
+                }
             }
             else{
                 // If no category was found, the test fails
