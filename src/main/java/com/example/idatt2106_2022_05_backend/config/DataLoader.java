@@ -538,5 +538,12 @@ public class DataLoader implements ApplicationRunner {
             fruit.setPictures(set);
             pictureRepository.save(pic);
             adRepository.save(pants);
+
+//            Ad ad =
+//
+//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
         }
 }
