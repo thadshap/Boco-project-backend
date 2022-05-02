@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -53,6 +54,12 @@ public class ChatController {
     public Response createTwoUserGroup(@RequestBody PrivateGroupDto privateGroupDto) {
         logger.info("Call to create a two-user group");
         return chatService.createTwoUserGroup(privateGroupDto);
+    }
+
+    @PostMapping("/create/group/list")
+    @ApiOperation(value = "Endpoint to create a group from list of userId", response = Response.class)
+    public Response createGroupFromUserIds(@RequestBody ListGroupDto listGroupDto){
+        return chatService.createGroupFromUserIds(listGroupDto);
     }
 
     @GetMapping("/user/groupchat/{userId}")

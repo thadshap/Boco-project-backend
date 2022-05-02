@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
 import com.example.idatt2106_2022_05_backend.dto.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
@@ -130,6 +131,7 @@ public class ChatServiceImpl implements ChatService {
 
         User userOne = userRepository.getById(privateGroupDto.getUserOneId());
         User userTwo = userRepository.getById(privateGroupDto.getUserTwoId());
+
         HashSet<User> users = new HashSet<>();
         users.add(userOne);
         users.add(userTwo);
@@ -138,6 +140,24 @@ public class ChatServiceImpl implements ChatService {
         groupRepository.save(newGroup);
 
         return new Response("Group object has been created", HttpStatus.OK);
+    }
+
+    @Override
+    public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
+        Set<Long> userIds = listGroupDto.getUserIds();
+        Set<User> users = new HashSet<>();
+
+        for (int i = 0; i<userIds.size(); i++) {
+            users.add(getUser())
+        }
+
+        Group newGroup = Group.builder()
+                .name(listGroupDto.getGroupName())
+                .users(listGroupDto.getUserIds())
+                .build();
+
+
+        return null;
     }
 
     public Response getGroupChatsBasedOnUserId(long id) {
