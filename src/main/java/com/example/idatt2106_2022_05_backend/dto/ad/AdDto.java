@@ -45,11 +45,14 @@ public class AdDto {
     @ApiModelProperty(notes = "price of renting item")
     private int price;
 
-    @ApiModelProperty(notes = "location streetaddress of item")
+    @ApiModelProperty(notes = "location streetAddress of item")
     private String streetAddress;
 
-    @ApiModelProperty(notes = "postalcode of items location")
+    @ApiModelProperty(notes = "postalCode of items location")
     private int postalCode;
+
+    @ApiModelProperty(notes = "city postalCode belongs to ")
+    private String city;
 
     @ApiModelProperty(notes = "title of ad")
     private String title; // title/header
@@ -60,11 +63,11 @@ public class AdDto {
     @ApiModelProperty(notes = "distance between user and the location of ad in km")
     private double distance;
 
-    // Upon POST-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private Set<MultipartFile> picturesIn;
+    @ApiModelProperty(notes = "latitude of the ad")
+    private double lat;
 
-    // Upon GET-request todo ex: https://www.techgeeknext.com/spring-boot/spring-boot-upload-image
-    private Set<Image> picturesOut;
+    @ApiModelProperty(notes = "longitude of the ad")
+    private double lng;
 
     // Upon update-methods
     @ApiModelProperty(notes = "Id of ad")
@@ -73,5 +76,9 @@ public class AdDto {
     @ApiModelProperty(notes = "id of user creating the ad")
     private long userId;
 
+    @ApiModelProperty(notes = "is the number of ads to present using pagination")
     private int sizeOfPage;
+
+    @ApiModelProperty(notes = "array of files for posting pictures in ad")
+    Set<MultipartFile> pictures;
 }

@@ -4,22 +4,30 @@ import com.example.idatt2106_2022_05_backend.dto.GroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
-import com.example.idatt2106_2022_05_backend.model.Message;
+import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +46,8 @@ public class ChatServiceImpl implements ChatService {
     SimpMessagingTemplate simpMessagingTemplate;
 
     private ModelMapper modelMapper = new ModelMapper();
+
+    private Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
 
     //private support method
     private Group getGroup(long id) {
@@ -81,32 +91,27 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public MessageDto saveMessage(MessageDto message, long groupId) {
-        Message message1 = new Message();
+    public void broadcast(Message message){
+        OutputMessage outputMessage = new OutputMessage();
 
-        if (message.getContent().length() > 280) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meldingen er for lang");
-        }
-        message1.setContent(message.getContent());
-        message1.setUser(getUser(message.getUser_id()));
-        message1.setGroup(getGroup(groupId));
+        String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
+        outputMessage.setText(text);
 
-        //setting timestamp
-        Timestamp current = Timestamp.from(Instant.now());
-        message1.setTimestamp(current);
+        //TODO: Add user check and set in outputmessage
+        //outputMessage.setFrom();
+        String time = new SimpleDateFormat("HH:mm").format(new Date());
+        outputMessage.setTime(time);
+        messageRepository.save(outputMessage);
+        //TODO: send to correct recipient
+        this.simpMessagingTemplate.convertAndSend("/topic/messages", outputMessage);
 
-        messageRepository.save(message1);
-
-        this.simpMessagingTemplate.convertAndSend("/topic/group" + message1.getGroup().getId(), message1);
-
-        return message;
     }
 
     @Override
     public Response getChat(long id) {
         Group group = getGroup(id);
-        List<Message> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
-        messageDtos.sort(Comparator.comparing(Message::getTimestamp));
+        List<OutputMessage> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
+        messageDtos.sort(Comparator.comparing(OutputMessage::getTime));
         return new Response(messageDtos.stream()
                 .map(message -> modelMapper.map(message, MessageDto.class))
                 .collect(Collectors.toList()), HttpStatus.OK);

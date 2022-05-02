@@ -27,9 +27,16 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
 
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://dev-.....okta.com/oauth2/default
       client:
         registration:
           google:
@@ -44,6 +51,7 @@ spring:
             scope:
               - email
               - profile_profile
+
 server:
   ssl:
     key-alias: boco
@@ -54,5 +62,7 @@ server:
     enabled: false
     enabled-protocols: TLSv1.2
     client-auth: want
-  port: 8080
-
+  port: 8443
+logging:
+  level:
+    ROOT: debug
