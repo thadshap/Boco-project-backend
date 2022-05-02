@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -88,26 +89,32 @@ public class ChatServiceImpl implements ChatService {
             com.example.idatt2106_2022_05_backend.model.Message ms = msL.get(i);
             String ts = ms.getTimestamp().toString().split("\\.")[0];
 
-            messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
+            //messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
         }
 
         return new Response(messageDtoList, HttpStatus.OK);
     }
 
     @Override
-    public void broadcast(Message message){
+    public void broadcast(MessageDto message){
+        logger.info("Go to service");
         OutputMessage outputMessage = new OutputMessage();
 
-        String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
-        outputMessage.setText(text);
+        //String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
+        outputMessage.setText(message.getContent());
 
         //TODO: Add user check and set in outputmessage
         //outputMessage.setFrom();
+
+        //String messageDestination = destination.get(0).split(" ")[0];
+        //String path = "topic/messages/"+messageDestination;
+
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         outputMessage.setTime(time);
-        ouputMessageRepository.save(outputMessage);
-        //TODO: send to correct recipient
-        this.simpMessagingTemplate.convertAndSend("/topic/messages", outputMessage);
+        //ouputMessageRepository.save(outputMessage);
+        //String path = "topic/messages/"+ message.getGroupId();
+        //logger.info("Sending "+message.getContent() + " to :" + path);
+        //simpMessagingTemplate.convertAndSend(path, message);
 
     }
 

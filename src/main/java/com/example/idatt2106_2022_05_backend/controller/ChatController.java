@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -8,8 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api")
@@ -30,16 +36,22 @@ public class ChatController {
     }
 */
 
-    @MessageMapping("/chat")
-    //@SendTo("/topic/messages")
-    public void sendMessage(Message message) {
+    @MessageMapping("/chat/{groupId}")
+    @SendTo("/topic/messages/{groupId}")
+    public MessageDto sendMessage(@PathVariable String groupId, String content) {
         logger.info("got to controller");
-        logger.info("payload: "+ message.getPayload());
-        logger.info("headers: "+ message.getHeaders());
-        //headerAccessor.getSessionAttributes().put("userid", messageDto.getFromUserId());
-        //headerAccessor.getSessionAttributes().put("groupId", groupId);
-        chatService.broadcast(message);
-        //return message;
+        logger.info("Got message: "+ content);
+        logger.info("groupId: "+ groupId);
+        MessageDto message = new MessageDto();
+        message.setContent(content);
+
+        //message.setGroupId(groupId);
+        //String time = new SimpleDateFormat("HH:mm").format(new Date());
+
+        //message.setTimestamp(time);
+
+        //chatService.broadcast(message);
+        return message;
     }
 
 

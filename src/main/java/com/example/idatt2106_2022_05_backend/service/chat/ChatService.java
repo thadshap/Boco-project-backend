@@ -25,7 +25,7 @@ public interface ChatService {
     Response addUserToGroupById(long groupId, long userId);
 
 
-    void broadcast(Message message);
+    void broadcast(MessageDto message);
 
     //Response getGroupChatsBasedOnUserId(long id);
 

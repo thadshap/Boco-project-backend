@@ -10,8 +10,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageDto {
-    private long user_id;
-    //private long groupId;  //Maybe we wont need this
+
     private String content;
-    private String timestamp;
+    private String timeStamp;
+    //User sending
+    private long userId;
+    private String firstName;
+    private String lastName;
 }
