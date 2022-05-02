@@ -1,18 +1,17 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +24,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @Order(1)
+@ComponentScan
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -32,6 +32,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JWTConfig jwtConfig;
+
+    private static final String[] WHITELIST_URLS = {
+            "/",
+            "/auth/**",
+    };
+
+    private static final String[] WHITELIST_DOCS = {
+            "/h2/**",
+            "/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources/**",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/ws",
+            "/ws/**",
+    };
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -44,7 +61,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
@@ -55,14 +71,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers("/","/ws","/ws/**",  "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
-                .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll().antMatchers(HttpMethod.GET, "/auth/**")
-                .permitAll().antMatchers(HttpMethod.POST, "/users/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
-                .permitAll().anyRequest().authenticated()
+                .antMatchers(WHITELIST_DOCS).permitAll()
+                .antMatchers(WHITELIST_URLS).permitAll()
+//                .antMatchers(HttpMethod.POST, "/user/").permitAll()
+//                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .x509()
+                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
 
                 // Relax CSRF on the WebSocket due to needing direct access from apps
@@ -84,12 +101,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
-    @Autowired
-    private OAuth2UserServiceImpl oauth2UserService;
-
-    @Autowired
-    private OAuthLoginHandler oauthLoginHandler;
-
-    @Autowired
-    private DatabaseLoginHandler databaseLoginHandler;
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("static/**");
+    }
 }

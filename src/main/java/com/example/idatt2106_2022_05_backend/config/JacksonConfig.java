@@ -6,9 +6,16 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Config class to get Strings and convert them to Localdate
+ */
 @Configuration
 public class JacksonConfig {
 
+    /**
+     * Method to get Strings and convert them to Localdate
+     * @return {@link ObjectMapper} that is
+     */
     @Bean
     public ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
