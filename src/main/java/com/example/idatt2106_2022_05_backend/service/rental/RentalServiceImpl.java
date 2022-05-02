@@ -127,7 +127,8 @@ public class RentalServiceImpl implements RentalService {
         rental.setActive(true);
         Set<CalendarDate> cld = rental.getAd().getDates();
         for (CalendarDate calDate: cld) {
-            if(calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())){
+            if(calDate.getDate().isBefore(rental.getRentTo()) &&
+                    calDate.getDate().isAfter(rental.getRentFrom())){
                 calDate.setAvailable(false);
                 dayDateRepository.save(calDate);
             }

@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.integration;
 import com.example.idatt2106_2022_05_backend.dto.CalendarDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
@@ -454,5 +455,173 @@ public class RentalIntegrationTest {
         // Assert that all dates are available now
         ResponseEntity<Object> response2 = calendarService.getUnavailableDates(dtoMock);
         assertEquals(response2.getStatusCodeValue(), HttpStatus.OK.value());
+    }
+
+    @SneakyThrows
+    @Test
+    public void activateRental() {
+        // Building a user
+        User owner1 = User.builder().
+                firstName("firstName").
+                lastName("lastName").
+                email("user.name@hotmail.com").
+                password("pass1word").
+                build();
+
+        // Saving the user
+        User owner = userRepository.save(owner1);
+
+        // Create a category
+        Category it = Category.builder().
+                name("new category2").
+                parent(true).
+                build();
+
+        // Saving the categories
+        categoryRepository.save(it);
+
+        // Building a user
+        User borrower1 = User.builder().
+                firstName("firstName").
+                lastName("lastName").
+                email("user.otherName@hotmail.com").
+                password("pass1word").
+                build();
+
+        // Saving the user
+        User borrower = userRepository.save(borrower1);
+
+        // Create an ad
+        // Create ads as well
+        AdDto speaker1 = AdDto.builder().
+                title("Title that does not exist elsewhere").
+                description("Renting out a brand new speaker").
+                rental(true).
+                durationType(AdType.WEEK).
+                duration(2).
+                price(100).
+                streetAddress("Speaker street 2").
+                postalCode(7120).
+                city("Trondheim").
+                userId(owner.getId()).
+                categoryId(it.getId()).
+                build();
+
+        // persist ad
+        adService.postNewAd(speaker1);
+
+        Set<Ad> foundAds = adRepository.findByTitle("Title that does not exist elsewhere");
+
+        Optional<Ad> foundAd = foundAds.stream().findFirst();
+        assertNotNull(foundAd);
+
+        // Create rental (not active)
+        Rental rental = Rental.builder().
+                dateOfRental(LocalDate.now()).
+                rentFrom(LocalDate.now().minusDays(2)).
+                rentTo(LocalDate.now().plusWeeks(1)).
+                deadline(LocalDate.now().minusDays(1)).
+                borrower(borrower).
+                owner(owner).
+                ad(foundAd.get()).
+                active(false).
+                price(100).
+                build();
+
+        // Persist rental
+        Rental rentalFound = rentalRepository.save(rental);
+
+        // Activate rental
+        ResponseEntity<Object> response = rentalService.activateRental(rentalFound.getId());
+        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+        assertNotEquals(rentalFound.isActive(),
+                rentalRepository.findById(rentalFound.getId()).get().isActive());
+    }
+
+    @SneakyThrows
+    @Test
+    public void rentalDeleted() {
+        // Building a user
+        User owner1 = User.builder().
+                firstName("firstName").
+                lastName("lastName").
+                email("user.name@hotmail.com").
+                password("pass1word").
+                build();
+
+        // Saving the user
+        User owner = userRepository.save(owner1);
+
+        // Create a category
+        Category it = Category.builder().
+                name("new category2").
+                parent(true).
+                build();
+
+        // Saving the categories
+        categoryRepository.save(it);
+
+        // Building a user
+        User borrower1 = User.builder().
+                firstName("firstName").
+                lastName("lastName").
+                email("user.otherName@hotmail.com").
+                password("pass1word").
+                build();
+
+        // Saving the user
+        User borrower = userRepository.save(borrower1);
+
+        // Create an ad
+        // Create ads as well
+        AdDto speaker1 = AdDto.builder().
+                title("Title that does not exist elsewhere").
+                description("Renting out a brand new speaker").
+                rental(true).
+                durationType(AdType.WEEK).
+                duration(2).
+                price(100).
+                streetAddress("Speaker street 2").
+                postalCode(7120).
+                city("Trondheim").
+                userId(owner.getId()).
+                categoryId(it.getId()).
+                build();
+
+        // persist ad
+        adService.postNewAd(speaker1);
+
+        Set<Ad> foundAds = adRepository.findByTitle("Title that does not exist elsewhere");
+
+        Optional<Ad> foundAd = foundAds.stream().findFirst();
+        assertNotNull(foundAd);
+
+        // Create rental (not active)
+        Rental rental = Rental.builder().
+                dateOfRental(LocalDate.now()).
+                rentFrom(LocalDate.now().minusDays(2)).
+                rentTo(LocalDate.now().plusWeeks(1)).
+                deadline(LocalDate.now().minusDays(1)).
+                borrower(borrower).
+                owner(owner).
+                ad(foundAd.get()).
+                active(true).
+                price(100).
+                build();
+
+        // Persist rental
+        Rental rentalFound = rentalRepository.save(rental);
+
+        // Create a rental-review DTO in order to execute deletion
+        RentalReviewDto dto = RentalReviewDto.builder().rating(5).build();
+
+        // Delete rental
+        ResponseEntity<Object> response =
+                rentalService.deleteRental(rentalFound.getId(), dto);
+        // Assert accepted http response
+        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+        // Assert that the rental now is not active
+        assertNotEquals(rentalFound.isActive(),
+                rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 }
