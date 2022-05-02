@@ -196,7 +196,6 @@ public class AdController {
     @GetMapping("/ads/newest/{pageSize}")
     @ApiOperation(value = "sorting all ads by when they are created")
     public Response getNewest(@PathVariable int pageSize){
-
         return adService.sortByCreatedDateAscending(pageSize);
     }
 

@@ -496,7 +496,10 @@ public class AdServiceImpl implements AdService {
             return new Response(adDto, HttpStatus.OK);
         }
         else {
-            return new Response("The database does not have as many ads as requested", HttpStatus.NOT_FOUND);
+            List<AdDto> adDtos = adRepository.findAll().stream()
+                    .map( ad -> modelMapper.map(ad, AdDto.class)).
+                            collect(Collectors.toList());
+            return new Response(adDtos, HttpStatus.OK);
         }
     }
 
