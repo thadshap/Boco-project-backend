@@ -23,5 +23,5 @@ public class Email {
     private String subject;
 
     @NotNull
-    private String message;
+    private ThymeleafTemplate template;
 }

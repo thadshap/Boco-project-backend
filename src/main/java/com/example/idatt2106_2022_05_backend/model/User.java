@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.model;
 
 
+import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -47,6 +48,12 @@ public class User {
     private double rating;
 
     private int numberOfReviews;
+
+    private String pictureUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_type")
+    private AuthenticationType authType;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private UserVerificationToken userVerificationToken;

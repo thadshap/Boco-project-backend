@@ -33,6 +33,8 @@ public class DataLoader implements ApplicationRunner {
 
         private ReviewRepository reviewRepository;
 
+        private PictureRepository pictureRepository;
+
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         @Autowired
@@ -49,7 +51,8 @@ public class DataLoader implements ApplicationRunner {
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
                           CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
-                      RentalRepository rentalRepository, ReviewRepository reviewRepository) {
+                      RentalRepository rentalRepository, ReviewRepository reviewRepository,
+                      PictureRepository pictureRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
@@ -57,6 +60,7 @@ public class DataLoader implements ApplicationRunner {
             this.calDateRepository = calDateRepository;
             this.rentalRepository = rentalRepository;
             this.reviewRepository = reviewRepository;
+            this.pictureRepository = pictureRepository;
         }
 
         public void run(ApplicationArguments args) {

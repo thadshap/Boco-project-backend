@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * TODO skriv utfyllende her
+ * Class that acts as filter on endpoint requests
  */
 @Component
 public class JWTConfig extends OncePerRequestFilter {
@@ -27,6 +27,14 @@ public class JWTConfig extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Method to check if user that is requesting has a valid JWT
+     * @param httpServletRequest http request
+     * @param httpServletResponse http response
+     * @param filterChain filter chain
+     * @throws ServletException throws exception on filter error
+     * @throws IOException throws exception on IO request fail
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             FilterChain filterChain) throws ServletException, IOException {

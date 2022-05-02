@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * TODO javadoc
+ * JWT util class to manage creation of JWTokens
  */
 @Component
 public class JWTUtil implements Serializable {
