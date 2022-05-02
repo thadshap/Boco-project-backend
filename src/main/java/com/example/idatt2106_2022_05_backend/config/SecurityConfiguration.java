@@ -8,6 +8,7 @@ import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -42,16 +44,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowCredentials(true);
+            cors.setAllowedOrigins(List.of("http://localhost:8080/"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers("/**", "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                .antMatchers("/","/ws","/ws/**",  "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
                 .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
@@ -60,6 +64,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
                 .permitAll().anyRequest().authenticated()
                 .and()
+
+                // Relax CSRF on the WebSocket due to needing direct access from apps
+                //.csrf().ignoringAntMatchers("/ws/**").and()
+                //.authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
+
 //                .formLogin().permitAll().loginPage("/auth/login")
 //                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
@@ -72,7 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-//        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

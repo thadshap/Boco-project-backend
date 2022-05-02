@@ -16,9 +16,14 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
 import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,7 +66,7 @@ public class AdServiceImpl implements AdService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-
+    private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
     // Get all ads
     @Override
     public Response getAllAds() throws IOException {
@@ -621,7 +626,7 @@ public class AdServiceImpl implements AdService {
      * @return response
      */
     @Override
-    public Response postNewAd(AdDto adDto) {
+    public Response postNewAd(AdDto adDto) throws IOException, InterruptedException {
         Ad newAd = new Ad();
 
         // Required attributes
@@ -634,6 +639,7 @@ public class AdServiceImpl implements AdService {
         newAd.setTitle(adDto.getTitle());
         newAd.setPostalCode(adDto.getPostalCode());
         newAd.setCity(adDto.getCity());
+        setCoordinatesOnAd(newAd);
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -1038,25 +1044,32 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response searchThroughAds(String searchword){
-        List<Ad> ads = new ArrayList<>();
-        Set<Ad> ad = adRepository.findByTitleContaining(searchword);
-        List<Category> categories = categoryRepository.findByNameContaining(searchword);
+        //List to be filled with corresponding ads
+        List<Ad> adsContainingSearchWord = new ArrayList<>();
+
+        List<Ad> ads = adRepository.findAll();
+
+        //Checking all titles for searchword
+        for(Ad a: ads){
+            if(a.getTitle().contains(searchword)){
+                adsContainingSearchWord.add(a);
+            }
+        }
+        List<Category> categories = categoryRepository.findAll();
 
         //Adding all ads with the category
         for(Category c: categories){
-            for(Ad a: c.getAds()){
-                ads.add(a);
+            if(c.getName().contains(searchword)) {
+                for (Ad a : c.getAds()) {
+                    if(!adsContainingSearchWord.contains(a)) {
+                        adsContainingSearchWord.add(a);
+                    }
+                }
             }
         }
 
-        //Adding all ads with the searchword in the title
-        for(Ad a: ad){
-            if(!ads.contains(a)){
-                ads.add(a);
-            }
-        }
         //Casting objects to Dto and returning
-        return new Response(ads.stream()
+        return new Response(adsContainingSearchWord.stream()
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
@@ -1094,6 +1107,32 @@ public class AdServiceImpl implements AdService {
     public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
+    }
+
+
+    private void setCoordinatesOnAd(Ad ad)
+            throws IOException, InterruptedException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Geocoder geocoder = new Geocoder();
+
+        String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
+        JsonNode responseJSONnode = objectMapper.readTree(response);
+        logger.info("recieved response: " + response);
+        JsonNode items = responseJSONnode.get("items");
+
+        for(JsonNode item : items){
+            JsonNode address = item.get("address");
+            String label = address.get("label").asText();
+            JsonNode position = item.get("position");
+
+            String lat = position.get("lat").asText();
+            String lng = position.get("lng").asText();
+            System.out.println(label + " is located at " + lat + "," + lng + ".");
+           if(!lng.equals("") && !lat.equals("")) {
+               ad.setLat(Double.parseDouble(lat));
+               ad.setLng(Double.parseDouble(lng));
+           }
+        }
     }
 
 

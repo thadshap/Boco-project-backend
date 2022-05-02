@@ -136,7 +136,6 @@ class AdServiceTest {
     }
 
 
-
     /**
      * This test uses the AdRepository method "findByPostalCode".
      * This repository method is mocked
