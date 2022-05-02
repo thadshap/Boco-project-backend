@@ -175,7 +175,7 @@ public class AdIntegrationTest {
             try {
                 // Post the ad
                 adService.postNewAd(ad);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 fail();
                 e.printStackTrace();
             }
@@ -227,6 +227,8 @@ public class AdIntegrationTest {
                 // The test passes if this exception is caught
             } catch (NullPointerException | IOException e) {
                 // The test passes if this exception is caught
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
