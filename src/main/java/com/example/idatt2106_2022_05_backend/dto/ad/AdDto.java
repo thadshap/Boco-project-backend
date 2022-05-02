@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Set;
 
 /**
@@ -81,4 +82,7 @@ public class AdDto {
 
     @ApiModelProperty(notes = "array of files for posting pictures in ad")
     Set<MultipartFile> pictures;
+
+    @ApiModelProperty(notes = "date")
+    private LocalDate created;
 }

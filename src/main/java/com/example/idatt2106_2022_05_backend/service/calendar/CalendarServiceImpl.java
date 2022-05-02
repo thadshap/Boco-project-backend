@@ -28,7 +28,13 @@ public class CalendarServiceImpl implements CalendarService {
     @Autowired
     private AdRepository adRepository;
 
-    // return true if dates between start and end are "typeOfAvailability" for an ad
+    /**
+     * Helper method to find dates.
+     * @param startDate start date.
+     * @param endDate end date.
+     * @param typeOfAvailability type of availability.
+     * @return true if dates between start and end are "typeOfAvailability".
+     */
     private boolean datesAre(LocalDate startDate, LocalDate endDate, boolean typeOfAvailability, long adId) {
         // Get all dates between start -and endDate
         Set<CalendarDate> dates = dateRepository.findByDateBetween(startDate, endDate);
@@ -168,6 +174,11 @@ public class CalendarServiceImpl implements CalendarService {
 
     }
 
+    /**
+     * Method to add dates to Calender
+     * @param adId
+     * @return
+     */
     @Override
     public Set<CalendarDate> addFutureDates(long adId) {
         // Find the ad

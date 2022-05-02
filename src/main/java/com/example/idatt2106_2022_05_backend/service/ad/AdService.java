@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.service.ad;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +51,7 @@ public interface AdService {
     //post new add
     Response getAllAdsInCity(String city);
 
-    Response postNewAd(AdDto adDto) throws IOException;
+    Response postNewAd(AdDto adDto) throws IOException, InterruptedException;
 
     // get all reviews for an add with owner = user id
     Response getReviewsByUserId(long userId);
@@ -116,5 +117,11 @@ public interface AdService {
     Response getAllSubCategories(String parentName);
 
     Response getAllCategories();
+
+    Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
+
+    Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
+
+    //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
 

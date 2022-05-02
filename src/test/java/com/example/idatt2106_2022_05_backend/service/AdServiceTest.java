@@ -103,7 +103,7 @@ class AdServiceTest {
 
 
     @Test
-    void getPageOfAds() throws IOException {
+    void getPageOfAds() throws IOException, InterruptedException {
         User user = User.builder().
                 id(1L).
                 firstName("firstName").
@@ -134,7 +134,6 @@ class AdServiceTest {
         List<Ad> ads = adRepository.findAll(pageOf24).getContent();
         System.out.println("ads:" +ads);
     }
-
 
 
     /**

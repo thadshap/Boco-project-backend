@@ -9,10 +9,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ApiModel(description = "data transfer object to update user info")
 public class UserUpdateDto {
 

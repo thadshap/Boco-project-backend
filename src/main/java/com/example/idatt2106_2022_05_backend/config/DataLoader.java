@@ -1,8 +1,10 @@
 package com.example.idatt2106_2022_05_backend.config;
 
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -10,6 +12,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +36,15 @@ public class DataLoader implements ApplicationRunner {
 
         private ReviewRepository reviewRepository;
 
+        private PictureRepository pictureRepository;
+
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         @Autowired
         CalendarService calendarService;
 
+        @Autowired
+        AdService adService;
 
     /**
      * Constructor of the class.
@@ -49,7 +56,8 @@ public class DataLoader implements ApplicationRunner {
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
                           CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
-                      RentalRepository rentalRepository, ReviewRepository reviewRepository) {
+                      RentalRepository rentalRepository, ReviewRepository reviewRepository,
+                      PictureRepository pictureRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
@@ -57,9 +65,10 @@ public class DataLoader implements ApplicationRunner {
             this.calDateRepository = calDateRepository;
             this.rentalRepository = rentalRepository;
             this.reviewRepository = reviewRepository;
+            this.pictureRepository = pictureRepository;
         }
 
-        public void run(ApplicationArguments args) {
+        public void run(ApplicationArguments args) throws IOException, InterruptedException {
 
             // Create users
             User user1 = User.builder()
@@ -266,8 +275,17 @@ public class DataLoader implements ApplicationRunner {
                     user(user1).
                     category(category1).
                     build();
-
+            /*
+            AdDto skaters = AdDto.builder().
+                    title("Patinadoras de secunda mano").
+                    city("Pozuelo de Alarcon").rental(true).userId(1).
+                    description("patinadoras de tamaño 36").
+                    duration(1).durationType(AdType.HOUR).
+                    postalCode(28223).price(10).
+                    streetAddress("C.Manuel Roses 15C").build();
+            */
             // Persist the 3 ads
+
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);

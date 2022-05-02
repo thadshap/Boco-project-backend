@@ -14,48 +14,32 @@ spring:
     password:
     driverClassName: org.h2.Driver
   mail:
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: 'true'
-          auth: 'true'
     host: ${EMAIL_HOST:smtp.gmail.com}
     username: ${EMAIL_USERNAME:hassano19988991@gmail.com}
     password: ${EMAIL_PASSWORD:etxkzjeuvuupkpmq}
     port: ${EMAIL_PORT:#{587}}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: 'true'
+          starttls:
+            enable: 'true'
+            required: 'true'
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 666906861821-bgcml5e7bq5pt5ptj9b33ir02n5hd0b9.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
-          facebook:
-            client-id: 1181763609285094
-            client-secret: 822eef3823b53888eb4dd9f0c1a09463
-            scope:
-              - email
-              - profile_profile
 server:
   ssl:
-    key-alias: boco
-    key-store-type: PKCS12
-    key-store: src/main/resources/keystore/keystores/cert_key.p12
+    key-alias: localhost
+#    key-store-type: PKCS12
+    key-store: src/main/resources/keystore/keystores/keystore.jks
+    key-password: password
     key-store-password: password
+    trust-store: src/main/resources/keystore/keystores/truststore.jks
+    trust-store-password: password
     protocol: TLS
-    enabled: false
+    enabled: true
     enabled-protocols: TLSv1.2
     client-auth: want
-#  port: 8443
+  port: 8443
