@@ -173,7 +173,7 @@ public class CalendarIntegrationTest {
 
         @Test
         public void datesAreMadeUnavailable() {
-            Ad ad = adRepository.findAll().get(0);
+            Ad ad = adRepository.findAll().get(1);
             assertNotNull(ad);
 
             // Get number of unavailable dates for the ad
@@ -195,14 +195,14 @@ public class CalendarIntegrationTest {
             CalendarDto dtoMock = CalendarDto.builder().
                     adId(ad.getId()).
                     startDate(afterCreation).
-                    endDate(afterCreation.plusWeeks(1)).
+                    endDate(afterCreation.plusDays(6)).
                     available(false).
                     build();
 
             // Mark the week as unavailable (rented out)
             calendarService.markDatesFromToAs(dtoMock);
 
-            Ad adAfter = adRepository.findAll().get(0);
+            Ad adAfter = adRepository.findAll().get(1);
 
             // Get a count of how many dates are unavailable for the ad now
             int unavailableAfter = 0;
@@ -218,8 +218,6 @@ public class CalendarIntegrationTest {
             assertEquals(unavailableAfter, 7);
             assertNotEquals(unavailableBefore, unavailableAfter);
             assertEquals(unavailableAfter, unavailableBefore + 7);
-
-
         }
 
         @Test

@@ -125,9 +125,13 @@ public class CalendarServiceImpl implements CalendarService {
                 // Get all dates between startDate and endDate
                 for (CalendarDate date : dates) {
 
+                    LocalDate theDate = date.getDate();
+
                     // PS: plus/minus days because we want to include the start and end dates in our search
-                    if (date.getDate().isAfter(dto.getStartDate().minusDays(1))
-                            && date.getDate().isBefore(dto.getEndDate().plusDays(1))) {
+                    if (theDate.isEqual(dto.getStartDate()) ||
+                            (theDate.isAfter(dto.getStartDate()) && theDate.isBefore(dto.getEndDate())) ||
+                            theDate.isEqual(dto.getEndDate()))
+                    {
 
                         // Change the availability
                         date.setAvailable(dto.isAvailable());
