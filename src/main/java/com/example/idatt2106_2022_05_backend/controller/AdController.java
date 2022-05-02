@@ -183,26 +183,26 @@ public class AdController {
 
     @PostMapping("/ads/sort/descending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
-    public Response getsorteddescending(@RequestBody SortingAdsDto sortingDto){
+    public Response getSortedDescending(@RequestBody SortingAdsDto sortingDto){
         return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
     @PostMapping("/ads/sort/ascending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
-    public Response getsortedAscending(@RequestBody SortingAdsDto sortingDto){
+    public Response getSortedAscending(@RequestBody SortingAdsDto sortingDto){
         return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
     @GetMapping("/ads/newest/{pageSize}")
     @ApiOperation(value = "sorting all ads by when they are created")
-    public Response getnewest(@PathVariable int pageSize){
+    public Response getNewest(@PathVariable int pageSize){
 
         return adService.sortByCreatedDateAscending(pageSize);
     }
 
     @GetMapping("/ads/oldest/{pageSize}")
     @ApiOperation(value = "sorting all ads by creation oldest")
-    public Response getoldest(@PathVariable int pageSize){
+    public Response getOldest(@PathVariable int pageSize){
 
         return adService.sortByCreatedDateDescending(pageSize);
     }
@@ -279,4 +279,13 @@ public class AdController {
         return adService.getAllAdsInCity(cityName);
     }
 
+    @PostMapping("/list/newestFirst")
+    public Response sortAdsNewestFirst(@RequestBody List<AdDto> list){
+        return adService.sortArrayOfAdsByDateNewestFirst(list);
+    }
+
+    @PostMapping("/list/oldestFirst")
+    public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
+        return adService.sortArrayOfAdsByDateOldestFirst(list);
+    }
 }
