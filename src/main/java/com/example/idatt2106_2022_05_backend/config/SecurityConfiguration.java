@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.security.JWTConfig;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @Order(1)
+@ComponentScan
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -32,6 +34,33 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JWTConfig jwtConfig;
+
+    private static final String[] WHITELIST_URLS = {
+            "/",
+            "/auth/**",
+            "/ws",
+            "/ws/**",
+            "/api/ads/**",
+            "/api/users/**",
+            "/api/search/**",
+            "/api/sort/**",
+            "/api/filterByDistance",
+            "/api/getListWithinPriceRange",
+            "/api/categories/**",
+            "/api/categoriesRecursive/**",
+            "/api/calendar/**",
+            "/api/reviews/**"
+    };
+
+    private static final String[] WHITELIST_DOCS = {
+            "/h2/**",
+            "/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources/**",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/swagger-ui/**"
+    };
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -55,14 +84,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers("/","/ws","/ws/**",  "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
-                .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll().antMatchers(HttpMethod.GET, "/auth/**")
-                .permitAll().antMatchers(HttpMethod.POST, "/users/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll().antMatchers(HttpMethod.POST, "/courses/**")
-                .permitAll().anyRequest().authenticated()
+                .antMatchers(WHITELIST_DOCS).permitAll()
+                .antMatchers(WHITELIST_URLS).permitAll()
+//                .antMatchers(HttpMethod.POST, "/user/").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .x509()
+                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
 
                 // Relax CSRF on the WebSocket due to needing direct access from apps
@@ -83,15 +113,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
-/*
-    @Autowired
-    private OAuth2UserServiceImpl oauth2UserService;
 
-    @Autowired
-    private OAuthLoginHandler oauthLoginHandler;
-
-    @Autowired
-    private DatabaseLoginHandler databaseLoginHandler;
-
- */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("static/**");
+    }
 }
