@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.config;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -12,12 +13,11 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Class loads in data for use in db upon start of application
@@ -37,6 +37,8 @@ public class DataLoader implements ApplicationRunner {
 
         private ReviewRepository reviewRepository;
 
+        private PictureRepository pictureRepository;
+
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         private GroupRepository groupRepository;
@@ -46,6 +48,8 @@ public class DataLoader implements ApplicationRunner {
         @Autowired
         CalendarService calendarService;
 
+        @Autowired
+        AdService adService;
 
     /**
      * Constructor of the class.
@@ -58,18 +62,22 @@ public class DataLoader implements ApplicationRunner {
      * @param messageRepository repository of the {@link Message} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                      CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
-                      GroupRepository groupRepository, MessageRepository messageRepository) {
+                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
+                      RentalRepository rentalRepository, ReviewRepository reviewRepository,
+                      PictureRepository pictureRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
             this.categoryRepository = categoryRepository;
             this.calDateRepository = calDateRepository;
+            this.rentalRepository = rentalRepository;
+            this.reviewRepository = reviewRepository;
+            this.pictureRepository = pictureRepository;
             this.groupRepository = groupRepository;
             this.messageRepository = messageRepository;
         }
 
-        public void run(ApplicationArguments args) {
+        public void run(ApplicationArguments args) throws IOException, InterruptedException {
 
             // Create users
             User user1 = User.builder()
@@ -278,11 +286,127 @@ public class DataLoader implements ApplicationRunner {
                     user(user1).
                     category(category1).
                     build();
-
+            /*
+            AdDto skaters = AdDto.builder().
+                    title("Patinadoras de secunda mano").
+                    city("Pozuelo de Alarcon").rental(true).userId(1).
+                    description("patinadoras de tamaño 36").
+                    duration(1).durationType(AdType.HOUR).
+                    postalCode(28223).price(10).
+                    streetAddress("C.Manuel Roses 15C").build();
+            */
             // Persist the 3 ads
+
             adRepository.save(pants);
             adRepository.save(fruit);
             adRepository.save(pc);
+            adRepository.save(charger);
+            adRepository.save(motherBoard);
+
+
+            adRepository.save(p);
+            adRepository.save(pa);
+            adRepository.save(pan);
+            adRepository.save(pant);
+            adRepository.save(pantss);
+
+            Rental rental = Rental.builder()
+                    .ad(pants)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(10000)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(1))
+                    .rentTo(LocalDate.now().plusDays(5))
+                    .rentFrom(LocalDate.now().plusDays(2))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pant)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(1000)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(3))
+                    .rentTo(LocalDate.now().plusDays(7))
+                    .rentFrom(LocalDate.now().plusDays(4))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pan)
+                    .owner(user1)
+                    .borrower(user2)
+                    .price(100)
+                    .active(false)
+                    .deadline(LocalDate.now().plusDays(5))
+                    .rentTo(LocalDate.now().plusDays(9))
+                    .rentFrom(LocalDate.now().plusDays(6))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(pa)
+                    .owner(user3)
+                    .borrower(user1)
+                    .price(3000)
+                    .active(true)
+                    .deadline(LocalDate.now().plusDays(7))
+                    .rentTo(LocalDate.now().plusDays(12))
+                    .rentFrom(LocalDate.now().plusDays(8))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            rental = Rental.builder()
+                    .ad(p)
+                    .owner(user3)
+                    .borrower(user1)
+                    .price(3000)
+                    .active(true)
+                    .deadline(LocalDate.now().plusDays(9))
+                    .rentTo(LocalDate.now().plusDays(15))
+                    .rentFrom(LocalDate.now().plusDays(10))
+                    .dateOfRental(LocalDate.now())
+                    .build();
+            rentalRepository.save(rental);
+
+            Review review = Review.builder()
+                    .ad(pants)
+                    .user(user3)
+                    .description("veldig bra anbefaler dette produktet!")
+                    .rating(9)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user2)
+                    .description("Elendig produkt")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user3)
+                    .description("ten out of ten would buy again")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pants)
+                    .user(user4)
+                    .description("two out of ten would never buy again")
+                    .rating(1)
+                    .build();
+            reviewRepository.save(review);
 
             // Add dates to the ads // todo might not work due to id
             List<Ad> ads =  adRepository.findAll();

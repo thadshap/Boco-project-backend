@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -33,12 +34,9 @@ public class CalendarDate {
     @Column(name = "available")
     private boolean available;
 
-    // Many to many connection to ads modelled by the "calendar" table (not modelled)
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "calendar",
-            joinColumns = { @JoinColumn(name = "date_id") },
-            inverseJoinColumns = { @JoinColumn(name = "id") }
-    )
-    private Set<Ad> ads;
+    // Many-to-many connection with Ad. Ad is parent in this case.
+    @ManyToMany(fetch = FetchType.EAGER,  mappedBy = "dates")
+    @ToString.Exclude
+    private Set<Ad> ads = new HashSet<>();
+
 }

@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -17,6 +14,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Configuration class for swagger endpoint documentation
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -41,6 +41,7 @@ public class SwaggerConfig {
     private String description = "Api Documentation for backend endpoints\n";
     private String contactName = "Hasan Omarzae";
     private String contactEmail = "BOCO@ntnu.no";
+    private Contact contact = new Contact(contactName, "www.boco.no",  contactEmail);
 
     @Bean
     public Docket api() {
@@ -50,6 +51,6 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title(title).description(description).version(version).build();
+        return new ApiInfoBuilder().title(title).description(description).version(version).contact(contact).build();
     }
 }

@@ -22,6 +22,9 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Exposing the directory containing photos relates to ads
         exposeDirectory("ad-photos", registry);
+        exposeDirectory("static/images", registry);
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
     }
 
     // ResourceHandlerRegistry stores registrations of resource handlers for serving static resources such as images

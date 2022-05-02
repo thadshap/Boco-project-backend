@@ -51,7 +51,7 @@ public interface AdService {
     //post new add
     Response getAllAdsInCity(String city);
 
-    Response postNewAd(AdDto adDto) throws IOException;
+    Response postNewAd(AdDto adDto) throws IOException, InterruptedException;
 
     // get all reviews for an add with owner = user id
     Response getReviewsByUserId(long userId);
@@ -117,6 +117,10 @@ public interface AdService {
     Response getAllSubCategories(String parentName);
 
     Response getAllCategories();
+
+    Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
+
+    Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
 
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
