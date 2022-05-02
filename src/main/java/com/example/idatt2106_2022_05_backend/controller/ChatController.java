@@ -3,6 +3,8 @@ package com.example.idatt2106_2022_05_backend.controller;
 import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +28,9 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    SecurityService securityService;
+
     Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     //TODO: fix send message, save message
@@ -45,13 +50,16 @@ public class ChatController {
         logger.info("groupId: "+ groupId);
         MessageDto message = new MessageDto();
         message.setContent(content);
-
+        //Setting user
+        User user = securityService.getCurrentUser();
+        message.setFirstName(user.getFirstName());
+        message.setLastName(user.getFirstName());
+        message.setUserId(user.getId());
         //message.setGroupId(groupId);
-        //String time = new SimpleDateFormat("HH:mm").format(new Date());
+        String time = new SimpleDateFormat("HH:mm").format(new Date());
+        message.setTimeStamp(time);
 
-        //message.setTimestamp(time);
-
-        //chatService.broadcast(message);
+        //TODO: save message to db
         return message;
     }
 

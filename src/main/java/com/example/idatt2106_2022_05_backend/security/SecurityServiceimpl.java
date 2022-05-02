@@ -42,6 +42,11 @@ public class SecurityServiceimpl implements SecurityService {
         return userRepository.findByEmail(email);
     }
 
+    @Override
+    public User getCurrentUser(){
+        return getUser();
+    }
+
     /**
      * Method to see if userId is the same as user making requests.
      * @param userId id of user.

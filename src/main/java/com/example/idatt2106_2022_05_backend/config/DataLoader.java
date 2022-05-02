@@ -64,7 +64,7 @@ public class DataLoader implements ApplicationRunner {
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
                           CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
                       RentalRepository rentalRepository, ReviewRepository reviewRepository,
-                      PictureRepository pictureRepository) {
+                      PictureRepository pictureRepository, GroupRepository groupRepository, MessageRepository messageRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
@@ -73,6 +73,8 @@ public class DataLoader implements ApplicationRunner {
             this.rentalRepository = rentalRepository;
             this.reviewRepository = reviewRepository;
             this.pictureRepository = pictureRepository;
+            this.groupRepository = groupRepository;
+            this.messageRepository = messageRepository;
             this.groupRepository = groupRepository;
             this.messageRepository = messageRepository;
         }
