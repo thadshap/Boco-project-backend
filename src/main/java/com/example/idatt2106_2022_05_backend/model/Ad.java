@@ -135,11 +135,11 @@ public class Ad {
         if(category != null) {
             setCategory(null);
         }
-        if(reviews != null){
-            setReviews(null);
-        }
         if (rentals != null) {
             setRentals(null);
+        }
+        if(reviews != null){
+            setReviews(null);
         }
         if(dates != null) {
             setDates(null);
