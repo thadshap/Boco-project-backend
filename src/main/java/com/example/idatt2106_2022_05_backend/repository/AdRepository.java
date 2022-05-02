@@ -41,6 +41,8 @@ public interface AdRepository extends JpaRepository<Ad, Long> {
 
     Set<Ad> findByTitleContaining(String searchWord);
 
+    Set<Ad> findByTitle(String title);
+
     Set<Ad> findByCity(String city);
 
     // Get all available ads

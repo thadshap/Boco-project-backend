@@ -13,6 +13,7 @@ import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarServiceImpl;
 import lombok.SneakyThrows;
 import org.apache.tomcat.jni.Local;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,6 +68,72 @@ public class CalendarIntegrationTest {
 
     @Nested
     class CalendarCreatedTests {
+
+        @SneakyThrows
+        @BeforeEach
+        public void setUp() {
+            // Deleting due to threads
+            reviewRepository.deleteAll();
+            rentalRepository.deleteAll();
+            adRepository.deleteAll();
+            userRepository.deleteAll();
+            categoryRepository.deleteAll();
+            calendarDateRepository.deleteAll();
+
+            // Building a user
+            User user = User.builder().
+                    firstName("firstName").
+                    lastName("lastName").
+                    email("user.name@hotmail.com").
+                    password("pass1word").
+                    build();
+
+            // Saving the user
+            userRepository.save(user);
+
+            // Building categories
+            Category clothes = Category.builder().
+                    name("new category1").
+                    parent(true).
+                    build();
+
+            Category it = Category.builder().
+                    name("new category2").
+                    parent(true).
+                    build();
+
+            // Saving the categories
+            categoryRepository.save(clothes);
+            categoryRepository.save(it);
+
+            // Create ads as well
+            AdDto speaker1 = AdDto.builder().
+                    title("New speaker").
+                    description("Renting out a brand new speaker").
+                    rental(true).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Speaker street 2").
+                    postalCode(7120).
+                    city("Trondheim").
+                    userId(user.getId()).
+                    categoryId(it.getId()).
+                    build();
+
+            // persist ad
+            adService.postNewAd(speaker1);
+        }
+
+        @AfterEach
+        public void emptyDatabase() {
+            reviewRepository.deleteAll();
+            rentalRepository.deleteAll();
+            adRepository.deleteAll();
+            userRepository.deleteAll();
+            categoryRepository.deleteAll();
+            calendarDateRepository.deleteAll();
+        }
 
         @Test
         public void oneYearOfDatesCreated_WhenAdIsCreated() {
@@ -223,8 +291,14 @@ public class CalendarIntegrationTest {
 
             // Persist the ad --> the dates are now also persisted
             adService.postNewAd(speaker);
-            Set<Ad> adsFound = adRepository.findByTitleContaining("New speaker");
-            assertEquals(adsFound.size(),1);
+
+            // Use the method to search through all ads
+            ResponseEntity<Object> response = adService.searchThroughAds("New speaker");
+            assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+
+            Set<Ad> adsFound = adRepository.findByTitle("New speaker");
+
+            assertNotNull(adsFound);
 
             Ad ad = adRepository.findAll().get(0);
             assertNotNull(ad);
@@ -255,7 +329,7 @@ public class CalendarIntegrationTest {
             // Mark the week as unavailable (rented out)
             calendarService.markDatesFromToAs(dtoMock);
 
-            Ad adAfter = adRepository.findAll().get(1);
+            Ad adAfter = adRepository.findAll().get(0);
 
             // Get a count of how many dates are unavailable for the ad now
             int unavailableAfter = 0;

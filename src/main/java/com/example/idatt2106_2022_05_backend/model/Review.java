@@ -28,11 +28,11 @@ public class Review {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ad_id")
     private Ad ad;
 

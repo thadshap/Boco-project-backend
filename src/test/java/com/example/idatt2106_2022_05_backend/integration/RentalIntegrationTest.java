@@ -1,10 +1,41 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class RentalIntegrationTest {
-    // perform rental with service and check OK
-    // User can perform rental
-    // rental not performed check NOT FOUND or something of the sort
-    // test repo
-    // Test that a rental can be cancelled before 24hrs
-    // Test that a rental cannot be cancelled after 24hrs
+
+
+    @Nested
+
+    @Test
+    public void rentalSaved_WhenForeignKeysCorrect() {
+
+        // Test rental
+        // Test service
+
+    }
+
+    @Test
+    public void rentalNotSaved_WhenForeignKeysWrong() {
+
+    }
+
+
+    @Test
+    public void rentalCanBeCancelled_Before24Hrs() {
+
+    }
+
+    @Test
+    public void rentalCanNotBeCancelled_After24Hrs() {
+
+    }
 }

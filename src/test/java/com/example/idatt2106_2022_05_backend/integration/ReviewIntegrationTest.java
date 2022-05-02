@@ -1,7 +1,10 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
 import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Review;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
@@ -10,6 +13,7 @@ import com.example.idatt2106_2022_05_backend.service.review.ReviewService;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.mysql.cj.xdevapi.SessionFactory;
+import lombok.SneakyThrows;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Nested;
@@ -65,21 +69,58 @@ public class ReviewIntegrationTest {
     class PositiveReviewTests {
         // Write review correct check OK
         // check repo count
+        @SneakyThrows
         @Test
         public void reviewSaved_WhenForeignKeysCorrect() {
-            // Get ad and user (that writes the ad)
-            Ad ad = adRepository.findAll().get(0);
-            User user = userRepository.findAll().get(0);
+            // Create a user
+            User user1 = User.builder()
+                    .firstName("Anders")
+                    .lastName("Tellefsen")
+                    .email("andetel@stud.ntnu.no")
+                    .password("passord123")
+                    .build();
+
+            User user = userRepository.save(user1);
 
             // Assert that they exist
-            assertNotNull(ad);
             assertNotNull(user);
+
+            // Create a category
+            Category category1 = Category.builder().
+                    name("category").
+                    parent(true).
+                    child(false).
+                    build();
+            Category category = categoryRepository.save(category1);
+
+            // Create new ad
+            Ad speaker = Ad.builder().
+                    title("New speaker").
+                    description("Renting out a brand new speaker").
+                    rental(true).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Speaker street 2").
+                    postalCode(7120).
+                    city("Trondheim").
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist the ad --> the dates are now also persisted
+            Ad ad = adRepository.save(speaker);
 
             // Get the number of reviews in the database
             int prevNumberOfReviewsInDb = reviewRepository.findAll().size();
 
-            // Get the number of reviews in the ad
-            int prevNumberOfReviewsInAd = ad.getReviews().size();
+            // Set as 0
+            int prevNumberOfReviewsInAd = 0;
+
+            // Get the number of reviews in the ad (unless null)
+            if(ad.getReviews() != null) {
+                prevNumberOfReviewsInAd = ad.getReviews().size();
+            }
 
             // Create Review dto entity
             ReviewDto review = ReviewDto.builder().

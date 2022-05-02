@@ -71,19 +71,22 @@ public class ReviewServiceImpl implements ReviewService{
      * @return Review
      */
     public Response createNewReview(ReviewDto newReviewDto){
-        Review review = new Review();
         validate(newReviewDto);
+
+        Review review = new Review();
 
         review.setDescription(newReviewDto.getDescription());
         review.setRating(newReviewDto.getRating());
 
         //checking that the same user does not post twice per ad
-        User user = userRepository.getById(newReviewDto.getUserId());
-        Optional<Ad> ad = adRepository.findById(newReviewDto.getAdId());
-        if(ad.isPresent()){
-            if(validateUser(ad.get(), user)) {
+        Optional<User> user = userRepository.findById(newReviewDto.getUserId());
 
-                review.setUser(user);
+        Optional<Ad> ad = adRepository.findById(newReviewDto.getAdId());
+        if(ad.isPresent() && user.isPresent()){
+
+            if(validateUser(ad.get(), user.get())) {
+
+                review.setUser(user.get());
 
                 // Setting ad
                 review.setAd(ad.get());
@@ -91,20 +94,21 @@ public class ReviewServiceImpl implements ReviewService{
                 Review reviewSaved = reviewRepository.save(review);
 
                 // Set the review to the list of reviews for the user
-                user.getReviews().add(reviewSaved);
+                user.get().addReview(reviewSaved);
+
                 //user.addReview(reviewSaved);
 
                 // Persist the change
-                userRepository.save(user);
+                userRepository.save(user.get());
 
                 // Retrieve the user that owns the ad
                 User ownerOfAd = ad.get().getUser();
 
                 // Increment the number of reviews for the user
-                ownerOfAd.setNumberOfReviews(user.getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
+                ownerOfAd.setNumberOfReviews(user.get().getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
 
                 // Add the rating to the total rating of the user
-                ownerOfAd.setRating(user.getRating() + newReviewDto.getRating());
+                ownerOfAd.setRating(user.get().getRating() + newReviewDto.getRating());
 
                 // Persist the users changes
                 userRepository.save(ownerOfAd);

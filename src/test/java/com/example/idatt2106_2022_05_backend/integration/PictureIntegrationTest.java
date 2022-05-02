@@ -1,12 +1,18 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.PictureUtility;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +25,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,6 +52,7 @@ public class PictureIntegrationTest {
 
     @Autowired
     RentalRepository rentalRepository;
+
     @Autowired
     UserRepository userRepository;
 
@@ -59,8 +68,72 @@ public class PictureIntegrationTest {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    PictureRepository pictureRepository;
+
+
     @Nested
     class UserPictureTests {
+
+        @SneakyThrows
+        @BeforeEach
+        public void setUp() {
+            // Building a user
+            User user = User.builder().
+                    firstName("firstName").
+                    lastName("lastName").
+                    email("user.name@hotmail.com").
+                    password("pass1word").
+                    build();
+
+            // Saving the user
+            userRepository.save(user);
+
+            // Building categories
+            Category clothes = Category.builder().
+                    name("new category1").
+                    parent(true).
+                    build();
+
+            Category it = Category.builder().
+                    name("new category2").
+                    parent(true).
+                    build();
+
+            // Saving the categories
+            categoryRepository.save(clothes);
+            categoryRepository.save(it);
+
+            // Create ads as well
+            AdDto speaker1 = AdDto.builder().
+                    title("New speaker").
+                    description("Renting out a brand new speaker").
+                    rental(true).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Speaker street 2").
+                    postalCode(7120).
+                    city("Trondheim").
+                    userId(user.getId()).
+                    categoryId(it.getId()).
+                    build();
+
+            // persist ad
+            adService.postNewAd(speaker1);
+        }
+
+        @AfterEach
+        public void emptyDatabase() {
+            List<Picture> pictures = pictureRepository.findAll();
+            for(Picture picture : pictures) {
+                picture.getUser().setPicture(null);
+                userRepository.save(picture.getUser());
+                picture.setUser(null); //todo do the same with user?
+                pictureRepository.save(picture);
+            }
+            pictureRepository.deleteAll();
+        }
         // Add photo to user
         @Test
         public void profilePictureAdded_WhenCorrectInput() {
@@ -197,6 +270,65 @@ public class PictureIntegrationTest {
 
     @Nested
     class AdPictureTests {
+
+        @SneakyThrows
+        @BeforeEach
+        public void setUp() {
+            // Building a user
+            User user = User.builder().
+                    firstName("firstName").
+                    lastName("lastName").
+                    email("user.name@hotmail.com").
+                    password("pass1word").
+                    build();
+
+            // Saving the user
+            userRepository.save(user);
+
+            // Building categories
+            Category clothes = Category.builder().
+                    name("new category1").
+                    parent(true).
+                    build();
+
+            Category it = Category.builder().
+                    name("new category2").
+                    parent(true).
+                    build();
+
+            // Saving the categories
+            categoryRepository.save(clothes);
+            categoryRepository.save(it);
+
+            // Create ads as well
+            AdDto speaker1 = AdDto.builder().
+                    title("New speaker").
+                    description("Renting out a brand new speaker").
+                    rental(true).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Speaker street 2").
+                    postalCode(7120).
+                    city("Trondheim").
+                    userId(user.getId()).
+                    categoryId(it.getId()).
+                    build();
+
+            // persist ad
+            adService.postNewAd(speaker1);
+        }
+
+        @AfterEach
+        public void emptyDatabase() {
+            reviewRepository.deleteAll();
+            rentalRepository.deleteAll();
+            pictureRepository.deleteAll();
+            adRepository.deleteAll();
+            userRepository.deleteAll();
+            categoryRepository.deleteAll();
+            calendarDateRepository.deleteAll();
+        }
 
         // Add photo to ad
         @Test

@@ -39,6 +39,16 @@ public class Picture {
     @OneToOne(fetch = FetchType.EAGER)
     private User user;
 
+    @PreRemove
+    private void removeRelationships(){
+        if(user != null){
+            setUser(null);
+        }
+        if(ad != null) {
+            setAd(null);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

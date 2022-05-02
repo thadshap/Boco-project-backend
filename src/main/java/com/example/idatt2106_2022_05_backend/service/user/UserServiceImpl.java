@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
         userFound.get().setRentalsBorrowed(null);
 
         // Get the reviews
-        List<Review> reviews = userFound.get().getReviews();
+        Set<Review> reviews = userFound.get().getReviews();
         if(reviews != null) {
             for(Review review : reviews) {
                 review.setUser(null);

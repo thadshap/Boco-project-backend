@@ -80,64 +80,6 @@ public class AdIntegrationTest {
 
     @AfterEach
     public void emptyDatabase() {
-        /**
-        // get all ads
-        List<Ad> ads = adRepository.findAll();
-        for(Ad ad : ads) {
-
-            Set<CalendarDate> dates = ad.getDates();
-            if(dates != null) {
-                for(CalendarDate date : dates) {
-                    date.getAds().remove(ad);
-                    calendarDateRepository.save(date);
-                }
-            }
-
-            Set<Review> reviews = ad.getReviews();
-            if(reviews != null) {
-                for(Review review : reviews) {
-                    review.setAd(null);
-                    reviewRepository.save(review);
-                }
-            }
-
-            Set<Rental> rentals = ad.getRentals();
-            if(rentals != null) {
-                for(Rental rental : rentals) {
-                    rental.setAd(null);
-                    rental.setBorrower(null);
-                    rental.setOwner(null);
-                    rentalRepository.save(rental);
-                }
-            }
-            ad.setCategory(null);
-            ad.setRentals(null);
-            ad.setUser(null);
-            ad.setDates(null);
-            ad.setPhotos(null);
-            ad.setReviews(null);
-
-            adRepository.delete(ad);
-        }
-        List<User> users = userRepository.findAll();
-        for(User user : users) {
-            user.setPicture(null);
-            user.setAds(null);
-            for(Review review : user.getReviews()) {
-                review.setUser(null);
-                reviewRepository.save(review);
-            }
-            user.setReviews(null);
-            user.setRentalsBorrowed(null);
-            user.setRentalsOwned(null);
-            userRepository.delete(user);
-        }
-        List<Category> categories = categoryRepository.findAll();
-        for(Category category : categories) {
-            category.setAds(null);
-            categoryRepository.delete(category);
-        }
-         */
         reviewRepository.deleteAll();
         rentalRepository.deleteAll();
         adRepository.deleteAll();
@@ -465,7 +407,7 @@ public class AdIntegrationTest {
         }
 
         @Test
-        public void paginationDoesNotWork_WhenNotEnoughAds() {
+        public void paginationWorks_WhenNotEnoughAds() {
             // Build new user
             User user = User.builder().
                     firstName("firstName").
@@ -505,11 +447,11 @@ public class AdIntegrationTest {
             }
             assertEquals(15, adRepository.findAll().size());
 
-            // Pagination with all 16 ads (only 15 present in db)
-            ResponseEntity<Object> res = adService.getPageOfAds(16);
+            // Pagination with 24 ads (only 15 present in db)
+            ResponseEntity<Object> res = adService.getPageOfAds(24);
 
-            // Service class should return HttpResponse.NOT_FOUND
-            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
+            // Service class should return HttpResponse.OK
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
     }
 

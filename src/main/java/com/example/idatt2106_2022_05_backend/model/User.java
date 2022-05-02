@@ -76,7 +76,7 @@ public class User {
     // PS: These reviews are those that are WRITTEN by this user (not owned)
     // todo check out this logic --> should the reviews be deleted?
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-    private List<Review> reviews;
+    private Set<Review> reviews = new HashSet<>();
 
     // One to many relationship w/ ad
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")

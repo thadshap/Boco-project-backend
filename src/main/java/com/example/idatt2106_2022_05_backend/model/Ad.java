@@ -90,7 +90,7 @@ public class Ad {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
