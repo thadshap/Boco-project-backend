@@ -177,6 +177,8 @@ public class AdServiceImpl implements AdService {
                             id(category.getId()).
                             name(category.getName()).
                             parentName(parentName).
+                            parent(category.isParent()).
+                            child(category.isParent()).
                             adIds(ids).
                             build();
 
@@ -223,6 +225,8 @@ public class AdServiceImpl implements AdService {
                     id(category.getId()).
                     name(category.getName()).
                     parentName(category.getParentName()).
+                    parent(category.isParent()).
+                    child(category.isChild()).
                     adIds(ids).
                     build();
 

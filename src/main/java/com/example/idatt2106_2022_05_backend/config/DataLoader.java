@@ -98,9 +98,9 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category category1 = Category.builder().name("Food").parent(true).build();
-            Category category2 = Category.builder().name("Clothes").parent(true).build();
-            Category category3 = Category.builder().name("Equipment").parent(true).build();
+            Category category1 = Category.builder().name("Food").parent(true).child(false).build();
+            Category category2 = Category.builder().name("Clothes").parent(true).child(false).build();
+            Category category3 = Category.builder().name("Equipment").parent(true).child(false).build();
 
             // Persist main-categories
             categoryRepository.save(category1);
@@ -111,15 +111,15 @@ public class DataLoader implements ApplicationRunner {
 
             // Create sub-categories
             Category category4 = Category.builder().name("Fruits").
-                    parentName(category1.getName()).build();
+                    parentName(category1.getName()).parent(false).child(true).build();
             Category category5 = Category.builder().name("Pants").
-                    parentName(category2.getName()).build();
+                    parentName(category2.getName()).parent(false).child(true).build();
             Category category6 = Category.builder().name("IT").
-                    parentName(category3.getName()).build();
+                    parentName(category3.getName()).parent(true).child(true).build();
 
             // Add a new category as well for testing!
             Category category7 = Category.builder().name("Shoes").
-                    parentName(category1.getName()).build();
+                    parentName(category1.getName()).child(true).build();
 
             // Persist sub-categories
             categoryRepository.save(category4);
@@ -129,7 +129,7 @@ public class DataLoader implements ApplicationRunner {
 
             // Create sub category of sub-category
             Category category8 = Category.builder().name("Chargers").
-                    parentName(category6.getName()).build();
+                    parentName(category6.getName()).parent(false).child(true).build();
 
             categoryRepository.save(category8);
 

@@ -27,6 +27,9 @@ public class Category {
     @NotNull
     private boolean parent;
 
+    @NotNull
+    private boolean child;
+
     private String parentName;
 
     @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
