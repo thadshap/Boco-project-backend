@@ -10,6 +10,8 @@ import java.io.IOException;
 public interface UserService {
     Response deleteUser(Long userId);
 
+    Response deleteProfilePicture(long userId, byte[] chosenPicture);
+
     Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException;
 
     Response getUser(Long userId);

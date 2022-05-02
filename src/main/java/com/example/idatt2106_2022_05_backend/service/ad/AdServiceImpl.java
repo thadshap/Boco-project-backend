@@ -59,6 +59,9 @@ public class AdServiceImpl implements AdService {
     private PictureRepository pictureRepository;
 
     @Autowired
+    private RentalRepository rentalRepository;
+
+    @Autowired
     private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -453,7 +456,7 @@ public class AdServiceImpl implements AdService {
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
         if(ad.isPresent()) {
-            AdDto adDto = modelMapper.map(adRepository.findById(id), AdDto.class);
+            AdDto adDto = modelMapper.map(adRepository.findById(id).get(), AdDto.class);
             return new Response(adDto, HttpStatus.OK);
         }
         else{
@@ -483,11 +486,18 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public Response getPageOfAds(int sizeOfPage){
-        Pageable pageOf = PageRequest.of(0,sizeOfPage);
-        List<AdDto> ads = adRepository.findAll(pageOf).stream()
-                .map( ad -> modelMapper.map(ad, AdDto.class)).
-                collect(Collectors.toList());
-        return new Response(ads, HttpStatus.OK);
+        // Check if size of page is smaller than all ads
+        List<Ad> ads = adRepository.findAll();
+        if(sizeOfPage <= ads.size()) {
+            Pageable pageOf = PageRequest.of(0,sizeOfPage);
+            List<AdDto> adDto = adRepository.findAll(pageOf).stream()
+                    .map( ad -> modelMapper.map(ad, AdDto.class)).
+                    collect(Collectors.toList());
+            return new Response(adDto, HttpStatus.OK);
+        }
+        else {
+            return new Response("The database does not have as many ads as requested", HttpStatus.NOT_FOUND);
+        }
     }
 
     // Get all available ads
@@ -775,8 +785,9 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getReviewsByUserId(long userId) {
 
+        Set<Review> reviews = adRepository.getReviewsByUserId(userId);
         // If the reviews-list contains anything
-        if(adRepository.getReviewsByUserId(userId) != null) {
+        if(reviews.size() > 0) {
             return new Response(adRepository.getReviewsByUserId(userId).stream().map(review -> modelMapper
                     .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
         }
@@ -851,6 +862,14 @@ public class AdServiceImpl implements AdService {
             // Delete the ad from its user
             ad.get().getUser().getAds().remove(ad.get());
 
+            // Get all the rentals
+            Set<Rental> rentals = ad.get().getRentals();
+            if(rentals != null) {
+                for(Rental rental : rentals) {
+                    rental.setAd(null);
+                    rentalRepository.save(rental);
+                }
+            }
             // Delete its rentals
             ad.get().setRentals(null);
 
