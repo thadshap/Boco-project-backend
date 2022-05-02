@@ -8,6 +8,7 @@ import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
+import com.example.idatt2106_2022_05_backend.repository.OuputMessageRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,9 @@ public class ChatServiceImpl implements ChatService {
     UserRepository userRepository;
 
     @Autowired
+    OuputMessageRepository ouputMessageRepository;
+
+    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -76,12 +80,12 @@ public class ChatServiceImpl implements ChatService {
     public Response getAllMessagesByGroupId(long groupId) {
         Group group = getGroup(groupId);
 
-        Set<Message> messages = messageRepository.findAllByGroup(group);
-        List<Message> msL = new ArrayList<>(messages);
+        Set<com.example.idatt2106_2022_05_backend.model.Message> messages = messageRepository.findAllByGroup(group);
+        List<com.example.idatt2106_2022_05_backend.model.Message> msL = new ArrayList<>(messages);
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (int i = 0; i < msL.size(); i++) {
-            Message ms = msL.get(i);
+            com.example.idatt2106_2022_05_backend.model.Message ms = msL.get(i);
             String ts = ms.getTimestamp().toString().split("\\.")[0];
 
             messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
@@ -101,7 +105,7 @@ public class ChatServiceImpl implements ChatService {
         //outputMessage.setFrom();
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         outputMessage.setTime(time);
-        messageRepository.save(outputMessage);
+        ouputMessageRepository.save(outputMessage);
         //TODO: send to correct recipient
         this.simpMessagingTemplate.convertAndSend("/topic/messages", outputMessage);
 
@@ -110,7 +114,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response getChat(long id) {
         Group group = getGroup(id);
-        List<OutputMessage> messageDtos = messageRepository.findAllByGroup(group).stream().collect(Collectors.toList());
+        List<OutputMessage> messageDtos = ouputMessageRepository.findAllByGroup(group);
         messageDtos.sort(Comparator.comparing(OutputMessage::getTime));
         return new Response(messageDtos.stream()
                 .map(message -> modelMapper.map(message, MessageDto.class))
