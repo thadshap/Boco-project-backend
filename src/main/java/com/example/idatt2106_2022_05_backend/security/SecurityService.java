@@ -30,6 +30,8 @@ public interface SecurityService {
 
     boolean isRentalBorrower(Long rentalId);
 
+    boolean userPicture(long id, long userId);
+
 //    boolean userRentalAccess(Long userId);
 
 }

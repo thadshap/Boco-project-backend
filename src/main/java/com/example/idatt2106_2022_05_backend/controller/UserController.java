@@ -42,6 +42,9 @@ public class UserController {
     @DeleteMapping("/profilePicture")
     @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
     public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
+        if(!securityService.userPicture(updatePictureDto.getId(), updatePictureDto.getUserId())){
+            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+        }
         try {
             return userService.deleteProfilePicture(updatePictureDto.getUserId(),
                     updatePictureDto.getMultipartFile().getBytes());

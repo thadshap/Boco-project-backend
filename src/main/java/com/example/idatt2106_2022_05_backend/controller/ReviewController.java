@@ -25,14 +25,14 @@ public class ReviewController {
         return reviewService.getReviewsByAdId(adId);
     }
 
-    @PostMapping("/new/review")
+    @PostMapping("/auth/new/review")
     @ApiOperation(value = "Endpoint to create a new review", response = Response.class)
     public Response createNewReview(@RequestBody ReviewDto newReview){
         log.debug("[X] Call to create new review for ad with id = {}", newReview.getAdId());
         return reviewService.createNewReview(newReview);
     }
 
-    @DeleteMapping("/delete/review")
+    @DeleteMapping("/auth/delete/review")
     @ApiOperation(value = "Endpoint to delete a review", response = Response.class)
     public Response deleteReview(@RequestBody ReviewDto reviewDto){
         log.debug("[X] Call to delete review of ad with id = {}", reviewDto.getAdId());
