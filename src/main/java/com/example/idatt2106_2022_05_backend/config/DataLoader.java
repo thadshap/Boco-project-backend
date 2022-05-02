@@ -83,6 +83,7 @@ public class DataLoader implements ApplicationRunner {
                     .email("andetel@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .verified(true)
+                    .role("User")
                     .build();
             User user2 = User.builder()
                     .firstName("Brage")
@@ -90,6 +91,7 @@ public class DataLoader implements ApplicationRunner {
                     .email("bragem@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .verified(true)
+                    .role("User")
                     .build();
 
             User user3 = User.builder()
@@ -98,6 +100,7 @@ public class DataLoader implements ApplicationRunner {
                     .email("hasano@stud.ntnu.no")
                     .password(passwordEncoder.encode("passord123"))
                     .verified(true)
+                    .role("User")
                     .build();
 
             User user4 = User.builder()
@@ -106,6 +109,7 @@ public class DataLoader implements ApplicationRunner {
                     .email("daniel@gmail.com")
                     .password(passwordEncoder.encode("passord123"))
                     .verified(true)
+                    .role("User")
                     .build();
 
             // Persist the users
@@ -117,175 +121,210 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category category1 = Category.builder().name("Food").parent(true).build();
-            Category category2 = Category.builder().name("Clothes").parent(true).build();
-            Category category3 = Category.builder().name("Equipment").parent(true).build();
+            Category tur = Category.builder().name("Tur").parent(true).build();
+            Category klor = Category.builder().name("Klær").parent(true).build();
+            Category redskap = Category.builder().name("Redskap").parent(true).build();
+            Category skole = Category.builder().name("Skole").parent(true).build();
 
             // Persist main-categories
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
-            categoryRepository.save(category3);
+            categoryRepository.save(tur);
+            categoryRepository.save(klor);
+            categoryRepository.save(skole);
 
             System.out.println("categories: " + categoryRepository.findAll());
 
             // Create sub-categories
-            Category category4 = Category.builder().name("Fruits").
-                    parentName(category1.getName()).build();
-            Category category5 = Category.builder().name("Pants").
-                    parentName(category2.getName()).build();
-            Category category6 = Category.builder().name("IT").
-                    parentName(category3.getName()).build();
+            Category telt = Category.builder().name("Telt").
+                    parentName(tur.getName()).build();
+            Category build = Category.builder().name("Bårre-maskin").
+                    parentName(redskap.getName()).build();
+            Category datamaskin = Category.builder().name("Datamaskin").
+                    parentName(skole.getName()).build();
 
             // Add a new category as well for testing!
-            Category category7 = Category.builder().name("Shoes").
-                    parentName(category1.getName()).build();
+            Category boker = Category.builder().name("Bøker").
+                    parentName(skole.getName()).build();
+
+            Category hammer = Category.builder().name("Hammer").
+                    parentName(redskap.getName()).build();
 
             // Persist sub-categories
-            categoryRepository.save(category4);
-            categoryRepository.save(category5);
-            categoryRepository.save(category6);
-            categoryRepository.save(category7);
+            categoryRepository.save(telt);
+            categoryRepository.save(build);
+            categoryRepository.save(datamaskin);
+            categoryRepository.save(hammer);
+            categoryRepository.save(boker);
 
             // Create sub category of sub-category
-            Category category8 = Category.builder().name("Chargers").
-                    parentName(category6.getName()).build();
+            Category lader = Category.builder().name("Lader").
+                    parentName(datamaskin.getName()).build();
 
-            categoryRepository.save(category8);
+            categoryRepository.save(lader);
 
 
             // Create ad
             Ad pants = Ad.builder().
-                    title("New pants").
-                    description("Renting out a pair of pants in size 36").
+                    title("Borre-maskin").
+                    description("Leier ut en kraftig borremaskin, kun 50 kr per time eller 300kr pr dag").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(100).
-                    streetAddress("Project Road 4").
-                    postalCode(7200).
+                    price(50).
+                    created(LocalDate.now()).
+                    lat(63.4).
+                    lng(10.4).
+                    streetAddress("Gate 4").
+                    postalCode(7030).
                     city("Trondheim").
                     user(user1).
-                    category(category5).
+                    category(build).
                     build();
 
             Ad fruit = Ad.builder().
-                    title("You may borrow fruit").
-                    description("Renting out 12 grapes").
+                    title("Leier ut tux").
+                    description("1000 kr pr kveld").
                     rental(true).
                     durationType(AdType.WEEK).
                     duration(2).
-                    price(150).
+                    price(1000).
+                    created(LocalDate.now()).
+                    lat(62.4).
+                    lng(10.4).
                     streetAddress("Project Road 5").
                     postalCode(7000).
                     city("Trondheim").
                     user(user2).
-                    category(category4).
+                    category(klor).
                     build();
 
             Ad pc = Ad.builder().
-                    title("Pc rental").
-                    description("Renting out a new lenovo").
+                    title("Leier ut Pc").
+                    description("Renting ut en ny lenovo").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
                     price(800).
+                    created(LocalDate.now()).
+                    lat(64.4).
+                    lng(10.4).
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
                     user(user3).
-                    category(category6).
+                    category(datamaskin).
                     build();
 
             Ad charger = Ad.builder().
-                    title("Pc charger").
-                    description("Renting out a new lenovo charger").
+                    title("Pc lader").
+                    description("Leier ut en ny lenovo lader").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(800).
+                    price(1000).
+                    created(LocalDate.now()).
+                    lat(60.4).
+                    lng(10.4).
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
                     user(user3).
-                    category(category8).
+                    category(lader).
                     build();
             Ad motherBoard = Ad.builder().
                     title("Mother board").
-                    description("Renting out a new lenovo motherboard").
+                    description("Leier ut ut ny lenovo motherboard").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(800).
+                    price(600).
+                    created(LocalDate.now()).
+                    lat(63.4).
+                    lng(10.4).
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
                     user(user3).
-                    category(category3).
+                    category(datamaskin).
                     build();
 
             Ad p = Ad.builder().
-                    title("Pets").
-                    description("Renting out my pet").
+                    title("Sovepose og primus").
+                    description("Leier ut sovepose og primus, leies ut kun sammen").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(100).
-                    streetAddress("Road 4").
+                    price(300).
+                    created(LocalDate.now()).
+                    lat(60.9).
+                    lng(10.4).
+                    streetAddress("gata 4").
                     postalCode(7202).
                     user(user1).
-                    category(category5).
+                    category(tur).
                     build();
 
             Ad pa = Ad.builder().
-                    title("New p").
-                    description("pushing p").
+                    title("Ny Hammer").
+                    description("Leier ut en ny hammer").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(100).
-                    streetAddress("Project P").
+                    price(200).
+                    created(LocalDate.now()).
+                    lat(59.4).
+                    lng(10.4).
+                    streetAddress("Prosjekt P").
                     postalCode(7201).
                     user(user1).
-                    category(category4).
+                    category(hammer).
                     build();
 
             Ad pan = Ad.builder().
-                    title("New news").
-                    description("Renting out news").
+                    title("Skolebøker Matematikk 3").
+                    description("Leier ut matematiske metoder 3 boka").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
                     price(100).
-                    streetAddress("4 fourty four").
+                    created(LocalDate.now()).
+                    lat(63.4).
+                    lng(11.4).
+                    streetAddress("gate 42").
                     postalCode(7200).
                     user(user1).
-                    category(category3).
+                    category(skole).
                     build();
 
             Ad pant = Ad.builder().
-                    title("New new").
-                    description("Renting out new").
+                    title("Klovnekostyme").
+                    description("Leier ut ett klovne-sett").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
-                    price(100).
-                    streetAddress("Project Road").
+                    price(300).
+                    created(LocalDate.now()).
+                    lat(63.4).
+                    lng(10.4).
+                    streetAddress("Klovnegata").
                     postalCode(7200).
-                    user(user1).
-                    category(category2).
+                    user(user3).
+                    category(klor).
                     build();
 
             Ad pantss = Ad.builder().
-                    title("New pantsss").
-                    description("Renting out a pair of pantsss in size 52").
+                    title("Nytt telt").
+                    description("Lavvo med plass til 8").
                     rental(true).
-                    durationType(AdType.MONTH).
+                    durationType(AdType.DAY).
                     duration(2).
-                    price(100).
+                    price(800).
+                    created(LocalDate.now()).
+                    lat(63.4).
+                    lng(12.4).
                     streetAddress("Project 4").
                     postalCode(7200).
-                    user(user1).
-                    category(category1).
+                    user(user4).
+                    category(tur).
                     build();
             /*
             AdDto skaters = AdDto.builder().
@@ -330,7 +369,7 @@ public class DataLoader implements ApplicationRunner {
                     .owner(user1)
                     .borrower(user2)
                     .price(1000)
-                    .active(false)
+                    .active(true)
                     .deadline(LocalDate.now().plusDays(3))
                     .rentTo(LocalDate.now().plusDays(7))
                     .rentFrom(LocalDate.now().plusDays(4))
@@ -343,7 +382,7 @@ public class DataLoader implements ApplicationRunner {
                     .owner(user1)
                     .borrower(user2)
                     .price(100)
-                    .active(false)
+                    .active(true)
                     .deadline(LocalDate.now().plusDays(5))
                     .rentTo(LocalDate.now().plusDays(9))
                     .rentFrom(LocalDate.now().plusDays(6))
@@ -356,7 +395,7 @@ public class DataLoader implements ApplicationRunner {
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
-                    .active(true)
+                    .active(false)
                     .deadline(LocalDate.now().plusDays(7))
                     .rentTo(LocalDate.now().plusDays(12))
                     .rentFrom(LocalDate.now().plusDays(8))
@@ -409,6 +448,54 @@ public class DataLoader implements ApplicationRunner {
                     .build();
             reviewRepository.save(review);
 
+            review = Review.builder()
+                    .ad(pan)
+                    .user(user2)
+                    .description("Elendig produkt")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pant)
+                    .user(user3)
+                    .description("ten out of ten would buy again")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pa)
+                    .user(user4)
+                    .description("two out of ten would never buy again")
+                    .rating(1)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(p)
+                    .user(user2)
+                    .description("Elendig produkt")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(pc)
+                    .user(user2)
+                    .description("ten out of ten would buy again")
+                    .rating(6)
+                    .build();
+            reviewRepository.save(review);
+
+            review = Review.builder()
+                    .ad(charger)
+                    .user(user4)
+                    .description("two out of ten would never buy again")
+                    .rating(1)
+                    .build();
+            reviewRepository.save(review);
+
             // Add dates to the ads // todo might not work due to id
             List<Ad> ads =  adRepository.findAll();
             for(Ad ad : ads) {
@@ -418,19 +505,20 @@ public class DataLoader implements ApplicationRunner {
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();
             ads1.add(fruit);
-            category4.setAds(ads1);
+            telt.setAds(ads1);
 
             Set<Ad> ads2 = new HashSet<>();
             ads2.add(pants);
-            category5.setAds(ads2);
+            build.setAds(ads2);
 
             Set<Ad> ads3 = new HashSet<>();
             ads3.add(pc);
-            category6.setAds(ads3);
+            datamaskin.setAds(ads3);
 
-            categoryRepository.save(category4);
-            categoryRepository.save(category5);
-            categoryRepository.save(category6);
+            categoryRepository.save(telt);
+            categoryRepository.save(build);
+            categoryRepository.save(datamaskin);
+            adRepository.saveAll(ads);
 
 //            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
 //            FileInputStream input = new FileInputStream(file);
