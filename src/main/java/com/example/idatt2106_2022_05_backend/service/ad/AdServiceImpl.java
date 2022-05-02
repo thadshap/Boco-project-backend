@@ -616,7 +616,7 @@ public class AdServiceImpl implements AdService {
      * @return response
      */
     @Override
-    public Response postNewAd(AdDto adDto) {
+    public Response postNewAd(AdDto adDto) throws IOException, InterruptedException {
         Ad newAd = new Ad();
 
         // Required attributes
@@ -629,6 +629,7 @@ public class AdServiceImpl implements AdService {
         newAd.setTitle(adDto.getTitle());
         newAd.setPostalCode(adDto.getPostalCode());
         newAd.setCity(adDto.getCity());
+        setCoordinatesOnAd(newAd);
 
         // If category exists
         Optional<Category> category = categoryRepository.findById(adDto.getCategoryId());
@@ -1088,12 +1089,9 @@ public class AdServiceImpl implements AdService {
         list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
     }
-/*
-    private double getLatFromAd(Ad ad){
 
-    }
-    */
-    private double getLongFromAd(Ad ad)
+
+    private void setCoordinatesOnAd(Ad ad)
             throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
@@ -1111,11 +1109,11 @@ public class AdServiceImpl implements AdService {
             String lat = position.get("lat").asText();
             String lng = position.get("lng").asText();
             System.out.println(label + " is located at " + lat + "," + lng + ".");
-           if(!lng.equals("")) {
-               return Double.parseDouble(lng);
+           if(!lng.equals("") && !lat.equals("")) {
+               ad.setLat(Double.parseDouble(lat));
+               ad.setLng(Double.parseDouble(lng));
            }
         }
-        return 0;
     }
 
 

@@ -51,7 +51,7 @@ public interface AdService {
     //post new add
     Response getAllAdsInCity(String city);
 
-    Response postNewAd(AdDto adDto) throws IOException;
+    Response postNewAd(AdDto adDto) throws IOException, InterruptedException;
 
     // get all reviews for an add with owner = user id
     Response getReviewsByUserId(long userId);
