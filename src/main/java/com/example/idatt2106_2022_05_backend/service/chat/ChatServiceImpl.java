@@ -125,10 +125,10 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
-        //TODO check if users exist
-        if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
-            return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
-        }
+        //TODO check if users exist, are same
+        //if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
+        //    return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
+        //}
 
         Group newGroup = new Group();
         newGroup.setName(privateGroupDto.getGroupName());
@@ -143,7 +143,7 @@ public class ChatServiceImpl implements ChatService {
 
         groupRepository.save(newGroup);
 
-        return new Response("Group object has been created", HttpStatus.OK);
+        return new Response(newGroup.getId(), HttpStatus.OK);
     }
 
     @Override
