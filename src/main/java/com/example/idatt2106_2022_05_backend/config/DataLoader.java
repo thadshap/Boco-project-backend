@@ -113,9 +113,9 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category category1 = Category.builder().name("Food").parent(true).build();
-            Category category2 = Category.builder().name("Clothes").parent(true).build();
-            Category category3 = Category.builder().name("Equipment").parent(true).build();
+            Category category1 = Category.builder().name("Food").parent(true).icon("fa-carrot").build();
+            Category category2 = Category.builder().name("Clothes").parent(true).icon("fa-socks").build();
+            Category category3 = Category.builder().name("Equipment").parent(true).icon("fa-desktop").build();
 
             // Persist main-categories
             categoryRepository.save(category1);
@@ -125,11 +125,11 @@ public class DataLoader implements ApplicationRunner {
             System.out.println("categories: " + categoryRepository.findAll());
 
             // Create sub-categories
-            Category category4 = Category.builder().name("Fruits").
+            Category category4 = Category.builder().name("Fruits").icon("").
                     parentName(category1.getName()).build();
-            Category category5 = Category.builder().name("Pants").
+            Category category5 = Category.builder().name("Pants").icon("").
                     parentName(category2.getName()).build();
-            Category category6 = Category.builder().name("IT").
+            Category category6 = Category.builder().name("IT").icon("").
                     parentName(category3.getName()).build();
 
             // Add a new category as well for testing!
