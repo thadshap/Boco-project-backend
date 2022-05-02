@@ -30,6 +30,8 @@ public interface ChatService {
 
     Response createGroupFromUserIds(ListGroupDto listGroupDto);
 
+    Response changeGroupNameFromGroupId(long groupId, String newName);
+
     //Response getGroupChatsBasedOnUserId(long id);
 
 }

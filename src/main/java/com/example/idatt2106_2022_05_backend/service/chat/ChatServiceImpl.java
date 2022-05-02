@@ -126,6 +126,10 @@ public class ChatServiceImpl implements ChatService {
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
         //TODO check if users exist
+        if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
+            return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
+        }
+
         Group newGroup = new Group();
         newGroup.setName(privateGroupDto.getGroupName());
 
@@ -144,20 +148,32 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
-        Set<Long> userIds = listGroupDto.getUserIds();
+        //TODO check if users exist, multiple of same user given
+        List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
         Set<User> users = new HashSet<>();
 
-        for (int i = 0; i<userIds.size(); i++) {
-            users.add(getUser())
+        for (int i = 0; i < userIds.size(); i++) {
+            users.add(getUser(userIds.get(i)));
         }
 
         Group newGroup = Group.builder()
                 .name(listGroupDto.getGroupName())
-                .users(listGroupDto.getUserIds())
+                .users(users)
                 .build();
+        groupRepository.save(newGroup);
 
+        return new Response("Group object has been created", HttpStatus.OK);
+    }
 
-        return null;
+    @Override
+    public Response changeGroupNameFromGroupId(long groupId, String newName) {
+        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()){
+            return new Response("New name given is empty", HttpStatus.BAD_REQUEST);
+        }
+        Group group = getGroup(groupId);
+        group.setName(newName);
+        groupRepository.save(group);
+        return new Response("Group name changed", HttpStatus.OK);
     }
 
     public Response getGroupChatsBasedOnUserId(long id) {
@@ -187,7 +203,7 @@ public class ChatServiceImpl implements ChatService {
             return new Response("User removed", HttpStatus.OK);
         }
 
-        return new Response("User not found in group", HttpStatus.NOT_FOUND);
+        return new Response("User not found in group", HttpStatus.BAD_REQUEST);
 
     }
 

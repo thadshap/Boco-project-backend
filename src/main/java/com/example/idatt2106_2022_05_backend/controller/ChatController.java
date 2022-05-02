@@ -61,6 +61,11 @@ public class ChatController {
     public Response createGroupFromUserIds(@RequestBody ListGroupDto listGroupDto){
         return chatService.createGroupFromUserIds(listGroupDto);
     }
+    @PutMapping("/group/name/{groupId}/{newName}")
+    @ApiOperation(value = "Endpoint to change group name from groupId", response = Response.class)
+    public Response changeGroupNameFromGroupId(@PathVariable long groupId, @PathVariable String newName) {
+        return chatService.changeGroupNameFromGroupId(groupId, newName);
+    }
 
     @GetMapping("/user/groupchat/{userId}")
     @ApiOperation(value = "Endpoint to get all groups by user id", response = Response.class)
