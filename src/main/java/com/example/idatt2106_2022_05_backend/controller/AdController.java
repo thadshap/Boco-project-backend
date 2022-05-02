@@ -94,7 +94,7 @@ public class AdController {
 
     @PostMapping("/ads/newAd")
     @ApiOperation(value = "Endpoint to create a new ad", response = Response.class)
-    public Response postAd(@RequestBody AdDto adDto) throws IOException {
+    public Response postAd(@RequestBody AdDto adDto) throws IOException, InterruptedException {
         log.debug("[X] Call to create a new ad");
         return adService.postNewAd(adDto);
     }
