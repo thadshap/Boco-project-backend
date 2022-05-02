@@ -5,7 +5,6 @@ import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
-import com.example.idatt2106_2022_05_backend.model.google.GoogleSignin;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
@@ -13,56 +12,32 @@ import com.example.idatt2106_2022_05_backend.security.JWTUtil;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
-import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.*;
-import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.JsonGenerator;
-import com.google.api.client.json.JsonParser;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.testing.http.MockHttpTransport;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.connect.FacebookConnectionFactory;
-import org.springframework.social.google.api.Google;
-import org.springframework.social.google.connect.GoogleConnectionFactory;
-//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-//import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.*;
+
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
 /**
  * Service class to handle authorization of different user requests
@@ -99,97 +74,13 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    private FacebookConnectionFactory facebookFactory = new FacebookConnectionFactory("1181763609285094",
-            "822eef3823b53888eb4dd9f0c1a09463"
-    );
-
-    private GoogleConnectionFactory googleFactory = new GoogleConnectionFactory(
-            "292543393372-pafvrt6kltssgf27g4p6safka8oqmgud.apps.googleusercontent.com",
-            "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"
-    );
-
-    /**
-     * Method to return the url to login with facebook.
-     * @return url to login with facebook.
-     */
-    @Override
-    public String getFacebookUrl() {
-        OAuth2Operations operations = facebookFactory.getOAuthOperations();
-        OAuth2Parameters params = new OAuth2Parameters();
-
-        params.setRedirectUri("http://localhost:8443/auth/forwardLogin/facebook");
-        params.setScope("email,public_profile");
-        //TODO thymeleaf
-
-        return  operations.buildAuthenticateUrl(params);
-    }
-
-    /**
-     * Method to retrieve user information from facebook.
-     * @param authorizationCode authorization code from facebook login.
-     * @return redirection view to frontend.
-     */
-    @Override
-    public RedirectView forwardToFacebook(String authorizationCode) {
-        OAuth2Operations operations = facebookFactory.getOAuthOperations();
-        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/facebook",
-                null);
-
-        Connection<Facebook> connection = facebookFactory.createConnection(accessToken);
-        Facebook facebook = connection.getApi();
-        String[] fields = { "id", "email", "first_name", "last_name" };
-
-        org.springframework.social.facebook.api.User userProfile =
-                facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
-
-        System.out.println(userProfile.getId() + " " + userProfile.getEmail() + ", " + userProfile.getFirstName() + " " + userProfile.getLastName());
-
-        return new RedirectView("http://localhost:8443/auth/login/?email=" + userProfile.getEmail());
-    }
-
-    /**
-     * Method to return the url to login with google.
-     * @return url to login with google.
-     */
-    @Override
-    public String getGoogleUrl() {
-        OAuth2Operations operations = googleFactory.getOAuthOperations();
-        OAuth2Parameters params = new OAuth2Parameters();
-
-        params.setRedirectUri("http://localhost:8443/auth/forwardLogin/google");
-        params.setScope("email");
-        //TODO thymeleaf
-
-        return  operations.buildAuthenticateUrl(params);
-    }
-
-    /**
-     * Method to retrieve user information from google.
-     * @param authorizationCode authorization code from google login.
-     * @return redirection view to frontend.
-     */
-    @Override
-    public RedirectView forwardToGoogle(String authorizationCode) {
-        OAuth2Operations operations = googleFactory.getOAuthOperations();
-        AccessGrant accessToken = operations.exchangeForAccess(authorizationCode, "http://localhost:8443/auth/forwardLogin/google",
-                null);
-
-        Connection<Google> connection = googleFactory.createConnection(accessToken);
-        Google google = connection.getApi();
-        String[] fields = { "id", "email", "first_name", "last_name" };
-
-        org.springframework.social.google.api.plus.Person userProfile =
-                google.plusOperations().getGoogleProfile();
-//                        .fetchObject("me", org.springframework.social.google.api.userinfo.implclass, fields);
-//        ModelAndView model = new ModelAndView("details");
-
-        System.out.println(userProfile.getId() + " " + userProfile.getDisplayName() + ", " + userProfile.getEmailAddresses().iterator().next());
-
-        return new RedirectView("https://localhost:8080/login/google/" + userProfile.getId());
-    }
-
     @Autowired private FacebookClient facebookClient;
 
+    /**
+     * Method to get user from facebook and log them in to.
+     * @param accessToken access code to get user information from facebook.
+     * @return user login dto.
+     */
     @Override
     public Response loginUserFacebook(String accessToken) {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
@@ -226,6 +117,13 @@ public class AuthServiceImpl implements AuthService {
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
+    /**
+     * method to get user information form google and log them in to the application
+     * @param socialLoginRequest id of the google user
+     * @return returns user login dto and jwt token
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     @Override
     public Response loginUserGoogle(SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException {
         URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + socialLoginRequest.getId_token());
@@ -289,33 +187,30 @@ public class AuthServiceImpl implements AuthService {
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
-
+    /**
+     * Helper method to generate password for facebook and google users
+     * @param length length of password
+     * @return returns raw password
+     */
     private String generatePassword(int length) {
-        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String capitalLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-        String specialCharacters = "!@#$";
+        String specialChar = "!@#$";
         String numbers = "1234567890";
-        String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
-        Random random = new Random();
+        String combinedChars = capitalLetters + lowerCaseLetters + specialChar + numbers;
+        Random randome = new Random();
         char[] password = new char[length];
 
-        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
-        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
-        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
-        password[3] = numbers.charAt(random.nextInt(numbers.length()));
+        password[0] = lowerCaseLetters.charAt(randome.nextInt(lowerCaseLetters.length()));
+        password[1] = capitalLetters.charAt(randome.nextInt(capitalLetters.length()));
+        password[2] = specialChar.charAt(randome.nextInt(specialChar.length()));
+        password[3] = numbers.charAt(randome.nextInt(numbers.length()));
 
         for(int i = 4; i< length ; i++) {
-            password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
+            password[i] = combinedChars.charAt(randome.nextInt(combinedChars.length()));
         }
         return new String(password);
     }
-
-
-
-
-
-
-
 
     /**
      * Method to handle user logging in.

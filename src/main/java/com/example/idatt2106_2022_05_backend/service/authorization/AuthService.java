@@ -15,14 +15,6 @@ import java.security.Principal;
 
 public interface AuthService {
 
-    String getFacebookUrl();
-
-    RedirectView forwardToFacebook(String authorizationCode);
-
-    String getGoogleUrl();
-
-    RedirectView forwardToGoogle(String authorizationCode);
-
     Response loginUserFacebook(String accessToken);
 
     Response loginUserGoogle(SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException;
