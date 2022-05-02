@@ -36,6 +36,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] WHITELIST_URLS = {
             "/",
             "/auth/**",
+            "/ws",
+            "/ws/**",
+            "/api/ads/**",
+            "/api/users/**",
+            "/api/search/**",
+            "/api/sort/**",
+            "/api/filterByDistance",
+            "/api/getListWithinPriceRange",
+            "/api/categories/**",
+            "/api/categoriesRecursive/**",
+            "/api/calendar/**",
+            "/api/reviews/**"
     };
 
     private static final String[] WHITELIST_DOCS = {
@@ -45,9 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/swagger-resources/**",
             "/configuration/security",
             "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/ws",
-            "/ws/**",
+            "/swagger-ui/**"
     };
 
     @Override
@@ -74,7 +84,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(WHITELIST_DOCS).permitAll()
                 .antMatchers(WHITELIST_URLS).permitAll()
 //                .antMatchers(HttpMethod.POST, "/user/").permitAll()
-//                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
