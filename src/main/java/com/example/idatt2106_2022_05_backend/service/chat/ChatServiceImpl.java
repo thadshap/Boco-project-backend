@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
+import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
@@ -17,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
@@ -87,10 +87,10 @@ public class ChatServiceImpl implements ChatService {
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (int i = 0; i < msL.size(); i++) {
-            com.example.idatt2106_2022_05_backend.model.Message ms = msL.get(i);
+            Message ms = msL.get(i);
             String ts = ms.getTimestamp().toString().split("\\.")[0];
-
-            //messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
+            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(), ms.getUser().getFirstName(), ms.getUser().getLastName());
+            messageDtoList.add(messageDto);
         }
 
         return new Response(messageDtoList, HttpStatus.OK);
