@@ -4,12 +4,19 @@ import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
+import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +70,7 @@ public class DataLoader implements ApplicationRunner {
             this.pictureRepository = pictureRepository;
         }
 
-        public void run(ApplicationArguments args) {
+        public void run(ApplicationArguments args) throws IOException {
 
             // Create users
             User user1 = User.builder()
@@ -407,5 +414,129 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(category4);
             categoryRepository.save(category5);
             categoryRepository.save(category6);
+
+            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
+            FileInputStream input = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            Set<Picture> set = new HashSet<>();
+            Picture pic = Picture.builder()
+                    .ad(pants)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            pants.setPictures(new HashSet<>());
+            pants.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+
+
+            file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(pants)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            pants.setPictures(new HashSet<>());
+            pants.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+            file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(pants)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            pants.setPictures(new HashSet<>());
+            pants.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(pants)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            pants.setPictures(new HashSet<>());
+            pants.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+
+            file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(fruit)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            fruit.setPictures(new HashSet<>());
+            fruit.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+
+            file = new File("src/main/resources/static/images/random/kristopher-roller-PC_lbSSxCZE-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(fruit)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            fruit.setPictures(new HashSet<>());
+            fruit.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
+
+
+            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
+            input = new FileInputStream(file);
+            multipartFile = new MockMultipartFile("file",
+                    file. getName(), "image/jpg", (input).readAllBytes());
+            set = new HashSet<>();
+            pic = Picture.builder()
+                    .ad(fruit)
+                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
+                    .filename(file.getName())
+                    .type("jpg")
+                    .build();
+            set.add(pic);
+            fruit.setPictures(new HashSet<>());
+            fruit.setPictures(set);
+            pictureRepository.save(pic);
+            adRepository.save(pants);
         }
 }
