@@ -61,44 +61,60 @@ public class RentalServiceImpl implements RentalService {
         if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
             return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
         }
-        Ad ad = adRepository.getById(rentalDto.getAdId());
-        Set<CalendarDate> cld = ad.getDates();
+        Optional<Ad> ad = adRepository.findById(rentalDto.getAdId());
+        if(ad.isPresent()) {
+            Set<CalendarDate> cld = ad.get().getDates();
+
+            if (rentalDto.isActive()){
+                for (CalendarDate calDate: cld) {
+                    if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
+                        calDate.setAvailable(false);
+                        dayDateRepository.save(calDate);
+                    }
+                }
+            }
+            rentalDto.setActive(false);
+            // User owner = userRepository.getById(rentalDto.getOwner());
+            // User borrower = userRepository.getById(rentalDto.getBorrower());
+            Optional<User> owner = userRepository.findById(rentalDto.getOwner());
+            Optional<User> borrower = userRepository.findById(rentalDto.getBorrower());
+            if(owner.isPresent() && borrower.isPresent()) {
+                Rental rental = Rental.builder()
+                        .borrower(borrower.get())
+                        .owner(owner.get())
+                        .ad(ad.get())
+                        .dateOfRental(rentalDto.getDateOfRental())
+                        .rentFrom(rentalDto.getRentFrom())
+                        .rentTo(rentalDto.getRentTo())
+                        .deadline(rentalDto.getDeadline())
+                        .active(rentalDto.isActive())
+                        .price(rentalDto.getPrice())
+                        .build();
+                borrower.get().getRentalsBorrowed().add(rental);
+                owner.get().getRentalsOwned().add(rental);
+                ad.get().getRentals().add(rental);
+                userRepository.save(borrower.get());
+                userRepository.save(owner.get());
+                adRepository.save(ad.get());
+                rentalRepository.save(rental);
+                return new Response("Rental object is now created", HttpStatus.OK);
+            }
+            else {
+                return new Response("Owner and/or borrower not present", HttpStatus.NOT_FOUND);
+            }
+        }
+
+        else {
+            return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
+        }
+        //Ad ad = adRepository.getById(rentalDto.getAdId());
+
 //        for (CalendarDate calDate : cld) {
 //            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
 //                    && calDate.isAvailable())){
 //                return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
 //            }
 //        }
-        if (rentalDto.isActive()){
-            for (CalendarDate calDate: cld) {
-                if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
-                    calDate.setAvailable(false);
-                    dayDateRepository.save(calDate);
-                }
-            }
-        }
-        rentalDto.setActive(false);
-        User owner = userRepository.getById(rentalDto.getOwner());
-        User borrower = userRepository.getById(rentalDto.getBorrower());
-        Rental rental = Rental.builder()
-                .borrower(borrower)
-                .owner(owner)
-                .ad(ad)
-                .dateOfRental(rentalDto.getDateOfRental())
-                .rentFrom(rentalDto.getRentFrom())
-                .rentTo(rentalDto.getRentTo())
-                .deadline(rentalDto.getDeadline())
-                .active(rentalDto.isActive())
-                .price(rentalDto.getPrice())
-                .build();
-        borrower.getRentalsBorrowed().add(rental);
-        owner.getRentalsOwned().add(rental);
-        ad.getRentals().add(rental);
-        userRepository.save(borrower);
-        userRepository.save(owner);
-        adRepository.save(ad);
-        rentalRepository.save(rental);
-        return new Response("Rental object is now created", HttpStatus.OK);
     }
 
     @Override

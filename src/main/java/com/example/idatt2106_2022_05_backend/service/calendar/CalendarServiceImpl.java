@@ -87,14 +87,16 @@ public class CalendarServiceImpl implements CalendarService {
 
             // If isAvailable == true, a cancellation has been made
             if (dto.isAvailable()) {
+
                 // Get the creation timestamp for the rental
                 LocalDateTime created = rental.get().getCreated();
                 LocalDateTime createdPlusOneDay = created.plusHours(24);
 
                 // If 24 hrs hasn't passed yet
                 if (LocalDateTime.now().isBefore(createdPlusOneDay)) {
+
                     return setDates(dto);
-                    }
+                }
 
                 // If 24 hrs has passed, the cancellation cannot be made
                 else {
