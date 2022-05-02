@@ -49,6 +49,8 @@ public class User {
 
     private int numberOfReviews;
 
+    private String pictureUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_type")
     private AuthenticationType authType;

@@ -1,10 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.authorization;
 
 import com.example.idatt2106_2022_05_backend.dto.LoginResponse;
-import com.example.idatt2106_2022_05_backend.dto.user.CreateAccountDto;
-import com.example.idatt2106_2022_05_backend.dto.user.LoginDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserForgotPasswordDto;
-import com.example.idatt2106_2022_05_backend.dto.user.UserRenewPasswordDto;
+import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
@@ -19,6 +16,19 @@ import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.*;
+import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonGenerator;
+import com.google.api.client.json.JsonParser;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.testing.http.MockHttpTransport;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +55,13 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import javax.servlet.http.HttpSession;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.*;
 
 /**
@@ -179,24 +194,30 @@ public class AuthServiceImpl implements AuthService {
     public Response loginUserFacebook(String accessToken) {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
-        System.out.println(facebookUser.getEmail());
+        System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " " + facebookUser.getLastName() + " " +
+                facebookUser.getPicture() + " " + facebookUser.getEmail());
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
         if (userDetails == null){
+            System.out.println("user details is null");
             User user = User.builder()
                     .email(facebookUser.getEmail())
                     .firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName())
+                    .verified(true)
                     .password(passwordEncoder.encode(generatePassword(8)))
                     .build();
             userRepository.save(user);
             userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
+            System.out.println("user is saved");
+            System.out.println(userDetails.getUsername());
         }
         final String token = jwtUtil.generateToken(userDetails);
-
+        System.out.println(userDetails.getUsername());
+        System.out.println(token);
         User user = userRepository.findByEmail(facebookUser.getEmail());
-
+        System.out.println(user.getEmail());
         LoginResponse jwt = LoginResponse.builder()
                 .id(user.getId())
                 .token(token)
@@ -206,69 +227,65 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Response loginUserGoogle(GoogleSignin socialLoginRequest) {
+    public Response loginUserGoogle(SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException {
+        URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + socialLoginRequest.getId_token());
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
 
-//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-//                // Specify the CLIENT_ID of the app that accesses the backend:
-//                .setAudience(Collections.singletonList(CLIENT_ID))
-//                // Or, if multiple clients access the backend:
-//                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
-//                .build();
-//
-//// (Receive idTokenString by HTTPS POST)
-//
-//        GoogleIdToken idToken = verifier.verify(idTokenString);
-//        if (idToken != null) {
-//            Payload payload = idToken.getPayload();
-//
-//            // Print user identifier
-//            String userId = payload.getSubject();
-//            System.out.println("User ID: " + userId);
-//
-//            // Get profile information from payload
-//            String email = payload.getEmail();
-//            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-//            String name = (String) payload.get("name");
-//            String pictureUrl = (String) payload.get("picture");
-//            String locale = (String) payload.get("locale");
-//            String familyName = (String) payload.get("family_name");
-//            String givenName = (String) payload.get("given_name");
-//
-//            // Use or store profile information
-//            // ...
-//
-//        } else {
-//            System.out.println("Invalid ID token.");
-//        }
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
 
+        User user = new User();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+            if (inputLine.contains("\"email\"")){
+                String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
+                user.setEmail(replace.replace(",", ""));
+            }
+            if (inputLine.contains("\"given_name\"")){
+                String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
+                user.setFirstName(replace.replace(",", ""));
+            }
+            if (inputLine.contains("\"family_name\"")){
+                String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
+                user.setLastName(replace.replace(",", ""));
+            }
+            if (inputLine.contains("\"picture\"")){
+                String replace = inputLine.split(":")[1] + inputLine.split(":")[2];
+                System.out.println(replace = replace.replace("\"", ""));
+                user.setPictureUrl(replace.replace(",", ""));
+            }
+        }
+        in.close();
 
+        con.disconnect();
 
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
 
+        if (userDetails == null){
+            user.setPassword(passwordEncoder.encode(generatePassword(8)));
+            user.setVerified(true);
+            userRepository.save(user);
+            userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
+        }
+        final String token = jwtUtil.generateToken(userDetails);
 
-//        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(socialLoginRequest.getEmail());
-
-//        if (userDetails == null){
-//            User user = User.builder()
-////                    .email(socialLoginRequest.getEmail())
-////                    .firstName(socialLoginRequest.getName().split(" ")[0])
-////                    .lastName(socialLoginRequest.getName().split(" ")[1])
-//                    //TODO img url
-//                    .password(passwordEncoder.encode(generatePassword(8)))
-//                    .build();
-//            userRepository.save(user);
-////            userDetails = userDetailsServiceImpl.loadUserByUsername(socialLoginRequest.getEmail());
-//        }
-//        final String token = jwtUtil.generateToken(userDetails);
-//
 //        User user = userRepository.findByEmail(socialLoginRequest.getEmail());
 
-//        LoginResponse jwt = LoginResponse.builder()
-//                .id(user.getId())
-//                .token(token)
-//                .build();
+        System.out.println(user.getFirstName() + " " + user.getLastName() + " " + user.getEmail());
 
-//        return new Response(jwt, HttpStatus.ACCEPTED);
-        return new Response("OK",HttpStatus.OK);
+        LoginResponse jwt = LoginResponse.builder()
+                .id(user.getId())
+                .token(token)
+                .build();
+
+        return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
 

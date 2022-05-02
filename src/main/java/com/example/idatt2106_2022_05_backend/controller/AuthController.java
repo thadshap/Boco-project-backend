@@ -17,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @Slf4j
 @RestController()
@@ -71,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/google/signin")
-    public Response googleAuth(@RequestBody GoogleSignin socialLoginRequest) {
+    public Response googleAuth(@RequestBody SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException {
         log.info("facebook login {}", socialLoginRequest);
         System.out.println(socialLoginRequest.getId_token());
         return authService.loginUserGoogle(socialLoginRequest);
