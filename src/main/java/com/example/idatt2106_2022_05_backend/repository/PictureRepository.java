@@ -24,4 +24,6 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
 
     @Transactional
     void deleteByUser(User user);
+
+    Picture getByAd(Long id);
 }

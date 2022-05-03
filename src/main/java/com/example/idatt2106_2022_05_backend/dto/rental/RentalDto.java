@@ -39,11 +39,13 @@ public class RentalDto {
 
     private int price;
 
-    @ApiModelProperty(notes = "id of owner of item")
-    private Long owner;
+    @ApiModelProperty(notes = "name of owner of item")
+    private String owner;
 
-    @ApiModelProperty(notes = "id of user that rents item")
-    private Long borrower;
+    @ApiModelProperty(notes = "name of user that rents item")
+    private String borrower;
+
+    private String title;
 
     @ApiModelProperty(notes = "id of ad")
     private Long adId;
