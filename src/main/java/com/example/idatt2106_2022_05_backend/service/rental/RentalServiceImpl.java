@@ -146,10 +146,13 @@ public class RentalServiceImpl implements RentalService {
                 .user(user)
                 .description(rating.getReview())
                 .rating((int)rating.getRating())
-//                .
+                .ad(rental.getAd())
                 .build();
-//        user.getReviews().add();
-        //TODO set user rating
+        user.getReviews().add(review);
+        Ad ad = rental.getAd();
+        ad.getReviews().add(review);
+        adRepository.save(ad);
+        userRepository.save(user);
         rentalRepository.save(rental);
         return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
     }

@@ -1,23 +1,17 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
@@ -31,27 +25,34 @@ import java.util.Set;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        private AdRepository adRepository;
+    @Autowired
+    private AdRepository adRepository;
 
-        private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-        private CalendarDateRepository calDateRepository;
+    @Autowired
+    private CalendarDateRepository calDateRepository;
 
-        private RentalRepository rentalRepository;
+    @Autowired
+    private RentalRepository rentalRepository;
 
-        private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
-        private PictureRepository pictureRepository;
+    @Autowired
+    private PictureRepository pictureRepository;
 
-        private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        @Autowired
-        CalendarService calendarService;
+    @Autowired
+    CalendarService calendarService;
 
-        @Autowired
-        AdService adService;
+    @Autowired
+    AdService adService;
 
     /**
      * Constructor of the class.
@@ -550,135 +551,46 @@ public class DataLoader implements ApplicationRunner {
             pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/hammer.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            newHammer.setPictures(new HashSet<>());
-            newHammer.getPictures().add(picture);
-            picture.setAd(newHammer);
-            adRepository.save(newHammer);
-            pictureRepository.save(picture);
+            fileContent(newHammer, file);
 
             file = new File("src/main/resources/static/images/klovn.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            klovn.setPictures(new HashSet<>());
-            klovn.getPictures().add(picture);
-            picture.setAd(klovn);
-            adRepository.save(klovn);
-            pictureRepository.save(picture);
-
-            file = new File("src/main/resources/images/borre.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            borre.setPictures(new HashSet<>());
-            borre.getPictures().add(picture);
-            picture.setAd(borre);
-            adRepository.save(borre);
-            pictureRepository.save(picture);
+            fileContent(klovn, file);
 
             file = new File("src/main/resources/static/images/lader.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            charger.setPictures(new HashSet<>());
-            charger.getPictures().add(picture);
-            picture.setAd(charger);
-            adRepository.save(charger);
-            pictureRepository.save(picture);
+            fileContent(charger, file);
 
             file = new File("src/main/resources/static/images/lavvo.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            tent.setPictures(new HashSet<>());
-            tent.getPictures().add(picture);
-            picture.setAd(tent);
-            adRepository.save(tent);
-            pictureRepository.save(picture);
+            fileContent(tent, file);
 
             file = new File("src/main/resources/static/images/lenovo.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            pc.setPictures(new HashSet<>());
-            pc.getPictures().add(picture);
-            picture.setAd(pc);
-            adRepository.save(pc);
-            pictureRepository.save(picture);
+            fileContent(pc, file);
 
             file = new File("src/main/resources/static/images/matte.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            matte.setPictures(new HashSet<>());
-            matte.getPictures().add(picture);
-            picture.setAd(matte);
-            adRepository.save(matte);
-            pictureRepository.save(picture);
-
+            fileContent(matte, file);
 
             file = new File("src/main/resources/static/images/mboard.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            motherBoard.setPictures(new HashSet<>());
-            motherBoard.getPictures().add(picture);
-            picture.setAd(motherBoard);
-            adRepository.save(motherBoard);
-            pictureRepository.save(picture);
+            fileContent(motherBoard, file);
 
             file = new File("src/main/resources/static/images/sovepose.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            sove.setPictures(new HashSet<>());
-            sove.getPictures().add(picture);
-            picture.setAd(sove);
-            adRepository.save(sove);
-            pictureRepository.save(picture);
+            fileContent(sove, file);
 
             file = new File("src/main/resources/static/images/tux.jpg");
-            fileContent = Files.readAllBytes(file.toPath());
-            picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
-            tux.setPictures(new HashSet<>());
-            tux.getPictures().add(picture);
-            picture.setAd(tux);
-            adRepository.save(tux);
-            pictureRepository.save(picture);
-
+            fileContent(tux, file);
         }
+
+    private void fileContent(Ad newHammer, File file) throws IOException {
+        byte[] fileContent;
+        Picture picture;
+        fileContent = Files.readAllBytes(file.toPath());
+        picture = Picture.builder()
+                .filename(file.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(file.toPath()))
+                .build();
+        newHammer.setPictures(new HashSet<>());
+        newHammer.getPictures().add(picture);
+        picture.setAd(newHammer);
+        adRepository.save(newHammer);
+        pictureRepository.save(picture);
+    }
 }
