@@ -22,6 +22,7 @@ public class Geocoder {
 
     private Logger logger = LoggerFactory.getLogger(Geocoder.class);
 
+    // TODO small letter at start of method
     public String GeocodeSync(String query) throws IOException, InterruptedException {
 
         HttpClient httpClient = HttpClient.newHttpClient();

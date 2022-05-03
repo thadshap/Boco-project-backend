@@ -1057,6 +1057,93 @@ public class AdIntegrationTest {
     }
 
     @Nested
+    class GeoCoderTests {
+
+        public Geocoder geocoder = new Geocoder();
+
+        @SneakyThrows
+        @Test
+        public void coordinatesAreCalculatedForAdWithCoordinates() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Creating ad without coordinates
+            Ad ad = Ad.builder().
+                    title("random title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("fjordvegen 2").
+                    postalCode(9990).
+                    city("båtsfjord").
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist the ad
+            adRepository.save(ad);
+
+            String coordinates = geocoder.GeocodeSync("fjordvegen 2 9990 båtsfjord");
+
+            assertNotNull(coordinates);
+
+            // The latitude of the address is 70.62993 (Google Maps)
+            assertTrue(coordinates.contains("70.62"));
+        }
+
+        @SneakyThrows
+        @Test
+        public void postingAdAlsoGeneratesCoordinates() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Creating ad without coordinates
+            AdDto ad = AdDto.builder().
+                    title("random title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("fjordvegen 2").
+                    postalCode(9990).
+                    city("båtsfjord").
+                    userId(user.getId()).
+                    categoryId(category.getId()).
+                    build();
+
+            // Persist the ad
+            ResponseEntity<Object> response = adService.postNewAd(ad);
+
+            // Get the id
+            long id = (long) response.getBody();
+
+            // Retrieve the new ad
+            Optional<Ad> adFound = adRepository.findById(id);
+
+            assertNotNull(adFound);
+            if(adFound.isPresent()) {
+                // See if the new ad has the correct coordinates
+                double latitude = adFound.get().getLat();
+                assertTrue(Double.toString(latitude).contains("70.62"));
+            }
+            else {
+                fail();
+            }
+        }
+    }
+
+    @Nested
     class SortingTests {
 
         @SneakyThrows
