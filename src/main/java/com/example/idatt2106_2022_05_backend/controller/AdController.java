@@ -139,7 +139,6 @@ public class AdController {
     }
      */
 
-
     @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
     public Response adPicture(@PathVariable Long userId,@PathVariable Long adId, @RequestPart List<MultipartFile> files) throws IOException {
         //TODO
@@ -148,6 +147,7 @@ public class AdController {
 
     @GetMapping("/ads/pictures/{adId}")
     public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
+        //TODO
         return adService.getAllPicturesForAd(adId);
     }
 
