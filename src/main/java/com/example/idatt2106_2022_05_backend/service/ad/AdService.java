@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -108,7 +109,7 @@ public interface AdService {
 
     // Response uploadPictureToAd(long adId, MultipartFile file);
 
-    Response getAllPicturesForAd(long adId);
+    List<PictureReturnDto> getAllPicturesForAd(long adId);
 
     Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 

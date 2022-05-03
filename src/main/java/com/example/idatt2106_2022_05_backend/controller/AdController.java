@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.List;
 
@@ -138,34 +140,14 @@ public class AdController {
      */
 
 
-    @PostMapping("/auth/ads/newPicture")
-    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto, @RequestPart List<MultipartFile> files) {
-        try {
-            return adService.storeImageForAd(dto.getId(), files);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // Post multiple images --> dto contains adId and file array
-    @PostMapping(value = "/auth/ads/newPictures",
-                 consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-                 produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Response uploadPictures(AdDto dto) {
-        Set<MultipartFile> files = dto.getPictures();
-        for(MultipartFile file : files) {
-//            try {
-////                adService.storeImageForAd(dto.getAdId(), file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-        }
-        return new Response("Pictures are saved", HttpStatus.OK);
+    @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
+    public Response adPicture(@PathVariable Long userId,@PathVariable Long adId, @RequestPart List<MultipartFile> files) throws IOException {
+        //TODO
+        return adService.storeImageForAd(adId, files);
     }
 
     @GetMapping("/ads/pictures/{adId}")
-    public Response getPicturesForAd(@PathVariable long adId) {
+    public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
         return adService.getAllPicturesForAd(adId);
     }
 

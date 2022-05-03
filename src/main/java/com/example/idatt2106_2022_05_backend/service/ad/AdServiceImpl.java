@@ -1,8 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
-import com.example.idatt2106_2022_05_backend.dto.PictureDto;
-import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.*;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -1075,44 +1073,19 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Response getAllPicturesForAd(long adId) {
-        Optional<Ad> adFound = adRepository.findById(adId);
-
-        if(adFound.isPresent()) {
-
-            // Retrieve the pictures this ad has
-            Set<Picture> pictures = adFound.get().getPictures();
-
-            // Create a list to hold the DTOs
-            Set<PictureDto> picturesToReturn = new HashSet<>();
-
-            // If the ad has any pictures
-            if(pictures != null) {
-
-                // Iterate over the pictures
-                for(Picture picture : pictures) {
-                    // Create a picture dto
-                    PictureDto dto = PictureDto.builder().
-                            adId(picture.getId()).
-                            data(picture.getData()).
-                            type(picture.getType()).build();
-
-                    // Add to DTO-list
-                    picturesToReturn.add(dto);
-                }
-            }
-            return new Response(picturesToReturn, HttpStatus.OK);
+    public List<PictureReturnDto> getAllPicturesForAd(long adId) {
+        Ad ad = adRepository.getById(adId);
+        List<Picture> pictures = pictureRepository.findByAd(ad);
+        List<PictureReturnDto> returnDto = new ArrayList<>();
+        for (int i = 0; i < pictures.size(); i++) {
+            returnDto.add(PictureReturnDto.builder()
+                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .type(pictures.get(i).getType())
+                    .build());
         }
-        // If the ad was not found
-        else {
-            return new Response("There was no ad with specified id in db.", HttpStatus.NOT_FOUND);
-        }
+        return returnDto;
     }
 
-    @Override
-    public Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException {
-        return null;
-    }
 
     @Override
     public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
@@ -1126,21 +1099,36 @@ public class AdServiceImpl implements AdService {
         return new Response(list, HttpStatus.OK);
     }
 
-//    @Override
-    public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
-
-        return pictureService.savePicture(file, adId, 0);
+    @Override
+    public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isEmpty()){
+            return null;
+        }
+        System.out.println("here");
+        Ad ad = adOptional.get();
+//        String filename = file.getName().split("\\.")[1];
+//        if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") || !filename.equalsIgnoreCase("jpeg") ){
+//            return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
+//        }
+        ad.setPictures(new HashSet<>());
+        for (int i = 0; i < files.size(); i++) {
+            Picture picture = Picture.builder()
+                    .filename(files.get(i).getName())
+                    .type(files.get(i).getContentType())
+                    .data(files.get(i).getBytes())
+                    .build();
+            ad.getPictures().add(picture);
+            picture.setAd(ad);
+            System.out.println("here " + i);
+            pictureRepository.save(picture);
+        }
+        adRepository.save(ad);
+        return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
     //TODO: do we use this?
-    public Response getPicture(long pictureId) {
-        Optional<Picture> picture = pictureRepository.findById(pictureId);
-
-        if(picture.isPresent()) {
-            return new Response(picture.get(), HttpStatus.OK);
-        }
-        else {
-            return new Response("Could not find picture with specified id", HttpStatus.NOT_FOUND);
-        }
-    }
+//    public List<PictureReturnDto> getPicture(long pictureId) {
+//
+//    }
 }
