@@ -34,6 +34,8 @@ public interface ChatService {
 
     MessageDto sendMessage(Long groupId, MessageDto content);
 
+    Response addUserToGroupByEmail(long groupId, String email);
+
     //Response getGroupChatsBasedOnUserId(long id);
 
 }

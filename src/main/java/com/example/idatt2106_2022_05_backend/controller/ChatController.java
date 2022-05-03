@@ -44,8 +44,8 @@ public class ChatController {
 
     @MessageMapping("/chat/{groupId}")
     @SendTo("/topic/messages/{groupId}")
-    public MessageDto sendMessage( @DestinationVariable Long groupId, MessageDto messageDto) {
-        logger.info("GROUP ID: " + groupId);
+    public MessageDto sendMessage(@DestinationVariable Long groupId, MessageDto messageDto) {
+        logger.info("Message sent to groupId: " + groupId);
         MessageDto msgDto = chatService.sendMessage(groupId, messageDto);
 
         return msgDto;
@@ -94,9 +94,15 @@ public class ChatController {
     }
 
     @PutMapping("/group/add/user/{groupId}/{userId}")
-    @ApiOperation(value = "Endpoint to add user to existing group", response = Response.class)
+    @ApiOperation(value = "Endpoint to add user to existing group with userId", response = Response.class)
     public Response addUserToGroupById(@PathVariable long groupId, @PathVariable long userId) {
         return chatService.addUserToGroupById(groupId, userId);
+    }
+
+    @PutMapping("/group/add/user/email/{groupId}/{email}")
+    @ApiOperation(value = "Endpoint to add user to existing group with email", response = Response.class)
+    public Response addUserToGroupByEmail(@PathVariable long groupId, @PathVariable String email) {
+        return chatService.addUserToGroupByEmail(groupId, email);
     }
 
 }

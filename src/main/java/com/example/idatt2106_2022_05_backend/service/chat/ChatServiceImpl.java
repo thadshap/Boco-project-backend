@@ -97,7 +97,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void broadcast(MessageDto message){
+    public void broadcast(MessageDto message) {
         logger.info("Go to service");
         OutputMessage outputMessage = new OutputMessage();
 
@@ -182,7 +182,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response changeGroupNameFromGroupId(long groupId, String newName) {
-        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()){
+        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()) {
             return new Response("New name given is empty", HttpStatus.BAD_REQUEST);
         }
         Group group = getGroup(groupId);
@@ -247,6 +247,28 @@ public class ChatServiceImpl implements ChatService {
     public Response addUserToGroupById(long groupId, long userId) {
         Group group = getGroup(groupId);
         User user = getUser(userId);
+        Set<User> users = group.getUsers();
+
+        if (group.getUsers().contains(user)) {
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+        }
+
+        users.add(user);
+        group.setUsers(users);
+        groupRepository.save(group);
+
+        return new Response("User added to group", HttpStatus.OK);
+    }
+
+    @Override
+    public Response addUserToGroupByEmail(long groupId, String email) {
+        Group group = getGroup(groupId);
+        User user = userRepository.findByEmail(email);
+
+        if(user == null) {
+            return new Response("Could not find user with email: " + email, HttpStatus.NOT_FOUND);
+        }
+
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
