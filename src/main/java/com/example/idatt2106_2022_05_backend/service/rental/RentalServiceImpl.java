@@ -116,7 +116,6 @@ public class RentalServiceImpl implements RentalService {
         rentalRepository.save(rental);
         //TODO check if right user gets confirm email
 
-
 //        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
 //                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
         return new Response("Rental has been activated", HttpStatus.ACCEPTED);

@@ -86,4 +86,14 @@ public class RentalController {
         }
         return rentalService.getRentalsByUserId(userId);
     }
+
+//    @GetMapping("/s/pictures/{userId}")
+//    @ApiOperation(value = "Endpoint to get list of rentals by user id", response = Response.class)
+//    public Response getRentalsByUserId(@PathVariable Long userId) {
+//        log.debug("[X] Call to get all rentals of user with id = {}", userId);
+//        if(!securityService.isUser(userId)){
+//            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
+//        }
+//        return rentalService.getRentalsByUserId(userId);
+//    }
 }
