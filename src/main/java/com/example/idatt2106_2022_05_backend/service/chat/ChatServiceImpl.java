@@ -66,6 +66,26 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
     }
 
+    private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
+        List<User> users = new ArrayList<>(usr);
+        User userOne = users.get(0);
+        User userTwo = users.get(1);
+
+        Set<Group> grps = userOne.getGroupChats();
+        List<Group> groups = new ArrayList<>(grps);
+
+        for (int i = 0; i < groups.size(); i++) {
+            Group group = groups.get(i);
+            if (group.getUsers().size() == 2) {
+                if (group.getUsers().contains(userTwo)) {
+                    return group;
+                }
+            }
+        }
+
+        return null;
+    };
+
     /*
         @Override
         public Response getAllMessagesByGroupId(long groupId){
@@ -132,7 +152,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
-        //TODO check if users exist, are same
         if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
             return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
         }
@@ -159,12 +178,19 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
-        //TODO check if users exist, multiple of same user given
+        //TODO multiple of same user given?
         List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
         Set<User> users = new HashSet<>();
 
         for (int i = 0; i < userIds.size(); i++) {
             users.add(getUser(userIds.get(i)));
+        }
+
+        if (users.size() == 2) {
+            Group group = checkIfUsersHavePrivateGroup(users);
+            if (group != null) {
+                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
+            }
         }
 
         Group newGroup = Group.builder()
