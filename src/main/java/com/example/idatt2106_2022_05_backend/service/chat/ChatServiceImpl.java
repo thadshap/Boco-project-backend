@@ -191,6 +191,27 @@ public class ChatServiceImpl implements ChatService {
         return new Response("Group name changed", HttpStatus.OK);
     }
 
+    @Override
+    public MessageDto sendMessage(Long groupId, MessageDto messageDto) {
+        User user = getUser(messageDto.getUserId());
+        Group group = getGroup(groupId);
+        Timestamp ts = Timestamp.from(Instant.now());
+        Message message = Message.builder()
+                .timestamp(ts)
+                .content(messageDto.getContent())
+                .group(group)
+                .user(user)
+                .build();
+
+        messageRepository.save(message);
+
+        messageDto.setFirstName(user.getFirstName());
+        messageDto.setLastName(user.getLastName());
+        messageDto.setTimeStamp(ts.toString().split("\\.")[0]);
+
+        return messageDto;
+    }
+
     public Response getGroupChatsBasedOnUserId(long id) {
         User user = getUser(id);
 
