@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Objects;
 
 @Getter
@@ -32,7 +33,7 @@ public class Review {
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "ad_id")
     private Ad ad;
 
     @Override

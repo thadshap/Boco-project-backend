@@ -1,9 +1,9 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
+//import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
-import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
+//import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
+//import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(false);
-            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedOrigins(List.of("https://localhost:8080/"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
@@ -83,7 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
     }
-
+/*
     @Autowired
     private OAuth2UserServiceImpl oauth2UserService;
 
@@ -92,4 +92,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private DatabaseLoginHandler databaseLoginHandler;
+
+ */
 }

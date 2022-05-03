@@ -50,10 +50,10 @@ public class RentalServiceImpl implements RentalService {
 
     /**
      * Method to create Rental object
-     * 
+     *
      * @param rentalDto
      *            {@link RentalDto} object with information to create a rental
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -125,10 +125,10 @@ public class RentalServiceImpl implements RentalService {
 
     /**
      * Method to delete a rental object from the repository.
-     * 
+     *
      * @param rentalId
      *            Id of the rental to delete.
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
@@ -146,7 +146,7 @@ public class RentalServiceImpl implements RentalService {
 
     /**
      * Method to update Rental object
-     * 
+     *
      * @param rentalDto
      *            {@link RentalDto} object with information to update a rental
      *
@@ -210,10 +210,10 @@ public class RentalServiceImpl implements RentalService {
 
     /**
      * Method to retrieve Rental objects by User id
-     * 
+     *
      * @param userId
      *            user id to retrieve the rental object for
-     * 
+     *
      * @return returns HttpStatus and a response object with.
      */
     @Override
