@@ -121,14 +121,15 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category tur = Category.builder().name("Tur").parent(true).build();
-            Category klor = Category.builder().name("Klær").parent(true).build();
-            Category redskap = Category.builder().name("Redskap").parent(true).build();
-            Category skole = Category.builder().name("Skole").parent(true).build();
+            Category tur = Category.builder().name("Tur").parent(true).icon("fa-suitcase").build();
+            Category klor = Category.builder().name("Klær").parent(true).icon("fa-socks").build();
+            Category redskap = Category.builder().name("Redskap").parent(true).icon("fa-wrench").build();
+            Category skole = Category.builder().name("Skole").parent(true).icon("fa-graduation-cap").build();
 
             // Persist main-categories
             categoryRepository.save(tur);
             categoryRepository.save(klor);
+            categoryRepository.save(redskap);
             categoryRepository.save(skole);
 
             System.out.println("categories: " + categoryRepository.findAll());
