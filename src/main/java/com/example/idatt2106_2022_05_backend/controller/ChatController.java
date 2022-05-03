@@ -22,7 +22,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin("http://localhost:8081")
+@CrossOrigin("http://localhost:8080")
 public class ChatController {
 
     @Autowired
