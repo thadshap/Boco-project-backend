@@ -26,4 +26,6 @@ public class UserReturnDto {
     private double rating;
 
     private String pictureUrl;
+
+    private long nrOfReviews;
 }

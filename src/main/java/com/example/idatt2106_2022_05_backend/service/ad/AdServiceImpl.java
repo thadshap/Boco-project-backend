@@ -193,7 +193,7 @@ public class AdServiceImpl implements AdService {
         // Return NOT_FOUND if there
         else {
             return new Response("No sub categories found with the specified parent-name",
-                    HttpStatus.NOT_FOUND);
+                    HttpStatus.NO_CONTENT);
         }
     }
 
@@ -443,6 +443,7 @@ public class AdServiceImpl implements AdService {
                 CategoryDto dto = CategoryDto.builder().
                         id(category.getId()).
                         name(category.getName()).
+                        icon(category.getIcon()).
                         build();
                 categoriesToReturn.add(dto);
             }
