@@ -293,5 +293,9 @@ public class AdController {
         return adService.sortArrayOfAdsByDateOldestFirst(list);
     }
 
-
+    @PostMapping("/ads/filter")
+    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("in controller");
+        return adService.getAllAdsWithFilter(filterListOfAds);
+    }
 }

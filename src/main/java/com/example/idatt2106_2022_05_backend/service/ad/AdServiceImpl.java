@@ -1150,27 +1150,37 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds){
-        if(filterListOfAds.getFilterType().toLowerCase().equals("price")){
+    public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
+        List<Ad> ads = adRepository.findAll();
+        List<AdDto> list = new ArrayList<>();
+        if (filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+            list = ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+        }
+
+        if (filterListOfAds.getFilterType().toLowerCase().equals("price")) {
             logger.debug("Got to service with limits: " + String.valueOf(filterListOfAds.getUpperLimit()) + String.valueOf(filterListOfAds.getLowerLimit()));
-            List<Ad> ads = adRepository.findAll();
 
-            for(Ad a: ads){
-                if(a.getPrice()<filterListOfAds.getUpperLimit() && a.getPrice()> filterListOfAds.getLowerLimit()){
+            for (Ad a : ads) {
+                if (a.getPrice() < filterListOfAds.getUpperLimit() && a.getPrice() > filterListOfAds.getLowerLimit()) {
 
-                    logger.info("adding ad with price: "+ a.getPrice());
-                    ads.add(a);
+                    logger.info("adding ad with price: " + a.getPrice());
+                    list.add(modelMapper.map(a, AdDto.class));
                 }
             }
-            List<AdDto> list = ads.stream().map(a -> modelMapper.map(a, AdDto.class)).collect(Collectors.toList());
-            for(AdDto a: list){
-                a.setDistance(calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(),a.getLng()));
+        }
+        //Returning array with nearest location
+        if (filterListOfAds.getLat()!=0 && filterListOfAds.getLng() != 0) {
+            for (AdDto a : list) {
+                a.setDistance(calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(), a.getLng()));
             }
-            list.sort(Comparator.comparing(AdDto::getDistance));
+            if (filterListOfAds.isLowestValueFirst()) {
+                list.sort(Comparator.comparing(AdDto::getDistance));
+            } else {
+                list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+            }
             return new Response(list, HttpStatus.OK);
         }
-        if(filterListOfAds.getFilterType().toLowerCase().equals("distance")){
 
-        }
+        return new Response("Noe gikk galt i filtreringen.", HttpStatus.NO_CONTENT);
     }
 }
