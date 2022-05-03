@@ -1148,6 +1148,7 @@ public class AdServiceImpl implements AdService {
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds){
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
         List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
+        logger.info("finished getting ads");
         filterListOfAds.setList(list);
         return new Response(getAllAdsWithFilter(filterListOfAds),HttpStatus.OK);
     }
@@ -1157,6 +1158,7 @@ public class AdServiceImpl implements AdService {
         List<Ad> ads = new ArrayList<>();
         if(filterListOfAds.getList()!=null) {
             for(AdDto a: filterListOfAds.getList()){
+                logger.info("got ad: "+ a.getTitle());
                 ads.add(adRepository.getById(a.getAdId()));
             }
         }else{
@@ -1192,6 +1194,9 @@ public class AdServiceImpl implements AdService {
             //excluding those that are outside the limit of distance
             if(filterListOfAds.getUpperLimit()!=0 && filterListOfAds.getFilterType().toLowerCase().equals("distance")){
                 list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
+            }
+            for(AdDto a: list){
+                logger.info("Ads to be returned: "+ a.getTitle());
             }
             return new Response(list, HttpStatus.OK);
         }
