@@ -28,7 +28,7 @@ public class CategoryDto {
     @ApiModelProperty(notes = "name of the parent-category if this category has one")
     private String parentName;
 
-    @ApiModelProperty(notes = "icon of the category")
+    @ApiModelProperty(notes = "icon name of the category")
     private String icon;
 
     @ApiModelProperty(notes = "list containing the ids of the ads that the original Category entity contains")

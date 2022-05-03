@@ -31,9 +31,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response createRental(@RequestBody RentalDto rentalDto) {
         log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
-        if(!securityService.isAdOwner(rentalDto.getAdId())){
-            return new Response("Som eier kan du ikke leie din egen gjenstand.", HttpStatus.BAD_REQUEST);
-        } else if(!securityService.isUser(rentalDto.getBorrower()) && !securityService.isVerifiedUser(rentalDto.getBorrower())){
+        if(!securityService.isUser(rentalDto.getBorrower()) && !securityService.isVerifiedUser(rentalDto.getBorrower())){
             return new Response("Du kan ikke leie dette produktet.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.createRental(rentalDto);
