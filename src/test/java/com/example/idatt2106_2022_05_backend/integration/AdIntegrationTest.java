@@ -1,26 +1,37 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
+import com.example.idatt2106_2022_05_backend.util.Geocoder;
+import com.example.idatt2106_2022_05_backend.util.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +63,10 @@ public class AdIntegrationTest {
 
     @Autowired
     ReviewRepository reviewRepository;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+
     @BeforeEach
     public void setUp() {
         // Building a user
@@ -775,6 +790,72 @@ public class AdIntegrationTest {
         public void allNearbyAdsAreReturned_WhenAdsExistNearby() {
 
         }
+
+        @Test
+        public void getAllAdsByCity() {
+            // Fetch the user
+            User user = userRepository.findAll().get(0);
+
+            // Fetch the category
+            Category category = categoryRepository.findAll().get(0);
+
+            // Create ad
+            Ad ad1 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(8000).
+                    city("Bodø").
+                    user(user).
+                    category(category).
+                    build();
+
+            // Create ad
+            Ad ad2 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    postalCode(8001).
+                    city("Bodø").
+                    user(user).
+                    category(category).
+                    build();
+
+            // Create ad
+            Ad ad3 = Ad.builder().
+                    title("title").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("address").
+                    city("Bodø").
+                    postalCode(8002).
+                    user(user).
+                    category(category).
+                    build();
+
+            // Persist ads
+            adRepository.save(ad1);
+            adRepository.save(ad2);
+            adRepository.save(ad3);
+
+            ResponseEntity<Object> res = adService.getAllAdsInCity("Bodø");
+            assertTrue(res.getBody().toString().contains("Bodø"));
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
+        }
         // get reviews by user id
         @Test
         public void allReviewsAreReturned_WhenUserIdCorrect() {
@@ -969,5 +1050,247 @@ public class AdIntegrationTest {
                 fail();
             }
         }
+    }
+
+    @Nested
+    class SortingTests {
+
+        @Test
+        public void getAllAdsWithDistance() {
+
+        }
+
+        // Should return ads
+        @Test
+        public void searchByDistance_WhenAdsExistWithinDistance() {
+
+        }
+
+        // Should return no ads
+        @Test
+        public void searchByDistance_WhenNoAdsExistWithinDistance() {
+
+        }
+
+        @Test
+        public void sortByDescendingTitle() {
+
+        }
+
+        @Test
+        public void sortByAscendingTitle() {
+
+        }
+
+        @Test
+        public void sortByCreatedDateAscending() {
+
+        }
+
+        @Test
+        public void sortByCreatedDateDescending() {
+
+        }
+
+        @Test
+        public void adReturned_WhenSearchingForPartsOfExistingTitle() {
+
+        }
+
+        @Test
+        public void nothingReturned_WhenSearchingForPartsOfNonExistingTitle() {
+
+        }
+
+        @Test
+        public void adsAreSortedByPriceAscending() {
+
+        }
+
+        @Test
+        public void adsAreSortedByPriceDescending() {
+
+        }
+
+        @Test
+        public void adsAreSortedByDistanceAscending() {
+
+        }
+
+        @Test
+        public void adsAreSortedByDistanceDescending() {
+
+        }
+
+        @Test
+        public void adsWithinDistanceAreReturned() {
+
+        }
+
+        @Test
+        public void adsWithingPriceRanceAreReturned() {
+
+        }
+
+        @Test
+        public void adsAreGivenCoordinates_WhenAdExists() {
+
+        }
+
+        /*** BELOW CODE CONTAINS ONLY COPIED METHODS FROM "AdServiceImpl.java" (FOR TESTING PURPOSES) ***/
+
+        public List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
+            ArrayList<AdDto> ads = new ArrayList<>();
+
+            for(Ad ad : adRepository.findAll()){
+                //Setting all attributes and decompressing pictures in help method
+                AdDto adDto = castObject(ad);
+                //Calculate and set distance
+                adDto.setDistance(calculateDistance(userGeoLocation.getLat(),
+                        userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
+                //Adding all ads to list and then response
+                ads.add(adDto);
+            }
+            return ads.stream().sorted(Comparator.comparing(AdDto::getDistance))
+                    .collect(Collectors.toList());
+        }
+
+        private AdDto castObject(Ad ad) {
+            AdDto adDto = modelMapper.map(ad, AdDto.class);
+            ;
+
+            // decompressing and converting images in support method
+            // convertPictures(ad, adDto);
+            return adDto;
+        }
+
+        public double calculateDistance(double lat1, double long1, double lat2,
+                                        double long2) {
+            double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
+            return dist/1000;
+        }
+
+        public List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
+            List<AdDto> ads = getAllAdsWithDistance(userGeoLocation);
+            return ads.stream().limit(userGeoLocation.getAmount())
+                    .collect(Collectors.toList());
+        }
+
+
+        public List<AdDto> sortByDescending(int pageSize, String sortBy){
+            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
+            List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
+            return list.stream()
+                    .map(ad -> modelMapper.map(ad, AdDto.class))
+                    .collect(Collectors.toList());
+
+        }
+
+
+        public List<AdDto> sortByAscending(int pageSize, String sortBy){
+            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
+            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
+            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).
+                    collect(Collectors.toList());
+        }
+
+
+        public Stream<AdDto> sortByCreatedDateAscending(int pageSize){
+            List<Ad> ads = adRepository.findAll();
+            ads.sort(Comparator.comparing(Ad::getCreated));
+            return ads.stream()
+                    .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+                    .limit(pageSize);
+        }
+
+
+        public Stream<AdDto> sortByCreatedDateDescending(int pageSize){
+            List<Ad> ads = adRepository.findAll();
+            ads.sort(Comparator.comparing(Ad::getCreated).reversed());
+            return ads.stream()
+                    .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+                    .limit(pageSize);
+        }
+
+        public List<AdDto> searchThroughAds(String searchWord){
+            //List to be filled with corresponding ads
+            List<Ad> adsContainingSearchWord = new ArrayList<>();
+
+            List<Ad> ads = adRepository.findAll();
+
+            //Checking all titles for searchWord
+            for(Ad a: ads){
+                if(a.getTitle().toLowerCase().contains(searchWord.toLowerCase())){
+                    adsContainingSearchWord.add(a);
+                }
+            }
+            List<Category> categories = categoryRepository.findAll();
+
+            //Adding all ads with the category
+            for(Category c: categories){
+                if(c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
+                    for (Ad a : c.getAds()) {
+                        if(!adsContainingSearchWord.contains(a)) {
+                            adsContainingSearchWord.add(a);
+                        }
+                    }
+                }
+            }
+
+            //Casting objects to Dto and returning
+            return adsContainingSearchWord.stream()
+                    .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList());
+        }
+
+        public List<AdDto> sortArrayByPriceAscending(List<AdDto> list){
+            list.sort(Comparator.comparing(AdDto::getPrice));
+            return list;        }
+
+        public List<AdDto> sortArrayByPriceDescending(List<AdDto> list){
+            list.sort(Comparator.comparing(AdDto::getPrice).reversed());
+            return list;        }
+
+        public List<AdDto> sortArrayByDistanceAscending(List<AdDto> list){
+            list.sort(Comparator.comparing(AdDto::getDistance));
+            return list;        }
+
+        public List<AdDto> sortArrayByDistanceDescending(List<AdDto> list){
+            list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+            return list;        }
+
+        public List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit){
+            list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
+            return list;
+        }
+
+        public List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
+            list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
+            return list;
+        }
+
+        private void setCoordinatesOnAd(Ad ad)
+                throws IOException, InterruptedException {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Geocoder geocoder = new Geocoder();
+
+            String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
+            JsonNode responseJSONNode = objectMapper.readTree(response);
+            JsonNode items = responseJSONNode.get("items");
+
+            for(JsonNode item : items){
+                JsonNode address = item.get("address");
+                String label = address.get("label").asText();
+                JsonNode position = item.get("position");
+
+                String lat = position.get("lat").asText();
+                String lng = position.get("lng").asText();
+                System.out.println(label + " is located at " + lat + "," + lng + ".");
+                if(!lng.equals("") && !lat.equals("")) {
+                    ad.setLat(Double.parseDouble(lat));
+                    ad.setLng(Double.parseDouble(lng));
+                }
+            }
+        }
+
     }
 }
