@@ -32,6 +32,8 @@ public interface SecurityService {
 
     boolean userPicture(long id, long userId);
 
+    boolean isUserByEmail(String borrower);
+
 //    boolean userRentalAccess(Long userId);
 
 }

@@ -110,6 +110,12 @@ public class SecurityServiceimpl implements SecurityService {
         return false;
     }
 
+    /**
+     * Method to see if the picture belongs to the user.
+     * @param id id of the picture.
+     * @param userId id of the user.
+     * @return true if picture belongs to the user.
+     */
     @Override
     public boolean userPicture(long id, long userId) {
         Picture picture = pictureRepository.findById(id).orElse(null);
@@ -118,6 +124,17 @@ public class SecurityServiceimpl implements SecurityService {
             return picture.getUser().equals(user);
         }
         return false;
+    }
+
+    /**
+     * Method to see if userId is the same as user making requests.
+     * @param borrower email of the borrower.
+     * @return true if user id is the same as requester.
+     */
+    @Override
+    public boolean isUserByEmail(String borrower) {
+        User user = getUser();
+        return user != null && user.getEmail().equals(borrower);
     }
 
 //    /**

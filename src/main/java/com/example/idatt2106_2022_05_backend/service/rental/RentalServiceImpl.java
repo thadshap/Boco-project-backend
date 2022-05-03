@@ -1,14 +1,12 @@
 package com.example.idatt2106_2022_05_backend.service.rental;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalListDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
-import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -17,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Service Rental class to handle rental objects
@@ -42,6 +37,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PictureRepository pictureRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -75,8 +73,8 @@ public class RentalServiceImpl implements RentalService {
             }
         }
         rentalDto.setActive(false);
-        User owner = userRepository.getById(rentalDto.getOwner());
-        User borrower = userRepository.getById(rentalDto.getBorrower());
+        User owner = userRepository.getByEmail(rentalDto.getOwner());
+        User borrower = userRepository.getByEmail(rentalDto.getBorrower());
         Rental rental = Rental.builder()
                 .borrower(borrower)
                 .owner(owner)
@@ -211,8 +209,9 @@ public class RentalServiceImpl implements RentalService {
         RentalDto rentalReturn = RentalDto.builder()
                 .id(rental.getId())
                 .adId(rental.getAd().getId())
-                .borrower(rental.getBorrower().getId())
-                .owner(rental.getOwner().getId())
+                .title(rental.getAd().getTitle())
+                .borrower(rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName())
+                .owner(rental.getOwner().getFirstName() + " " + rental.getOwner().getLastName())
                 .active(rental.isActive())
                 .dateOfRental(rental.getDateOfRental())
                 .deadline(rental.getDeadline())
@@ -246,8 +245,9 @@ public class RentalServiceImpl implements RentalService {
             RentalDto rentalReturn = RentalDto.builder()
                     .id(rental.get(i).getId())
                     .adId(rental.get(i).getAd().getId())
-                    .borrower(rental.get(i).getBorrower().getId())
-                    .owner(rental.get(i).getOwner().getId())
+                    .title(rental.get(i).getAd().getTitle())
+                    .borrower(rental.get(i).getBorrower().getFirstName() + " " + rental.get(i).getBorrower().getFirstName())
+                    .owner(rental.get(i).getOwner().getFirstName() + " " + rental.get(i).getOwner().getFirstName())
                     .active(rental.get(i).isActive())
                     .dateOfRental(rental.get(i).getDateOfRental())
                     .deadline(rental.get(i).getDeadline())
@@ -258,5 +258,17 @@ public class RentalServiceImpl implements RentalService {
             rentals.getRentals().add(rentalReturn);
         }
         return new Response(rentals, HttpStatus.OK);
+    }
+
+    @Override
+    public Response getRentalPictureById(Long rentalId) {
+        Rental rental = rentalRepository.getById(rentalId);
+        List<Picture> pictures = pictureRepository.findByAd(rental.getAd());
+        PictureReturnDto returnDto = PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .type(pictures.get(0).getType())
+                .build();
+        returnDto.setId(rentalId);
+        return new Response(returnDto, HttpStatus.OK);
     }
 }
