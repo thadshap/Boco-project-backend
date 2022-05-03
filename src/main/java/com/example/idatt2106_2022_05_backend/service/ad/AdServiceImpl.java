@@ -1,8 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
-import com.example.idatt2106_2022_05_backend.dto.PictureDto;
-import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.*;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -301,7 +299,7 @@ public class AdServiceImpl implements AdService {
      * @return a list of ads
      */
     @Override
-    public Response getAllAdsInCategoryAndSubCategories(String name) {
+    public Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
 
         // Retrieve all categories from database
         ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
@@ -330,6 +328,13 @@ public class AdServiceImpl implements AdService {
                 }
             }
         }
+        //Calculation and setting distance for ads
+        for(AdDto a:adsToBeReturned){
+            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+        }
+        //sort so nearest ads comes first
+        adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+
         // Now all ads are returned
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
@@ -1042,8 +1047,18 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
-        list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
-        return new Response(list, HttpStatus.OK);
+        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
+        List<AdDto> ads = new ArrayList<>();
+
+        for(AdDto a: list){
+            if(a.getPrice()<upperLimit && a.getPrice()>lowerLimit){
+
+                logger.info("adding ad with price: "+ a.getPrice());
+                ads.add(a);
+            }
+        }
+
+        return new Response(ads, HttpStatus.OK);
     }
 
     private void setCoordinatesOnAd(Ad ad)
@@ -1132,6 +1147,30 @@ public class AdServiceImpl implements AdService {
         }
         else {
             return new Response("Could not find picture with specified id", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds){
+        if(filterListOfAds.getFilterType().toLowerCase().equals("price")){
+            logger.debug("Got to service with limits: " + String.valueOf(filterListOfAds.getUpperLimit()) + String.valueOf(filterListOfAds.getLowerLimit()));
+            List<Ad> ads = adRepository.findAll();
+
+            for(Ad a: ads){
+                if(a.getPrice()<filterListOfAds.getUpperLimit() && a.getPrice()> filterListOfAds.getLowerLimit()){
+
+                    logger.info("adding ad with price: "+ a.getPrice());
+                    ads.add(a);
+                }
+            }
+            List<AdDto> list = ads.stream().map(a -> modelMapper.map(a, AdDto.class)).collect(Collectors.toList());
+            for(AdDto a: list){
+                a.setDistance(calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(),a.getLng()));
+            }
+            list.sort(Comparator.comparing(AdDto::getDistance));
+            return new Response(list, HttpStatus.OK);
+        }
+        if(filterListOfAds.getFilterType().toLowerCase().equals("distance")){
+
         }
     }
 }

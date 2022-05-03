@@ -8,6 +8,10 @@ import java.util.List;
 @Data
 public class FilterListOfAds {
     private List<AdDto> list;
+    private String filterType;
     private double upperLimit;
     private double lowerLimit;
+
+    private double lat;
+    private double lng;
 }

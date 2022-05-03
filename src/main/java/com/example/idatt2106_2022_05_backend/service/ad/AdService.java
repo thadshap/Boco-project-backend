@@ -23,7 +23,7 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
-    Response getAllAdsInCategoryAndSubCategories(String name);
+    Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
 
     Response getAllParentCategories();
 
