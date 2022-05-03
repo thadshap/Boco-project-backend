@@ -165,8 +165,8 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create ad
-            Ad pants = Ad.builder().
-                    title("Borre-maskin").
+            Ad borre = Ad.builder().
+                    title("Borrmaskin").
                     description("Leier ut en kraftig borremaskin, kun 50 kr per time eller 300kr pr dag").
                     rental(true).
                     durationType(AdType.MONTH).
@@ -182,7 +182,7 @@ public class DataLoader implements ApplicationRunner {
                     category(build).
                     build();
 
-            Ad fruit = Ad.builder().
+            Ad tux = Ad.builder().
                     title("Leier ut tux").
                     description("1000 kr pr kveld").
                     rental(true).
@@ -249,7 +249,7 @@ public class DataLoader implements ApplicationRunner {
                     category(datamaskin).
                     build();
 
-            Ad p = Ad.builder().
+            Ad sove = Ad.builder().
                     title("Sovepose og primus").
                     description("Leier ut sovepose og primus, leies ut kun sammen").
                     rental(true).
@@ -265,7 +265,7 @@ public class DataLoader implements ApplicationRunner {
                     category(tur).
                     build();
 
-            Ad pa = Ad.builder().
+            Ad newHammer = Ad.builder().
                     title("Ny Hammer").
                     description("Leier ut en ny hammer").
                     rental(true).
@@ -281,7 +281,7 @@ public class DataLoader implements ApplicationRunner {
                     category(hammer).
                     build();
 
-            Ad pan = Ad.builder().
+            Ad matte = Ad.builder().
                     title("Skolebøker Matematikk 3").
                     description("Leier ut matematiske metoder 3 boka").
                     rental(true).
@@ -297,7 +297,7 @@ public class DataLoader implements ApplicationRunner {
                     category(skole).
                     build();
 
-            Ad pant = Ad.builder().
+            Ad klovn = Ad.builder().
                     title("Klovnekostyme").
                     description("Leier ut ett klovne-sett").
                     rental(true).
@@ -313,7 +313,7 @@ public class DataLoader implements ApplicationRunner {
                     category(klor).
                     build();
 
-            Ad pantss = Ad.builder().
+            Ad tent = Ad.builder().
                     title("Nytt telt").
                     description("Lavvo med plass til 8").
                     rental(true).
@@ -339,21 +339,21 @@ public class DataLoader implements ApplicationRunner {
             */
             // Persist the 3 ads
 
-            adRepository.save(pants);
-            adRepository.save(fruit);
+            adRepository.save(borre);
+            adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
             adRepository.save(motherBoard);
 
 
-            adRepository.save(p);
-            adRepository.save(pa);
-            adRepository.save(pan);
-            adRepository.save(pant);
-            adRepository.save(pantss);
+            adRepository.save(sove);
+            adRepository.save(newHammer);
+            adRepository.save(matte);
+            adRepository.save(klovn);
+            adRepository.save(tent);
 
             Rental rental = Rental.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .owner(user1)
                     .borrower(user2)
                     .price(10000)
@@ -367,7 +367,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .owner(user1)
                     .borrower(user2)
                     .price(1000)
@@ -380,7 +380,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .owner(user1)
                     .borrower(user2)
                     .price(100)
@@ -393,7 +393,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -406,7 +406,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(p)
+                    .ad(sove)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -419,7 +419,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             Review review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("veldig bra anbefaler dette produktet!")
                     .rating(9)
@@ -427,7 +427,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -435,7 +435,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -443,7 +443,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -451,7 +451,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -459,7 +459,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -467,7 +467,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -475,7 +475,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(p)
+                    .ad(sove)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -506,11 +506,11 @@ public class DataLoader implements ApplicationRunner {
 
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();
-            ads1.add(fruit);
+            ads1.add(tux);
             telt.setAds(ads1);
 
             Set<Ad> ads2 = new HashSet<>();
-            ads2.add(pants);
+            ads2.add(borre);
             build.setAds(ads2);
 
             Set<Ad> ads3 = new HashSet<>();
@@ -523,9 +523,22 @@ public class DataLoader implements ApplicationRunner {
             adRepository.saveAll(ads);
 
 
-            File file = new File("src/main/resources/images/pants.jpg");
+            File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             byte[] fileContent = Files.readAllBytes(file.toPath());
             Picture picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            borre.setPictures(new HashSet<>());
+            borre.getPictures().add(picture);
+            picture.setAd(borre);
+            adRepository.save(borre);
+            pictureRepository.save(picture);
+
+            file = new File("src/main/resources/static/images/anders.jpg");
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
                     .filename(file.getName())
                     .data(fileContent)
                     .type(Files.probeContentType(file.toPath()))
@@ -536,135 +549,50 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user1);
             pictureRepository.save(picture);
 
-//            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
-//            FileInputStream input = new FileInputStream(file);
-//            MultipartFile multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            Set<Picture> set = new HashSet<>();
-//            Picture pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//
-//            file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//            file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/kristopher-roller-PC_lbSSxCZE-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
+            file = new File("src/main/resources/static/images/hammer.jpg");
+            fileContent(newHammer, file);
 
-//            Ad ad =
-//
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+            file = new File("src/main/resources/static/images/klovn.jpg");
+            fileContent(klovn, file);
+
+            file = new File("src/main/resources/images/borre.jpg");
+            fileContent(borre, file);
+
+            file = new File("src/main/resources/static/images/lader.jpg");
+            fileContent(charger, file);
+
+            file = new File("src/main/resources/static/images/lavvo.jpg");
+            fileContent(tent, file);
+
+            file = new File("src/main/resources/static/images/lenovo.jpg");
+            fileContent(pc, file);
+
+            file = new File("src/main/resources/static/images/matte.jpg");
+            fileContent(matte, file);
+
+            file = new File("src/main/resources/static/images/mboard.jpg");
+            fileContent(motherBoard, file);
+
+            file = new File("src/main/resources/static/images/sovepose.jpg");
+            fileContent(sove, file);
+
+            file = new File("src/main/resources/static/images/tux.jpg");
+            fileContent(tux, file);
         }
+
+    private void fileContent(Ad ad, File file) throws IOException {
+        byte[] fileContent;
+        Picture picture;
+        fileContent = Files.readAllBytes(file.toPath());
+        picture = Picture.builder()
+                .filename(file.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(file.toPath()))
+                .build();
+        ad.setPictures(new HashSet<>());
+        ad.getPictures().add(picture);
+        picture.setAd(ad);
+        adRepository.save(ad);
+        pictureRepository.save(picture);
+    }
 }
