@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
@@ -52,7 +53,7 @@ public class UserController {
 
     @GetMapping("/profilePicture/{userId}")
     @ApiOperation(value = "Endpoint to get user profile picture", response = Response.class)
-    public String getPicture(@PathVariable Long userId) throws IOException {
+    public PictureReturnDto getPicture(@PathVariable Long userId) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
 //        if(!securityService.isUser(userId)){
 //            return null;

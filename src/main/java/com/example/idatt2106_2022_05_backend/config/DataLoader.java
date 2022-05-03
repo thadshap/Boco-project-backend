@@ -528,7 +528,7 @@ public class DataLoader implements ApplicationRunner {
             Picture picture = Picture.builder()
                     .filename(file.getName())
                     .data(fileContent)
-                    .type("PB")
+                    .type(Files.probeContentType(file.toPath()))
                     .build();
 
             user1.setPicture(picture);

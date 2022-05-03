@@ -32,9 +32,6 @@ public class Picture {
     @Column(name = "data", nullable = false)
     private byte[] data;
 
-    @Column(length = 50000)
-    private String base64;
-
     @ManyToOne
     @JoinColumn(name = "ad_id")
     private Ad ad;

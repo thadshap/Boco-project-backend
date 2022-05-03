@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
@@ -165,22 +166,25 @@ public class UserServiceImpl implements UserService {
 //        }
         Picture picture = Picture.builder()
                 .filename(file.getName())
-                .type("PB")
+                .type(file.getContentType())
                 .data(file.getBytes())
                 .build();
         user.setPicture(picture);
         picture.setUser(user);
+        pictureRepository.deleteByUser(user);
         userRepository.save(user);
         pictureRepository.save(picture);
         return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
     @Override
-    public String getPicture(Long userId) {
+    public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
-
-        return Base64.getEncoder().encodeToString(picture.get(0).getData());
+        return PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .type(picture.get(0).getType())
+                .build();
     }
 
     /**

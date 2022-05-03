@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,4 +21,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     Picture getByUser(User user);
 
     List<Picture> findByUser(User user);
+
+    @Transactional
+    void deleteByUser(User user);
 }
