@@ -146,6 +146,7 @@ public class CalendarServiceImpl implements CalendarService {
 
                         // Persist the change to the specific date from the CalendarDate table
                         dateRepository.save(date);
+
                         /**
                         Optional<CalendarDate> dateFound = dateRepository.findById(date.getId());
 
@@ -171,9 +172,8 @@ public class CalendarServiceImpl implements CalendarService {
         // If ad not found, return false
         return new Response("Could not find the ad", HttpStatus.NOT_FOUND);
         // Not all dates in the span were of the same availability
-        //return new Response("Not all dates in the span were of the same availability",
-          //      HttpStatus.NOT_ACCEPTABLE);
-
+        // return new Response("Not all dates in the span were of the same availability",
+          // HttpStatus.NOT_ACCEPTABLE);
     }
 
     /**

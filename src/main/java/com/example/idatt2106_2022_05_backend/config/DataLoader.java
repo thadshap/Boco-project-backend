@@ -158,6 +158,8 @@ public class DataLoader implements ApplicationRunner {
                     streetAddress("Project Road 4").
                     postalCode(7200).
                     city("Trondheim").
+                    lat(63.428961).
+                    lng(10.389443).
                     user(user1).
                     category(category5).
                     build();
@@ -172,6 +174,8 @@ public class DataLoader implements ApplicationRunner {
                     streetAddress("Project Road 5").
                     postalCode(7000).
                     city("Trondheim").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user2).
                     category(category4).
                     build();
@@ -186,6 +190,8 @@ public class DataLoader implements ApplicationRunner {
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
+                    lat(63.378302).
+                    lng(10.359326).
                     user(user3).
                     category(category6).
                     build();
@@ -200,6 +206,8 @@ public class DataLoader implements ApplicationRunner {
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
+                    lat(63.389729).
+                    lng(10.425262).
                     user(user3).
                     category(category8).
                     build();
@@ -213,6 +221,8 @@ public class DataLoader implements ApplicationRunner {
                     streetAddress("Project Road 6").
                     postalCode(7800).
                     city("Trondheim").
+                    lat(63.401920).
+                    lng(10.443579).
                     user(user3).
                     category(category3).
                     build();
@@ -226,6 +236,9 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Road 4").
                     postalCode(7202).
+                    city("Bodø").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user1).
                     category(category5).
                     build();
@@ -239,6 +252,9 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project P").
                     postalCode(7201).
+                    city("Bodø").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user1).
                     category(category4).
                     build();
@@ -251,7 +267,10 @@ public class DataLoader implements ApplicationRunner {
                     duration(2).
                     price(100).
                     streetAddress("4 fourty four").
-                    postalCode(7200).
+                    postalCode(9990).
+                    city("Båtsfjord").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user1).
                     category(category3).
                     build();
@@ -265,6 +284,9 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project Road").
                     postalCode(7200).
+                    city("Trondheim").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user1).
                     category(category2).
                     build();
@@ -278,6 +300,9 @@ public class DataLoader implements ApplicationRunner {
                     price(100).
                     streetAddress("Project 4").
                     postalCode(7200).
+                    city("Trondheim").
+                    lat(63.431209).
+                    lng(10.411677).
                     user(user1).
                     category(category1).
                     build();

@@ -11,6 +11,7 @@ import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -597,6 +598,9 @@ public class AdIntegrationTest {
                     durationType(AdType.HOUR).
                     duration(2).
                     price(100).
+                    lat(63.401920).
+                    lng( 10.443579).
+                    city("Trondheim").
                     streetAddress("address").
                     postalCode(7999).
                     user(user).
@@ -1055,9 +1059,30 @@ public class AdIntegrationTest {
     @Nested
     class SortingTests {
 
+        @SneakyThrows
         @Test
         public void getAllAdsWithDistance() {
+            // Verify that the db contains at least 3 ads
+            assertTrue(adRepository.findAll().size() >= 3);
 
+            // Simulate a UserGeoLocation (current position of the user activating the method)
+            UserGeoLocation userGeoLocation = new UserGeoLocation();
+            userGeoLocation.setLat(63.418735);
+            userGeoLocation.setLng(10.404052);
+
+            // TODO SET THE LOCATION OF THE DATALOADER OBJECTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            // Amount == the number of ads requested
+            userGeoLocation.setAmount(3);
+
+            // Call on the method using the service-class in order to verify the HTTP-response
+            ResponseEntity<Object> res = adService.getAllAdsWithDistance(userGeoLocation);
+
+            // Call on the copied method in order to easily verify the correctness of the ResponseBody
+            List<AdDto> DTOs = getAllAdsWithDistance(userGeoLocation);
+
+            // Verify that the list contains 3 ads
+            assertEquals(3, DTOs.size());
         }
 
         // Should return ads
@@ -1137,9 +1162,16 @@ public class AdIntegrationTest {
 
         }
 
-        /*** BELOW CODE CONTAINS ONLY COPIED METHODS FROM "AdServiceImpl.java" (FOR TESTING PURPOSES) ***/
+        /** ---------------------------------------- ABOUT BELOW CODE: ----------------------------------------
+          *
+          * Code contains only copied methods from "AdServiceImpl.java" (for testing purposes).
+          * The purpose is not having to deal with response-entities when testing.
+          * Methods for testing sorting therefore contains both:
+          *         - The original service-methods for checking correctly received HTTP-responses.
+          *         - These methods in order to verify the correctness of the body of the responses received.
+         **/
 
-        public List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
+        private List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
             ArrayList<AdDto> ads = new ArrayList<>();
 
             for(Ad ad : adRepository.findAll()){
@@ -1164,20 +1196,20 @@ public class AdIntegrationTest {
             return adDto;
         }
 
-        public double calculateDistance(double lat1, double long1, double lat2,
+        private double calculateDistance(double lat1, double long1, double lat2,
                                         double long2) {
             double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
             return dist/1000;
         }
 
-        public List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
+        private List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
             List<AdDto> ads = getAllAdsWithDistance(userGeoLocation);
             return ads.stream().limit(userGeoLocation.getAmount())
                     .collect(Collectors.toList());
         }
 
 
-        public List<AdDto> sortByDescending(int pageSize, String sortBy){
+        private List<AdDto> sortByDescending(int pageSize, String sortBy){
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
             List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
             return list.stream()
@@ -1187,7 +1219,7 @@ public class AdIntegrationTest {
         }
 
 
-        public List<AdDto> sortByAscending(int pageSize, String sortBy){
+        private List<AdDto> sortByAscending(int pageSize, String sortBy){
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
             List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
             return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).
@@ -1195,7 +1227,7 @@ public class AdIntegrationTest {
         }
 
 
-        public Stream<AdDto> sortByCreatedDateAscending(int pageSize){
+        private Stream<AdDto> sortByCreatedDateAscending(int pageSize){
             List<Ad> ads = adRepository.findAll();
             ads.sort(Comparator.comparing(Ad::getCreated));
             return ads.stream()
@@ -1204,7 +1236,7 @@ public class AdIntegrationTest {
         }
 
 
-        public Stream<AdDto> sortByCreatedDateDescending(int pageSize){
+        private Stream<AdDto> sortByCreatedDateDescending(int pageSize){
             List<Ad> ads = adRepository.findAll();
             ads.sort(Comparator.comparing(Ad::getCreated).reversed());
             return ads.stream()
@@ -1212,7 +1244,7 @@ public class AdIntegrationTest {
                     .limit(pageSize);
         }
 
-        public List<AdDto> searchThroughAds(String searchWord){
+        private List<AdDto> searchThroughAds(String searchWord){
             //List to be filled with corresponding ads
             List<Ad> adsContainingSearchWord = new ArrayList<>();
 
@@ -1242,34 +1274,33 @@ public class AdIntegrationTest {
                     .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList());
         }
 
-        public List<AdDto> sortArrayByPriceAscending(List<AdDto> list){
+        private List<AdDto> sortArrayByPriceAscending(List<AdDto> list){
             list.sort(Comparator.comparing(AdDto::getPrice));
             return list;        }
 
-        public List<AdDto> sortArrayByPriceDescending(List<AdDto> list){
+        private List<AdDto> sortArrayByPriceDescending(List<AdDto> list){
             list.sort(Comparator.comparing(AdDto::getPrice).reversed());
             return list;        }
 
-        public List<AdDto> sortArrayByDistanceAscending(List<AdDto> list){
+        private List<AdDto> sortArrayByDistanceAscending(List<AdDto> list){
             list.sort(Comparator.comparing(AdDto::getDistance));
             return list;        }
 
-        public List<AdDto> sortArrayByDistanceDescending(List<AdDto> list){
+        private List<AdDto> sortArrayByDistanceDescending(List<AdDto> list){
             list.sort(Comparator.comparing(AdDto::getDistance).reversed());
             return list;        }
 
-        public List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit){
+        private List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit){
             list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
             return list;
         }
 
-        public List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
+        private List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
             list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
             return list;
         }
 
-        private void setCoordinatesOnAd(Ad ad)
-                throws IOException, InterruptedException {
+        private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
             ObjectMapper objectMapper = new ObjectMapper();
             Geocoder geocoder = new Geocoder();
 
