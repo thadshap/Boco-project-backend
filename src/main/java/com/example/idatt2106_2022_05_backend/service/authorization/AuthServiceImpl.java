@@ -292,7 +292,7 @@ public class AuthServiceImpl implements AuthService {
     public ModelAndView validatePasswordThroughToken(String token, UserRenewPasswordDto forgotPasswordDto) {
         ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
         ModelAndView view = new ModelAndView("verified");
-        if (resetPasswordToken == null) {
+        if (resetPasswordToken.equals(null)) {
             view.addObject("txt1", "Ikke gyldig token for å bytte passord!");;
             return view;
         }
