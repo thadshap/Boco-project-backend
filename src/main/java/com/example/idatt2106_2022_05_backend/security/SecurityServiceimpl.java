@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.security;
 
 import com.example.idatt2106_2022_05_backend.model.Ad;
+import com.example.idatt2106_2022_05_backend.model.Picture;
 import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
@@ -110,6 +111,16 @@ public class SecurityServiceimpl implements SecurityService {
         User user = getUser();
         if(rental != null && user != null  && rental.getBorrower() != null){
             return rental.getBorrower().equals(user);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean userPicture(long id, long userId) {
+        Picture picture = pictureRepository.findById(id).orElse(null);
+        User user = getUser();
+        if(picture != null && user != null  && picture.getUser() != null){
+            return picture.getUser().equals(user);
         }
         return false;
     }

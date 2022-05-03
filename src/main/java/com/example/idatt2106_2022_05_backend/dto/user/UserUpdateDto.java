@@ -16,22 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 @ApiModel(description = "data transfer object to update user info")
 public class UserUpdateDto {
 
-    @ApiModelProperty(notes = "id of the user") //todo necessary? hilsen karoline..
-    private long id;
-
     @ApiModelProperty(notes = "first name of user")
     private String firstName;
 
     @ApiModelProperty(notes = "last name of user")
     private String lastName;
 
-    @Email
-    @ApiModelProperty(notes = "users email")
-    private String email;
-
     @ApiModelProperty(notes = "users password")
     private String password;
-
-    @ApiModelProperty(notes = "profile picture")
-    private MultipartFile picture;
 }

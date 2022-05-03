@@ -11,6 +11,8 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +31,8 @@ public class AdController {
 
     @Autowired
     AdService adService;
+
+    private Logger logger = LoggerFactory.getLogger(AdController.class);
 
     @GetMapping("/ads")
     @ApiOperation(value = "Endpoint to return all ads", response = Response.class)
@@ -92,7 +96,7 @@ public class AdController {
         return adService.getAllAdsWithDistance(userGeoLocation);
     }
 
-    @PostMapping("/ads/newAd")
+    @PostMapping("/auth/ads/newAd")
     @ApiOperation(value = "Endpoint to create a new ad", response = Response.class)
     public Response postAd(@RequestBody AdDto adDto) throws IOException, InterruptedException {
         log.debug("[X] Call to create a new ad");
@@ -106,21 +110,21 @@ public class AdController {
         return adService.getReviewsByUserId(id);
     }
 
-    @PutMapping("/ads/{adId}")
+    @PutMapping("/auth/ads/{adId}")
     @ApiOperation(value = "", response = Response.class)
     public Response updateAd(@PathVariable Long adId, @RequestBody AdUpdateDto adUpdateDto) {
         log.debug("[X] Call to update an ad with id = {}", adId);
         return adService.updateAd(adId, adUpdateDto);
     }
 
-    @DeleteMapping("ads/{adId}")
+    @DeleteMapping("/auth/ads/{adId}")
     @ApiOperation(value = "Endpoint to delete an ad", response = Response.class)
     public Response deleteAd(@PathVariable long adId) {
         log.debug("[X] Call to delete ad with id = {}", adId);
         return adService.deleteAd(adId);
     }
 
-    @DeleteMapping("/ads/picture")
+    @DeleteMapping("/auth/ads/picture")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
     public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
@@ -138,7 +142,7 @@ public class AdController {
      */
 
 
-    @PostMapping("/ads/newPicture")
+    @PostMapping("/auth/ads/newPicture")
     public Response uploadPicture(@ModelAttribute UpdatePictureDto dto) {
         try {
             return adService.storeImageForAd(dto.getId(), dto.getMultipartFile());
@@ -149,7 +153,7 @@ public class AdController {
     }
 
     // Post multiple images --> dto contains adId and file array
-    @PostMapping(value = "/ads/newPictures",
+    @PostMapping(value = "/auth/ads/newPictures",
                  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
                  produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Response uploadPictures(AdDto dto) {
@@ -239,6 +243,7 @@ public class AdController {
 
     @PostMapping("/getListWithinPriceRange")
     public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("got to controller");
         return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
     }
 
@@ -261,9 +266,9 @@ public class AdController {
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @GetMapping("/categoriesRecursive/{categoryName}")
-    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName){
-        return adService.getAllAdsInCategoryAndSubCategories(categoryName);
+    @PostMapping("/categoriesRecursive/{categoryName}")
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName, @RequestBody UserGeoLocation userGeoLocation){
+        return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     // Get all parent categories
@@ -287,4 +292,16 @@ public class AdController {
     public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
         return adService.sortArrayOfAdsByDateOldestFirst(list);
     }
+
+    @PostMapping("/ads/filter")
+    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("in controller");
+        return adService.getAllAdsWithFilter(filterListOfAds);
+    }
+
+    @PostMapping("/ads/category/filter")
+    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getAdsWithCategoryAndFilter(filterListOfAds);
+    }
+
 }

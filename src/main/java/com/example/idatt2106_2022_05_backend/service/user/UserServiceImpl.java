@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -153,6 +154,18 @@ public class UserServiceImpl implements UserService {
         return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
     }
 
+    @Override
+    public Response updatePicture(Long userId, MultipartFile file) {
+//        User user = userRepository.getById(userId);
+//        user.setPicture(file);
+        return null;
+    }
+
+    @Override
+    public Response getPicture(Long userId) {
+        return null;
+    }
+
     /**
      * Method to update User object in the repository.
      *
@@ -170,21 +183,16 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
         User user = userFromDB.get();
-        if (userUpdateDto.getFirstName() != null) {
+        if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
-        if (userUpdateDto.getLastName() != null) {
+        if (!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if (userUpdateDto.getEmail() != null) {
-            user.setEmail(userUpdateDto.getEmail());
-        }
-        if (userUpdateDto.getPassword() != null) {
+        if (!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
-        if(userUpdateDto.getPicture() != null) {
-            pictureService.savePicture(userUpdateDto.getPicture(),0,userId);
-        }
+        System.out.println(user.getFirstName() + " " + user.getEmail());
         userRepository.save(user);
         return new Response("User updated", HttpStatus.OK);
     }
@@ -203,7 +211,19 @@ public class UserServiceImpl implements UserService {
         if (userFromDB.isEmpty()) {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
-        UserReturnDto user = modelMapper.map(userFromDB.get(), UserReturnDto.class);
+        User userGot = userFromDB.get();
+        UserReturnDto user = UserReturnDto.builder()
+                .id(userGot.getId())
+                .firstName(userGot.getFirstName())
+                .lastName(userGot.getLastName())
+                .email(userGot.getEmail())
+                .role(userGot.getRole())
+                .verified(userGot.isVerified())
+                .rating(userGot.getRating())
+                .nrOfReviews(userGot.getNumberOfReviews())
+                .pictureUrl(userGot.getPictureUrl())
+                .build();
+
         return new Response(user, HttpStatus.OK);
     }
 

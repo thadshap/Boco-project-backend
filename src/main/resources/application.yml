@@ -30,20 +30,27 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 server:
-
-# ssl:
+#  ssl:
 #    key-alias: localhost
-#    key-store-type: PKCS12
+##    key-store-type: PKCS12
 #    key-store: src/main/resources/keystore/keystores/keystore.jks
 #    key-password: password
 #    key-store-password: password
 #    trust-store: src/main/resources/keystore/keystores/truststore.jks
 #    trust-store-password: password
 #    protocol: TLS
-#    enabled: false
+#    enabled: true
 #    enabled-protocols: TLSv1.2
 #    client-auth: want
   port: 8443
-logging:
-  level:
-    ROOT: info
+#logging:
+  #level:
+    #ROOT: debug
+#org:
+#  apache:
+#    tomcat:
+#      websocket:
+#        SSL_TRUSTSTORE: src/main/resources/keystore/keystores/truststore.jks
+#        SSL_PROTOCOLS: TLS
+#        SSL_CONTEXT: ''
+#        SSL_TRUSTSTORE_PWD: ''

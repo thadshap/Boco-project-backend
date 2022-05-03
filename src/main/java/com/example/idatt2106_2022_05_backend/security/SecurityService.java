@@ -32,6 +32,8 @@ public interface SecurityService {
 
     public User getCurrentUser();
 
+    boolean userPicture(long id, long userId);
+
 //    boolean userRentalAccess(Long userId);
 
 }
