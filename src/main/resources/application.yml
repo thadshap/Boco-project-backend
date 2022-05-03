@@ -43,9 +43,9 @@ server:
 #    enabled-protocols: TLSv1.2
 #    client-auth: want
   port: 8443
-logging:
-  level:
-    ROOT: debug
+#logging:
+  #level:
+    #ROOT: info
 #org:
 #  apache:
 #    tomcat:
