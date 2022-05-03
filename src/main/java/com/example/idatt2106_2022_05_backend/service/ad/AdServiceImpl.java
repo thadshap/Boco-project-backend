@@ -1,8 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
-import com.example.idatt2106_2022_05_backend.dto.PictureDto;
-import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
+import com.example.idatt2106_2022_05_backend.dto.*;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -205,7 +203,7 @@ public class AdServiceImpl implements AdService {
         // Return NOT_FOUND if there
         else {
             return new Response("No sub categories found with the specified parent-name",
-                    HttpStatus.NOT_FOUND);
+                    HttpStatus.NO_CONTENT);
         }
     }
 
@@ -313,7 +311,7 @@ public class AdServiceImpl implements AdService {
      * @return a list of ads
      */
     @Override
-    public Response getAllAdsInCategoryAndSubCategories(String name) {
+    public Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
 
         // Retrieve all categories from database
         ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
@@ -341,6 +339,13 @@ public class AdServiceImpl implements AdService {
                 }
             }
         }
+        //Calculation and setting distance for ads
+        for(AdDto a:adsToBeReturned){
+            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+        }
+        //sort so nearest ads comes first
+        adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+
         // Now all ads are returned
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
@@ -447,6 +452,7 @@ public class AdServiceImpl implements AdService {
                 CategoryDto dto = CategoryDto.builder().
                         id(category.getId()).
                         name(category.getName()).
+                        icon(category.getIcon()).
                         build();
                 categoriesToReturn.add(dto);
             }
@@ -456,7 +462,7 @@ public class AdServiceImpl implements AdService {
             return new Response(categoriesToReturn,HttpStatus.OK);
         }
         else {
-            return new Response("Could not find any parent categories", HttpStatus.NOT_FOUND);
+            return new Response("Could not find any parent categories", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -853,9 +859,11 @@ public class AdServiceImpl implements AdService {
             }
 
             for(Picture picture : pictureRepository.findAll()) {
-                if(picture.getAd().getId() == ad.get().getId()) {
-                    picture.setAd(null);
-                    pictureRepository.save(picture);
+                if(picture.getAd() != null) {
+                    if(Objects.equals(picture.getAd().getId(), ad.get().getId())) {
+                        picture.setAd(null);
+                        pictureRepository.save(picture);
+                    }
                 }
             }
 
@@ -913,15 +921,16 @@ public class AdServiceImpl implements AdService {
      * @return response with status ok or not found
      */
     @Override
-    public Response deletePicture(long ad_id, byte[] chosenPicture){
+    public Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException {
         Optional<Ad> ad = adRepository.findById(ad_id);
 
         // If present
         if(ad.isPresent()) {
             Set<Picture> pictures = ad.get().getPictures();
             if(pictures != null) {
+                int i = 0;
                 for (Picture picture : pictures) {
-                    if(Arrays.equals(picture.getData(), chosenPicture)) {
+                    if(Arrays.equals(picture.getData(), chosenPicture.get(i).getBytes())) {
                         // Remove this picture from ad
                         ad.get().getPictures().remove(picture);
 
@@ -937,6 +946,7 @@ public class AdServiceImpl implements AdService {
 
                         return new Response("Slettet bildet", HttpStatus.OK);
                     }
+                    i++;
                 }
             }
             // If we get here, pictures are equal to null
@@ -1077,11 +1087,21 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
-        list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
-        return new Response(list, HttpStatus.OK);
+        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
+        List<AdDto> ads = new ArrayList<>();
+
+        for(AdDto a: list){
+            if(a.getPrice()<upperLimit && a.getPrice()>lowerLimit){
+
+                logger.info("adding ad with price: "+ a.getPrice());
+                ads.add(a);
+            }
+        }
+
+        return new Response(ads, HttpStatus.OK);
     }
 
-    private void setCoordinatesOnAd(Ad ad)
+    public void setCoordinatesOnAd(Ad ad)
             throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
@@ -1107,39 +1127,19 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Response getAllPicturesForAd(long adId) {
-        Optional<Ad> adFound = adRepository.findById(adId);
-
-        if(adFound.isPresent()) {
-
-            // Retrieve the pictures this ad has
-            Set<Picture> pictures = adFound.get().getPictures();
-
-            // Create a list to hold the DTOs
-            Set<PictureDto> picturesToReturn = new HashSet<>();
-
-            // If the ad has any pictures
-            if(pictures != null) {
-
-                // Iterate over the pictures
-                for(Picture picture : pictures) {
-                    // Create a picture dto
-                    PictureDto dto = PictureDto.builder().
-                            adId(picture.getId()).
-                            data(picture.getData()).
-                            type(picture.getType()).build();
-
-                    // Add to DTO-list
-                    picturesToReturn.add(dto);
-                }
-            }
-            return new Response(picturesToReturn, HttpStatus.OK);
+    public List<PictureReturnDto> getAllPicturesForAd(long adId) {
+        Ad ad = adRepository.getById(adId);
+        List<Picture> pictures = pictureRepository.findByAd(ad);
+        List<PictureReturnDto> returnDto = new ArrayList<>();
+        for (int i = 0; i < pictures.size(); i++) {
+            returnDto.add(PictureReturnDto.builder()
+                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .type(pictures.get(i).getType())
+                    .build());
         }
-        // If the ad was not found
-        else {
-            return new Response("There was no ad with specified id in db.", HttpStatus.NOT_FOUND);
-        }
+        return returnDto;
     }
+
 
     @Override
     public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
@@ -1154,19 +1154,85 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
-        return pictureService.savePicture(file, adId, 0);
+    public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
+        Optional<Ad> adOptional = adRepository.findById(adId);
+        if (adOptional.isEmpty()){
+            return null;
+        }
+        System.out.println("here");
+        Ad ad = adOptional.get();
+//        String filename = file.getName().split("\\.")[1];
+//        if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") || !filename.equalsIgnoreCase("jpeg") ){
+//            return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
+//        }
+        ad.setPictures(new HashSet<>());
+        for (int i = 0; i < files.size(); i++) {
+            Picture picture = Picture.builder()
+                    .filename(files.get(i).getName())
+                    .type(files.get(i).getContentType())
+                    .data(files.get(i).getBytes())
+                    .build();
+            ad.getPictures().add(picture);
+            picture.setAd(ad);
+            System.out.println("here " + i);
+            pictureRepository.save(picture);
+        }
+        adRepository.save(ad);
+        return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
-    //TODO: do we use this?
-    public Response getPicture(long pictureId) {
-        Optional<Picture> picture = pictureRepository.findById(pictureId);
+    @Override
+    public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds){
+        UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
+        List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
+        filterListOfAds.setList(list);
+        return new Response(getAllAdsWithFilter(filterListOfAds),HttpStatus.OK);
+    }
 
-        if(picture.isPresent()) {
-            return new Response(picture.get(), HttpStatus.OK);
+    @Override
+    public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
+        List<Ad> ads = new ArrayList<>();
+        if(filterListOfAds.getList()!=null) {
+            for(AdDto a: filterListOfAds.getList()){
+                ads.add(adRepository.getById(a.getAdId()));
+            }
+        }else{
+            ads = adRepository.findAll();
         }
-        else {
-            return new Response("Could not find picture with specified id", HttpStatus.NOT_FOUND);
+        List<AdDto> list = new ArrayList<>();
+        if (filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+            list = ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
         }
+
+        if (filterListOfAds.getFilterType().toLowerCase().equals("price")) {
+            logger.debug("Got to service with limits: " + String.valueOf(filterListOfAds.getUpperLimit()) + String.valueOf(filterListOfAds.getLowerLimit()));
+
+            for (Ad a : ads) {
+                if (a.getPrice() < filterListOfAds.getUpperLimit() && a.getPrice() > filterListOfAds.getLowerLimit()) {
+
+                    logger.info("adding ad with price: " + a.getPrice());
+                    list.add(modelMapper.map(a, AdDto.class));
+                }
+            }
+        }
+        //Returning array with nearest location
+        if (filterListOfAds.getLat()!=0 && filterListOfAds.getLng() != 0) {
+            for (AdDto a : list) {
+                a.setDistance(calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(), a.getLng()));
+            }
+            //setting them in the right order
+            if (filterListOfAds.isLowestValueFirst()) {
+                list.sort(Comparator.comparing(AdDto::getDistance));
+            } else {
+                list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+            }
+            //excluding those that are outside the limit of distance
+            if(filterListOfAds.getUpperLimit()!=0 && filterListOfAds.getFilterType().toLowerCase().equals("distance")){
+                list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
+            }
+            return new Response(list, HttpStatus.OK);
+        }
+
+        return new Response("Noe gikk galt i filtreringen.", HttpStatus.NO_CONTENT);
     }
 }

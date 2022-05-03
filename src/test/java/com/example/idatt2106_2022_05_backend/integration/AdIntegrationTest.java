@@ -63,6 +63,12 @@ public class AdIntegrationTest {
     PictureRepository pictureRepository;
 
     @Autowired
+    MessageRepository messageRepository;
+
+    @Autowired
+    OuputMessageRepository outputMessageRepository;
+
+    @Autowired
     ReviewRepository reviewRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -103,6 +109,8 @@ public class AdIntegrationTest {
         rentalRepository.deleteAll();
         pictureRepository.deleteAll();
         adRepository.deleteAll();
+        messageRepository.deleteAll();
+        outputMessageRepository.deleteAll();
         userRepository.deleteAll();
         categoryRepository.deleteAll();
     }
@@ -1148,7 +1156,7 @@ public class AdIntegrationTest {
 
         @SneakyThrows
         @Test
-        public void getAllAdsWithDistance() {
+        public void getAllAdsSortedByDistance() {
             // Verify that the db contains at least 3 ads
             assertTrue(adRepository.findAll().size() >= 3);
 
@@ -1156,8 +1164,6 @@ public class AdIntegrationTest {
             UserGeoLocation userGeoLocation = new UserGeoLocation();
             userGeoLocation.setLat(63.418735);
             userGeoLocation.setLng(10.404052);
-
-            // TODO SET THE LOCATION OF THE DATALOADER OBJECTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             // Amount == the number of ads requested
             userGeoLocation.setAmount(3);
@@ -1169,7 +1175,7 @@ public class AdIntegrationTest {
             List<AdDto> DTOs = getAllAdsWithDistance(userGeoLocation);
 
             // Verify that the list contains 3 ads
-            assertEquals(3, DTOs.size());
+            assertEquals(adRepository.findAll().size(), DTOs.size());
         }
 
         // Should return ads
@@ -1258,15 +1264,18 @@ public class AdIntegrationTest {
           *         - These methods in order to verify the correctness of the body of the responses received.
          **/
 
-        private List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
+        private List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) {
             ArrayList<AdDto> ads = new ArrayList<>();
 
             for(Ad ad : adRepository.findAll()){
+
                 //Setting all attributes and decompressing pictures in help method
                 AdDto adDto = castObject(ad);
+
                 //Calculate and set distance
                 adDto.setDistance(calculateDistance(userGeoLocation.getLat(),
                         userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
+
                 //Adding all ads to list and then response
                 ads.add(adDto);
             }

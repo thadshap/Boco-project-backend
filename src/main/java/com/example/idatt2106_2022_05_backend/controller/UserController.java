@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -39,20 +41,41 @@ public class UserController {
         return userService.updateUser(userId, userUpdateDto);
     }
 
-    @DeleteMapping("/profilePicture")
-    @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
-    public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
-        if(!securityService.userPicture(updatePictureDto.getId(), updatePictureDto.getUserId())){
+    @PutMapping("/profilePicture/{userId}")
+    @ApiOperation(value = "Endpoint to update user profile picture", response = Response.class)
+    public Response updatePicture(@PathVariable Long userId, @RequestPart MultipartFile file) throws IOException {
+        log.debug("[X] Call to update user with id = {}", userId);
+        if(!securityService.isUser(userId)){
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
-        try {
-            return userService.deleteProfilePicture(updatePictureDto.getUserId(),
-                    updatePictureDto.getMultipartFile().getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
+        return userService.updatePicture(userId, file);
     }
+
+    @GetMapping("/profilePicture/{userId}")
+    @ApiOperation(value = "Endpoint to get user profile picture", response = Response.class)
+    public PictureReturnDto getPicture(@PathVariable Long userId) throws IOException {
+        log.debug("[X] Call to update user with id = {}", userId);
+//        if(!securityService.isUser(userId)){
+//            return null;
+//        }
+        return userService.getPicture(userId);
+    }
+
+//    @DeleteMapping("/profilePicture")
+//    @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
+//    public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
+//        if(!securityService.userPicture(updatePictureDto.getId(), updatePictureDto)){
+//            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+//        }
+//        try {
+//            return userService.deleteProfilePicture(updatePictureDto.getUserId(),
+//                    updatePictureDto.getMultipartFile().getBytes());
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
+//    }
 
     @DeleteMapping("/{userId}")
     @ApiOperation(value = "Endpoint to delete user", response = Response.class)
@@ -67,8 +90,8 @@ public class UserController {
     @GetMapping("/{userId}")
     @ApiOperation(value = "Endpoint to get user", response = UserReturnDto.class)
     public Response getUser(@PathVariable Long userId, Authentication auth) {
-        UserDetails user = (UserDetails)auth.getPrincipal();
-        System.out.println(user.getUsername());
+//        UserDetails user = (UserDetails)auth.getPrincipal();
+//        System.out.println(user.getUsername());
         log.debug("[X] Call to get user with id = {}", userId);
         return userService.getUser(userId);
     }

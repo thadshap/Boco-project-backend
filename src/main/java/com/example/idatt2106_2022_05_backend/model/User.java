@@ -61,7 +61,7 @@ public class User {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private ResetPasswordToken resetPasswordToken;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     private Picture picture;
 
@@ -86,12 +86,12 @@ public class User {
     @ManyToMany()
     @JoinTable(
             name="user_group",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")}
     )
     private Set<Group> groupChats;
 
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "user")
     @ToString.Exclude
     private Set<OutputMessage> messages;
 

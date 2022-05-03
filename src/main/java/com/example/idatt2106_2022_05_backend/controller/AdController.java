@@ -11,6 +11,8 @@ import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.List;
 
@@ -29,6 +33,8 @@ public class AdController {
 
     @Autowired
     AdService adService;
+
+    private Logger logger = LoggerFactory.getLogger(AdController.class);
 
     @GetMapping("/ads")
     @ApiOperation(value = "Endpoint to return all ads", response = Response.class)
@@ -120,11 +126,11 @@ public class AdController {
         return adService.deleteAd(adId);
     }
 
-    @DeleteMapping("/auth/ads/picture")
+    @DeleteMapping("/auth/ads/picture/{userId}")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
+    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto, @RequestPart List<MultipartFile> files) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
-        return adService.deletePicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile().getBytes());
+        return adService.deletePicture(updatePictureDto.getId(), files);
     }
 
     // Not in use
@@ -138,34 +144,14 @@ public class AdController {
      */
 
 
-    @PostMapping("/auth/ads/newPicture")
-    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto) {
-        try {
-            return adService.storeImageForAd(dto.getId(), dto.getMultipartFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // Post multiple images --> dto contains adId and file array
-    @PostMapping(value = "/auth/ads/newPictures",
-                 consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-                 produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Response uploadPictures(AdDto dto) {
-        Set<MultipartFile> files = dto.getPictures();
-        for(MultipartFile file : files) {
-            try {
-                adService.storeImageForAd(dto.getAdId(), file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return new Response("Pictures are saved", HttpStatus.OK);
+    @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
+    public Response adPicture(@PathVariable Long userId,@PathVariable Long adId, @RequestPart List<MultipartFile> files) throws IOException {
+        //TODO
+        return adService.storeImageForAd(adId, files);
     }
 
     @GetMapping("/ads/pictures/{adId}")
-    public Response getPicturesForAd(@PathVariable long adId) {
+    public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
         return adService.getAllPicturesForAd(adId);
     }
 
@@ -239,6 +225,7 @@ public class AdController {
 
     @PostMapping("/getListWithinPriceRange")
     public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("got to controller");
         return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
     }
 
@@ -261,9 +248,9 @@ public class AdController {
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @GetMapping("/categoriesRecursive/{categoryName}")
-    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName){
-        return adService.getAllAdsInCategoryAndSubCategories(categoryName);
+    @PostMapping("/categoriesRecursive/{categoryName}")
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName, @RequestBody UserGeoLocation userGeoLocation){
+        return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     // Get all parent categories
@@ -287,4 +274,16 @@ public class AdController {
     public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
         return adService.sortArrayOfAdsByDateOldestFirst(list);
     }
+
+    @PostMapping("/ads/filter")
+    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("in controller");
+        return adService.getAllAdsWithFilter(filterListOfAds);
+    }
+
+    @PostMapping("/ads/category/filter")
+    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getAdsWithCategoryAndFilter(filterListOfAds);
+    }
+
 }

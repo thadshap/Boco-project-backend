@@ -32,6 +32,8 @@ public class Category {
 
     private String parentName;
 
+    private String icon;
+
     @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
     private Set<Ad> ads;
 

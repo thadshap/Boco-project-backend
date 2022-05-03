@@ -2,6 +2,7 @@ package com.example.idatt2106_2022_05_backend.integration;
 
 
 import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
@@ -451,7 +452,12 @@ public class CategoryIntegrationTest {
             assertEquals(adsFound.size(), 3);
 
             // Testing service method as well
-            ResponseEntity<Object> response = adService.getAllAdsInCategoryAndSubCategories("Flasks");
+            UserGeoLocation dto = new UserGeoLocation();
+            dto.setAmount(1);
+            dto.setLng(63.98);
+            dto.setLat(63.98);
+            ResponseEntity<Object> response =
+                    adService.getAllAdsInCategoryAndSubCategories("Flasks", dto);
             assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
         }
 

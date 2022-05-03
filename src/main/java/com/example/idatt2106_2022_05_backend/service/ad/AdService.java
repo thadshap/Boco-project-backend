@@ -1,14 +1,14 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.PixelGrabber;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
-    Response getAllAdsInCategoryAndSubCategories(String name);
+    Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
 
     Response getAllParentCategories();
 
@@ -66,7 +66,7 @@ public interface AdService {
     Response deleteAd(long adId);
 
     //delete picture
-    Response deletePicture(long ad_id, byte[] chosenPicture);
+    Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
 
     //upload a new picture
     // Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
@@ -110,9 +110,9 @@ public interface AdService {
 
     // Response uploadPictureToAd(long adId, MultipartFile file);
 
-    Response getAllPicturesForAd(long adId);
+    List<PictureReturnDto> getAllPicturesForAd(long adId);
 
-    Response storeImageForAd(long adId, MultipartFile file) throws IOException;
+    Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 
     Response getAllSubCategories(String parentName);
 
@@ -121,6 +121,10 @@ public interface AdService {
     Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
 
     Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
+
+    Response getAllAdsWithFilter(FilterListOfAds filterListOfAds);
+
+    Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }

@@ -26,18 +26,18 @@ public class Geocoder {
     public String GeocodeSync(String query) throws IOException, InterruptedException {
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        logger.info("created client");
+        // logger.info("created client");
         String encodedQuery = URLEncoder.encode(query,"UTF-8");
         String requestUri = GEOCODING_RESOURCE + "?apiKey=" + API_KEY + "&q=" + encodedQuery;
-        logger.info("created query: " + requestUri);
+        // logger.info("created query: " + requestUri);
         HttpRequest geocodingRequest = HttpRequest.newBuilder().GET().uri(URI.create(requestUri))
                 .timeout(Duration.ofMillis(2000)).build();
 
-        logger.info("created geocodingrequest");
+        // logger.info("created geocodingrequest");
         HttpResponse geocodingResponse = httpClient.send(geocodingRequest,
                 HttpResponse.BodyHandlers.ofString());
 
-        logger.info("Recieved response: " + geocodingResponse.body());
+        // logger.info("Recieved response: " + geocodingResponse.body());
         return String.valueOf(geocodingResponse.body());
     }
 /*
@@ -50,5 +50,6 @@ public class Geocoder {
         adService.setCoordinatesOnAd(ad);
         System.out.println("This ads coordianates are: " + ad.getLat()+ " "+ ad.getLng() );
 
-    }*/
+    }
+ */
 }
