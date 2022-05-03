@@ -43,7 +43,7 @@ public class UserController {
 
     @PutMapping("/profilePicture/{userId}")
     @ApiOperation(value = "Endpoint to update user profile picture", response = Response.class)
-    public Response updatePicture(@PathVariable Long userId, @RequestPart MultipartFile file) throws IOException {
+    public Response updatePicture(@PathVariable Long userId, @RequestPart("file") MultipartFile file) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
         if(!securityService.isUser(userId)){
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
