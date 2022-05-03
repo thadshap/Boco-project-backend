@@ -1061,7 +1061,7 @@ public class AdServiceImpl implements AdService {
         return new Response(ads, HttpStatus.OK);
     }
 
-    private void setCoordinatesOnAd(Ad ad)
+    public void setCoordinatesOnAd(Ad ad)
             throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
@@ -1150,8 +1150,24 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    @Override
+    public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds){
+        UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
+        List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
+        filterListOfAds.setList(list);
+        return new Response(getAllAdsWithFilter(filterListOfAds),HttpStatus.OK);
+    }
+
+    @Override
     public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
-        List<Ad> ads = adRepository.findAll();
+        List<Ad> ads = new ArrayList<>();
+        if(filterListOfAds.getList()!=null) {
+            for(AdDto a: filterListOfAds.getList()){
+                ads.add(adRepository.getById(a.getAdId()));
+            }
+        }else{
+            ads = adRepository.findAll();
+        }
         List<AdDto> list = new ArrayList<>();
         if (filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
             list = ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
@@ -1173,10 +1189,15 @@ public class AdServiceImpl implements AdService {
             for (AdDto a : list) {
                 a.setDistance(calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(), a.getLng()));
             }
+            //setting them in the right order
             if (filterListOfAds.isLowestValueFirst()) {
                 list.sort(Comparator.comparing(AdDto::getDistance));
             } else {
                 list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+            }
+            //excluding those that are outside the limit of distance
+            if(filterListOfAds.getUpperLimit()!=0 && filterListOfAds.getFilterType().toLowerCase().equals("distance")){
+                list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
             }
             return new Response(list, HttpStatus.OK);
         }

@@ -15,6 +15,7 @@ public class FilterListOfAds {
     private String filterType;
     private double upperLimit;
     private double lowerLimit;
+    private String category;
 
     private boolean lowestValueFirst;
     private double lat;

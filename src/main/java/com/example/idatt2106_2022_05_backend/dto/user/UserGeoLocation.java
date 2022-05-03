@@ -20,4 +20,9 @@ public class UserGeoLocation {
 
     @ApiModelProperty(notes = "amount of ads requested")
     private int amount;
+
+    public UserGeoLocation(double lat, double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 }

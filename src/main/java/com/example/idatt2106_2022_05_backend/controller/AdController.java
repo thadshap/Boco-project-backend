@@ -298,4 +298,10 @@ public class AdController {
         logger.info("in controller");
         return adService.getAllAdsWithFilter(filterListOfAds);
     }
+
+    @PostMapping("/ads/category/filter")
+    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getAdsWithCategoryAndFilter(filterListOfAds);
+    }
+
 }
