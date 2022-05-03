@@ -17,7 +17,7 @@ public interface UserService {
 
     Response updatePicture(Long userId, MultipartFile file) throws IOException;
 
-    byte[] getPicture(Long userId);
+    String getPicture(Long userId);
 
     Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException;
 

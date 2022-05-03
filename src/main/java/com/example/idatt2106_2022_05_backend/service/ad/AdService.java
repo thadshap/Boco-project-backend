@@ -110,7 +110,7 @@ public interface AdService {
 
     Response getAllPicturesForAd(long adId);
 
-    Response storeImageForAd(long adId, MultipartFile file) throws IOException;
+    Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 
     Response getAllSubCategories(String parentName);
 

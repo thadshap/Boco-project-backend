@@ -176,10 +176,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public byte[] getPicture(Long userId) {
+    public String getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
-        return picture.get(0).getData();
+
+        return Base64.getEncoder().encodeToString(picture.get(0).getData());
     }
 
     /**

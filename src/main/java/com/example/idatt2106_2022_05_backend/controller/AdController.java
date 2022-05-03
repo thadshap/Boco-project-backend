@@ -141,7 +141,7 @@ public class AdController {
     @PostMapping("/auth/ads/newPicture")
     public Response uploadPicture(@ModelAttribute UpdatePictureDto dto, @RequestPart List<MultipartFile> files) {
         try {
-            return adService.storeImageForAd(dto.getId(), (MultipartFile) files);
+            return adService.storeImageForAd(dto.getId(), files);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,11 +155,11 @@ public class AdController {
     public Response uploadPictures(AdDto dto) {
         Set<MultipartFile> files = dto.getPictures();
         for(MultipartFile file : files) {
-            try {
-                adService.storeImageForAd(dto.getAdId(), file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+////                adService.storeImageForAd(dto.getAdId(), file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
         return new Response("Pictures are saved", HttpStatus.OK);
     }

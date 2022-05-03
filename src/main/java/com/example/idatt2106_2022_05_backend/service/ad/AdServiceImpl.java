@@ -1110,6 +1110,11 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException {
+        return null;
+    }
+
+    @Override
     public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
         list.sort(Comparator.comparing(AdDto::getCreated));
         return new Response(list, HttpStatus.OK);
@@ -1121,7 +1126,7 @@ public class AdServiceImpl implements AdService {
         return new Response(list, HttpStatus.OK);
     }
 
-    @Override
+//    @Override
     public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
 
         return pictureService.savePicture(file, adId, 0);
