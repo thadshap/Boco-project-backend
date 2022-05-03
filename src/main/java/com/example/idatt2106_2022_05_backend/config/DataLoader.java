@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -520,6 +521,20 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(build);
             categoryRepository.save(datamaskin);
             adRepository.saveAll(ads);
+
+
+            File file = new File("src/main/resources/images/pants.jpg");
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            Picture picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type("PB")
+                    .build();
+
+            user1.setPicture(picture);
+            picture.setUser(user1);
+            userRepository.save(user1);
+            pictureRepository.save(picture);
 
 //            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
 //            FileInputStream input = new FileInputStream(file);
