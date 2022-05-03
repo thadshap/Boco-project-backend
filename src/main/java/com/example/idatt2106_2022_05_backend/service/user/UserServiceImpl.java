@@ -220,6 +220,7 @@ public class UserServiceImpl implements UserService {
                 .role(userGot.getRole())
                 .verified(userGot.isVerified())
                 .rating(userGot.getRating())
+                .nrOfReviews(userGot.getNumberOfReviews())
                 .pictureUrl(userGot.getPictureUrl())
                 .build();
 
