@@ -49,13 +49,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
-            cors.setAllowCredentials(false);
+            cors.setAllowCredentials(true);
             cors.setAllowedOrigins(List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
-                .antMatchers("/","/ws","/ws/**",  "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword")
+                .antMatchers("/","/ws","/ws/**",  "/auth/login", "/h2/**", "/auth/login/outside/service", "/auth/forgotPassword", "/api/**", "/user/**")
                 .permitAll().antMatchers("/v2/api-docs").permitAll().antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll().antMatchers("/configuration/security").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll().antMatchers("/swagger-ui/**").permitAll()
