@@ -22,7 +22,7 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
-    Response getAllAdsInCategoryAndSubCategories(String name);
+    Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
 
     Response getAllParentCategories();
 
@@ -120,6 +120,10 @@ public interface AdService {
     Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
 
     Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
+
+    Response getAllAdsWithFilter(FilterListOfAds filterListOfAds);
+
+    Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }

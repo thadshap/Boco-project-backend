@@ -1,6 +1,8 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
+import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.messaging.Message;
@@ -11,9 +13,24 @@ public interface ChatService {
 
     Response getAllMessagesByGroupId(long groupId);
 
+    //MessageDto saveMessage(MessageDto message, long groupId);
+
     Response getChat(long id);
 
-    void broadcast(Message message);
+    Response createTwoUserGroup(PrivateGroupDto privateGroupDto);
+
+    Response getGroupChatsBasedOnUserId(long id);
+
+    Response removeUserFromGroupById(long groupId, long userId);
+
+    Response addUserToGroupById(long groupId, long userId);
+
+
+    void broadcast(MessageDto message);
+
+    Response createGroupFromUserIds(ListGroupDto listGroupDto);
+
+    Response changeGroupNameFromGroupId(long groupId, String newName);
 
     //Response getGroupChatsBasedOnUserId(long id);
 

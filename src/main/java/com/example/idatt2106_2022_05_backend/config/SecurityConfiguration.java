@@ -1,6 +1,9 @@
 package com.example.idatt2106_2022_05_backend.config;
 
+//import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
+//import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
+//import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private JWTConfig jwtConfig;
 
     private static final String[] WHITELIST_URLS = {
-            "/",
+            "/**",
             "/auth/**",
             "/ws",
             "/ws/**",
@@ -70,6 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
