@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
+import com.example.idatt2106_2022_05_backend.dto.FilterListOfAds;
 import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
@@ -23,7 +24,7 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
-    Response getAllAdsInCategoryAndSubCategories(String name);
+    Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
 
     Response getAllParentCategories();
 
@@ -121,6 +122,10 @@ public interface AdService {
     Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
 
     Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
+
+    Response getAllAdsWithFilter(FilterListOfAds filterListOfAds);
+
+    Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,6 +48,10 @@ public class DataLoader implements ApplicationRunner {
 
         private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+        private GroupRepository groupRepository;
+
+        private MessageRepository messageRepository;
+
         @Autowired
         CalendarService calendarService;
 
@@ -59,11 +65,13 @@ public class DataLoader implements ApplicationRunner {
      * @param adRepository repository of the {@link Ad} object
      * @param categoryRepository repository of the {@link Category} object
      * @param calDateRepository repository of the {@link CalendarDate} object
+     * @param groupRepository repository of the {@link Group} object
+     * @param messageRepository repository of the {@link Message} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
                           CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
                       RentalRepository rentalRepository, ReviewRepository reviewRepository,
-                      PictureRepository pictureRepository) {
+                      PictureRepository pictureRepository, GroupRepository groupRepository, MessageRepository messageRepository) {
 
             this.userRepository = userRepository;
             this.adRepository = adRepository;
@@ -72,6 +80,10 @@ public class DataLoader implements ApplicationRunner {
             this.rentalRepository = rentalRepository;
             this.reviewRepository = reviewRepository;
             this.pictureRepository = pictureRepository;
+            this.groupRepository = groupRepository;
+            this.messageRepository = messageRepository;
+            this.groupRepository = groupRepository;
+            this.messageRepository = messageRepository;
         }
 
         public void run(ApplicationArguments args) throws IOException {
@@ -650,5 +662,78 @@ public class DataLoader implements ApplicationRunner {
 //            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
 //            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
 //            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+
+            Group group1 = Group.builder()
+                    .name("gruppechat1")
+                    .build();
+
+            Group group2 = Group.builder()
+                    .name("gruppechat2")
+                    .build();
+
+            Group group3 = Group.builder()
+                    .name("gruppechat3")
+                    .build();
+
+            Set<User> users1 = new HashSet<>();
+            users1.add(user1);
+            users1.add(user2);
+            group1.setUsers(users1);
+
+            Set<User> users2 = new HashSet<>();
+            users2.add(user1);
+            users2.add(user3);
+            group2.setUsers(users2);
+
+            Set<User> users3 = new HashSet<>();
+            users3.add(user3);
+            users3.add(user4);
+            group3.setUsers(users3);
+
+            groupRepository.save(group1);
+            groupRepository.save(group2);
+            groupRepository.save(group3);
+
+            Message message1 = Message.builder()
+                    .content("Hei!")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message2 = Message.builder()
+                    .content("Halo")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message3 = Message.builder()
+                    .content("Så fint vær idag.")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message4 = Message.builder()
+                    .content("Nei")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message5 = Message.builder()
+                    .content("-(^__^)-")
+                    .group(group2)
+                    .user(user3)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            messageRepository.save(message1);
+            messageRepository.save(message2);
+            messageRepository.save(message3);
+            messageRepository.save(message4);
+            messageRepository.save(message5);
+
         }
 }

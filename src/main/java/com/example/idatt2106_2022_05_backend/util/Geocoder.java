@@ -49,5 +49,6 @@ public class Geocoder {
         adService.setCoordinatesOnAd(ad);
         System.out.println("This ads coordianates are: " + ad.getLat()+ " "+ ad.getLng() );
 
-    }*/
+    }
+ */
 }
