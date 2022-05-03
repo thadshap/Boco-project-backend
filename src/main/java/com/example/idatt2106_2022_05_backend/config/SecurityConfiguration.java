@@ -91,9 +91,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .x509()
-                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
+//                .and()
+//                .x509()
+//                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
 
                 // Relax CSRF on the WebSocket due to needing direct access from apps
