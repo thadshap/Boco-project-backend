@@ -76,7 +76,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
-            cors.setAllowedOrigins(List.of("https://localhost:8080/"));
+            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedOrigins(List.of("http://localhost:8080/"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
@@ -87,9 +88,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .x509()
-                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
+//                .and()
+//                .x509()
+//                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
 
                 // Relax CSRF on the WebSocket due to needing direct access from apps

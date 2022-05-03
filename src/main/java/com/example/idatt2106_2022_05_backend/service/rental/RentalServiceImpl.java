@@ -118,8 +118,10 @@ public class RentalServiceImpl implements RentalService {
         }
         rentalRepository.save(rental);
         //TODO check if right user gets confirm email
-        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
-                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
+
+
+//        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
+//                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
         return new Response("Rental has been activated", HttpStatus.ACCEPTED);
     }
 
@@ -140,6 +142,7 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setRating(rating.getRating());
         rental.setActive(false);
+        //TODO set user rating
         rentalRepository.save(rental);
         return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
     }
@@ -172,10 +175,11 @@ public class RentalServiceImpl implements RentalService {
         if (rentalDto.getDeadline() != null){
             rental.setDeadline(rentalDto.getDeadline());
         }
-        if (rentalDto.getPrice() <= 0){
+        if (!(rentalDto.getPrice() <= 0)){
             rental.setPrice(rentalDto.getPrice());
         }
-        return new Response("Rental", HttpStatus.ACCEPTED);
+        rentalRepository.save(rental);
+        return new Response("Rental updated", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -196,6 +200,7 @@ public class RentalServiceImpl implements RentalService {
         System.out.println("returning the rental");
         Rental rental = rentalOptional.get();
         RentalDto rentalReturn = RentalDto.builder()
+                .id(rental.getId())
                 .adId(rental.getAd().getId())
                 .borrower(rental.getBorrower().getId())
                 .owner(rental.getOwner().getId())
@@ -204,6 +209,7 @@ public class RentalServiceImpl implements RentalService {
                 .deadline(rental.getDeadline())
                 .rentFrom(rental.getRentFrom())
                 .rentTo(rental.getRentTo())
+                .price(rental.getPrice())
                 .build();
         return new Response(rentalReturn, HttpStatus.OK);
     }
@@ -238,6 +244,7 @@ public class RentalServiceImpl implements RentalService {
                     .deadline(rental.get(i).getDeadline())
                     .rentFrom(rental.get(i).getRentFrom())
                     .rentTo(rental.get(i).getRentTo())
+                    .price(rental.get(i).getPrice())
                     .build();
             rentals.getRentals().add(rentalReturn);
         }
