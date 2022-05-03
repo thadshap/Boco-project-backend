@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +16,9 @@ public interface UserService {
 
     Response deleteProfilePicture(long userId, byte[] chosenPicture);
 
-    Response updatePicture(Long userId, MultipartFile file);
+    Response updatePicture(Long userId, MultipartFile file) throws IOException;
 
-    Response getPicture(Long userId);
+    PictureReturnDto getPicture(Long userId);
 
     Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException;
 

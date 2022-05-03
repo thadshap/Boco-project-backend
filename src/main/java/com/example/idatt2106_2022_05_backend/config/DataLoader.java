@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -133,14 +134,15 @@ public class DataLoader implements ApplicationRunner {
 
 
             // Create main-categories
-            Category tur = Category.builder().name("Tur").parent(true).build();
-            Category klor = Category.builder().name("Klær").parent(true).build();
-            Category redskap = Category.builder().name("Redskap").parent(true).build();
-            Category skole = Category.builder().name("Skole").parent(true).build();
+            Category tur = Category.builder().name("Tur").parent(true).icon("fa-suitcase").build();
+            Category klor = Category.builder().name("Klær").parent(true).icon("fa-socks").build();
+            Category redskap = Category.builder().name("Redskap").parent(true).icon("fa-wrench").build();
+            Category skole = Category.builder().name("Skole").parent(true).icon("fa-graduation-cap").build();
 
             // Persist main-categories
             categoryRepository.save(tur);
             categoryRepository.save(klor);
+            categoryRepository.save(redskap);
             categoryRepository.save(skole);
 
             System.out.println("categories: " + categoryRepository.findAll());
@@ -531,6 +533,20 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(build);
             categoryRepository.save(datamaskin);
             adRepository.saveAll(ads);
+
+
+            File file = new File("src/main/resources/images/pants.jpg");
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            Picture picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+
+            user1.setPicture(picture);
+            picture.setUser(user1);
+            userRepository.save(user1);
+            pictureRepository.save(picture);
 
 //            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
 //            FileInputStream input = new FileInputStream(file);

@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
@@ -155,15 +156,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response updatePicture(Long userId, MultipartFile file) {
-//        User user = userRepository.getById(userId);
-//        user.setPicture(file);
-        return null;
+    public Response updatePicture(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.getById(userId);
+        System.out.println(file.getName());
+        System.out.println(file.getContentType());
+//        String filename = file.getName().split("\\.")[1];
+//        if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") || !filename.equalsIgnoreCase("jpeg") ){
+//            return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
+//        }
+        Picture picture = Picture.builder()
+                .filename(file.getName())
+                .type(file.getContentType())
+                .data(file.getBytes())
+                .build();
+        user.setPicture(picture);
+        picture.setUser(user);
+        pictureRepository.deleteByUser(user);
+        userRepository.save(user);
+        pictureRepository.save(picture);
+        return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
     @Override
-    public Response getPicture(Long userId) {
-        return null;
+    public PictureReturnDto getPicture(Long userId) {
+        User user = userRepository.getById(userId);
+        List<Picture> picture = pictureRepository.findByUser(user);
+        return PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .type(picture.get(0).getType())
+                .build();
     }
 
     /**
