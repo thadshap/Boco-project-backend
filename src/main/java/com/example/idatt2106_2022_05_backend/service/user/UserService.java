@@ -15,9 +15,9 @@ public interface UserService {
 
     Response deleteProfilePicture(long userId, byte[] chosenPicture);
 
-    Response updatePicture(Long userId, MultipartFile file);
+    Response updatePicture(Long userId, MultipartFile file) throws IOException;
 
-    Response getPicture(Long userId);
+    byte[] getPicture(Long userId);
 
     Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException;
 

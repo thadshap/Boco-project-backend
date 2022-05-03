@@ -155,15 +155,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response updatePicture(Long userId, MultipartFile file) {
-//        User user = userRepository.getById(userId);
-//        user.setPicture(file);
-        return null;
+    public Response updatePicture(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.getById(userId);
+        System.out.println(file.getName());
+        System.out.println(file.getContentType());
+//        String filename = file.getName().split("\\.")[1];
+//        if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") || !filename.equalsIgnoreCase("jpeg") ){
+//            return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
+//        }
+        Picture picture = Picture.builder()
+                .filename(file.getName())
+                .type("PB")
+                .data(file.getBytes())
+                .build();
+        user.setPicture(picture);
+        picture.setUser(user);
+        userRepository.save(user);
+        pictureRepository.save(picture);
+        return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
     @Override
-    public Response getPicture(Long userId) {
-        return null;
+    public byte[] getPicture(Long userId) {
+        User user = userRepository.getById(userId);
+        List<Picture> picture = pictureRepository.findByUser(user);
+        return picture.get(0).getData();
     }
 
     /**

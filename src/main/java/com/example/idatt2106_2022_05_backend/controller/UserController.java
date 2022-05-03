@@ -51,11 +51,11 @@ public class UserController {
     }
 
     @GetMapping("/profilePicture/{userId}")
-    @ApiOperation(value = "Endpoint to update user profile picture", response = Response.class)
-    public Response updatePicture(@PathVariable Long userId) throws IOException {
+    @ApiOperation(value = "Endpoint to get user profile picture", response = Response.class)
+    public byte[] getPicture(@PathVariable Long userId) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
         if(!securityService.isUser(userId)){
-            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+            return null;
         }
         return userService.getPicture(userId);
     }
