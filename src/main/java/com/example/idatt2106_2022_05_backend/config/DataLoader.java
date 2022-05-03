@@ -550,49 +550,135 @@ public class DataLoader implements ApplicationRunner {
             pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/hammer.jpg");
-            fileContent(newHammer, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            newHammer.setPictures(new HashSet<>());
+            newHammer.getPictures().add(picture);
+            picture.setAd(newHammer);
+            adRepository.save(newHammer);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/klovn.jpg");
-            fileContent(klovn, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            klovn.setPictures(new HashSet<>());
+            klovn.getPictures().add(picture);
+            picture.setAd(klovn);
+            adRepository.save(klovn);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/images/borre.jpg");
-            fileContent(borre, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            borre.setPictures(new HashSet<>());
+            borre.getPictures().add(picture);
+            picture.setAd(borre);
+            adRepository.save(borre);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/lader.jpg");
-            fileContent(charger, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            charger.setPictures(new HashSet<>());
+            charger.getPictures().add(picture);
+            picture.setAd(charger);
+            adRepository.save(charger);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/lavvo.jpg");
-            fileContent(tent, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            tent.setPictures(new HashSet<>());
+            tent.getPictures().add(picture);
+            picture.setAd(tent);
+            adRepository.save(tent);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/lenovo.jpg");
-            fileContent(pc, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            pc.setPictures(new HashSet<>());
+            pc.getPictures().add(picture);
+            picture.setAd(pc);
+            adRepository.save(pc);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/matte.jpg");
-            fileContent(matte, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            matte.setPictures(new HashSet<>());
+            matte.getPictures().add(picture);
+            picture.setAd(matte);
+            adRepository.save(matte);
+            pictureRepository.save(picture);
+
 
             file = new File("src/main/resources/static/images/mboard.jpg");
-            fileContent(motherBoard, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            motherBoard.setPictures(new HashSet<>());
+            motherBoard.getPictures().add(picture);
+            picture.setAd(motherBoard);
+            adRepository.save(motherBoard);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/sovepose.jpg");
-            fileContent(sove, file);
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            sove.setPictures(new HashSet<>());
+            sove.getPictures().add(picture);
+            picture.setAd(sove);
+            adRepository.save(sove);
+            pictureRepository.save(picture);
 
             file = new File("src/main/resources/static/images/tux.jpg");
-            fileContent(tux, file);
-        }
+            fileContent = Files.readAllBytes(file.toPath());
+            picture = Picture.builder()
+                    .filename(file.getName())
+                    .data(fileContent)
+                    .type(Files.probeContentType(file.toPath()))
+                    .build();
+            tux.setPictures(new HashSet<>());
+            tux.getPictures().add(picture);
+            picture.setAd(tux);
+            adRepository.save(tux);
+            pictureRepository.save(picture);
 
-    private void fileContent(Ad ad, File file) throws IOException {
-        byte[] fileContent;
-        Picture picture;
-        fileContent = Files.readAllBytes(file.toPath());
-        picture = Picture.builder()
-                .filename(file.getName())
-                .data(fileContent)
-                .type(Files.probeContentType(file.toPath()))
-                .build();
-        ad.setPictures(new HashSet<>());
-        ad.getPictures().add(picture);
-        picture.setAd(ad);
-        adRepository.save(ad);
-        pictureRepository.save(picture);
-    }
+        }
 }

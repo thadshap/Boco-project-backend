@@ -4,10 +4,7 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalListDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.CalendarDate;
-import com.example.idatt2106_2022_05_backend.model.Rental;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.CalendarDateRepository;
 import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
@@ -142,6 +139,16 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setRating(rating.getRating());
         rental.setActive(false);
+        User user = userRepository.getById(rental.getOwner().getId());
+        user.setNumberOfReviews(user.getNumberOfReviews()+1);
+        user.setRating((user.getRating()+rating.getRating())/user.getNumberOfReviews());
+        Review review = Review.builder()
+                .user(user)
+                .description(rating.getReview())
+                .rating((int)rating.getRating())
+//                .
+                .build();
+//        user.getReviews().add();
         //TODO set user rating
         rentalRepository.save(rental);
         return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
