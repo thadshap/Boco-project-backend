@@ -3,6 +3,7 @@ package com.example.idatt2106_2022_05_backend.controller;
 import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
@@ -11,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -22,7 +22,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin("http://localhost:8081")
+@CrossOrigin("http://localhost:8080")
 public class ChatController {
 
     @Autowired
@@ -44,23 +44,11 @@ public class ChatController {
 
     @MessageMapping("/chat/{groupId}")
     @SendTo("/topic/messages/{groupId}")
-    public MessageDto sendMessage(@PathVariable String groupId, String content) {
-        logger.info("got to controller");
-        logger.info("Got message: "+ content);
-        logger.info("groupId: "+ groupId);
-        MessageDto message = new MessageDto();
-        message.setContent(content);
-        //Setting user
-        User user = securityService.getCurrentUser();
-        message.setFirstName(user.getFirstName());
-        message.setLastName(user.getFirstName());
-        message.setUserId(user.getId());
-        //message.setGroupId(groupId);
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
-        message.setTimeStamp(time);
+    public MessageDto sendMessage(@DestinationVariable Long groupId, MessageDto messageDto) {
+        logger.info("Message sent to groupId: " + groupId);
+        MessageDto msgDto = chatService.sendMessage(groupId, messageDto);
 
-        //TODO: save message to db
-        return message;
+        return msgDto;
     }
 
 
@@ -106,9 +94,15 @@ public class ChatController {
     }
 
     @PutMapping("/group/add/user/{groupId}/{userId}")
-    @ApiOperation(value = "Endpoint to add user to existing group", response = Response.class)
+    @ApiOperation(value = "Endpoint to add user to existing group with userId", response = Response.class)
     public Response addUserToGroupById(@PathVariable long groupId, @PathVariable long userId) {
         return chatService.addUserToGroupById(groupId, userId);
+    }
+
+    @PutMapping("/group/add/user/email/{groupId}/{email}")
+    @ApiOperation(value = "Endpoint to add user to existing group with email", response = Response.class)
+    public Response addUserToGroupByEmail(@PathVariable long groupId, @PathVariable String email) {
+        return chatService.addUserToGroupByEmail(groupId, email);
     }
 
 }

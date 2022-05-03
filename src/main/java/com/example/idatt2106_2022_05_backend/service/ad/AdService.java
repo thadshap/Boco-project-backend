@@ -128,4 +128,3 @@ public interface AdService {
 
     //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
-

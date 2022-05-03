@@ -32,6 +32,10 @@ public interface ChatService {
 
     Response changeGroupNameFromGroupId(long groupId, String newName);
 
+    MessageDto sendMessage(Long groupId, MessageDto content);
+
+    Response addUserToGroupByEmail(long groupId, String email);
+
     //Response getGroupChatsBasedOnUserId(long id);
 
 }

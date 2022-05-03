@@ -33,31 +33,38 @@ import java.util.Set;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        private AdRepository adRepository;
+    @Autowired
+    private AdRepository adRepository;
 
-        private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-        private CalendarDateRepository calDateRepository;
+    @Autowired
+    private CalendarDateRepository calDateRepository;
 
-        private RentalRepository rentalRepository;
+    @Autowired
+    private RentalRepository rentalRepository;
 
-        private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
-        private PictureRepository pictureRepository;
+    @Autowired
+    private PictureRepository pictureRepository;
 
-        private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        private GroupRepository groupRepository;
+    private GroupRepository groupRepository;
 
-        private MessageRepository messageRepository;
+    private MessageRepository messageRepository;
 
-        @Autowired
-        CalendarService calendarService;
+    @Autowired
+    CalendarService calendarService;
 
-        @Autowired
-        AdService adService;
+    @Autowired
+    AdService adService;
 
     /**
      * Constructor of the class.
@@ -70,7 +77,7 @@ public class DataLoader implements ApplicationRunner {
      * @param messageRepository repository of the {@link Message} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
+                      CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
                       RentalRepository rentalRepository, ReviewRepository reviewRepository,
                       PictureRepository pictureRepository, GroupRepository groupRepository, MessageRepository messageRepository) {
 
@@ -87,105 +94,105 @@ public class DataLoader implements ApplicationRunner {
             this.messageRepository = messageRepository;
         }
 
-        public void run(ApplicationArguments args) throws IOException {
+    public void run(ApplicationArguments args) throws IOException {
 
-            // Create users
-            User user1 = User.builder()
-                    .firstName("Anders")
-                    .lastName("Tellefsen")
-                    .email("andetel@stud.ntnu.no")
-                    .password(passwordEncoder.encode("passord123"))
-                    .verified(true)
-                    .role("User")
-                    .build();
-            User user2 = User.builder()
-                    .firstName("Brage")
-                    .lastName("Minge")
-                    .email("bragem@stud.ntnu.no")
-                    .password(passwordEncoder.encode("passord123"))
-                    .verified(true)
-                    .role("User")
-                    .build();
+        // Create users
+        User user1 = User.builder()
+                .firstName("Anders")
+                .lastName("Tellefsen")
+                .email("andetel@stud.ntnu.no")
+                .password(passwordEncoder.encode("passord123"))
+                .verified(true)
+                .role("User")
+                .build();
+        User user2 = User.builder()
+                .firstName("Brage")
+                .lastName("Minge")
+                .email("bragem@stud.ntnu.no")
+                .password(passwordEncoder.encode("passord123"))
+                .verified(true)
+                .role("User")
+                .build();
 
-            User user3 = User.builder()
-                    .firstName("Hasan")
-                    .lastName("Rehman")
-                    .email("hasano@stud.ntnu.no")
-                    .password(passwordEncoder.encode("passord123"))
-                    .verified(true)
-                    .role("User")
-                    .build();
+        User user3 = User.builder()
+                .firstName("Hasan")
+                .lastName("Rehman")
+                .email("hasano@stud.ntnu.no")
+                .password(passwordEncoder.encode("passord123"))
+                .verified(true)
+                .role("User")
+                .build();
 
-            User user4 = User.builder()
-                    .firstName("Daniel")
-                    .lastName("Danielsen")
-                    .email("daniel@gmail.com")
-                    .password(passwordEncoder.encode("passord123"))
-                    .verified(true)
-                    .role("User")
-                    .build();
+        User user4 = User.builder()
+                .firstName("Daniel")
+                .lastName("Danielsen")
+                .email("daniel@gmail.com")
+                .password(passwordEncoder.encode("passord123"))
+                .verified(true)
+                .role("User")
+                .build();
 
-            // Persist the users
+        // Persist the users
 
-            userRepository.save(user1);
-            userRepository.save(user2);
-            userRepository.save(user3);
-            userRepository.save(user4);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+        userRepository.save(user4);
 
 
-            // Create main-categories
-            Category tur = Category.builder().name("Tur").parent(true).icon("fa-suitcase").build();
-            Category klor = Category.builder().name("Klær").parent(true).icon("fa-socks").build();
-            Category redskap = Category.builder().name("Redskap").parent(true).icon("fa-wrench").build();
-            Category skole = Category.builder().name("Skole").parent(true).icon("fa-graduation-cap").build();
+        // Create main-categories
+        Category tur = Category.builder().name("Tur").parent(true).icon("fa-suitcase").build();
+        Category klor = Category.builder().name("Klær").parent(true).icon("fa-socks").build();
+        Category redskap = Category.builder().name("Redskap").parent(true).icon("fa-wrench").build();
+        Category skole = Category.builder().name("Skole").parent(true).icon("fa-graduation-cap").build();
 
-            // Persist main-categories
-            categoryRepository.save(tur);
-            categoryRepository.save(klor);
-            categoryRepository.save(redskap);
-            categoryRepository.save(skole);
+        // Persist main-categories
+        categoryRepository.save(tur);
+        categoryRepository.save(klor);
+        categoryRepository.save(redskap);
+        categoryRepository.save(skole);
 
-            // Create sub-categories
-            Category telt = Category.builder().name("Telt").
-                    parentName(tur.getName()).parent(false).child(true).build();
-            Category build = Category.builder().name("Bårre-maskin").
-                    parentName(redskap.getName()).parent(false).child(true).build();
-            Category datamaskin = Category.builder().name("Datamaskin").
-                    parentName(skole.getName()).parent(true).child(true).build();
+        // Create sub-categories
+        Category telt = Category.builder().name("Telt").
+                parentName(tur.getName()).parent(false).child(true).build();
+        Category build = Category.builder().name("Bårre-maskin").
+                parentName(redskap.getName()).parent(false).child(true).build();
+        Category datamaskin = Category.builder().name("Datamaskin").
+                parentName(skole.getName()).parent(true).child(true).build();
 
-            // Add a new category as well for testing!
-            Category boker = Category.builder().name("Bøker").
-                    parentName(skole.getName()).parent(false).child(true).build();
+        // Add a new category as well for testing!
+        Category boker = Category.builder().name("Bøker").
+                parentName(skole.getName()).parent(false).child(true).build();
 
-            Category hammer = Category.builder().name("Hammer").
-                    parentName(redskap.getName()).parent(false).child(true).build();
+        Category hammer = Category.builder().name("Hammer").
+                parentName(redskap.getName()).parent(false).child(true).build();
 
-            // Persist sub-categories
-            categoryRepository.save(telt);
-            categoryRepository.save(build);
-            categoryRepository.save(datamaskin);
-            categoryRepository.save(hammer);
-            categoryRepository.save(boker);
+        // Persist sub-categories
+        categoryRepository.save(telt);
+        categoryRepository.save(build);
+        categoryRepository.save(datamaskin);
+        categoryRepository.save(hammer);
+        categoryRepository.save(boker);
 
-            // Create sub category of sub-category
-            Category lader = Category.builder().name("Lader").
-                    parentName(datamaskin.getName()).parent(false).child(true).build();
+        // Create sub category of sub-category
+        Category lader = Category.builder().name("Lader").
+                parentName(datamaskin.getName()).
+                parent(false).
+                child(true).
+                build();
 
-            categoryRepository.save(lader);
+        categoryRepository.save(lader);
 
 
             // Create ad
-            Ad pants = Ad.builder().
-                    title("Borre-maskin").
+            Ad borre = Ad.builder().
+                    title("Borrmaskin").
                     description("Leier ut en kraftig borremaskin, kun 50 kr per time eller 300kr pr dag").
                     rental(true).
                     durationType(AdType.MONTH).
                     duration(2).
                     price(50).
                     created(LocalDate.now()).
-                    lat(63.4).
-                    lng(10.4).
-                    streetAddress("Gate 4").
                     postalCode(7030).
                     city("Trondheim").
                     lat(63.428961).
@@ -194,7 +201,7 @@ public class DataLoader implements ApplicationRunner {
                     category(build).
                     build();
 
-            Ad fruit = Ad.builder().
+            Ad tux = Ad.builder().
                     title("Leier ut tux").
                     description("1000 kr pr kveld").
                     rental(true).
@@ -269,7 +276,7 @@ public class DataLoader implements ApplicationRunner {
                     category(datamaskin).
                     build();
 
-            Ad p = Ad.builder().
+            Ad sove = Ad.builder().
                     title("Sovepose og primus").
                     description("Leier ut sovepose og primus, leies ut kun sammen").
                     rental(true).
@@ -288,7 +295,7 @@ public class DataLoader implements ApplicationRunner {
                     category(tur).
                     build();
 
-            Ad pa = Ad.builder().
+            Ad newHammer = Ad.builder().
                     title("Ny Hammer").
                     description("Leier ut en ny hammer").
                     rental(true).
@@ -307,7 +314,7 @@ public class DataLoader implements ApplicationRunner {
                     category(hammer).
                     build();
 
-            Ad pan = Ad.builder().
+            Ad matte = Ad.builder().
                     title("Skolebøker Matematikk 3").
                     description("Leier ut matematiske metoder 3 boka").
                     rental(true).
@@ -324,7 +331,7 @@ public class DataLoader implements ApplicationRunner {
                     category(skole).
                     build();
 
-            Ad pant = Ad.builder().
+            Ad klovn = Ad.builder().
                     title("Klovnekostyme").
                     description("Leier ut ett klovne-sett").
                     rental(true).
@@ -341,7 +348,7 @@ public class DataLoader implements ApplicationRunner {
                     category(klor).
                     build();
 
-            Ad pantss = Ad.builder().
+            Ad tent = Ad.builder().
                     title("Nytt telt").
                     description("Lavvo med plass til 8").
                     rental(true).
@@ -368,21 +375,21 @@ public class DataLoader implements ApplicationRunner {
             */
             // Persist the 3 ads
 
-            adRepository.save(pants);
-            adRepository.save(fruit);
+            adRepository.save(borre);
+            adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
             adRepository.save(motherBoard);
 
 
-            adRepository.save(p);
-            adRepository.save(pa);
-            adRepository.save(pan);
-            adRepository.save(pant);
-            adRepository.save(pantss);
+            adRepository.save(sove);
+            adRepository.save(newHammer);
+            adRepository.save(matte);
+            adRepository.save(klovn);
+            adRepository.save(tent);
 
             Rental rental = Rental.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .owner(user1)
                     .borrower(user2)
                     .price(10000)
@@ -396,7 +403,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .owner(user1)
                     .borrower(user2)
                     .price(1000)
@@ -409,7 +416,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .owner(user1)
                     .borrower(user2)
                     .price(100)
@@ -422,7 +429,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -435,7 +442,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(p)
+                    .ad(sove)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -448,7 +455,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             Review review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("veldig bra anbefaler dette produktet!")
                     .rating(9)
@@ -456,7 +463,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -464,7 +471,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -472,7 +479,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -480,7 +487,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -488,7 +495,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -496,7 +503,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -504,7 +511,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(p)
+                    .ad(sove)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -535,11 +542,11 @@ public class DataLoader implements ApplicationRunner {
 
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();
-            ads1.add(fruit);
+            ads1.add(tux);
             telt.setAds(ads1);
 
             Set<Ad> ads2 = new HashSet<>();
-            ads2.add(pants);
+            ads2.add(borre);
             build.setAds(ads2);
 
             Set<Ad> ads3 = new HashSet<>();
@@ -552,221 +559,155 @@ public class DataLoader implements ApplicationRunner {
             adRepository.saveAll(ads);
 
 
-            File file = new File("src/main/resources/images/pants.jpg");
-            byte[] fileContent = Files.readAllBytes(file.toPath());
-            Picture picture = Picture.builder()
-                    .filename(file.getName())
-                    .data(fileContent)
-                    .type(Files.probeContentType(file.toPath()))
-                    .build();
+        Group group1 = Group.builder()
+                .name("gruppechat1")
+                .build();
 
-            user1.setPicture(picture);
-            picture.setUser(user1);
-            userRepository.save(user1);
-            pictureRepository.save(picture);
+        Group group2 = Group.builder()
+                .name("gruppechat2")
+                .build();
 
-//            File file = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
-//            FileInputStream input = new FileInputStream(file);
-//            MultipartFile multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            Set<Picture> set = new HashSet<>();
-//            Picture pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//
-//            file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//            file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(pants)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            pants.setPictures(new HashSet<>());
-//            pants.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/kristopher-roller-PC_lbSSxCZE-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
-//
-//
-//            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
-//            input = new FileInputStream(file);
-//            multipartFile = new MockMultipartFile("file",
-//                    file. getName(), "image/jpg", (input).readAllBytes());
-//            set = new HashSet<>();
-//            pic = Picture.builder()
-//                    .ad(fruit)
-//                    .data(PictureUtility.compressImage(multipartFile.getBytes()))
-//                    .filename(file.getName())
-//                    .type("jpg")
-//                    .build();
-//            set.add(pic);
-//            fruit.setPictures(new HashSet<>());
-//            fruit.setPictures(set);
-//            pictureRepository.save(pic);
-//            adRepository.save(pants);
+        Group group3 = Group.builder()
+                .name("gruppechat3")
+                .build();
 
-//            Ad ad =
-//
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
-//            pants.setDates(calendarService.addFutureDates(savedAd.getId()));
+        Set<User> users1 = new HashSet<>();
+        users1.add(user1);
+        users1.add(user2);
+        group1.setUsers(users1);
 
-            Group group1 = Group.builder()
-                    .name("gruppechat1")
-                    .build();
+        Set<User> users2 = new HashSet<>();
+        users2.add(user1);
+        users2.add(user3);
+        group2.setUsers(users2);
 
-            Group group2 = Group.builder()
-                    .name("gruppechat2")
-                    .build();
+        Set<User> users3 = new HashSet<>();
+        users3.add(user3);
+        users3.add(user4);
+        group3.setUsers(users3);
 
-            Group group3 = Group.builder()
-                    .name("gruppechat3")
-                    .build();
+        groupRepository.save(group1);
+        groupRepository.save(group2);
+        groupRepository.save(group3);
 
-            Set<User> users1 = new HashSet<>();
-            users1.add(user1);
-            users1.add(user2);
-            group1.setUsers(users1);
+        Message message1 = Message.builder()
+                .content("Hei!")
+                .group(group1)
+                .user(user1)
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
 
-            Set<User> users2 = new HashSet<>();
-            users2.add(user1);
-            users2.add(user3);
-            group2.setUsers(users2);
+        Message message2 = Message.builder()
+                .content("Halo")
+                .group(group1)
+                .user(user2)
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
 
-            Set<User> users3 = new HashSet<>();
-            users3.add(user3);
-            users3.add(user4);
-            group3.setUsers(users3);
+        Message message3 = Message.builder()
+                .content("Så fint vær idag.")
+                .group(group1)
+                .user(user2)
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
 
-            groupRepository.save(group1);
-            groupRepository.save(group2);
-            groupRepository.save(group3);
+        Message message4 = Message.builder()
+                .content("Nei")
+                .group(group1)
+                .user(user1)
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
 
-            Message message1 = Message.builder()
-                    .content("Hei!")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
+        Message message5 = Message.builder()
+                .content("-(^__^)-")
+                .group(group2)
+                .user(user3)
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
 
-            Message message2 = Message.builder()
-                    .content("Halo")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
+        messageRepository.save(message1);
+        messageRepository.save(message2);
+        messageRepository.save(message3);
+        messageRepository.save(message4);
+        messageRepository.save(message5);
 
-            Message message3 = Message.builder()
-                    .content("Så fint vær idag.")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
 
-            Message message4 = Message.builder()
-                    .content("Nei")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
+        File file = new File("src/main/resources/static/images/borrmaskin.jpg");
+        byte[] fileContent = Files.readAllBytes(file.toPath());
+        Picture picture = Picture.builder()
+                .filename(file.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(file.toPath()))
+                .build();
+        borre.setPictures(new HashSet<>());
+        borre.getPictures().add(picture);
+        picture.setAd(borre);
+        adRepository.save(borre);
+        pictureRepository.save(picture);
 
-            Message message5 = Message.builder()
-                    .content("-(^__^)-")
-                    .group(group2)
-                    .user(user3)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
+        file = new File("src/main/resources/static/images/anders.jpg");
+        fileContent = Files.readAllBytes(file.toPath());
+        picture = Picture.builder()
+                .filename(file.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(file.toPath()))
+                .build();
 
-            messageRepository.save(message1);
-            messageRepository.save(message2);
-            messageRepository.save(message3);
-            messageRepository.save(message4);
-            messageRepository.save(message5);
+        user1.setPicture(picture);
+        picture.setUser(user1);
+        userRepository.save(user1);
+        pictureRepository.save(picture);
 
-        }
+        file = new File("src/main/resources/static/images/hammer.jpg");
+        fileContent(newHammer, file);
+
+        file = new File("src/main/resources/static/images/klovn.jpg");
+        fileContent(klovn, file);
+
+        file = new File("src/main/resources/static/images/lader.jpg");
+        fileContent(charger, file);
+
+        file = new File("src/main/resources/static/images/lavvo.jpg");
+        fileContent(tent, file);
+
+        file = new File("src/main/resources/static/images/lenovo.jpg");
+        fileContent(pc, file);
+
+        file = new File("src/main/resources/static/images/matte.jpg");
+        fileContent(matte, file);
+
+        file = new File("src/main/resources/static/images/mboard.jpg");
+        fileContent(motherBoard, file);
+
+        file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
+        fileContent(sove, file);
+
+        file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
+        fileContent(tux, file);
+
+        file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
+        fileContent(motherBoard, file);
+
+        file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
+        fileContent(sove, file);
+
+        file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
+        fileContent(pc, file);
+    }
+
+    private void fileContent(Ad newHammer, File file) throws IOException {
+        byte[] fileContent;
+        Picture picture;
+        fileContent = Files.readAllBytes(file.toPath());
+        picture = Picture.builder()
+                .filename(file.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(file.toPath()))
+                .build();
+        newHammer.setPictures(new HashSet<>());
+        newHammer.getPictures().add(picture);
+        picture.setAd(newHammer);
+        adRepository.save(newHammer);
+        pictureRepository.save(picture);
+    }
 }
