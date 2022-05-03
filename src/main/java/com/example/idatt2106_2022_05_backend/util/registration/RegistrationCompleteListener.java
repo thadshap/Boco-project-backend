@@ -39,20 +39,16 @@ public class RegistrationCompleteListener implements ApplicationListener<Registr
         variables.put("name", user.getFirstName() + " " + user.getLastName());
         variables.put("url", url);
         variables.put("lagd", "sant");
-//        variables.put("email", new ClassPathResource("static/images/email.jpeg"));
-//        variables.put("logo", new ClassPathResource("static/images/BoCo.jpeg"));
+        // variables.put("email", new ClassPathResource("static/images/email.jpeg"));
+        // variables.put("logo", new ClassPathResource("static/images/BoCo.jpeg"));
 
-        Email email = Email.builder()
-                .from("BOCO@gmail.com")
-                .to(user.getEmail())
-                .template(new ThymeleafTemplate("verify_mail", variables))
-                .subject("Verifiser konto i BOCO")
-                .build();
+        Email email = Email.builder().from("BOCO@gmail.com").to(user.getEmail())
+                .template(new ThymeleafTemplate("verify_mail", variables)).subject("Verifiser konto i BOCO").build();
         emailService.sendEmail(email);
 
-        //TODO edit thymeleaf html file
-//        emailService.sendEmail("BOCO", user.getEmail(), "Verifiser konto i BOCO",
-//                "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
+        // TODO edit thymeleaf html file
+        // emailService.sendEmail("BOCO", user.getEmail(), "Verifiser konto i BOCO",
+        // "Kontoen din er nesten klar, " + " klikk på lenken under for å verifisere kontoen din." + "\n" + url);
         log.info("Click the link to verify your account: {}", url);
     }
 }

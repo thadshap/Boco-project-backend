@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class SortingAdsDto {
-    private int  pageSize;
+    private int pageSize;
     private String sortBy;
 }

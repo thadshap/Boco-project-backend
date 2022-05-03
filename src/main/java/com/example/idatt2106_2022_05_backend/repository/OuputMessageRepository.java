@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface OuputMessageRepository extends JpaRepository<OutputMessage, Long> {
 
-
     List<OutputMessage> findAllByGroup(Group group);
 
 }

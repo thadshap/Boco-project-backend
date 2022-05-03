@@ -30,10 +30,10 @@ public class ThymeLeafConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public SpringResourceTemplateResolver thymeleafTemplateResolver(){
+    public SpringResourceTemplateResolver thymeleafTemplateResolver() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         resolver.setPrefix("classpath:/templates/");
-//        resolver.se
+        // resolver.se
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML");
         return resolver;

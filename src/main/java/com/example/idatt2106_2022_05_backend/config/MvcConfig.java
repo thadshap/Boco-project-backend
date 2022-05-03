@@ -8,9 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * This class is to display the images in a browser. To do this we
- * must expose the directory containing the uploaded files to the clients (web browsers)
- * so they can access them.
+ * This class is to display the images in a browser. To do this we must expose the directory containing the uploaded
+ * files to the clients (web browsers) so they can access them.
  *
  * Here, we configure Spring MVC to allow access to the directory ad-photos in the file system.
  */
@@ -23,8 +22,7 @@ public class MvcConfig implements WebMvcConfigurer {
         // Exposing the directory containing photos relates to ads
         exposeDirectory("ad-photos", registry);
         exposeDirectory("static/images", registry);
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
     }
 
     // ResourceHandlerRegistry stores registrations of resource handlers for serving static resources such as images
@@ -42,7 +40,6 @@ public class MvcConfig implements WebMvcConfigurer {
         }
 
         // Add a new resource handler to the resource handler registry
-        registry.addResourceHandler("/" + directoryName + "/**").
-                 addResourceLocations("file:/"+ uploadPath + "/");
+        registry.addResourceHandler("/" + directoryName + "/**").addResourceLocations("file:/" + uploadPath + "/");
     }
 }

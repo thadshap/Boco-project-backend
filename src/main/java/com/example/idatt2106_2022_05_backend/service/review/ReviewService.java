@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ReviewService {
 
-    //creating a new review
+    // creating a new review
     Response createNewReview(ReviewDto newReviewDto);
 
-    //Getting all reviews on an ad
+    // Getting all reviews on an ad
     Response getReviewsByAdId(long ad_id);
 
-    //deleting review
+    // deleting review
     Response deleteReview(long ad_id, long user_id);
 }

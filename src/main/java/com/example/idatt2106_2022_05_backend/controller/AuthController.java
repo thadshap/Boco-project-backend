@@ -37,7 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/google/signin")
-    public Response googleAuth(@RequestBody SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException {
+    public Response googleAuth(@RequestBody SocialLoginRequest socialLoginRequest)
+            throws GeneralSecurityException, IOException {
         log.info("facebook login {}", socialLoginRequest);
         System.out.println(socialLoginRequest.getId_token());
         return authService.loginUserGoogle(socialLoginRequest);
@@ -55,7 +56,8 @@ public class AuthController {
     public Response forgotPassword(@RequestBody UserForgotPasswordDto forgotPasswordDto, HttpServletRequest url)
             throws MessagingException, IOException {
         log.debug("[X] Call to reset password");
-        return authService.resetPassword(forgotPasswordDto, "http://" + url.getServerName() + ":" + "8080" + url.getContextPath());
+        return authService.resetPassword(forgotPasswordDto,
+                "http://" + url.getServerName() + ":" + "8080" + url.getContextPath());
     }
 
     @PostMapping("/renewPassword")

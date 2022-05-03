@@ -71,7 +71,6 @@ public class PictureIntegrationTest {
     @Autowired
     PictureRepository pictureRepository;
 
-
     @Nested
     class UserPictureTests {
 
@@ -79,45 +78,25 @@ public class PictureIntegrationTest {
         @BeforeEach
         public void setUp() {
             // Building a user
-            User user = User.builder().
-                    firstName("firstName").
-                    lastName("lastName").
-                    email("user.name@hotmail.com").
-                    password("pass1word").
-                    build();
+            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                    .password("pass1word").build();
 
             // Saving the user
             userRepository.save(user);
 
             // Building categories
-            Category clothes = Category.builder().
-                    name("new category1").
-                    parent(true).
-                    build();
+            Category clothes = Category.builder().name("new category1").parent(true).build();
 
-            Category it = Category.builder().
-                    name("new category2").
-                    parent(true).
-                    build();
+            Category it = Category.builder().name("new category2").parent(true).build();
 
             // Saving the categories
             categoryRepository.save(clothes);
             categoryRepository.save(it);
 
             // Create ads as well
-            AdDto speaker1 = AdDto.builder().
-                    title("New speaker").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    userId(user.getId()).
-                    categoryId(it.getId()).
-                    build();
+            AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
+                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .postalCode(7120).city("Trondheim").userId(user.getId()).categoryId(it.getId()).build();
 
             // persist ad
             adService.postNewAd(speaker1);
@@ -126,14 +105,15 @@ public class PictureIntegrationTest {
         @AfterEach
         public void emptyDatabase() {
             List<Picture> pictures = pictureRepository.findAll();
-            for(Picture picture : pictures) {
+            for (Picture picture : pictures) {
                 picture.getUser().setPicture(null);
                 userRepository.save(picture.getUser());
-                picture.setUser(null); //todo do the same with user?
+                picture.setUser(null); // todo do the same with user?
                 pictureRepository.save(picture);
             }
             pictureRepository.deleteAll();
         }
+
         // Add photo to user
         @Test
         public void profilePictureAdded_WhenCorrectInput() {
@@ -156,21 +136,18 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile result = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method
             try {
-                ResponseEntity<Object> res = pictureService.savePicture(result,0, user.getId());
+                ResponseEntity<Object> res = pictureService.savePicture(result, 0, user.getId());
 
                 // Assert that the profile picture exists
                 Optional<User> userFound = userRepository.findById(user.getId());
-                if(userFound.isPresent()) {
+                if (userFound.isPresent()) {
                     assertNotNull(userFound.get().getPicture());
                     assertEquals(HttpStatus.CREATED.value(), res.getStatusCodeValue());
-                }
-                else {
+                } else {
                     fail();
                 }
 
@@ -196,14 +173,12 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile result = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method using the wrong user id (non-existent user)
             try {
                 long wrongUserId = 100010L;
-                ResponseEntity<Object> res = pictureService.savePicture(result,0, wrongUserId);
+                ResponseEntity<Object> res = pictureService.savePicture(result, 0, wrongUserId);
 
                 // Assert that the profile picture does not exist
                 Optional<User> userFound = userRepository.findById(wrongUserId);
@@ -237,28 +212,25 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile mockMultipartFile = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile mockMultipartFile = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method
             try {
-                ResponseEntity<Object> res = pictureService.savePicture(mockMultipartFile,0, user.getId());
+                ResponseEntity<Object> res = pictureService.savePicture(mockMultipartFile, 0, user.getId());
 
                 // Assert that the profile picture exists
                 Optional<User> userFound = userRepository.findById(user.getId());
-                if(userFound.isPresent()) {
+                if (userFound.isPresent()) {
                     assertNotNull(userFound.get().getPicture());
                     assertEquals(HttpStatus.CREATED.value(), res.getStatusCodeValue());
 
                     // Now, delete the profile picture
-                    ResponseEntity<Object> res2 = userService.
-                            deleteProfilePicture(user.getId(), mockMultipartFile.getBytes());
+                    ResponseEntity<Object> res2 = userService.deleteProfilePicture(user.getId(),
+                            mockMultipartFile.getBytes());
 
                     // Assert the correct response
                     assertEquals(res2.getStatusCodeValue(), HttpStatus.OK.value());
-                }
-                else {
+                } else {
                     fail();
                 }
 
@@ -275,45 +247,25 @@ public class PictureIntegrationTest {
         @BeforeEach
         public void setUp() {
             // Building a user
-            User user = User.builder().
-                    firstName("firstName").
-                    lastName("lastName").
-                    email("user.name@hotmail.com").
-                    password("pass1word").
-                    build();
+            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                    .password("pass1word").build();
 
             // Saving the user
             userRepository.save(user);
 
             // Building categories
-            Category clothes = Category.builder().
-                    name("new category1").
-                    parent(true).
-                    build();
+            Category clothes = Category.builder().name("new category1").parent(true).build();
 
-            Category it = Category.builder().
-                    name("new category2").
-                    parent(true).
-                    build();
+            Category it = Category.builder().name("new category2").parent(true).build();
 
             // Saving the categories
             categoryRepository.save(clothes);
             categoryRepository.save(it);
 
             // Create ads as well
-            AdDto speaker1 = AdDto.builder().
-                    title("New speaker").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    userId(user.getId()).
-                    categoryId(it.getId()).
-                    build();
+            AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
+                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .postalCode(7120).city("Trondheim").userId(user.getId()).categoryId(it.getId()).build();
 
             // persist ad
             adService.postNewAd(speaker1);
@@ -356,9 +308,7 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile result = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method
             try {
@@ -398,9 +348,7 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile result = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method using the wrong user id (non-existent user)
             try {
@@ -443,9 +391,7 @@ public class PictureIntegrationTest {
             }
 
             // Multipart file is mocked
-            MultipartFile result = new MockMultipartFile(name,
-                    originalFileName, contentType, content);
-
+            MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
 
             // Perform the method to save the picture
             try {
@@ -469,7 +415,6 @@ public class PictureIntegrationTest {
                     assertNotEquals(numberOfPictures, currentNumberOfPictures);
 
                     // Now, delete the picture
-
 
                 } else {
                     fail();

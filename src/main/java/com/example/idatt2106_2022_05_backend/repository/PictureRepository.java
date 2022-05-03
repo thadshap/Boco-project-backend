@@ -15,7 +15,9 @@ import java.util.Set;
 @Repository
 public interface PictureRepository extends JpaRepository<Picture, Long> {
     Optional<Picture> findByFilename(String name);
+
     Optional<Picture> findByAdAndId(Ad ad, long picture_id);
+
     List<Picture> findByAd(Ad ad);
 
     Picture getByUser(User user);

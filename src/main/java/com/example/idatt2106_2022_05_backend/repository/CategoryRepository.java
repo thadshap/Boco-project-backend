@@ -14,6 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Set<Category> findByName(String name);
 
-    //search function
+    // search function
     List<Category> findByNameContaining(String searchWord);
 }

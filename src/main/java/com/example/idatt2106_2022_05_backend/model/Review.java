@@ -29,7 +29,7 @@ public class Review {
     private String description;
 
     @ManyToOne()
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne()
@@ -38,8 +38,10 @@ public class Review {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         Review review = (Review) o;
         return id != null && Objects.equals(id, review.id);
     }

@@ -18,8 +18,8 @@ import java.util.Set;
 public interface AdRepository extends JpaRepository<Ad, Long> {
 
     // Get all available ads
-//    @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
-//    Set<Ad> getAllAvailableAds();
+    // @Query("SELECT a FROM Ad a WHERE a.rentedOut= false")
+    // Set<Ad> getAllAvailableAds();
 
     // Get all available ads by user id
     @Query("SELECT a FROM Ad a WHERE a.user.id= :id")

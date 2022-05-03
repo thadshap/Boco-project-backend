@@ -43,7 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class CalendarIntegrationTest {
 
-
     @Autowired
     AdService adService;
     @Autowired
@@ -59,8 +58,6 @@ public class CalendarIntegrationTest {
 
     @Autowired
     CalendarDateRepository calendarDateRepository;
-
-
 
     @Autowired
     CalendarService calendarService;
@@ -87,47 +84,26 @@ public class CalendarIntegrationTest {
             calendarDateRepository.deleteAll();
 
             // Building a user
-            User user = User.builder().
-                    firstName("firstName").
-                    lastName("lastName").
-                    email("user.name@hotmail.com").
-                    password("pass1word").
-                    build();
+            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                    .password("pass1word").build();
 
             // Saving the user
             userRepository.save(user);
 
             // Building categories
-            Category clothes = Category.builder().
-                    name("new category1").
-                    parent(true).
-                    build();
+            Category clothes = Category.builder().name("new category1").parent(true).build();
 
-            Category it = Category.builder().
-                    name("new category2").
-                    parent(true).
-                    build();
+            Category it = Category.builder().name("new category2").parent(true).build();
 
             // Saving the categories
             categoryRepository.save(clothes);
             categoryRepository.save(it);
 
             // Create ads as well
-            AdDto speaker1 = AdDto.builder().
-                    title("New speaker").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    lat(63.401920).
-                    lng(10.443579).
-                    city("Trondheim").
-                    userId(user.getId()).
-                    categoryId(it.getId()).
-                    build();
+            AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
+                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .postalCode(7120).lat(63.401920).lng(10.443579).city("Trondheim").userId(user.getId())
+                    .categoryId(it.getId()).build();
 
             // persist ad
             adService.postNewAd(speaker1);
@@ -178,7 +154,7 @@ public class CalendarIntegrationTest {
 
             // Remove the ad
             adService.deleteAd(adFound.getId());
-            //adRepository.delete(adFound);
+            // adRepository.delete(adFound);
 
             // Calculate current number of ads
             int newNumberOfAds = adRepository.findAll().size();
@@ -200,44 +176,25 @@ public class CalendarIntegrationTest {
         @Test
         public void datesAreAvailable_WhenCreated() {
             // Create a user
-            User user1 = User.builder()
-                    .firstName("Anders")
-                    .lastName("Tellefsen")
-                    .email("andetel@stud.ntnu.no")
-                    .password("passord123")
-                    .build();
+            User user1 = User.builder().firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no")
+                    .password("passord123").build();
 
             User user = userRepository.save(user1);
 
             // Create a category
-            Category category1 = Category.builder().
-                    name("category").
-                    parent(true).
-                    child(false).
-                    build();
+            Category category1 = Category.builder().name("category").parent(true).child(false).build();
             Category category = categoryRepository.save(category1);
 
             // Create new ad
-            AdDto speaker = AdDto.builder().
-                    title("new ad for category").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    lat(63.401920).
-                    lng(10.443579).
-                    userId(user.getId()).
-                    categoryId(category.getId()).
-                    build();
+            AdDto speaker = AdDto.builder().title("new ad for category").description("Renting out a brand new speaker")
+                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .postalCode(7120).city("Trondheim").lat(63.401920).lng(10.443579).userId(user.getId())
+                    .categoryId(category.getId()).build();
 
             // Persist the ad --> the dates are now also persisted
             adService.postNewAd(speaker);
             Set<Ad> adsFound = adRepository.findByTitleContaining("new ad for category");
-            assertEquals(adsFound.size(),1);
+            assertEquals(adsFound.size(), 1);
 
             // Verify that the dates were created
             Ad ad = adsFound.stream().findFirst().get();
@@ -248,58 +205,34 @@ public class CalendarIntegrationTest {
             assertEquals(LocalDate.EPOCH.lengthOfYear(), ad.getDates().size());
 
             // Assert that the dates are available using CalendarService support method
-            CalendarDto dtoMock = CalendarDto.builder().
-                    adId(ad.getId()).
-                    available(false).
-                    startDate(LocalDate.now()).
-                    endDate(LocalDate.now().plusYears(1)).
-                    build();
+            CalendarDto dtoMock = CalendarDto.builder().adId(ad.getId()).available(false).startDate(LocalDate.now())
+                    .endDate(LocalDate.now().plusYears(1)).build();
 
             // Call on the method
             ResponseEntity<Object> res = calendarService.getUnavailableDates(dtoMock);
 
-            // Assert HTTP-response  true
+            // Assert HTTP-response true
             assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
         }
-
 
         @SneakyThrows
         @Test
         public void datesAreMadeUnavailable() {
             // Create a user
-            User user1 = User.builder()
-                    .firstName("Anders")
-                    .lastName("Tellefsen")
-                    .email("andetel@stud.ntnu.no")
-                    .password("passord123")
-                    .build();
+            User user1 = User.builder().firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no")
+                    .password("passord123").build();
 
             User user = userRepository.save(user1);
 
             // Create a category
-            Category category1 = Category.builder().
-                    name("category").
-                    parent(true).
-                    child(false).
-                    build();
+            Category category1 = Category.builder().name("category").parent(true).child(false).build();
             Category category = categoryRepository.save(category1);
 
             // Create new ad
-            AdDto speaker = AdDto.builder().
-                    title("New ad for testing and such").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    lat(63.401920).
-                    lng(10.443579).
-                    userId(user.getId()).
-                    categoryId(category.getId()).
-                    build();
+            AdDto speaker = AdDto.builder().title("New ad for testing and such")
+                    .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                    .price(100).streetAddress("Speaker street 2").postalCode(7120).city("Trondheim").lat(63.401920)
+                    .lng(10.443579).userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad --> the dates are now also persisted
             ResponseEntity<Object> r = adService.postNewAd(speaker);
@@ -328,8 +261,8 @@ public class CalendarIntegrationTest {
             int unavailableBefore = 0;
             Set<CalendarDate> dates = ad.getDates();
             for (CalendarDate date : dates) {
-                if(!date.isAvailable()) {
-                    unavailableBefore ++;
+                if (!date.isAvailable()) {
+                    unavailableBefore++;
                 }
             }
 
@@ -340,18 +273,14 @@ public class CalendarIntegrationTest {
             LocalDate afterCreation = created.plusWeeks(2);
 
             // Set a week of dates as unavailable
-            CalendarDto dtoMock = CalendarDto.builder().
-                    adId(ad.getId()).
-                    startDate(afterCreation).
-                    endDate(afterCreation.plusDays(6)).
-                    available(false).
-                    build();
+            CalendarDto dtoMock = CalendarDto.builder().adId(ad.getId()).startDate(afterCreation)
+                    .endDate(afterCreation.plusDays(6)).available(false).build();
 
             // Mark the week as unavailable (rented out)
             ResponseEntity<Object> res = calendarService.markDatesFromToAs(dtoMock);
 
             // Assert that the correct HTTP-response was received before proceeding
-            assertEquals(HttpStatus.OK.value(),res.getStatusCodeValue());
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
 
             Optional<Ad> adAfter = adRepository.findById(ad.getId());
             // Ad adAfter = adRepository.findAll().get(0);
@@ -359,9 +288,9 @@ public class CalendarIntegrationTest {
             // Get a count of how many dates are unavailable for the ad now
             int unavailableAfter = 0;
             Set<CalendarDate> dates2 = adAfter.get().getDates();
-            for(CalendarDate date : dates2) {
-                if(!date.isAvailable()) {
-                    unavailableAfter ++;
+            for (CalendarDate date : dates2) {
+                if (!date.isAvailable()) {
+                    unavailableAfter++;
                 }
             }
 
@@ -377,39 +306,20 @@ public class CalendarIntegrationTest {
         @Test
         public void getUnavailableDatesForAd() {
             // Create a user
-            User user1 = User.builder()
-                    .firstName("Anders")
-                    .lastName("Tellefsen")
-                    .email("andetel@stud.ntnu.no")
-                    .password("passord123")
-                    .build();
+            User user1 = User.builder().firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no")
+                    .password("passord123").build();
 
             User user = userRepository.save(user1);
 
             // Create a category
-            Category category1 = Category.builder().
-                    name("category").
-                    parent(true).
-                    child(false).
-                    build();
+            Category category1 = Category.builder().name("category").parent(true).child(false).build();
             Category category = categoryRepository.save(category1);
 
             // Create new ad
-            AdDto speaker = AdDto.builder().
-                    title("New ad for testing").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    lat(63.401920).
-                    lng(10.443579).
-                    userId(user.getId()).
-                    categoryId(category.getId()).
-                    build();
+            AdDto speaker = AdDto.builder().title("New ad for testing").description("Renting out a brand new speaker")
+                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .postalCode(7120).city("Trondheim").lat(63.401920).lng(10.443579).userId(user.getId())
+                    .categoryId(category.getId()).build();
 
             // Persist the ad --> the dates are now also persisted
             ResponseEntity<Object> r = adService.postNewAd(speaker);
@@ -438,8 +348,8 @@ public class CalendarIntegrationTest {
             int unavailableBefore = 0;
             Set<CalendarDate> dates = ad.getDates();
             for (CalendarDate date : dates) {
-                if(!date.isAvailable()) {
-                    unavailableBefore ++;
+                if (!date.isAvailable()) {
+                    unavailableBefore++;
                 }
             }
 
@@ -450,18 +360,14 @@ public class CalendarIntegrationTest {
             LocalDate afterCreation = created.plusWeeks(2);
 
             // Set a week of dates as unavailable
-            CalendarDto dtoMock = CalendarDto.builder().
-                    adId(ad.getId()).
-                    startDate(afterCreation).
-                    endDate(afterCreation.plusDays(6)).
-                    available(false).
-                    build();
+            CalendarDto dtoMock = CalendarDto.builder().adId(ad.getId()).startDate(afterCreation)
+                    .endDate(afterCreation.plusDays(6)).available(false).build();
 
             // Mark the week as unavailable (rented out)
             ResponseEntity<Object> res = calendarService.markDatesFromToAs(dtoMock);
 
             // Assert that the correct HTTP-response was received before proceeding
-            assertEquals(HttpStatus.OK.value(),res.getStatusCodeValue());
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
 
             Optional<Ad> adAfter = adRepository.findById(ad.getId());
             // Ad adAfter = adRepository.findAll().get(0);
@@ -469,9 +375,9 @@ public class CalendarIntegrationTest {
             // Get a count of how many dates are unavailable for the ad now
             int unavailableAfter = 0;
             Set<CalendarDate> dates2 = adAfter.get().getDates();
-            for(CalendarDate date : dates2) {
-                if(!date.isAvailable()) {
-                    unavailableAfter ++;
+            for (CalendarDate date : dates2) {
+                if (!date.isAvailable()) {
+                    unavailableAfter++;
                 }
             }
 
@@ -510,7 +416,7 @@ public class CalendarIntegrationTest {
             // Get the ad the dto points to
             Optional<Ad> ad = adRepository.findById(dto.getAdId());
 
-            if(ad.isPresent()) {
+            if (ad.isPresent()) {
 
                 // Find out when the ad was created
                 LocalDate startDate = ad.get().getCreated();
@@ -526,12 +432,11 @@ public class CalendarIntegrationTest {
 
                     // If the date is within the specified span
                     // PS: plus/minus days because we want to include the start and end dates in our search
-                    if(date.getDate().isAfter(startDate.minusDays(1))
-                            && date.getDate().isBefore(expirationDate.plusDays(1)))
-                    {
+                    if (date.getDate().isAfter(startDate.minusDays(1))
+                            && date.getDate().isBefore(expirationDate.plusDays(1))) {
 
                         // If the date is not available
-                        if(!date.isAvailable()) {
+                        if (!date.isAvailable()) {
 
                             // Add to return-array
                             datesOut.add(date.getDate());

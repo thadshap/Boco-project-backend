@@ -67,11 +67,11 @@ public class Rental {
     private LocalDateTime created;
 
     @PreRemove
-    private void removeRelationships(){
-        if(ad != null){
+    private void removeRelationships() {
+        if (ad != null) {
             setAd(null);
         }
-        if(borrower != null){
+        if (borrower != null) {
             setBorrower(null);
         }
         if (owner != null) {

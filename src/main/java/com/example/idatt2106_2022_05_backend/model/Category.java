@@ -34,24 +34,19 @@ public class Category {
 
     private String icon;
 
-    @OneToMany(fetch = FetchType.EAGER,  mappedBy = "category")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
     private Set<Ad> ads;
 
     @PreRemove
-    private void removeRelationships(){
-        if(ads != null) {
+    private void removeRelationships() {
+        if (ads != null) {
             setAds(null);
         }
     }
 
     @Override
     public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", parent=" + parent +
-                ", parentName='" + parentName + '\'' +
-                ", ads=" + ads +
-                '}';
+        return "Category{" + "id=" + id + ", name='" + name + '\'' + ", parent=" + parent + ", parentName='"
+                + parentName + '\'' + ", ads=" + ads + '}';
     }
 }

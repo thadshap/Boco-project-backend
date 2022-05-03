@@ -54,7 +54,6 @@ public class UserIntegrationTest {
     @Autowired
     ReviewRepository reviewRepository;
 
-
     @Nested
     class TestUserRepo {
 
@@ -74,8 +73,8 @@ public class UserIntegrationTest {
             // The user should be found
             assertNotNull(userFound);
             assertEquals(userFound.getEmail(), correctEmail);
-
         }
+
         @Test
         public void cannotGetUserByEmail_WhenIdWrong() {
             // Users exist in db because of dataloader
@@ -103,19 +102,9 @@ public class UserIntegrationTest {
             assertNotNull(user);
 
             // Building an ad with foreign keys and add it to the user
-            Ad newAd = Ad.builder().
-                    title("Sail boat").
-                    description("Renting out a huge sail boat").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.MONTH).
-                    duration(2).
-                    price(100).
-                    streetAddress("The sea").
-                    postalCode(7000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
+                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
             Ad savedAd = adRepository.save(newAd);
@@ -145,19 +134,9 @@ public class UserIntegrationTest {
             assertNotNull(user);
 
             // Building an ad with foreign keys and add it to the user
-            Ad newAd = Ad.builder().
-                    title("Sail boat").
-                    description("Renting out a huge sail boat").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.MONTH).
-                    duration(2).
-                    price(100).
-                    streetAddress("The sea").
-                    postalCode(7000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
+                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
             Ad savedAd = adRepository.save(newAd);
@@ -193,15 +172,12 @@ public class UserIntegrationTest {
             assertNotNull(user);
 
             // Build a dto
-            UserUpdateDto dto = UserUpdateDto.builder().
-                    firstName("new name").
-                    build();
+            UserUpdateDto dto = UserUpdateDto.builder().firstName("new name").build();
 
             // Update the user by using the dto
             try {
                 // Extract a response entity using UserService
-                ResponseEntity<Object> res =
-                        userService.updateUser(user.getId(), dto);
+                ResponseEntity<Object> res = userService.updateUser(user.getId(), dto);
 
                 // Assert that the response code is OK
                 assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
@@ -222,14 +198,12 @@ public class UserIntegrationTest {
             assertNotNull(user);
 
             // Build an empty dto
-            UserUpdateDto dto = UserUpdateDto.builder().
-                    build();
+            UserUpdateDto dto = UserUpdateDto.builder().build();
 
             // Update the user by using the dto
             try {
                 // Extract a response entity using UserService
-                ResponseEntity<Object> res =
-                        userService.updateUser(user.getId(), dto);
+                ResponseEntity<Object> res = userService.updateUser(user.getId(), dto);
 
                 // Assert that the response code is OK
                 assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
@@ -248,9 +222,7 @@ public class UserIntegrationTest {
         public void userNotUpdated_WhenUserIdNotCorrect() {
 
             // Build a dto
-            UserUpdateDto dto = UserUpdateDto.builder().
-                    firstName("new name").
-                    build();
+            UserUpdateDto dto = UserUpdateDto.builder().firstName("new name").build();
 
             // Create a random id that does not exist in db
             long wrongUserId = 1000000L;
@@ -258,8 +230,7 @@ public class UserIntegrationTest {
             // Update the user by using the dto
             try {
                 // Extract a response entity using UserService
-                ResponseEntity<Object> res =
-                        userService.updateUser(wrongUserId, dto);
+                ResponseEntity<Object> res = userService.updateUser(wrongUserId, dto);
 
                 // Assert that the response code is NOT_FOUND
                 assertEquals(res.getStatusCodeValue(), HttpStatus.NOT_FOUND.value());
@@ -328,9 +299,8 @@ public class UserIntegrationTest {
                 ResponseEntity<Object> response = userService.deleteUser(wrongUserId);
 
                 // Assert that the method passed but received a status code == NOT_FOUND
-                assertEquals(response.getStatusCodeValue(),
-                        HttpStatus.NOT_FOUND.value());
-            }catch (EmptyResultDataAccessException |NoSuchElementException e) {
+                assertEquals(response.getStatusCodeValue(), HttpStatus.NOT_FOUND.value());
+            } catch (EmptyResultDataAccessException | NoSuchElementException e) {
                 // Passing the test
             }
         }

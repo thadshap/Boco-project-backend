@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class ReviewIntegrationTest {
 
-
     @Autowired
     AdService adService;
 
@@ -64,7 +63,6 @@ public class ReviewIntegrationTest {
     @Autowired
     ReviewService reviewService;
 
-
     @Nested
     class PositiveReviewTests {
         // Write review correct check OK
@@ -73,12 +71,8 @@ public class ReviewIntegrationTest {
         @Test
         public void reviewSaved_WhenForeignKeysCorrect() {
             // Create a user
-            User user1 = User.builder()
-                    .firstName("Anders")
-                    .lastName("Tellefsen")
-                    .email("andetel@stud.ntnu.no")
-                    .password("passord123")
-                    .build();
+            User user1 = User.builder().firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no")
+                    .password("passord123").build();
 
             User user = userRepository.save(user1);
 
@@ -86,27 +80,13 @@ public class ReviewIntegrationTest {
             assertNotNull(user);
 
             // Create a category
-            Category category1 = Category.builder().
-                    name("category").
-                    parent(true).
-                    child(false).
-                    build();
+            Category category1 = Category.builder().name("category").parent(true).child(false).build();
             Category category = categoryRepository.save(category1);
 
             // Create new ad
-            Ad speaker = Ad.builder().
-                    title("New speaker").
-                    description("Renting out a brand new speaker").
-                    rental(true).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Speaker street 2").
-                    postalCode(7120).
-                    city("Trondheim").
-                    user(user).
-                    category(category).
-                    build();
+            Ad speaker = Ad.builder().title("New speaker").description("Renting out a brand new speaker").rental(true)
+                    .durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2").postalCode(7120)
+                    .city("Trondheim").user(user).category(category).build();
 
             // Persist the ad --> the dates are now also persisted
             Ad ad = adRepository.save(speaker);
@@ -118,17 +98,13 @@ public class ReviewIntegrationTest {
             int prevNumberOfReviewsInAd = 0;
 
             // Get the number of reviews in the ad (unless null)
-            if(ad.getReviews() != null) {
+            if (ad.getReviews() != null) {
                 prevNumberOfReviewsInAd = ad.getReviews().size();
             }
 
             // Create Review dto entity
-            ReviewDto review = ReviewDto.builder().
-                    description("Great shoes!").
-                    rating(5).
-                    adId(ad.getId()).
-                    userId(user.getId()).
-                    build();
+            ReviewDto review = ReviewDto.builder().description("Great shoes!").rating(5).adId(ad.getId())
+                    .userId(user.getId()).build();
 
             // Save the review entity
             ResponseEntity<Object> res = reviewService.createNewReview(review);
@@ -137,8 +113,7 @@ public class ReviewIntegrationTest {
             assertNotEquals(prevNumberOfReviewsInDb, reviewRepository.findAll().size());
 
             // Assert that the ads reviews increased with one review
-            assertNotEquals(prevNumberOfReviewsInAd,
-                    adRepository.findById(ad.getId()).get().getReviews().size());
+            assertNotEquals(prevNumberOfReviewsInAd, adRepository.findById(ad.getId()).get().getReviews().size());
 
             // Assert that the status code was correct
             assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
@@ -155,15 +130,12 @@ public class ReviewIntegrationTest {
             int prevNumberOfReviewsInDb = reviewRepository.findAll().size();
 
             // Create Review dto entity without fk
-            ReviewDto review = ReviewDto.builder().
-                    description("Great shoes!").
-                    rating(5).
-                    build();
+            ReviewDto review = ReviewDto.builder().description("Great shoes!").rating(5).build();
 
             // Save the review entity
-            try{
+            try {
                 ResponseEntity<Object> res = reviewService.createNewReview(review);
-            }catch (LazyInitializationException e) {
+            } catch (LazyInitializationException e) {
                 // Pass
 
                 // Assert that the db did not increase with one review

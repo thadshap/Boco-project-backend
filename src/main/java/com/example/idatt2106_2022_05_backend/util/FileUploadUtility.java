@@ -10,15 +10,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 /**
- * Needed in order to upload images to the db (for ads and users).
- * This utility class is responsible for creating the directory if it does not exist,
- * as well as to save the uploaded file from MultipartFile object to a file in the
+ * Needed in order to upload images to the db (for ads and users). This utility class is responsible for creating the
+ * directory if it does not exist, as well as to save the uploaded file from MultipartFile object to a file in the
  * specified directory in the file system.
  */
 public class FileUploadUtility {
 
-    public static void saveFile(String uploadDirectory, String fileName,
-                                MultipartFile multipartFile) throws IOException {
+    public static void saveFile(String uploadDirectory, String fileName, MultipartFile multipartFile)
+            throws IOException {
 
         // The path is retrieved from the directory
         Path uploadPath = Paths.get(uploadDirectory);
@@ -36,8 +35,7 @@ public class FileUploadUtility {
 
             // Copies all bytes from an input stream to a file
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
 
             // In case the target file already exists or is a symbolic link
             throw new IOException("Could not save image file: " + fileName, e);

@@ -29,7 +29,7 @@ public class CalendarController {
 
     // the frontend sends two dates that an item is to be rented/cancelled out to from
     // dto contains date from, date to, ad id and available (true for rental, false for cancellation)
-    @PostMapping("/post") //todo fix these paths hihi
+    @PostMapping("/post") // todo fix these paths hihi
     @ApiOperation(value = "Endpoint to create see if dates are available", response = Response.class)
     public Response postRentalDates(@RequestBody CalendarDto dto) {
         log.debug("[X] Call to get rental dates");

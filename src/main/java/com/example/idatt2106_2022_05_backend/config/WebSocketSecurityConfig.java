@@ -13,12 +13,9 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
     private Logger logger = LoggerFactory.getLogger(WebSocketSecurityConfig.class);
 
     @Override
-    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages)
-    {
-        messages
-                .simpTypeMatchers(SimpMessageType.CONNECT,
-                        SimpMessageType.DISCONNECT, SimpMessageType.OTHER).permitAll()
-                .anyMessage();
+    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+        messages.simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.OTHER)
+                .permitAll().anyMessage();
     }
 
     @Override

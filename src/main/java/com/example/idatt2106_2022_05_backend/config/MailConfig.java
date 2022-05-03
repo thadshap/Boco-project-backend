@@ -38,6 +38,7 @@ public class MailConfig {
 
     /**
      * Bean to configure sending of mail
+     * 
      * @return {@link JavaMailSender} object
      */
     @Bean

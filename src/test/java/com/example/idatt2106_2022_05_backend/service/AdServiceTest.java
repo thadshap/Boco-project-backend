@@ -24,7 +24,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = {Ad.class})
+/**
+@SpringBootTest(classes = { Ad.class })
 @ExtendWith(SpringExtension.class)
 class AdServiceTest {
 
@@ -38,11 +39,10 @@ class AdServiceTest {
     private AdRepository adRepository;
 
     /**
-     * Creating an Ad object for use in each test (mocking repository)
-     * Ad is created using the Builder-pattern (Lombok), which allows
-     * us to create all possible variants of constructors for the object.
-     * To create an ad, a user and a category must also be created.
-     */
+     * Creating an Ad object for use in each test (mocking repository) Ad is created using the Builder-pattern (Lombok),
+     * which allows us to create all possible variants of constructors for the object. To create an ad, a user and a
+     * category must also be created.
+     *
     @BeforeEach
     void setUp() { // description, rental (boolean), rented_out,
                    // duration_type, duration, price, street_address, postal_code
@@ -52,34 +52,16 @@ class AdServiceTest {
         Set<Ad> ads = new HashSet<>();
 
         // Building an ad
-        Ad ad = Ad.builder().
-                id(1L).
-                title("Shoes").
-                description("Renting out a pair of shoes in size 36").
-                rental(true).
-                rentedOut(false).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("Project Road 4").
-                postalCode(7234).
-                build();
+        Ad ad = Ad.builder().id(1L).title("Shoes").description("Renting out a pair of shoes in size 36").rental(true)
+                .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
+                .postalCode(7234).build();
 
         // Building a user
-        User user = User.builder().
-                id(2L).
-                firstName("firstName").
-                lastName("lastName").
-                email("user.name@hotmail.com").
-                password("pass1word").
-                build();
+        User user = User.builder().id(2L).firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
 
         // Building a category
-        Category category = Category.builder().
-                id(3L).
-                name("Shoes").
-                build();
-
+        Category category = Category.builder().id(3L).name("Shoes").build();
 
         // Set the foreign keys for the ad
         ad.setCategory(category);
@@ -100,29 +82,22 @@ class AdServiceTest {
         Mockito.when(adRepository.getAvailableAdsByUserId(2L)).thenReturn(Collections.singleton((ad)));
     }
 
-
-
     @Test
     void getPageOfAds() throws IOException, InterruptedException {
-        User user = User.builder().
-                id(1L).
-                firstName("firstName").
-                lastName("lastName").
-                email("user.name@hotmail.com").
-                password("pass1word").
-                build();
+        User user = User.builder().id(1L).firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
 
-        Category category= new Category();
+        Category category = new Category();
         category.setName("Kategori1");
         category.setId((long) 1);
 
-        for(int i=0; i<20; i++){
+        for (int i = 0; i < 20; i++) {
             AdDto ad = new AdDto();
             ad.setDescription("text:" + i);
             ad.setDuration(i);
             ad.setDurationType(AdType.HOUR);
-            ad.setPostalCode(1234+i);
-            ad.setPrice(10*i);
+            ad.setPostalCode(1234 + i);
+            ad.setPrice(10 * i);
             ad.setRental(false);
             ad.setRentedOut(false);
             ad.setCategoryId(1);
@@ -130,16 +105,14 @@ class AdServiceTest {
             ad.setTitle("Ad" + i);
             adService.postNewAd(ad);
         }
-        Pageable pageOf24 = PageRequest.of(0,25);
+        Pageable pageOf24 = PageRequest.of(0, 25);
         List<Ad> ads = adRepository.findAll(pageOf24).getContent();
-        System.out.println("ads:" +ads);
+        System.out.println("ads:" + ads);
     }
 
-
     /**
-     * This test uses the AdRepository method "findByPostalCode".
-     * This repository method is mocked
-     */
+     * This test uses the AdRepository method "findByPostalCode". This repository method is mocked
+     *
     @Test
     void getAllAdsByPostalCode() {
 
@@ -148,13 +121,12 @@ class AdServiceTest {
         Set<Ad> foundAds = (Set<Ad>) adService.getAllAdsByPostalCode(postalCode).getBody();
 
         assert foundAds != null;
-        for(Ad ad : foundAds) {
-            if(ad.getPostalCode() == postalCode) {
+        for (Ad ad : foundAds) {
+            if (ad.getPostalCode() == postalCode) {
                 assertEquals(postalCode, ad.getPostalCode());
             }
         }
     }
-
 
     @Test
     void getAdById() {
@@ -198,3 +170,4 @@ class AdServiceTest {
 
     }
 }
+*/

@@ -48,7 +48,7 @@ public class AdController {
         return new Response("Could not get ads", HttpStatus.NOT_FOUND);
     }
 
-    //TODO: GetMapping?
+    // TODO: GetMapping?
     @PostMapping("/ads/available/true")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
@@ -128,36 +128,38 @@ public class AdController {
 
     @DeleteMapping("/auth/ads/picture/{userId}")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto, @RequestPart List<MultipartFile> files) throws IOException {
+    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto,
+            @RequestPart List<MultipartFile> files) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
         return adService.deletePicture(updatePictureDto.getId(), files);
     }
 
     // Not in use
     /**
-    @PostMapping("/ads/picture")
-    @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class)
-    public Response uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
-        log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId());
-        return adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile());
-    }
+     * @PostMapping("/ads/picture")
+     * 
+     * @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class) public Response
+     *                     uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
+     *                     log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId()); return
+     *                     adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile()); }
      */
 
     @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
-    public Response adPicture(@PathVariable Long userId,@PathVariable Long adId, @RequestPart List<MultipartFile> files) throws IOException {
-        //TODO
+    public Response adPicture(@PathVariable Long userId, @PathVariable Long adId,
+            @RequestPart List<MultipartFile> files) throws IOException {
+        // TODO
         return adService.storeImageForAd(adId, files);
     }
 
     @GetMapping("/ads/pictures/{adId}")
     public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
-        //TODO
+        // TODO
         return adService.getAllPicturesForAd(adId);
     }
 
     @GetMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
-    public Response getPageOfAds(@PathVariable int sizeOfPage){
+    public Response getPageOfAds(@PathVariable int sizeOfPage) {
         return adService.getPageOfAds(sizeOfPage);
     }
 
@@ -169,120 +171,122 @@ public class AdController {
 
     @PostMapping("/ads/sort/descending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
-    public Response getSortedDescending(@RequestBody SortingAdsDto sortingDto){
+    public Response getSortedDescending(@RequestBody SortingAdsDto sortingDto) {
         return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
     @PostMapping("/ads/sort/ascending")
     @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
-    public Response getSortedAscending(@RequestBody SortingAdsDto sortingDto){
+    public Response getSortedAscending(@RequestBody SortingAdsDto sortingDto) {
         return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
     }
 
     @GetMapping("/ads/newest/{pageSize}")
     @ApiOperation(value = "sorting all ads by when they are created")
-    public Response getNewest(@PathVariable int pageSize){
+    public Response getNewest(@PathVariable int pageSize) {
         return adService.sortByCreatedDateAscending(pageSize);
     }
 
     @GetMapping("/ads/oldest/{pageSize}")
     @ApiOperation(value = "sorting all ads by creation oldest")
-    public Response getOldest(@PathVariable int pageSize){
+    public Response getOldest(@PathVariable int pageSize) {
 
         return adService.sortByCreatedDateDescending(pageSize);
     }
 
     @GetMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@PathVariable String searchWord){
+    public Response searchInAdsAndCategories(@PathVariable String searchWord) {
         return adService.searchThroughAds(searchWord);
     }
 
     @PostMapping("/sort/list/price/ascending")
-    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list){
+    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list) {
         return adService.sortArrayByPriceAscending(list);
     }
 
     @PostMapping("/sort/list/price/descending")
-    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list){
+    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list) {
         return adService.sortArrayByPriceDescending(list);
     }
 
     @PostMapping("/sort/list/distance/ascending")
-    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list){
+    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list) {
         return adService.sortArrayByDistanceAscending(list);
     }
 
     @PostMapping("/sort/list/distance/descending")
-    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list){
+    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list) {
         return adService.sortArrayByDistanceDescending(list);
     }
 
     @PostMapping("/filterByDistance")
-    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds){
+    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds) {
         return adService.getListWithinDistanceIntervall(filterListOfAds.getList(), filterListOfAds.getUpperLimit());
     }
 
     @PostMapping("/getListWithinPriceRange")
-    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds) {
         logger.info("got to controller");
-        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
+        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(),
+                filterListOfAds.getLowerLimit());
     }
 
     // Get all categories
     @GetMapping("/categories")
-    public Response getAllCategories(){
+    public Response getAllCategories() {
         return adService.getAllCategories();
     }
 
     // Get sub-categories for a category
     @GetMapping("/categories/{parentCategoryName}")
-    public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName){
+    public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName) {
         return adService.getAllSubCategories(parentCategoryName);
     }
 
     // Get all ads for specific category id
     @GetMapping("/categories/ads/{categoryId}")
-    public Response getAllAdsInCategory(@PathVariable long categoryId){
+    public Response getAllAdsInCategory(@PathVariable long categoryId) {
         return adService.getAllAdsInCategory(categoryId);
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
     @PostMapping("/categoriesRecursive/{categoryName}")
-    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName, @RequestBody UserGeoLocation userGeoLocation){
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
+            @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     // Get all parent categories
     @GetMapping("/categories/parent")
-    public Response getAllParentCategories(){
+    public Response getAllParentCategories() {
         return adService.getAllParentCategories();
     }
 
     // Get all ads in city
     @GetMapping("/ads/city/{cityName}")
-    public Response getAllAdsInCity(@PathVariable String cityName){
+    public Response getAllAdsInCity(@PathVariable String cityName) {
         return adService.getAllAdsInCity(cityName);
     }
 
     @PostMapping("/list/newestFirst")
-    public Response sortAdsNewestFirst(@RequestBody List<AdDto> list){
+    public Response sortAdsNewestFirst(@RequestBody List<AdDto> list) {
         return adService.sortArrayOfAdsByDateNewestFirst(list);
     }
 
     @PostMapping("/list/oldestFirst")
-    public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
+    public Response sortAdsOldestFirst(@RequestBody List<AdDto> list) {
         return adService.sortArrayOfAdsByDateOldestFirst(list);
     }
 
     @PostMapping("/ads/filter")
-    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
+    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds) {
         logger.info("in controller");
         return adService.getAllAdsWithFilter(filterListOfAds);
     }
 
     @PostMapping("/ads/category/filter")
-    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
+    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds) {
         return adService.getAdsWithCategoryAndFilter(filterListOfAds);
     }
 

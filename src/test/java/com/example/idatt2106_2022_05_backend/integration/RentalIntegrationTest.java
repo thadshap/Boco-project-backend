@@ -67,51 +67,31 @@ public class RentalIntegrationTest {
     @Test
     public void rentalSaved_WhenForeignKeysCorrect() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user1.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user1.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user2.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName").email("user2.otherName@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -122,17 +102,10 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // TODO parts of this is not implemented in CalendarDate service (deadline and active)
-        RentalDto rental = RentalDto.builder().
-                dateOfRental(LocalDate.now()).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                rentFrom(LocalDate.now().plusDays(1)).
-                deadline(LocalDate.now().plusDays(2)).
-                borrower(borrower.getEmail()).
-                owner(owner.getEmail()).
-                adId(foundAd.get().getId()).
-                active(true).
-                price(100).
-                build();
+        RentalDto rental = RentalDto.builder().dateOfRental(LocalDate.now()).rentTo(LocalDate.now().plusWeeks(1))
+                .rentFrom(LocalDate.now().plusDays(1)).deadline(LocalDate.now().plusDays(2))
+                .borrower(borrower.getEmail()).owner(owner.getEmail()).adId(foundAd.get().getId()).active(true)
+                .price(100).build();
 
         // Get previous number of rentals
         int previousNumberOfRentals = rentalRepository.findAll().size();
@@ -150,51 +123,31 @@ public class RentalIntegrationTest {
     @Test
     public void rentalNotSaved_WhenForeignKeysWrong() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user3.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user3.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user4.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName").email("user4.otherName@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere2").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -205,17 +158,10 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Creating rental with a user that does not exist
-        RentalDto rental = RentalDto.builder().
-                dateOfRental(LocalDate.now()).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                rentFrom(LocalDate.now().plusDays(1)).
-                deadline(LocalDate.now().plusDays(2)).
-                borrower(borrower.getEmail()).
-                owner("random.email.com").
-                adId(foundAd.get().getId()).
-                active(true).
-                price(100).
-                build();
+        RentalDto rental = RentalDto.builder().dateOfRental(LocalDate.now()).rentTo(LocalDate.now().plusWeeks(1))
+                .rentFrom(LocalDate.now().plusDays(1)).deadline(LocalDate.now().plusDays(2))
+                .borrower(borrower.getEmail()).owner("random.email.com").adId(foundAd.get().getId()).active(true)
+                .price(100).build();
 
         // Get previous number of rentals
         int previousNumberOfRentals = rentalRepository.findAll().size();
@@ -223,7 +169,7 @@ public class RentalIntegrationTest {
         // Persist rental
         try {
             ResponseEntity<Object> res = rentalService.createRental(rental);
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             // Passed
             // Get new number of rentals
             int newNumberOfRentals = rentalRepository.findAll().size();
@@ -232,56 +178,35 @@ public class RentalIntegrationTest {
         }
     }
 
-
     @SneakyThrows
     @Test
     public void rentalCanBeCancelled_Before24Hrs() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user5.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user5.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user6.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName").email("user6.otherName@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -292,17 +217,10 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // TODO parts of this is not implemented in CalendarDate service (deadline and active)
-        RentalDto rental = RentalDto.builder().
-                dateOfRental(LocalDate.now()).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                rentFrom(LocalDate.now().plusDays(1)).
-                deadline(LocalDate.now().plusDays(2)).
-                borrower(borrower.getEmail()).
-                owner(owner.getEmail()).
-                adId(foundAd.get().getId()).
-                active(true).
-                price(100).
-                build();
+        RentalDto rental = RentalDto.builder().dateOfRental(LocalDate.now()).rentTo(LocalDate.now().plusWeeks(1))
+                .rentFrom(LocalDate.now().plusDays(1)).deadline(LocalDate.now().plusDays(2))
+                .borrower(borrower.getEmail()).owner(owner.getEmail()).adId(foundAd.get().getId()).active(true)
+                .price(100).build();
 
         // Get previous number of rentals
         int previousNumberOfRentals = rentalRepository.findAll().size();
@@ -313,8 +231,8 @@ public class RentalIntegrationTest {
         Optional<Rental> rentalFound = null;
 
         List<Rental> rentals = rentalRepository.getByBorrower(borrower);
-        if(rentals != null) {
-            if(rentals.size() > 1) {
+        if (rentals != null) {
+            if (rentals.size() > 1) {
                 rentalFound = Optional.ofNullable(rentals.get(-1));
             }
             rentalFound = rentals.stream().findFirst();
@@ -322,21 +240,15 @@ public class RentalIntegrationTest {
 
         assertNotNull(rentalFound);
 
-
-
         // Get new number of rentals
         int newNumberOfRentals = rentalRepository.findAll().size();
 
         assertNotEquals(previousNumberOfRentals, newNumberOfRentals);
 
         // Create a dto object to mark dates as unavailable
-        CalendarDto dtoMock = CalendarDto.builder().
-                available(true).
-                startDate(LocalDate.now().plusDays(1)).
-                endDate(LocalDate.now().plusWeeks(1)).
-                adId(foundAd.get().getId()).
-                rentalId(rentalFound.get().getId()).
-                build();
+        CalendarDto dtoMock = CalendarDto.builder().available(true).startDate(LocalDate.now().plusDays(1))
+                .endDate(LocalDate.now().plusWeeks(1)).adId(foundAd.get().getId()).rentalId(rentalFound.get().getId())
+                .build();
 
         // Try to cancel the rental
         ResponseEntity<Object> response = calendarService.markDatesFromToAs(dtoMock);
@@ -353,51 +265,31 @@ public class RentalIntegrationTest {
     @Test
     public void rentalCanNotBeCancelled_After24Hrs() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user7.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user7.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user8.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName").email("user8.otherName@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -408,17 +300,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // TODO parts of this is not implemented in CalendarDate service (deadline and active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(true).price(100).build();
 
         // Get previous number of rentals
         int previousNumberOfRentals = rentalRepository.findAll().size();
@@ -431,9 +315,7 @@ public class RentalIntegrationTest {
         rentalRepository.save(rentalFound);
         System.out.println(rentalFound.getCreated());
 
-
         assertNotNull(rentalFound);
-
 
         // Get new number of rentals
         int newNumberOfRentals = rentalRepository.findAll().size();
@@ -441,13 +323,9 @@ public class RentalIntegrationTest {
         assertNotEquals(previousNumberOfRentals, newNumberOfRentals);
 
         // Create a dto object to mark dates as unavailable
-        CalendarDto dtoMock = CalendarDto.builder().
-                available(true).
-                startDate(LocalDate.now().minusDays(2)).
-                endDate(LocalDate.now().plusWeeks(1)).
-                adId(foundAd.get().getId()).
-                rentalId(rentalFound.getId()).
-                build();
+        CalendarDto dtoMock = CalendarDto.builder().available(true).startDate(LocalDate.now().minusDays(2))
+                .endDate(LocalDate.now().plusWeeks(1)).adId(foundAd.get().getId()).rentalId(rentalFound.getId())
+                .build();
 
         // Try to cancel the rental
         ResponseEntity<Object> response = calendarService.markDatesFromToAs(dtoMock);
@@ -464,51 +342,31 @@ public class RentalIntegrationTest {
     @Test
     public void activateRental() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user9.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user9.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user10.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user10.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -519,17 +377,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Create rental (not active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(false).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(false).price(100).build();
 
         // Persist rental
         Rental rentalFound = rentalRepository.save(rental);
@@ -537,59 +387,38 @@ public class RentalIntegrationTest {
         // Activate rental
         ResponseEntity<Object> response = rentalService.activateRental(rentalFound.getId());
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
-        assertNotEquals(rentalFound.isActive(),
-                rentalRepository.findById(rentalFound.getId()).get().isActive());
+        assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 
     @SneakyThrows
     @Test
     public void rentalDeleted() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user11.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user11.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user12.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user12.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -600,17 +429,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Create rental (not active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(true).price(100).build();
 
         // Persist rental
         Rental rentalFound = rentalRepository.save(rental);
@@ -619,13 +440,11 @@ public class RentalIntegrationTest {
         RentalReviewDto dto = RentalReviewDto.builder().rating(5).build();
 
         // Delete rental
-        ResponseEntity<Object> response =
-                rentalService.deleteRental(rentalFound.getId(), dto);
+        ResponseEntity<Object> response = rentalService.deleteRental(rentalFound.getId(), dto);
         // Assert accepted http response
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
         // Assert that the rental now is not active
-        assertNotEquals(rentalFound.isActive(),
-                rentalRepository.findById(rentalFound.getId()).get().isActive());
+        assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 
     // Update rental
@@ -633,51 +452,31 @@ public class RentalIntegrationTest {
     @Test
     public void rentalIsUpdated_WhenArgsAreCorrect() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user13.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user13.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user14.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user14.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere2").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -688,17 +487,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Create rental (not active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(true).price(100).build();
 
         // Persist rental
         Rental rentalFound = rentalRepository.save(rental);
@@ -725,51 +516,31 @@ public class RentalIntegrationTest {
     @Test
     public void rentalIsNotUpdated_WhenArgsAreWrong() {
         // Building a user
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user15.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user15.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user16.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user16.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere3").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -780,17 +551,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Create rental (not active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(true).price(100).build();
 
         // Persist rental
         rentalRepository.save(rental);
@@ -809,51 +572,31 @@ public class RentalIntegrationTest {
     @Test
     public void getRentalById() {
         // Create 1 rental
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user17.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user17.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user18.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user18.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().
-                title("Title that does not exist elsewhere3").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
+                .categoryId(it.getId()).build();
 
         // persist ad
         adService.postNewAd(speaker1);
@@ -864,17 +607,9 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd);
 
         // Create rental (not active)
-        Rental rental = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd.get()).active(true).price(100).build();
 
         Rental rentalSaved = rentalRepository.save(rental);
 
@@ -888,63 +623,32 @@ public class RentalIntegrationTest {
     @Test
     public void getRentalsByUserId() {
         // Create two rentals
-        User owner1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user19.name@hotmail.com").
-                password("pass1word").
-                build();
+        User owner1 = User.builder().firstName("firstName").lastName("lastName").email("user19.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         User owner = userRepository.save(owner1);
 
         // Create a category
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(it);
 
         // Building a user
-        User borrower1 = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user20.otherName@hotmail.com").
-                password("pass1word").
-                build();
+        User borrower1 = User.builder().firstName("firstName").lastName("lastName")
+                .email("user20.otherName@hotmail.com").password("pass1word").build();
 
         // Saving the user
         User borrower = userRepository.save(borrower1);
 
         // Create an ad
-        AdDto speaker1 = AdDto.builder().
-                title("Title 1 for test").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
-        AdDto speaker2 = AdDto.builder().
-                title("Title 2 for test").
-                description("Renting out a brand new speaker").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("vollabakken 3").
-                postalCode(7030).
-                city("Trondheim").
-                userId(owner.getId()).
-                categoryId(it.getId()).
-                build();
+        AdDto speaker1 = AdDto.builder().title("Title 1 for test").description("Renting out a brand new speaker")
+                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
+        AdDto speaker2 = AdDto.builder().title("Title 2 for test").description("Renting out a brand new speaker")
+                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
 
         // Persist ads
         adService.postNewAd(speaker1);
@@ -954,7 +658,6 @@ public class RentalIntegrationTest {
         Set<Ad> foundAds1 = adRepository.findByTitle("Title 1 for test");
         Set<Ad> foundAds2 = adRepository.findByTitle("Title 2 for test");
 
-
         Optional<Ad> foundAd1 = foundAds1.stream().findFirst();
         Optional<Ad> foundAd2 = foundAds2.stream().findFirst();
 
@@ -962,28 +665,12 @@ public class RentalIntegrationTest {
         assertNotNull(foundAd2);
 
         // Create rentals
-        Rental rental1 = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd1.get()).
-                active(true).
-                price(100).
-                build();
-        Rental rental2 = Rental.builder().
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().minusDays(2)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().minusDays(1)).
-                borrower(borrower).
-                owner(owner).
-                ad(foundAd2.get()).
-                active(true).
-                price(100).
-                build();
+        Rental rental1 = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd1.get()).active(true).price(100).build();
+        Rental rental2 = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().minusDays(1)).borrower(borrower)
+                .owner(owner).ad(foundAd2.get()).active(true).price(100).build();
 
         // Persist both rentals
         rentalRepository.save(rental1);

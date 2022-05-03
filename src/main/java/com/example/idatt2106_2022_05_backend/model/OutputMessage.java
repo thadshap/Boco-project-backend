@@ -10,7 +10,7 @@ public class OutputMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="message_id", nullable=false)
+    @Column(name = "message_id", nullable = false)
     private Long id;
 
     @Column(name = "sender")

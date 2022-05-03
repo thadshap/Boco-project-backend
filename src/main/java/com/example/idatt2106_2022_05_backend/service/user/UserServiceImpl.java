@@ -66,15 +66,15 @@ public class UserServiceImpl implements UserService {
     public Response deleteUser(Long userId) {
         // Find the user
         Optional<User> userFound = userRepository.findById(userId);
-        if(userFound.isPresent()) {
+        if (userFound.isPresent()) {
             // Retrieve the user
             User user = userFound.get();
 
             // Get the ads
             Set<Ad> ads = user.getAds();
-            if(ads != null) {
+            if (ads != null) {
                 // Iterate over all the ads and delete them
-                for(Ad ad : ads) {
+                for (Ad ad : ads) {
                     adService.deleteAd(ad.getId());
                 }
             }
@@ -83,8 +83,8 @@ public class UserServiceImpl implements UserService {
 
             // Get the rentals
             List<Rental> rentals = user.getRentalsOwned();
-            if(rentals != null) {
-                for(Rental rental : rentals) {
+            if (rentals != null) {
+                for (Rental rental : rentals) {
                     rental.setOwner(null);
                     rentalRepository.save(rental);
                 }
@@ -94,8 +94,8 @@ public class UserServiceImpl implements UserService {
             user.setRentalsOwned(null);
 
             List<Rental> rentals2 = user.getRentalsBorrowed();
-            if(rentals != null) {
-                for(Rental rental : rentals2) {
+            if (rentals != null) {
+                for (Rental rental : rentals2) {
                     rental.setBorrower(null);
                     rentalRepository.save(rental);
                 }
@@ -106,42 +106,30 @@ public class UserServiceImpl implements UserService {
 
             // Get the reviews
             Set<Review> reviews = user.getReviews();
-            if(reviews != null) {
-                for(Review review : reviews) {
+            if (reviews != null) {
+                for (Review review : reviews) {
                     review.setUser(null);
                     reviewRepository.save(review);
                 }
             }
 
-
             // Delete reviews from user
             user.setReviews(null);
 
             /**
-            // Get the output-messages
-            List<OutputMessage> messages = ouputMessageRepository.findAll();
-            for(OutputMessage message : messages) {
-                if(Objects.equals(message.getUser().getId(), user.getId())) {
-                    message.setUser(null);
-                    message.setGroup(null);
-                    ouputMessageRepository.save(message);
-                    ouputMessageRepository.delete(message);
-                }
-            }
-
-            Set<OutputMessage> outputMessages = user.getMessages();
-            if(outputMessages != null) {
-                for(OutputMessage message : outputMessages) {
-                    message.setUser(null);
-                    ouputMessageRepository.save(message);
-                    ouputMessageRepository.delete(message);
-                }
-            }
+             * // Get the output-messages List<OutputMessage> messages = ouputMessageRepository.findAll();
+             * for(OutputMessage message : messages) { if(Objects.equals(message.getUser().getId(), user.getId())) {
+             * message.setUser(null); message.setGroup(null); ouputMessageRepository.save(message);
+             * ouputMessageRepository.delete(message); } }
+             * 
+             * Set<OutputMessage> outputMessages = user.getMessages(); if(outputMessages != null) { for(OutputMessage
+             * message : outputMessages) { message.setUser(null); ouputMessageRepository.save(message);
+             * ouputMessageRepository.delete(message); } }
              */
             // Get messages
             List<Message> messages = messageRepository.findAll();
-            for(Message message : messages) {
-                if(message.getUser().getId() == user.getId()) {
+            for (Message message : messages) {
+                if (message.getUser().getId() == user.getId()) {
                     message.setUser(null);
                     messageRepository.save(message);
                 }
@@ -154,8 +142,7 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteById(user.getId());
 
             return new Response("User deleted", HttpStatus.ACCEPTED);
-        }
-        else {
+        } else {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
 
@@ -164,20 +151,22 @@ public class UserServiceImpl implements UserService {
     /**
      * method to delete a picture on an ad
      *
-     * @param userId the id of the user that wished to change their profile picture
-     * @param chosenPicture the picture to remove (converted to bytes)
+     * @param userId
+     *            the id of the user that wished to change their profile picture
+     * @param chosenPicture
+     *            the picture to remove (converted to bytes)
      *
      * @return response with status ok or not found
      */
     @Override
-    public Response deleteProfilePicture(long userId, byte[] chosenPicture){
+    public Response deleteProfilePicture(long userId, byte[] chosenPicture) {
         Optional<User> user = userRepository.findById(userId);
 
         // If present
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             Picture profilePicture = user.get().getPicture();
-            if(profilePicture != null) {
-                if(Arrays.equals(profilePicture.getData(), chosenPicture)) {
+            if (profilePicture != null) {
+                if (Arrays.equals(profilePicture.getData(), chosenPicture)) {
 
                     // Remove this picture from user
                     user.get().setPicture(null);
@@ -211,14 +200,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getById(userId);
         System.out.println(file.getName());
         System.out.println(file.getContentType());
-//        String filename = file.getName().split("\\.")[1];
-//        if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") || !filename.equalsIgnoreCase("jpeg") ){
-//            return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
-//        }
-        Picture picture = Picture.builder()
-                .filename(file.getName())
-                .type(file.getContentType())
-                .data(file.getBytes())
+        // String filename = file.getName().split("\\.")[1];
+        // if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") ||
+        // !filename.equalsIgnoreCase("jpeg") ){
+        // return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
+        // }
+        Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType()).data(file.getBytes())
                 .build();
         user.setPicture(picture);
         picture.setUser(user);
@@ -232,10 +219,8 @@ public class UserServiceImpl implements UserService {
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
-        return PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
-                .type(picture.get(0).getType())
-                .build();
+        return PictureReturnDto.builder().base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .type(picture.get(0).getType()).build();
     }
 
     /**
@@ -251,7 +236,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
         Optional<User> userFromDB = userRepository.findById(userId);
-        if(userFromDB.isEmpty()){
+        if (userFromDB.isEmpty()) {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
         User user = userFromDB.get();
@@ -284,17 +269,10 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NOT_FOUND);
         }
         User userGot = userFromDB.get();
-        UserReturnDto user = UserReturnDto.builder()
-                .id(userGot.getId())
-                .firstName(userGot.getFirstName())
-                .lastName(userGot.getLastName())
-                .email(userGot.getEmail())
-                .role(userGot.getRole())
-                .verified(userGot.isVerified())
-                .rating(userGot.getRating())
-                .nrOfReviews(userGot.getNumberOfReviews())
-                .pictureUrl(userGot.getPictureUrl())
-                .build();
+        UserReturnDto user = UserReturnDto.builder().id(userGot.getId()).firstName(userGot.getFirstName())
+                .lastName(userGot.getLastName()).email(userGot.getEmail()).role(userGot.getRole())
+                .verified(userGot.isVerified()).rating(userGot.getRating()).nrOfReviews(userGot.getNumberOfReviews())
+                .pictureUrl(userGot.getPictureUrl()).build();
 
         return new Response(user, HttpStatus.OK);
     }

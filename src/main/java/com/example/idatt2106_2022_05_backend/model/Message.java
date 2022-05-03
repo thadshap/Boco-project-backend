@@ -14,18 +14,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="message")
+@Table(name = "message")
 public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="message_id", nullable=false)
+    @Column(name = "message_id", nullable = false)
     private Long id;
 
     @Column(name = "content", nullable = false)
     private String content;
 
-    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     @Column(name = "timestamp", nullable = false)
     private Timestamp timestamp;
 
@@ -38,11 +38,11 @@ public class Message {
     private Group group;
 
     @PreRemove
-    void remove(){
-        if(user != null) {
+    void remove() {
+        if (user != null) {
             setUser(null);
         }
-        if(group != null) {
+        if (group != null) {
             setGroup(null);
         }
     }

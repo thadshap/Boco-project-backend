@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jdk.jfr.Timestamp;
 import lombok.*;
@@ -26,7 +25,7 @@ public class CalendarDate {
     @Column(name = "date_id", nullable = false)
     private Long id;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
@@ -35,7 +34,7 @@ public class CalendarDate {
     private boolean available;
 
     // Many-to-many connection with Ad. Ad is parent in this case.
-    @ManyToMany(fetch = FetchType.EAGER,  mappedBy = "dates")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "dates")
     @ToString.Exclude
     private Set<Ad> ads = new HashSet<>();
 

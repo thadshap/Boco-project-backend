@@ -13,7 +13,7 @@ public interface ChatService {
 
     Response getAllMessagesByGroupId(long groupId);
 
-    //MessageDto saveMessage(MessageDto message, long groupId);
+    // MessageDto saveMessage(MessageDto message, long groupId);
 
     Response getChat(long id);
 
@@ -25,7 +25,6 @@ public interface ChatService {
 
     Response addUserToGroupById(long groupId, long userId);
 
-
     void broadcast(MessageDto message);
 
     Response createGroupFromUserIds(ListGroupDto listGroupDto);
@@ -36,6 +35,6 @@ public interface ChatService {
 
     Response addUserToGroupByEmail(long groupId, String email);
 
-    //Response getGroupChatsBasedOnUserId(long id);
+    // Response getGroupChatsBasedOnUserId(long id);
 
 }

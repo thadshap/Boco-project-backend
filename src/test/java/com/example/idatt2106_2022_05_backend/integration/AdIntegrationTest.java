@@ -42,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class AdIntegrationTest {
 
-
     @Autowired
     AdService adService;
     @Autowired
@@ -73,30 +72,19 @@ public class AdIntegrationTest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-
     @BeforeEach
     public void setUp() {
         // Building a user
-        User user = User.builder().
-                firstName("firstName").
-                lastName("lastName").
-                email("user.name@hotmail.com").
-                password("pass1word").
-                build();
+        User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
 
         // Saving the user
         userRepository.save(user);
 
         // Building categories
-        Category clothes = Category.builder().
-                name("new category1").
-                parent(true).
-                build();
+        Category clothes = Category.builder().name("new category1").parent(true).build();
 
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(clothes);
@@ -118,7 +106,7 @@ public class AdIntegrationTest {
     @Nested
     class AdClassTests {
         @Test
-        public void whenForeignKeysCorrect_ThenAadIsSaved(){
+        public void whenForeignKeysCorrect_ThenAadIsSaved() {
 
             // If the setUp @beforeEach works as it should, the repository should be empty
             assertEquals(0, adRepository.findAll().size());
@@ -128,19 +116,10 @@ public class AdIntegrationTest {
             Category clothesCategory = categoryRepository.findAll().get(0);
 
             // Building an ad-dto with foreign keys
-            AdDto ad = AdDto.builder().
-                    title("Nike shoes").
-                    description("Renting out a pair of shoes in size 40").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.WEEK).
-                    duration(2).
-                    price(100).
-                    streetAddress("Project Road 4").
-                    postalCode(7234).
-                    userId(user.getId()).
-                    categoryId(clothesCategory.getId()).
-                    build();
+            AdDto ad = AdDto.builder().title("Nike shoes").description("Renting out a pair of shoes in size 40")
+                    .rental(true).rentedOut(false).durationType(AdType.WEEK).duration(2).price(100)
+                    .streetAddress("Project Road 4").postalCode(7234).userId(user.getId())
+                    .categoryId(clothesCategory.getId()).build();
 
             try {
                 // Post the ad
@@ -150,49 +129,32 @@ public class AdIntegrationTest {
                 e.printStackTrace();
             }
 
-
-            //Verify that the post is saved
+            // Verify that the post is saved
             assertTrue(adRepository.findAll().size() > 0);
             assertEquals(adRepository.findAll().get(0).getTitle(), "Nike shoes");
         }
 
         @Test
-        public void whenForeignKeysWrong_ThenAdIsNotSaved(){
+        public void whenForeignKeysWrong_ThenAdIsNotSaved() {
             // Building a user
-            User user = User.builder().
-                    firstName("user2").
-                    lastName("second").
-                    email("second.user@hotmail.com").
-                    password("newPassword").
-                    build();
+            User user = User.builder().firstName("user2").lastName("second").email("second.user@hotmail.com")
+                    .password("newPassword").build();
 
             // Building a new category
-            Category boats = Category.builder().
-                    name("Boats").
-                    build();
+            Category boats = Category.builder().name("Boats").build();
 
             // Building an ad-dto with foreign keys
-            AdDto boatAd = AdDto.builder().
-                    title("Sail boat").
-                    description("Renting out a huge sail boat").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.MONTH).
-                    duration(2).
-                    price(100).
-                    streetAddress("The sea").
-                    postalCode(7000).
-                    userId(202L).
-                    categoryId(101L).
-                    build();
+            AdDto boatAd = AdDto.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
+                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .postalCode(7000).userId(202L).categoryId(101L).build();
 
             try {
                 // Post the ad
                 adService.postNewAd(boatAd);
 
                 // The test will fail because the foreign keys did not exist
-                //fail();
-            }catch (InvalidDataAccessApiUsageException e) {
+                // fail();
+            } catch (InvalidDataAccessApiUsageException e) {
 
                 // The test passes if this exception is caught
             } catch (NullPointerException | IOException e) {
@@ -205,28 +167,18 @@ public class AdIntegrationTest {
     }
 
     @Nested
-    class UpdatePostTests{
+    class UpdatePostTests {
         @Test
-        public void updatePostWorks(){
+        public void updatePostWorks() {
 
             // Get the foreign keys
             User user = userRepository.findAll().get(0);
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad with foreign keys
-            Ad newAd = Ad.builder().
-                    title("Sail boat").
-                    description("Renting out a huge sail boat").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.MONTH).
-                    duration(2).
-                    price(100).
-                    streetAddress("The sea").
-                    postalCode(7000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
+                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .postalCode(7000).user(user).category(category).build();
 
             // Persisting the ad and set newAd equal to it in order to fetch the id
             newAd = adRepository.save(newAd);
@@ -240,7 +192,7 @@ public class AdIntegrationTest {
 
             try {
                 // Edit the ad
-                adService.updateAd(newAd.getId(),updateDto);
+                adService.updateAd(newAd.getId(), updateDto);
 
                 // Get the edited ad and assign it to the ad reference (newAd)
                 newAd = adRepository.findById(newAd.getId()).get();
@@ -248,7 +200,7 @@ public class AdIntegrationTest {
                 // Assert that the new ad title was persisted
                 assertEquals("Renting out sail boat", newAd.getTitle());
 
-            }catch(InvalidDataAccessApiUsageException e){
+            } catch (InvalidDataAccessApiUsageException e) {
                 fail();
             }
         }
@@ -259,19 +211,9 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad without persisting it
-            Ad newAd = Ad.builder().
-                    title("non existent post").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("non existent").
-                    postalCode(7000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().title("non existent post").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("non existent").postalCode(7000)
+                    .user(user).category(category).build();
             try {
                 // Create an update-dto
                 AdUpdateDto updateDto = new AdUpdateDto();
@@ -289,10 +231,10 @@ public class AdIntegrationTest {
     }
 
     @Nested
-    class DeletePostTests{
+    class DeletePostTests {
 
         @Test
-        public void whenPostExists_postIsDeleted(){
+        public void whenPostExists_postIsDeleted() {
             // The cleanup should have erased ads from this repo (EXCEPT ONE)
             assertEquals(0, adRepository.findAll().size());
 
@@ -301,20 +243,9 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad without persisting it
-            Ad newAd = Ad.builder().
-                    id(100L).
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().id(100L).title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             newAd = adRepository.save(newAd);
 
@@ -329,7 +260,7 @@ public class AdIntegrationTest {
         }
 
         @Test
-        public void whenPostDoesNotExist_postIsNotDeleted(){
+        public void whenPostDoesNotExist_postIsNotDeleted() {
             // The cleanup should have erased ads from this repo
             assertEquals(0, adRepository.findAll().size());
 
@@ -344,25 +275,15 @@ public class AdIntegrationTest {
     class UserRelatedAdTests {
 
         @Test
-        public void whenUserExists_retrieveAds(){
+        public void whenUserExists_retrieveAds() {
             // Retrieve the user and category
             User user = userRepository.findAll().get(0);
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad without persisting it
-            Ad newAd = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             // Save the ad with the foreign keys
             newAd = adRepository.save(newAd);
@@ -375,7 +296,7 @@ public class AdIntegrationTest {
         }
 
         @Test
-        public void whenUserDoesNotExist_adsAreNotReturned(){
+        public void whenUserDoesNotExist_adsAreNotReturned() {
             // Random id
             long wrongUserId = 101L;
 
@@ -386,16 +307,11 @@ public class AdIntegrationTest {
         }
 
         @Test
-        public void paginationWorks(){
+        public void paginationWorks() {
 
             // Build new user and category
-            User user = User.builder().
-                    firstName("firstName").
-                    lastName("lastName").
-                    email("user.name@hotmail.com").
-                    password("pass1word").
-                    build();
-
+            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                    .password("pass1word").build();
 
             // Persist the user --> we now have two users
             userRepository.save(user);
@@ -407,22 +323,12 @@ public class AdIntegrationTest {
             Category category1 = categoryRepository.findAll().get(0);
 
             // Create and save 15 new posts
-            for(int i = 0; i < 15; i++){
+            for (int i = 0; i < 15; i++) {
 
                 // Building an ad
-                Ad newAd = Ad.builder().
-                        title("title").
-                        description("").
-                        rental(true).
-                        rentedOut(false).
-                        durationType(AdType.HOUR).
-                        duration(2).
-                        price(100).
-                        streetAddress("address").
-                        postalCode(7999).
-                        user(user1).
-                        category(category1).
-                        build();
+                Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .user(user1).category(category1).build();
 
                 // Save the new ad
                 adRepository.save(newAd);
@@ -437,12 +343,8 @@ public class AdIntegrationTest {
         @Test
         public void paginationWorks_WhenNotEnoughAds() {
             // Build new user
-            User user = User.builder().
-                    firstName("firstName").
-                    lastName("lastName").
-                    email("user.name@hotmail.com").
-                    password("pass1word").
-                    build();
+            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                    .password("pass1word").build();
 
             // Persist the user --> we now have two users
             userRepository.save(user);
@@ -454,21 +356,11 @@ public class AdIntegrationTest {
             Category category1 = categoryRepository.findAll().get(0);
 
             // Create and save 15 new posts
-            for(int i = 0; i < 15; i++){
+            for (int i = 0; i < 15; i++) {
                 // Building an ad
-                Ad newAd = Ad.builder().
-                        title("title").
-                        description("").
-                        rental(true).
-                        rentedOut(false).
-                        durationType(AdType.HOUR).
-                        duration(2).
-                        price(100).
-                        streetAddress("address").
-                        postalCode(7999).
-                        user(user1).
-                        category(category1).
-                        build();
+                Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .user(user1).category(category1).build();
 
                 // Save the new ad
                 adRepository.save(newAd);
@@ -483,9 +375,8 @@ public class AdIntegrationTest {
         }
     }
 
-
     @Nested
-    class AdGetRelatedTests{
+    class AdGetRelatedTests {
         // get all available ads
         @Test
         public void whenAdsAreAvailable_allAvailableAdsAreReturned() {
@@ -496,66 +387,26 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create available ads
-            Ad availableAd1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
-            Ad availableAd2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             // Persist them
             adRepository.save(availableAd1);
             adRepository.save(availableAd2);
 
             // Create unavailable ads
-            Ad unavailableAd1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(true).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad unavailableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
-            Ad unavailableAd2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(true).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad unavailableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             // Persist them
             adRepository.save(unavailableAd1);
@@ -584,36 +435,13 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create available ads
-            Ad availableAd1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
-            Ad availableAd2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    lat(63.401920).
-                    lng( 10.443579).
-                    city("Trondheim").
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).lat(63.401920).lng(10.443579).city("Trondheim")
+                    .streetAddress("address").postalCode(7999).user(user).category(category).build();
 
             adRepository.save(availableAd1);
             adRepository.save(availableAd2);
@@ -638,53 +466,22 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ads
-            Ad ad1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(8000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .build();
 
-            Ad ad2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(8000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .build();
 
-            Ad ad3 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(8000).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .build();
 
             // Persist them
             adRepository.save(ad1);
             adRepository.save(ad2);
             adRepository.save(ad3);
-
 
             // Repository call should return 3
             assertEquals(3, adRepository.findByPostalCode(8000).size());
@@ -705,38 +502,17 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ads with rental == true
-            Ad ad1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .build();
 
-            Ad ad2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .build();
 
             // Persist
             adRepository.save(ad1);
             adRepository.save(ad2);
-
 
             // Repository call should return 2
             assertEquals(adRepository.findByRental(true).size(), 2);
@@ -756,33 +532,13 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ads with rental == false
-            Ad ad1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(false).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad1 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
-            Ad ad2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(false).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad2 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             // Persist
             adRepository.save(ad1);
@@ -812,52 +568,19 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ad
-            Ad ad1 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(8000).
-                    city("Bodø").
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(8000).city("Bodø").user(user)
+                    .category(category).build();
 
             // Create ad
-            Ad ad2 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(8001).
-                    city("Bodø").
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(8001).city("Bodø").user(user)
+                    .category(category).build();
 
             // Create ad
-            Ad ad3 = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    city("Bodø").
-                    postalCode(8002).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").city("Bodø").postalCode(8002).user(user)
+                    .category(category).build();
 
             // Persist ads
             adRepository.save(ad1);
@@ -868,6 +591,7 @@ public class AdIntegrationTest {
             assertTrue(res.getBody().toString().contains("Bodø"));
             assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
+
         // get reviews by user id
         @Test
         public void allReviewsAreReturned_WhenUserIdCorrect() {
@@ -878,28 +602,15 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ad
-            Ad ad = Ad.builder().
-                    title("title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
+                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .build();
 
             // Persist the ad
             adRepository.save(ad);
 
             // Create Review entity
-            Review review = Review.builder().
-                    description("Great shoes!").
-                    rating(5).
-                    build();
+            Review review = Review.builder().description("Great shoes!").rating(5).build();
 
             // Save the review
             reviewRepository.save(review);
@@ -927,12 +638,7 @@ public class AdIntegrationTest {
             User user = userRepository.findAll().get(0);
 
             // Create Review entity
-            Review review = Review.builder().
-                    id(5L).
-                    description("Great shoes!").
-                    rating(5).
-                    user(user).
-                            build();
+            Review review = Review.builder().id(5L).description("Great shoes!").rating(5).user(user).build();
 
             // Retrieve reviews for user
             List<Review> reviews = reviewRepository.getAllByUser(user);
@@ -951,13 +657,9 @@ public class AdIntegrationTest {
         public void allCategoriesAreReturned() {
 
             // Building categories
-            Category category3 = Category.builder().
-                    name("new category").
-                    build();
+            Category category3 = Category.builder().name("new category").build();
 
-            Category category4 = Category.builder().
-                    name("even newer category").
-                    build();
+            Category category4 = Category.builder().name("even newer category").build();
 
             // Persist categories
             categoryRepository.save(category3);
@@ -968,8 +670,7 @@ public class AdIntegrationTest {
 
             ResponseEntity<Object> res = adService.getAllCategories();
 
-            assertEquals(HttpStatus.OK.value(),
-                    res.getStatusCodeValue());
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get all sub categories
@@ -979,23 +680,14 @@ public class AdIntegrationTest {
             int previousCategoriesCount = categoryRepository.findAll().size();
 
             // Building categories
-            Category category1 = Category.builder().
-                    name("new category").
-                    parent(true).
-                    build();
+            Category category1 = Category.builder().name("new category").parent(true).build();
 
             // Building 2 sub-categories for category1
-            Category subCategory1 = Category.builder().
-                    name("new category").
-                    parent(false).
-                    parentName(category1.getName()).
-                    build();
+            Category subCategory1 = Category.builder().name("new category").parent(false)
+                    .parentName(category1.getName()).build();
 
-            Category subCategory2 = Category.builder().
-                    name("even newer category").
-                    parent(false).
-                    parentName(category1.getName()).
-                    build();
+            Category subCategory2 = Category.builder().name("even newer category").parent(false)
+                    .parentName(category1.getName()).build();
 
             // Persist categories
             Category mainCategory = categoryRepository.save(category1);
@@ -1004,15 +696,13 @@ public class AdIntegrationTest {
 
             // There should be 12 categories in category-repository now
             // 2 (setUp) + 8 (dataLoader) + 3 (this method) = 12
-            assertEquals(previousCategoriesCount + 3,categoryRepository.findAll().size());
+            assertEquals(previousCategoriesCount + 3, categoryRepository.findAll().size());
 
             // Service method should return HttpStatus.OK
 
-
             ResponseEntity<Object> res = adService.getAllSubCategories(mainCategory.getName());
 
-            assertEquals(HttpStatus.OK.value(),
-                    res.getStatusCodeValue());
+            assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
 
         // get all ads within specified category
@@ -1025,19 +715,9 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Create ad
-            Ad ad = Ad.builder().
-                    title("random title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("address").
-                    postalCode(7999).
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .user(user).category(category).build();
 
             // Persist the ad
             adRepository.save(ad);
@@ -1047,8 +727,8 @@ public class AdIntegrationTest {
 
             // Retrieve category with name
             Set<Category> categoriesFound = categoryRepository.findByName(category.getName());
-            if(categoriesFound != null) {
-                for(Category category1 : categoriesFound) {
+            if (categoriesFound != null) {
+                for (Category category1 : categoriesFound) {
                     // Assert that the ad was added to the category
                     assertEquals(category1.getAds().size(), 1);
 
@@ -1056,8 +736,7 @@ public class AdIntegrationTest {
                     ResponseEntity<Object> res = adService.getAllAdsInCategory(category.getId());
                     assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
                 }
-            }
-            else{
+            } else {
                 // If no category was found, the test fails
                 fail();
             }
@@ -1079,20 +758,9 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Creating ad without coordinates
-            Ad ad = Ad.builder().
-                    title("random title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("fjordvegen 2").
-                    postalCode(9990).
-                    city("båtsfjord").
-                    user(user).
-                    category(category).
-                    build();
+            Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").user(user).category(category).build();
 
             // Persist the ad
             adRepository.save(ad);
@@ -1115,20 +783,9 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Creating ad without coordinates
-            AdDto ad = AdDto.builder().
-                    title("random title").
-                    description("").
-                    rental(true).
-                    rentedOut(false).
-                    durationType(AdType.HOUR).
-                    duration(2).
-                    price(100).
-                    streetAddress("fjordvegen 2").
-                    postalCode(9990).
-                    city("båtsfjord").
-                    userId(user.getId()).
-                    categoryId(category.getId()).
-                    build();
+            AdDto ad = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad
             ResponseEntity<Object> response = adService.postNewAd(ad);
@@ -1140,12 +797,11 @@ public class AdIntegrationTest {
             Optional<Ad> adFound = adRepository.findById(id);
 
             assertNotNull(adFound);
-            if(adFound.isPresent()) {
+            if (adFound.isPresent()) {
                 // See if the new ad has the correct coordinates
                 double latitude = adFound.get().getLat();
                 assertTrue(Double.toString(latitude).contains("70.62"));
-            }
-            else {
+            } else {
                 fail();
             }
         }
@@ -1255,32 +911,31 @@ public class AdIntegrationTest {
 
         }
 
-        /** ---------------------------------------- ABOUT BELOW CODE: ----------------------------------------
-          *
-          * Code contains only copied methods from "AdServiceImpl.java" (for testing purposes).
-          * The purpose is not having to deal with response-entities when testing.
-          * Methods for testing sorting therefore contains both:
-          *         - The original service-methods for checking correctly received HTTP-responses.
-          *         - These methods in order to verify the correctness of the body of the responses received.
+        /**
+         * ---------------------------------------- ABOUT BELOW CODE: ----------------------------------------
+         *
+         * Code contains only copied methods from "AdServiceImpl.java" (for testing purposes). The purpose is not having
+         * to deal with response-entities when testing. Methods for testing sorting therefore contains both: - The
+         * original service-methods for checking correctly received HTTP-responses. - These methods in order to verify
+         * the correctness of the body of the responses received.
          **/
 
         private List<AdDto> getAllAdsWithDistance(UserGeoLocation userGeoLocation) {
             ArrayList<AdDto> ads = new ArrayList<>();
 
-            for(Ad ad : adRepository.findAll()){
+            for (Ad ad : adRepository.findAll()) {
 
-                //Setting all attributes and decompressing pictures in help method
+                // Setting all attributes and decompressing pictures in help method
                 AdDto adDto = castObject(ad);
 
-                //Calculate and set distance
-                adDto.setDistance(calculateDistance(userGeoLocation.getLat(),
-                        userGeoLocation.getLng(), ad.getLat(), ad.getLng()));
+                // Calculate and set distance
+                adDto.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), ad.getLat(),
+                        ad.getLng()));
 
-                //Adding all ads to list and then response
+                // Adding all ads to list and then response
                 ads.add(adDto);
             }
-            return ads.stream().sorted(Comparator.comparing(AdDto::getDistance))
-                    .collect(Collectors.toList());
+            return ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList());
         }
 
         private AdDto castObject(Ad ad) {
@@ -1292,107 +947,101 @@ public class AdIntegrationTest {
             return adDto;
         }
 
-        private double calculateDistance(double lat1, double long1, double lat2,
-                                        double long2) {
+        private double calculateDistance(double lat1, double long1, double lat2, double long2) {
             double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
-            return dist/1000;
+            return dist / 1000;
         }
 
         private List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
             List<AdDto> ads = getAllAdsWithDistance(userGeoLocation);
-            return ads.stream().limit(userGeoLocation.getAmount())
-                    .collect(Collectors.toList());
+            return ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList());
         }
 
-
-        private List<AdDto> sortByDescending(int pageSize, String sortBy){
+        private List<AdDto> sortByDescending(int pageSize, String sortBy) {
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-            List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream()
-                    .map(ad -> modelMapper.map(ad, AdDto.class))
-                    .collect(Collectors.toList());
+            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
+            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
 
         }
 
-
-        private List<AdDto> sortByAscending(int pageSize, String sortBy){
+        private List<AdDto> sortByAscending(int pageSize, String sortBy) {
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
             List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).
-                    collect(Collectors.toList());
+            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
         }
 
-
-        private Stream<AdDto> sortByCreatedDateAscending(int pageSize){
+        private Stream<AdDto> sortByCreatedDateAscending(int pageSize) {
             List<Ad> ads = adRepository.findAll();
             ads.sort(Comparator.comparing(Ad::getCreated));
-            return ads.stream()
-                    .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
                     .limit(pageSize);
         }
 
-
-        private Stream<AdDto> sortByCreatedDateDescending(int pageSize){
+        private Stream<AdDto> sortByCreatedDateDescending(int pageSize) {
             List<Ad> ads = adRepository.findAll();
             ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-            return ads.stream()
-                    .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
                     .limit(pageSize);
         }
 
-        private List<AdDto> searchThroughAds(String searchWord){
-            //List to be filled with corresponding ads
+        private List<AdDto> searchThroughAds(String searchWord) {
+            // List to be filled with corresponding ads
             List<Ad> adsContainingSearchWord = new ArrayList<>();
 
             List<Ad> ads = adRepository.findAll();
 
-            //Checking all titles for searchWord
-            for(Ad a: ads){
-                if(a.getTitle().toLowerCase().contains(searchWord.toLowerCase())){
+            // Checking all titles for searchWord
+            for (Ad a : ads) {
+                if (a.getTitle().toLowerCase().contains(searchWord.toLowerCase())) {
                     adsContainingSearchWord.add(a);
                 }
             }
             List<Category> categories = categoryRepository.findAll();
 
-            //Adding all ads with the category
-            for(Category c: categories){
-                if(c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
+            // Adding all ads with the category
+            for (Category c : categories) {
+                if (c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
                     for (Ad a : c.getAds()) {
-                        if(!adsContainingSearchWord.contains(a)) {
+                        if (!adsContainingSearchWord.contains(a)) {
                             adsContainingSearchWord.add(a);
                         }
                     }
                 }
             }
 
-            //Casting objects to Dto and returning
-            return adsContainingSearchWord.stream()
-                    .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList());
+            // Casting objects to Dto and returning
+            return adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
+                    .collect(Collectors.toList());
         }
 
-        private List<AdDto> sortArrayByPriceAscending(List<AdDto> list){
+        private List<AdDto> sortArrayByPriceAscending(List<AdDto> list) {
             list.sort(Comparator.comparing(AdDto::getPrice));
-            return list;        }
-
-        private List<AdDto> sortArrayByPriceDescending(List<AdDto> list){
-            list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-            return list;        }
-
-        private List<AdDto> sortArrayByDistanceAscending(List<AdDto> list){
-            list.sort(Comparator.comparing(AdDto::getDistance));
-            return list;        }
-
-        private List<AdDto> sortArrayByDistanceDescending(List<AdDto> list){
-            list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-            return list;        }
-
-        private List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit){
-            list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
             return list;
         }
 
-        private List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
-            list.stream().filter(x->lowerLimit<x.getPrice() && x.getPrice()<upperLimit).collect(Collectors.toList());
+        private List<AdDto> sortArrayByPriceDescending(List<AdDto> list) {
+            list.sort(Comparator.comparing(AdDto::getPrice).reversed());
+            return list;
+        }
+
+        private List<AdDto> sortArrayByDistanceAscending(List<AdDto> list) {
+            list.sort(Comparator.comparing(AdDto::getDistance));
+            return list;
+        }
+
+        private List<AdDto> sortArrayByDistanceDescending(List<AdDto> list) {
+            list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+            return list;
+        }
+
+        private List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit) {
+            list.stream().filter(x -> x.getDistance() < limit).collect(Collectors.toList());
+            return list;
+        }
+
+        private List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit) {
+            list.stream().filter(x -> lowerLimit < x.getPrice() && x.getPrice() < upperLimit)
+                    .collect(Collectors.toList());
             return list;
         }
 
@@ -1404,7 +1053,7 @@ public class AdIntegrationTest {
             JsonNode responseJSONNode = objectMapper.readTree(response);
             JsonNode items = responseJSONNode.get("items");
 
-            for(JsonNode item : items){
+            for (JsonNode item : items) {
                 JsonNode address = item.get("address");
                 String label = address.get("label").asText();
                 JsonNode position = item.get("position");
@@ -1412,7 +1061,7 @@ public class AdIntegrationTest {
                 String lat = position.get("lat").asText();
                 String lng = position.get("lng").asText();
                 System.out.println(label + " is located at " + lat + "," + lng + ".");
-                if(!lng.equals("") && !lat.equals("")) {
+                if (!lng.equals("") && !lat.equals("")) {
                     ad.setLat(Double.parseDouble(lat));
                     ad.setLng(Double.parseDouble(lng));
                 }

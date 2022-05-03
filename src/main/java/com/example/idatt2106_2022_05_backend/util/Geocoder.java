@@ -27,29 +27,24 @@ public class Geocoder {
 
         HttpClient httpClient = HttpClient.newHttpClient();
         // logger.info("created client");
-        String encodedQuery = URLEncoder.encode(query,"UTF-8");
+        String encodedQuery = URLEncoder.encode(query, "UTF-8");
         String requestUri = GEOCODING_RESOURCE + "?apiKey=" + API_KEY + "&q=" + encodedQuery;
         // logger.info("created query: " + requestUri);
         HttpRequest geocodingRequest = HttpRequest.newBuilder().GET().uri(URI.create(requestUri))
                 .timeout(Duration.ofMillis(2000)).build();
 
         // logger.info("created geocodingrequest");
-        HttpResponse geocodingResponse = httpClient.send(geocodingRequest,
-                HttpResponse.BodyHandlers.ofString());
+        HttpResponse geocodingResponse = httpClient.send(geocodingRequest, HttpResponse.BodyHandlers.ofString());
 
         // logger.info("Recieved response: " + geocodingResponse.body());
         return String.valueOf(geocodingResponse.body());
     }
-/*
-    public static void main(String[] args) throws IOException, InterruptedException {
-        AdServiceImpl adService = new AdServiceImpl();
-        Ad ad = new Ad();
-        ad.setCity("Pozuelo de Alarcon");
-        ad.setStreetAddress("C.Manuel Roses 15C");
-        ad.setPostalCode(28223);
-        adService.setCoordinatesOnAd(ad);
-        System.out.println("This ads coordianates are: " + ad.getLat()+ " "+ ad.getLng() );
-
-    }
- */
+    /*
+     * public static void main(String[] args) throws IOException, InterruptedException { AdServiceImpl adService = new
+     * AdServiceImpl(); Ad ad = new Ad(); ad.setCity("Pozuelo de Alarcon"); ad.setStreetAddress("C.Manuel Roses 15C");
+     * ad.setPostalCode(28223); adService.setCoordinatesOnAd(ad); System.out.println("This ads coordianates are: " +
+     * ad.getLat()+ " "+ ad.getLng() );
+     * 
+     * }
+     */
 }
