@@ -879,15 +879,16 @@ public class AdServiceImpl implements AdService {
      * @return response with status ok or not found
      */
     @Override
-    public Response deletePicture(long ad_id, byte[] chosenPicture){
+    public Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException {
         Optional<Ad> ad = adRepository.findById(ad_id);
 
         // If present
         if(ad.isPresent()) {
             Set<Picture> pictures = ad.get().getPictures();
             if(pictures != null) {
+                int i = 0;
                 for (Picture picture : pictures) {
-                    if(Arrays.equals(picture.getData(), chosenPicture)) {
+                    if(Arrays.equals(picture.getData(), chosenPicture.get(i).getBytes())) {
                         // Remove this picture from ad
                         ad.get().getPictures().remove(picture);
 
@@ -903,6 +904,7 @@ public class AdServiceImpl implements AdService {
 
                         return new Response("Slettet bildet", HttpStatus.OK);
                     }
+                    i++;
                 }
             }
             // If we get here, pictures are equal to null
@@ -1121,6 +1123,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Response storeImageForAd(long adId, MultipartFile file) throws IOException {
+
         return pictureService.savePicture(file, adId, 0);
     }
 

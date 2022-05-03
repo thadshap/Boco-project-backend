@@ -120,11 +120,11 @@ public class AdController {
         return adService.deleteAd(adId);
     }
 
-    @DeleteMapping("/auth/ads/picture")
+    @DeleteMapping("/auth/ads/picture/{userId}")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
+    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto, @RequestPart List<MultipartFile> files) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
-        return adService.deletePicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile().getBytes());
+        return adService.deletePicture(updatePictureDto.getId(), files);
     }
 
     // Not in use
@@ -139,9 +139,9 @@ public class AdController {
 
 
     @PostMapping("/auth/ads/newPicture")
-    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto) {
+    public Response uploadPicture(@ModelAttribute UpdatePictureDto dto, @RequestPart List<MultipartFile> files) {
         try {
-            return adService.storeImageForAd(dto.getId(), dto.getMultipartFile());
+            return adService.storeImageForAd(dto.getId(), (MultipartFile) files);
         } catch (IOException e) {
             e.printStackTrace();
         }
