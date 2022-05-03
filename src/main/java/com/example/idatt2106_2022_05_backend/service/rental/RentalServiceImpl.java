@@ -179,7 +179,9 @@ public class RentalServiceImpl implements RentalService {
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NOT_FOUND);
         }
+
         Rental rental = rentalOptional.get();
+
         if (rentalDto.getRentFrom() != null){
             rental.setRentFrom(rentalDto.getRentFrom());
         }
@@ -189,10 +191,14 @@ public class RentalServiceImpl implements RentalService {
         if (rentalDto.getDeadline() != null){
             rental.setDeadline(rentalDto.getDeadline());
         }
-        if (rentalDto.getPrice() <= 0){
+        if (rentalDto.getPrice() >= 0){
             rental.setPrice(rentalDto.getPrice());
         }
-        return new Response("Rental", HttpStatus.ACCEPTED);
+
+        // Persist the changes
+        rentalRepository.save(rental);
+
+        return new Response("Rental updated", HttpStatus.ACCEPTED);
     }
 
     /**
