@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PictureReturnDto {
 
+    public Long id;
+
     private String type;
 
     private String base64;

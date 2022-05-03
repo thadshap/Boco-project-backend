@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
@@ -31,7 +32,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response createRental(@RequestBody RentalDto rentalDto) {
         log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
-        if(!securityService.isUser(rentalDto.getBorrower()) && !securityService.isVerifiedUser(rentalDto.getBorrower())){
+        if(!securityService.isUserByEmail(rentalDto.getBorrower()) && !securityService.isVerifiedUser(0L)){
             return new Response("Du kan ikke leie dette produktet.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.createRental(rentalDto);
@@ -85,5 +86,15 @@ public class RentalController {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.getRentalsByUserId(userId);
+    }
+
+    @GetMapping("/s/picture/{rentalId}")
+    @ApiOperation(value = "Endpoint to get picture of rentals by user id", response = Response.class)
+    public Response getRentalPictureById(@PathVariable Long rentalId) {
+        log.debug("[X] Call to get all rentals of user with id = {}", rentalId);
+        if(!securityService.isRentalOwner(rentalId) || !securityService.isRentalOwner(rentalId)){
+            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
+        }
+        return rentalService.getRentalPictureById(rentalId);
     }
 }
