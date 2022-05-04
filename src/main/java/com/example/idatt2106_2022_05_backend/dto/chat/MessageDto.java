@@ -19,4 +19,7 @@ public class MessageDto {
     private long userId;
     private String firstName;
     private String lastName;
+
+    private String type;
+    private String base64;
 }

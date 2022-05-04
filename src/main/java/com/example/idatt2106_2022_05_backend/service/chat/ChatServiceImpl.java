@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
@@ -13,6 +14,7 @@ import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -50,6 +52,9 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     AdRepository adRepository;
 
+    @Autowired
+    UserService userService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
@@ -57,12 +62,12 @@ public class ChatServiceImpl implements ChatService {
     //private support method
     private Group getGroup(long id) {
         return groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke gruppechat"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
     }
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke brukeren"));
     }
 
     private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
@@ -112,7 +117,7 @@ public class ChatServiceImpl implements ChatService {
             groupRepository.save(group);
         }
         Ad ad = adRepository.findById(rentalDto.getAdId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke ad"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke ad"));
 
         String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
@@ -146,8 +151,17 @@ public class ChatServiceImpl implements ChatService {
 
         for (int i = 0; i < msL.size(); i++) {
             Message ms = msL.get(i);
+
+            PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
+
             String ts = ms.getTimestamp().toString().split("\\.")[0];
-            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(), ms.getUser().getFirstName(), ms.getUser().getLastName());
+            MessageDto messageDto = new MessageDto(
+                    ms.getContent(),
+                    ts, ms.getUser().getId(),
+                    ms.getUser().getFirstName(),
+                    ms.getUser().getLastName(),
+                    pRDto.getType(),
+                    pRDto.getBase64());
             messageDtoList.add(messageDto);
         }
 
@@ -316,9 +330,13 @@ public class ChatServiceImpl implements ChatService {
 
         messageRepository.save(message);
 
+        PictureReturnDto pRDto = userService.getPicture(messageDto.getUserId());
+
         messageDto.setFirstName(user.getFirstName());
         messageDto.setLastName(user.getLastName());
         messageDto.setTimeStamp(ts.toString().split("\\.")[0]);
+        messageDto.setType(pRDto.getType());
+        messageDto.setBase64(pRDto.getBase64());
 
         return messageDto;
     }
