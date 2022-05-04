@@ -49,11 +49,13 @@ public class Rental {
 
     private int price;
 
+    private boolean isReviewed;
+
     @ManyToOne
     @JoinColumn(referencedColumnName = "user_id")
     private User owner;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(referencedColumnName = "user_id")
     private User borrower;
 

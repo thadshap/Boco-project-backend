@@ -89,9 +89,9 @@ public class AuthController {
             view.addObject("txt3", "Hvis du har tidligere verifisert kontoen din, trenger du ikke å gjøre det igjen.");
             return view;
         }
-        view.addObject("txt1", "Tidsfristen for å endre passord er gått ut!!!");
-        view.addObject("txt2", "Du kan fortsatt verifisere deg med å sende ett nytt verifikasjonsmail.");
-        view.addObject("txt3", resendVerificationMail);
+        view = new ModelAndView("expired");
+        view.addObject("txt1", "Det ser ut som at valideringstiden har utløpt. Ikke vær redd, vi kan sende e-post på nytt.");
+        view.addObject("url", resendVerificationMail);
         return view;
     }
 

@@ -7,13 +7,18 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
+import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -40,6 +45,15 @@ public class RentalServiceImpl implements RentalService {
     @Autowired
     private PictureRepository pictureRepository;
 
+    @Autowired
+    private AcceptRentalTokenRepository acceptRentalTokenRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ChatService chatService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     /**
@@ -52,49 +66,82 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response createRental(RentalDto rentalDto) {
-        if (rentalDto.getBorrower().equals(rentalDto.getOwner())) {
+        if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
             return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
         }
-        Optional<Ad> ad = adRepository.findById(rentalDto.getAdId());
-        if (ad.isPresent()) {
-            Set<CalendarDate> cld = ad.get().getDates();
-
-            if (rentalDto.isActive()) {
-                for (CalendarDate calDate : cld) {
-                    if (calDate.getDate().isBefore(rentalDto.getRentTo())
-                            && calDate.getDate().isAfter(rentalDto.getRentFrom())) {
-                        calDate.setAvailable(false);
-                        dayDateRepository.save(calDate);
-                    }
+        Ad ad = adRepository.getById(rentalDto.getAdId());
+        Set<CalendarDate> cld = ad.getDates();
+//        for (CalendarDate calDate : cld) {
+//            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
+//                    && calDate.isAvailable())){
+//                return new Response("Rental is not available in those dates", HttpStatus.NO_CONTENT);
+//            }
+//        }
+        if (rentalDto.isActive()){
+            for (CalendarDate calDate: cld) {
+                if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
+                    calDate.setAvailable(false);
+                    dayDateRepository.save(calDate);
                 }
             }
-            rentalDto.setActive(false);
-            User owner = userRepository.getByEmail(rentalDto.getOwner());
-            User borrower = userRepository.getByEmail(rentalDto.getBorrower());
-            Rental rental = Rental.builder().borrower(borrower).owner(owner).ad(ad.get())
-                    .dateOfRental(rentalDto.getDateOfRental()).rentFrom(rentalDto.getRentFrom())
-                    .rentTo(rentalDto.getRentTo()).deadline(rentalDto.getDeadline()).active(rentalDto.isActive())
-                    .price(rentalDto.getPrice()).build();
-            borrower.getRentalsBorrowed().add(rental);
-            owner.getRentalsOwned().add(rental);
-            ad.get().getRentals().add(rental);
-            userRepository.save(borrower);
-            userRepository.save(owner);
-            adRepository.save(ad.get());
-            rentalRepository.save(rental);
-            return new Response("Rental object is now created", HttpStatus.OK);
-        } else {
-            return new Response("Owner and/or borrower not present", HttpStatus.NOT_FOUND);
         }
-    }
-    // Ad ad = adRepository.getById(rentalDto.getAdId());
+        rentalDto.setActive(false);
+        User owner = userRepository.getByEmail(rentalDto.getOwner());
+        User borrower = userRepository.getByEmail(rentalDto.getBorrower());
+        Rental rental = Rental.builder()
+                .borrower(borrower)
+                .owner(owner)
+                .ad(ad)
+                .dateOfRental(rentalDto.getDateOfRental())
+                .rentFrom(rentalDto.getRentFrom())
+                .rentTo(rentalDto.getRentTo())
+                .deadline(rentalDto.getDeadline())
+                .active(rentalDto.isActive())
+                .price(rentalDto.getPrice())
+                .build();
+        borrower.getRentalsBorrowed().add(rental);
+        owner.getRentalsOwned().add(rental);
+        ad.getRentals().add(rental);
+        userRepository.save(borrower);
+        userRepository.save(owner);
+        adRepository.save(ad);
+        rentalRepository.save(rental);
 
-    // for (CalendarDate calDate : cld) {
-    // if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
-    // && calDate.isAvailable())){
-    // return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
-    // }
-    // }
+        String token = UUID.randomUUID().toString();
+        AcceptRentalToken resetToken = new AcceptRentalToken(owner, token);
+        acceptRentalTokenRepository.save(resetToken);
+        System.out.println(token);
+
+        rentalDto.setId(rental.getId());
+        chatService.sendRentalMessage(rentalDto, "token");
+
+        return new Response("Rental object is now created", HttpStatus.OK);
+    }
+
+    @Override
+    public ModelAndView approveRental(Long rentalId, String token) {
+        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+        ModelAndView view = new ModelAndView("approve");
+        if(rentalOpt.isEmpty()) {
+            return view.addObject("title", "Kunne desverre ikke finne leieforespørsel!");
+        }
+        Rental rental = rentalOpt.get();
+        Ad ad = adRepository.getById(rental.getAd().getId());
+        User borrower = rental.getBorrower();
+        System.out.println(borrower.getEmail());
+        System.out.println(rental.getOwner().getEmail());
+
+        view.addObject("title", rental.getAd().getTitle());
+        view.addObject("borrower", borrower.getFirstName() + " " +
+                borrower.getLastName() + " har ett oenske om aa leie dette produktet med disse datoene.");
+        view.addObject("rentFrom", "Leie fra: " + rental.getRentTo());
+        view.addObject("rentTo", "Leie til: " + rental.getRentTo());
+        view.addObject("price", rental.getPrice() + ",- kr");
+        view.addObject("accept","http://localhost:8443/rental/activate/" + rental.getId() + "/?token=" + token);
+        view.addObject("decline","http://localhost:8443/decline/activate/" + rental.getId() + "/?token=" + token);
+        System.out.println("rental id = " + rental.getId());
+        return view;
+    }
 
     /**
      * Method to activate rental objec for user.
@@ -102,26 +149,87 @@ public class RentalServiceImpl implements RentalService {
      * @return returns response and status.
      */
     @Override
-    public Response activateRental(Long rentalId) {
+    public ModelAndView activateRental(Long rentalId, String token) throws MessagingException, IOException {
+        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
-            return new Response("Rental is not found in the database", HttpStatus.NO_CONTENT);
+            return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
         }
+        if (accToken.equals(null)) {
+            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
+        }
+
+        User user = accToken.getUser();
+        Calendar cal = Calendar.getInstance();
+
         Rental rental = rentalOptional.get();
         rental.setActive(true);
+
+        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+            acceptRentalTokenRepository.delete(accToken);
+            rentalRepository.deleteById(rentalId);
+            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
+        }
+
         Set<CalendarDate> cld = rental.getAd().getDates();
-        for (CalendarDate calDate : cld) {
-            if (calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())) {
+        for (CalendarDate calDate: cld) {
+            if(calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())){
                 calDate.setAvailable(false);
                 dayDateRepository.save(calDate);
             }
         }
         rentalRepository.save(rental);
-        // TODO check if right user gets confirm email
+        acceptRentalTokenRepository.delete(accToken);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
+        variables.put("url", "http://localhost:8080/rentals");
+        variables.put("lont", "sant");
 
-        // emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
-        // "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
-        return new Response("Rental has been activated", HttpStatus.ACCEPTED);
+        Email email = Email.builder()
+                .from("BOCO@gmail.com")
+                .to(rental.getBorrower().getEmail())
+                .template(new ThymeleafTemplate("verify_maillon", variables))
+                .subject("Låneforespørsel hos BOCO er godtatt")
+                .build();
+        emailService.sendEmail(email);
+
+        return new ModelAndView("approve").addObject("title", "Rental has been activated");
+    }
+
+    @Override
+    public ModelAndView declineRental(Long rentalId, String token) throws MessagingException, IOException {
+        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
+        if (rentalOptional.isEmpty()){
+            return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
+        }
+        if (accToken.equals(null)) {
+            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
+        }
+        Calendar cal = Calendar.getInstance();
+
+        Rental rental = rentalOptional.get();
+        rental.setActive(true);
+
+        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+            acceptRentalTokenRepository.delete(accToken);
+            rentalRepository.deleteById(rentalId);
+            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
+        }
+        rentalRepository.deleteById(rentalId);
+        acceptRentalTokenRepository.delete(accToken);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
+        variables.put("url", "http://localhost:8080/rentals");
+
+        Email email = Email.builder()
+                .from("BOCO@gmail.com")
+                .to(rental.getBorrower().getEmail())
+                .template(new ThymeleafTemplate("verify_maillon", variables))
+                .subject("Låneforespørsel hos BOCO er avslått")
+                .build();
+        emailService.sendEmail(email);
+        return new ModelAndView("approve").addObject("title","Rental is deleted");
     }
 
     /**
@@ -141,25 +249,24 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setRating(rating.getRating());
         rental.setActive(false);
-        // User user = userRepository.getById(rental.getOwner().getId());
-        Optional<User> userFound = userRepository.findById(rental.getOwner().getId());
-        if (userFound.isPresent()) {
-            User user = userFound.get();
-            user.setNumberOfReviews(user.getNumberOfReviews() + 1);
-            user.setRating((user.getRating() + rating.getRating()) / user.getNumberOfReviews());
-            Review review = Review.builder().user(user).description(rating.getReview()).rating((int) rating.getRating())
-                    .ad(rental.getAd()).build();
-            user.getReviews().add(review);
-            Ad ad = rental.getAd();
-            ad.getReviews().add(review);
-            adRepository.save(ad);
-            userRepository.save(user);
-            rentalRepository.save(rental);
-            return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
-        } else {
-            return new Response("Could not find user", HttpStatus.NOT_FOUND);
-        }
-
+        rental.setReviewed(true);
+        User user = userRepository.getById(rental.getOwner().getId());
+        user.setNumberOfReviews(user.getNumberOfReviews()+1);
+        user.setRating((user.getRating()+rating.getRating())/user.getNumberOfReviews());
+        Review review = Review.builder()
+                .user(user)
+                .description(rating.getReview())
+                .rating((int)rating.getRating())
+                .ad(rental.getAd())
+                .build();
+        user.getReviews().add(review);
+        Ad ad = rental.getAd();
+        ad.getReviews().add(review);
+        reviewRepository.save(review);
+        adRepository.save(ad);
+        userRepository.save(user);
+        rentalRepository.save(rental);
+        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -180,25 +287,20 @@ public class RentalServiceImpl implements RentalService {
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NO_CONTENT);
         }
-
         Rental rental = rentalOptional.get();
-
-        if (rentalDto.getRentFrom() != null) {
+        if (rentalDto.getRentFrom() != null){
             rental.setRentFrom(rentalDto.getRentFrom());
         }
-        if (rentalDto.getRentTo() != null) {
+        if (rentalDto.getRentTo() != null){
             rental.setRentTo(rentalDto.getRentTo());
         }
-        if (rentalDto.getDeadline() != null) {
+        if (rentalDto.getDeadline() != null){
             rental.setDeadline(rentalDto.getDeadline());
         }
-        if (rentalDto.getPrice() >= 0) {
+        if (!(rentalDto.getPrice() <= 0)){
             rental.setPrice(rentalDto.getPrice());
         }
-
-        // Persist the changes
         rentalRepository.save(rental);
-
         return new Response("Rental updated", HttpStatus.ACCEPTED);
     }
 
@@ -267,6 +369,7 @@ public class RentalServiceImpl implements RentalService {
                     .rentFrom(rental.get(i).getRentFrom())
                     .rentTo(rental.get(i).getRentTo())
                     .price(rental.get(i).getPrice())
+                    .isReviewed(rental.get(i).isReviewed())
                     .build();
             rentals.getRentals().add(rentalReturn);
         }

@@ -18,11 +18,11 @@ public class UserGeoLocation {
     @ApiModelProperty(notes = "longitude")
     private double lng;
 
-    @ApiModelProperty(notes = "amount of ads requested")
-    private int amount;
+//    @ApiModelProperty(notes = "amount of ads requested")
+//    private int amount;
 
-    public UserGeoLocation(double lat, double lng) {
-        this.lat = lat;
-        this.lng = lng;
-    }
+//    public UserGeoLocation(double lat, double lng) {
+//        this.lat = lat;
+//        this.lng = lng;
+//    }
 }

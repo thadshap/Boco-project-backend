@@ -36,12 +36,36 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTConfig jwtConfig;
 
-    private static final String[] WHITELIST_URLS = { "/**", "/auth/**", "/ws", "/ws/**", "/api/ads/**", "/api/users/**",
-            "/api/search/**", "/api/sort/**", "/api/filterByDistance", "/api/getListWithinPriceRange",
-            "/api/categories/**", "/api/categoriesRecursive/**", "/api/calendar/**", "/api/reviews/**" };
+    private static final String[] WHITELIST_URLS = {
+            "/**",
+            "/auth/**",
+            "/ws",
+            "/ws/**",
+            "/rental/approve/**",
+            "/rental/activate/**",
+            "/rental/decline/**",
+            "/api/ads/**",
+            "/api/ads/**",
+            "/api/users/**",
+            "/api/search/**",
+            "/api/sort/**",
+            "/api/filterByDistance",
+            "/api/getListWithinPriceRange",
+            "/api/categories/**",
+            "/api/categoriesRecursive/**",
+            "/api/calendar/**",
+            "/api/reviews/**"
+    };
 
-    private static final String[] WHITELIST_DOCS = { "/h2/**", "/v2/api-docs", "/configuration/ui",
-            "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/swagger-ui/**" };
+    private static final String[] WHITELIST_DOCS = {
+            "/h2/**",
+            "/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources/**",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/swagger-ui/**"
+    };
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -54,38 +78,39 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
-            cors.setAllowedOrigins(
-                    List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
+            cors.setAllowedOrigins(List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
-        }).and().csrf().disable().authorizeRequests().antMatchers(WHITELIST_DOCS).permitAll()
+        }).and().csrf().disable().authorizeRequests()
+                .antMatchers(WHITELIST_DOCS).permitAll()
                 .antMatchers(WHITELIST_URLS).permitAll()
-                // .antMatchers(HttpMethod.POST, "/user/").permitAll()
+//                .antMatchers(HttpMethod.POST, "/user/").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
-                // .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
                 .anyRequest().authenticated()
-                // .and()
-                // .x509()
-                // .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
+//                .and()
+//                .x509()
+//                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
 
                 // Relax CSRF on the WebSocket due to needing direct access from apps
-                // .csrf().ignoringAntMatchers("/ws/**").and()
-                // .authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
+                //.csrf().ignoringAntMatchers("/ws/**").and()
+                //.authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
 
-                // .formLogin().permitAll().loginPage("/auth/login")
-                // .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
-                // .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
-                // .userService(oauth2UserService).and().successHandler(oauthLoginHandler)
-                // .and()
-                .logout().logoutSuccessUrl("/").permitAll().and().exceptionHandling()
-                .authenticationEntryPoint((req, res, e) -> {
+//                .formLogin().permitAll().loginPage("/auth/login")
+//                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
+//                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
+//                .userService(oauth2UserService).and().successHandler(oauthLoginHandler)
+//                .and()
+                .logout()
+                .logoutSuccessUrl("/").permitAll().and().exceptionHandling().authenticationEntryPoint((req, res, e) -> {
                     res.setContentType("application/json");
                     res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");

@@ -4,7 +4,10 @@ import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
-import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
+import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
+import com.example.idatt2106_2022_05_backend.repository.ReviewRepository;
+import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,6 +255,10 @@ public class UserServiceImpl implements UserService {
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
+        //temp fix so backend does not crash when no picture found
+        if (picture.size() == 0) {
+            return null;
+        }
         return PictureReturnDto.builder()
                 .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
                 .type(picture.get(0).getType())
@@ -269,19 +276,19 @@ public class UserServiceImpl implements UserService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
+    public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
         Optional<User> userFromDB = userRepository.findById(userId);
         if(userFromDB.isEmpty()){
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
-        if (userUpdateDto.getFirstName() != null) {
+        if ((!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) && userUpdateDto.getFirstName() != null) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
-        if (userUpdateDto.getLastName() != null) {
+        if ((!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) && userUpdateDto.getLastName() != null) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if (userUpdateDto.getPassword() != null) {
+        if ((!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) && userUpdateDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
         System.out.println(user.getFirstName() + " " + user.getEmail());
