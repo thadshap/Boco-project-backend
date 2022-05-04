@@ -134,7 +134,7 @@ public class ChatServiceImpl implements ChatService {
      *
      * @param groupId id of group to get messages from
      *
-     * @return returns HttpStatus and a response object with.
+     * @return returns HttpStatus and list of messages.
      */
     @Override
     public Response getAllMessagesByGroupId(long groupId) {
@@ -159,7 +159,8 @@ public class ChatServiceImpl implements ChatService {
      * Method to get all userIds in a group
      *
      * @param groupId id of group to get users from
-     * @return returns HttpStatus and a response object with.
+     *
+     * @return returns HttpStatus and a list of userIds.
      */
     @Override
     public Response getGroupUsersByGroupId(long groupId) {
@@ -203,7 +204,9 @@ public class ChatServiceImpl implements ChatService {
      * Method to create a new group with two users.
      *
      * @param privateGroupDto
-     * @return
+     *      {@link PrivateGroupDto} object with information to create a two user group.
+     *
+     * @return returns HttpStatus and created group.
      */
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
@@ -232,6 +235,14 @@ public class ChatServiceImpl implements ChatService {
         return new Response(groupDto, HttpStatus.OK);
     }
 
+    /**
+     *
+     * Method to create group from multiple userIds.
+     *
+     * @param listGroupDto {@link ListGroupDto} object with information to create a multiple user group.
+     *
+     * @return returns HttpStatus and created group.
+     */
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
         //TODO multiple of same user given?
@@ -262,6 +273,15 @@ public class ChatServiceImpl implements ChatService {
         return new Response(groupDto, HttpStatus.OK);
     }
 
+    /**
+     *
+     * Method to change group name.
+     *
+     * @param groupId id of group to change name.
+     * @param newName new name of group.
+     *
+     * @return returns HttpStatus.
+     */
     @Override
     public Response changeGroupNameFromGroupId(long groupId, String newName) {
         if (newName == null || newName.isEmpty() || newName.trim().isEmpty()) {
@@ -273,6 +293,15 @@ public class ChatServiceImpl implements ChatService {
         return new Response("Group name changed", HttpStatus.OK);
     }
 
+    /**
+     *
+     * Method to store incoming message in repository, and ready message to be sent to other users.
+     *
+     * @param groupId group id of message to be sant.
+     * @param messageDto {@link MessageDto} object with all message data needed by chat.
+     *
+     * @return return messageDto to send to other users
+     */
     @Override
     public MessageDto sendMessage(Long groupId, MessageDto messageDto) {
         User user = getUser(messageDto.getUserId());
@@ -294,6 +323,14 @@ public class ChatServiceImpl implements ChatService {
         return messageDto;
     }
 
+    /**
+     *
+     * Method to get group chats that a user is in.
+     *
+     * @param id user id to get groups of.
+     *
+     * @return return HttpStatus and list og GroupDto objects.
+     */
     public Response getGroupChatsBasedOnUserId(long id) {
         User user = getUser(id);
 
@@ -308,6 +345,15 @@ public class ChatServiceImpl implements ChatService {
         return new Response(grps, HttpStatus.OK);
     }
 
+    /**
+     *
+     * Method to remove a user from group.
+     *
+     * @param groupId group id to remove user from.
+     * @param userId user id to be removed from group.
+     *
+     * @return return HttpStatus with result message.
+     */
     @Override
     public Response removeUserFromGroupById(long groupId, long userId) {
         Group group = getGroup(groupId);
@@ -325,6 +371,15 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
+    /**
+     *
+     * Method to add a user to group.
+     *
+     * @param groupId group id to add user to.
+     * @param userId user id to add to group.
+     *
+     * @return return HttpStatus and result message.
+     */
     @Override
     public Response addUserToGroupById(long groupId, long userId) {
         Group group = getGroup(groupId);
@@ -342,6 +397,15 @@ public class ChatServiceImpl implements ChatService {
         return new Response("User added to group", HttpStatus.OK);
     }
 
+    /**
+     *
+     * Method to add user to group by email.
+     *
+     * @param groupId group id to add user to.
+     * @param email email of user to add to group.
+     *
+     * @return return HttpStatus
+     */
     @Override
     public Response addUserToGroupByEmail(long groupId, String email) {
         Group group = getGroup(groupId);
