@@ -37,6 +37,16 @@ public class RentalController {
         return rentalService.createRental(rentalDto);
     }
 
+    @PostMapping("/activate/{rentalId}")
+    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
+    public Response approveRental(@PathVariable Long rentalId) throws MessagingException {
+        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
+        if(!securityService.isRentalOwner(rentalId)){
+            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
+        }
+        return rentalService.approveRental(rentalId);
+    }
+
     @PutMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response activateRental(@PathVariable Long rentalId) throws MessagingException {

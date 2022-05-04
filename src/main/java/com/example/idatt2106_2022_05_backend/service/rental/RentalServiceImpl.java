@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
 
@@ -93,6 +94,26 @@ public class RentalServiceImpl implements RentalService {
         adRepository.save(ad);
         rentalRepository.save(rental);
         return new Response("Rental object is now created", HttpStatus.OK);
+    }
+
+    @Override
+    public Response approveRental(Long rentalId) {
+        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+        ModelAndView view = new ModelAndView("approve");
+        if(rentalOpt.isEmpty()) {
+            view.addObject("title", "Kunne desverre ikke finne leieforespørsel!");
+        }
+        Rental rental = rentalOpt.get();
+        view.addObject("title", rental.getAd().getTitle());
+        view.addObject("borrower", rental.getBorrower() + " har ett ønske om å leie dette produktet med disse datoene.");
+        view.addObject("rentFrom", "Leie fra: " + rental.getRentTo());
+        view.addObject("rentTo", "Leie til: " + rental.getRentTo());
+        view.addObject("price", rental.getPrice() + ",- kr");
+        view.addObject("accept","");
+        view.addObject("decline","");
+
+//        return view;
+        return null;
     }
 
     /**

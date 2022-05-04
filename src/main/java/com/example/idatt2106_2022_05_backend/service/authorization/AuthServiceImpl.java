@@ -294,7 +294,8 @@ public class AuthServiceImpl implements AuthService {
         ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
         ModelAndView view = new ModelAndView("verified");
         if (resetPasswordToken.equals(null)) {
-            view.addObject("txt1", "Ikke gyldig token for å bytte passord!");;
+            view.addObject("txt1", "Ikke gyldig token for å bytte passord!");
+            view.addObject("url", "http://localhost:8080/login");
             return view;
         }
 
@@ -303,8 +304,9 @@ public class AuthServiceImpl implements AuthService {
 
         if ((resetPasswordToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
             resetPasswordTokenRepository.delete(resetPasswordToken);
-            view.addObject("txt1", "Tidsfristen for å endre passord er gått ut!!!");
-            view.addObject("txt2", "Trykk på glemt passord på innloggings siden for å kunne endre på nytt.");
+            view = new ModelAndView("expired");
+            view.addObject("txt1", "Det ser ut som at valideringstiden har utløpt. Du kan forespør om å bytte passord på nytt på login siden.");
+            view.addObject("url", "http://localhost:8080/login");
             return view;
         }
 
