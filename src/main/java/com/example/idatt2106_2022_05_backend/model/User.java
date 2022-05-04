@@ -61,6 +61,9 @@ public class User {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private ResetPasswordToken resetPasswordToken;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private AcceptRentalToken acceptRentalToken;
+
     @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     private Picture picture;

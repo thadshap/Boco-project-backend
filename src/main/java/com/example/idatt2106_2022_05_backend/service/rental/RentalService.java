@@ -5,15 +5,19 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 
 public interface RentalService {
     Response createRental(RentalDto rentalDto);
 
-    Response approveRental(Long rentalId);
+    ModelAndView approveRental(Long rentalId, String token);
 
-    Response activateRental(Long rentalId) throws MessagingException;
+    ModelAndView activateRental(Long rentalId, String token) throws MessagingException, IOException;
+
+    ModelAndView declineRental(Long rentalId, String token) throws MessagingException, IOException;
 
     Response completeRental(Long rentalId, RentalReviewDto rentalDto);
 

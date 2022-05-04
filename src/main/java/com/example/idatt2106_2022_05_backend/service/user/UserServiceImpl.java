@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-
     @Autowired
     private ReviewRepository reviewRepository;
 
@@ -203,13 +202,13 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
-        if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
+        if ((!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) && userUpdateDto.getFirstName() != null) {
             user.setFirstName(userUpdateDto.getFirstName());
         }
-        if (!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) {
+        if ((!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) && userUpdateDto.getLastName() != null) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if (!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) {
+        if ((!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) && userUpdateDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
         System.out.println(user.getFirstName() + " " + user.getEmail());

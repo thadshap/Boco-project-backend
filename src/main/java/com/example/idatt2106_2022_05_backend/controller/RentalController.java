@@ -12,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 
 @Slf4j
 @RestController()
@@ -37,24 +39,37 @@ public class RentalController {
         return rentalService.createRental(rentalDto);
     }
 
-    @PostMapping("/activate/{rentalId}")
+    @GetMapping("/approve/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public Response approveRental(@PathVariable Long rentalId) throws MessagingException {
+    public ModelAndView approveRental(@RequestParam("token") String token, @PathVariable Long rentalId) throws MessagingException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId)){
-            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
+        if(!securityService.isRentalOwnerByToken(rentalId, token)){
+            return new ModelAndView("approve")
+                    .addObject("title", "Du har ikke tilgang på forespørselen.");
         }
-        return rentalService.approveRental(rentalId);
+        return rentalService.approveRental(rentalId, token);
     }
 
-    @PutMapping("/activate/{rentalId}")
+    @GetMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public Response activateRental(@PathVariable Long rentalId) throws MessagingException {
+    public ModelAndView activateRental(@RequestParam("token") String token, @PathVariable String rentalId) throws MessagingException, IOException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId)){
-            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
+        if(!securityService.isRentalOwnerByToken(Long.valueOf(rentalId), token)){
+            return new ModelAndView("approve")
+                    .addObject("title", "Du har ikke tilgang på forespørselen.");
         }
-        return rentalService.activateRental(rentalId);
+        return rentalService.activateRental(Long.valueOf(rentalId), token);
+    }
+
+    @GetMapping("/decline/{rentalId}")
+    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
+    public ModelAndView declineRental(@RequestParam("token") String token, @PathVariable String rentalId) throws MessagingException, IOException {
+    log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
+        if(!securityService.isRentalOwnerByToken(Long.valueOf(rentalId), token)){
+        return new ModelAndView("approve")
+                .addObject("title", "Du har ikke tilgang på forespørselen.");
+    }
+        return rentalService.declineRental(Long.valueOf(rentalId), token);
     }
 
     @DeleteMapping("/delete/{rentalId}")

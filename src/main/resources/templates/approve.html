@@ -76,7 +76,6 @@ c117 8 216 11 219 7 26 -26 -367 -202 -618 -278 -204 -62 -267 -72 -460 -72
                         </g>
                     </svg>
 
-
                     <div class="header"
                          style="font-weight: bold;
                                 font-size: 2em;
@@ -91,13 +90,17 @@ c117 8 216 11 219 7 26 -26 -367 -202 -618 -278 -204 -62 -267 -72 -460 -72
                     </div>
                     <div th:text="${price}">
                     </div>
+                    <br>
                     <div>
-                        <div th:href="${accept}">
+                        <a th:href="${accept} ">
                             Accept
+                        </a>
+                        <div>
+                            <br>
                         </div>
-                        <div th:href="${accept}">
+                        <a th:href="${decline}">
                             Decline
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>

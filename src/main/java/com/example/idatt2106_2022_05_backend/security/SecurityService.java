@@ -28,9 +28,11 @@ public interface SecurityService {
 
     boolean isRentalOwner(Long rentalId);
 
+    boolean isRentalOwnerByToken(Long rentalId, String token);
+
     boolean isRentalBorrower(Long rentalId);
 
-    public User getCurrentUser();
+    User getCurrentUser();
 
     boolean userPicture(long id, long userId);
 
