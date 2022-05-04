@@ -87,10 +87,6 @@ public class User {
             @JoinColumn(name = "group_id") })
     private Set<Group> groupChats;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
-    @ToString.Exclude
-    private Set<OutputMessage> messages;
-
     public void setAd(Ad newAd) {
         ads.add(newAd);
     }

@@ -64,15 +64,13 @@ public class AuthController {
     @ApiOperation(value = "Endpoint to handle the new password set by the user", response = Response.class)
     public ModelAndView renewPassword(@RequestParam("token") String token,
             @RequestBody UserRenewPasswordDto renewPasswordDto) {
-        System.out.println(renewPasswordDto.getPassword() + " " + renewPasswordDto.getConfirmPassword());
-        System.out.println(token);
         log.debug("[X] Call to renew the password");
         return authService.validatePasswordThroughToken(token, renewPasswordDto);
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "Endpoint where user can create an account", response = Response.class)
-    public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) {
+    public Response createUser(@RequestBody CreateAccountDto createAccount, final HttpServletRequest url) throws MessagingException, IOException {
         log.debug("[X] Call to get create a user");
         return authService.createUser(createAccount, url(url));
     }

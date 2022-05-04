@@ -8,6 +8,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to connect with facebook api and retrieve the user.
+ */
 @Service
 public class FacebookClient {
 
@@ -16,6 +19,11 @@ public class FacebookClient {
 
     private final String FACEBOOK_GRAPH_API_BASE = "https://graph.facebook.com";
 
+    /**
+     * Class to connect with facebook api and retrieve the user.
+     * @param accessToken token for user given out by facebook.
+     * @return returns an instance of facebook user.
+     */
     public FacebookUser getUser(String accessToken) {
         // var path = "/me?fields={fields}&redirect={redirect}&access_token={access_token}";
         String fields = "email,first_name,last_name,id,picture.width(720).height(720)";

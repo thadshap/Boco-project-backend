@@ -14,10 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,9 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     /**
      * Method validate creation of a new review
-     * 
-     * @param newReviewDto
-     *            reviewDto
+     * @param newReviewDto reviewDto
      */
     private void validate(ReviewDto newReviewDto) {
         if (newReviewDto.getDescription().length() > 200) {
@@ -55,11 +51,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     /**
      * Method to validate that a user only posts once per ad
-     * 
-     * @param ad
-     *            ad
-     * @param newPostingUser
-     *            user
+     * @param ad ad
+     * @param newPostingUser user
      */
     private boolean validateUser(Ad ad, User newPostingUser) {
         List<Review> allreviews = reviewRepository.getAllByAd(ad);
@@ -73,10 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     /**
      * Method to create and save a new review
-     * 
-     * @param newReviewDto
-     *            dto
-     * 
+     * @param newReviewDto dto
      * @return Review
      */
     public Response createNewReview(ReviewDto newReviewDto) {
@@ -133,10 +123,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     /**
      * Method retrieves all reviews on an ad
-     * 
-     * @param ad_id
-     *            ad
-     * 
+     * @param ad_id ad
      * @return list of reviews
      */
     @Override
@@ -148,18 +135,17 @@ public class ReviewServiceImpl implements ReviewService {
 
             // Returns reviews
             return new Response(reviews, HttpStatus.OK);
-        } else {
-            return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NOT_FOUND);
+        }
+        else {
+            return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NO_CONTENT);
         }
     }
 
     /**
      * method to delete a review
      *
-     * @param ad_id
-     *            id of ad to be deleted
-     * @param user_id
-     *            user who wrote the review
+     * @param ad_id id of ad to be deleted
+     * @param user_id user who wrote the review
      *
      * @return response
      */
@@ -207,8 +193,9 @@ public class ReviewServiceImpl implements ReviewService {
                 }
             }
             return new Response("Omtalen ble slettet", HttpStatus.OK);
-        } else {
-            return new Response("fant ikke omtalen", HttpStatus.NOT_FOUND);
+        }
+        else {
+            return new Response("Fant ikke omtalen", HttpStatus.NO_CONTENT);
         }
     }
 }

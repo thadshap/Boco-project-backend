@@ -1,14 +1,13 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
-import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -64,8 +63,6 @@ public class AdIntegrationTest {
     @Autowired
     MessageRepository messageRepository;
 
-    @Autowired
-    OuputMessageRepository outputMessageRepository;
 
     @Autowired
     ReviewRepository reviewRepository;
@@ -82,9 +79,15 @@ public class AdIntegrationTest {
         userRepository.save(user);
 
         // Building categories
-        Category clothes = Category.builder().name("new category1").parent(true).build();
+        Category clothes = Category.builder().
+                name("new category1").
+                parent(true).
+                build();
 
-        Category it = Category.builder().name("new category2").parent(true).build();
+        Category it = Category.builder().
+                name("new category2").
+                parent(true).
+                build();
 
         // Saving the categories
         categoryRepository.save(clothes);
@@ -97,7 +100,6 @@ public class AdIntegrationTest {
         rentalRepository.deleteAll();
         pictureRepository.deleteAll();
         messageRepository.deleteAll();
-        outputMessageRepository.deleteAll();
         userRepository.deleteAll();
         adRepository.deleteAll();
         // messageRepository.deleteAll();
@@ -119,10 +121,19 @@ public class AdIntegrationTest {
             Category clothesCategory = categoryRepository.findAll().get(0);
 
             // Building an ad-dto with foreign keys
-            AdDto ad = AdDto.builder().title("Nike shoes").description("Renting out a pair of shoes in size 40")
-                    .rental(true).rentedOut(false).durationType(AdType.WEEK).duration(2).price(100)
-                    .streetAddress("Project Road 4").postalCode(7234).userId(user.getId())
-                    .categoryId(clothesCategory.getId()).build();
+            AdDto ad = AdDto.builder().
+                    title("Nike shoes").
+                    description("Renting out a pair of shoes in size 40").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.WEEK).
+                    duration(2).
+                    price(100).
+                    streetAddress("Project Road 4").
+                    postalCode(7234).
+                    userId(user.getId()).
+                    categoryId(clothesCategory.getId()).
+                    build();
 
             try {
                 // Post the ad
@@ -140,16 +151,32 @@ public class AdIntegrationTest {
         @Test
         public void whenForeignKeysWrong_ThenAdIsNotSaved() {
             // Building a user
-            User user = User.builder().firstName("user2").lastName("second").email("second.user@hotmail.com")
-                    .password("newPassword").build();
+            User user = User.builder().
+                    firstName("user2").
+                    lastName("second").
+                    email("second.user@hotmail.com").
+                    password("newPassword").
+                    build();
 
             // Building a new category
-            Category boats = Category.builder().name("Boats").build();
+            Category boats = Category.builder().
+                    name("Boats").
+                    build();
 
             // Building an ad-dto with foreign keys
-            AdDto boatAd = AdDto.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
-                    .postalCode(7000).userId(202L).categoryId(101L).build();
+            AdDto boatAd = AdDto.builder().
+                    title("Sail boat").
+                    description("Renting out a huge sail boat").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("The sea").
+                    postalCode(7000).
+                    userId(202L).
+                    categoryId(101L).
+                    build();
 
             try {
                 // Post the ad
@@ -179,9 +206,19 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad with foreign keys
-            Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
-                    .postalCode(7000).user(user).category(category).build();
+            Ad newAd = Ad.builder().
+                    title("Sail boat").
+                    description("Renting out a huge sail boat").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.MONTH).
+                    duration(2).
+                    price(100).
+                    streetAddress("The sea").
+                    postalCode(7000).
+                    user(user).
+                    category(category).
+                    build();
 
             // Persisting the ad and set newAd equal to it in order to fetch the id
             newAd = adRepository.save(newAd);
@@ -214,9 +251,19 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad without persisting it
-            Ad newAd = Ad.builder().title("non existent post").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("non existent").postalCode(7000)
-                    .user(user).category(category).build();
+            Ad newAd = Ad.builder().
+                    title("non existent post").
+                    description("").
+                    rental(true).
+                    rentedOut(false).
+                    durationType(AdType.HOUR).
+                    duration(2).
+                    price(100).
+                    streetAddress("non existent").
+                    postalCode(7000).
+                    user(user).
+                    category(category).
+                    build();
             try {
                 // Create an update-dto
                 AdUpdateDto updateDto = new AdUpdateDto();
@@ -319,7 +366,8 @@ public class AdIntegrationTest {
         public void paginationWorks() {
 
             // Build new user and category
-            User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+            User user = User.builder().firstName("firstName").
+                    lastName("lastName").email("user.name@hotmail.com")
                     .password("pass1word").build();
 
             // Persist the user --> we now have two users
@@ -343,7 +391,11 @@ public class AdIntegrationTest {
                 adRepository.save(newAd);
             }
             // Pagination with all 15 ads
-            ResponseEntity<Object> res = adService.getPageOfAds(15);
+            UserGeoLocation dto = new UserGeoLocation();
+            dto.setLat(63.52);
+            dto.setLng(15.23);
+            dto.setAmount(1);
+            ResponseEntity<Object> res = adService.getPageOfAds(15, dto);
 
             // Service class should return HttpResponse.OK
             assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
@@ -377,12 +429,17 @@ public class AdIntegrationTest {
             assertEquals(15, adRepository.findAll().size());
 
             // Pagination with 24 ads (only 15 present in db)
-            ResponseEntity<Object> res = adService.getPageOfAds(24);
+            UserGeoLocation dto = new UserGeoLocation();
+            dto.setLat(63.52);
+            dto.setLng(15.23);
+            dto.setAmount(10);
+            ResponseEntity<Object> res = adService.getPageOfAds(24, dto);
 
             // Service class should return HttpResponse.OK
             assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
         }
     }
+
 
     @Nested
     class AdGetRelatedTests {
@@ -658,7 +715,7 @@ public class AdIntegrationTest {
             ResponseEntity<Object> res = adService.getReviewsByUserId(user.getId());
 
             // Service class should return HttpResponse.NOT_FOUND
-            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
+            assertEquals(HttpStatus.NO_CONTENT.value(), res.getStatusCodeValue());
         }
 
         // get all categories

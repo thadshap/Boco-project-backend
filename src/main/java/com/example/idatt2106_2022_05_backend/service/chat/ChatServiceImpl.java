@@ -1,16 +1,14 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
-import com.example.idatt2106_2022_05_backend.dto.GroupDto;
-import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
 import com.example.idatt2106_2022_05_backend.model.Message;
-import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
-import com.example.idatt2106_2022_05_backend.repository.OuputMessageRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -19,11 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -46,9 +42,6 @@ public class ChatServiceImpl implements ChatService {
     UserRepository userRepository;
 
     @Autowired
-    OuputMessageRepository ouputMessageRepository;
-
-    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -58,12 +51,12 @@ public class ChatServiceImpl implements ChatService {
     // private support method
     private Group getGroup(long id) {
         return groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke gruppechat"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
     }
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke brukeren"));
     }
 
     private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
@@ -90,7 +83,7 @@ public class ChatServiceImpl implements ChatService {
      * @Override public Response getAllMessagesByGroupId(long groupId){ Group group = getGroup(groupId);
      * List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream() .map(message ->
      * modelMapper.map(message, MessageDto.class)) .collect(Collectors.toList());
-     * 
+     *
      * return new Response(messageDtoList, HttpStatus.OK); }
      */
 
@@ -116,38 +109,40 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void broadcast(MessageDto message) {
         logger.info("Go to service");
-        OutputMessage outputMessage = new OutputMessage();
+//        OutputMessage outputMessage = new OutputMessage();
 
-        // String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
-        outputMessage.setText(message.getContent());
+        //String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
+//        outputMessage.setText(message.getContent());
 
-        // TODO: Add user check and set in outputmessage
-        // outputMessage.setFrom();
+        //TODO: Add user check and set in outputmessage
+        //outputMessage.setFrom();
 
-        // String messageDestination = destination.get(0).split(" ")[0];
-        // String path = "topic/messages/"+messageDestination;
+        //String messageDestination = destination.get(0).split(" ")[0];
+        //String path = "topic/messages/"+messageDestination;
 
         String time = new SimpleDateFormat("HH:mm").format(new Date());
-        outputMessage.setTime(time);
-        // ouputMessageRepository.save(outputMessage);
-        // String path = "topic/messages/"+ message.getGroupId();
-        // logger.info("Sending "+message.getContent() + " to :" + path);
-        // simpMessagingTemplate.convertAndSend(path, message);
+//        outputMessage.setTime(time);
+        //ouputMessageRepository.save(outputMessage);
+        //String path = "topic/messages/"+ message.getGroupId();
+        //logger.info("Sending "+message.getContent() + " to :" + path);
+        //simpMessagingTemplate.convertAndSend(path, message);
 
     }
 
     @Override
     public Response getChat(long id) {
-        Group group = getGroup(id);
-        List<OutputMessage> messageDtos = ouputMessageRepository.findAllByGroup(group);
-        messageDtos.sort(Comparator.comparing(OutputMessage::getTime));
-        return new Response(messageDtos.stream().map(message -> modelMapper.map(message, MessageDto.class))
-                .collect(Collectors.toList()), HttpStatus.OK);
+//        Group group = getGroup(id);
+//        List<OutputMessage> messageDtos = ouputMessageRepository.findAllByGroup(group);
+//        messageDtos.sort(Comparator.comparing(OutputMessage::getTime));
+//        return new Response(messageDtos.stream()
+//                .map(message -> modelMapper.map(message, MessageDto.class))
+//                .collect(Collectors.toList()), HttpStatus.OK);
+        return null;
     }
 
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
-        // TODO check if group with the users already exists
+        //TODO check if group with the users already exists
         if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
             return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
         }
@@ -174,7 +169,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
-        // TODO multiple of same user given?
+        //TODO multiple of same user given?
         List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
         Set<User> users = new HashSet<>();
 
@@ -185,11 +180,14 @@ public class ChatServiceImpl implements ChatService {
         if (users.size() == 2) {
             Group group = checkIfUsersHavePrivateGroup(users);
             if (group != null) {
-                return new Response(new GroupDto(group.getId(), group.getName()), HttpStatus.OK);
+                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
             }
         }
 
-        Group newGroup = Group.builder().name(listGroupDto.getGroupName()).users(users).build();
+        Group newGroup = Group.builder()
+                .name(listGroupDto.getGroupName())
+                .users(users)
+                .build();
         groupRepository.save(newGroup);
 
         GroupDto groupDto = new GroupDto();
@@ -215,7 +213,11 @@ public class ChatServiceImpl implements ChatService {
         User user = getUser(messageDto.getUserId());
         Group group = getGroup(groupId);
         Timestamp ts = Timestamp.from(Instant.now());
-        Message message = Message.builder().timestamp(ts).content(messageDto.getContent()).group(group).user(user)
+        Message message = Message.builder()
+                .timestamp(ts)
+                .content(messageDto.getContent())
+                .group(group)
+                .user(user)
                 .build();
 
         messageRepository.save(message);
@@ -265,7 +267,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND); //TODO occupied place
         }
 
         users.add(user);
@@ -280,14 +282,14 @@ public class ChatServiceImpl implements ChatService {
         Group group = getGroup(groupId);
         User user = userRepository.findByEmail(email);
 
-        if (user == null) {
-            return new Response("Could not find user with email: " + email, HttpStatus.NOT_FOUND);
+        if(user == null) {
+            return new Response("Could not find user with email: " + email, HttpStatus.NO_CONTENT);
         }
 
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND);//TODO occupied already
         }
 
         users.add(user);
@@ -296,13 +298,18 @@ public class ChatServiceImpl implements ChatService {
 
         return new Response("User added to group", HttpStatus.OK);
     }
-    /*
-     * public Response getGroupChatsBasedOnUserId(long id){ User user = getUser(id); Set<Group> groups =
-     * groupRepository.findAllByUser(user); List<Long> groupId =
-     * groups.stream().map(Group::getId).collect(Collectors.toList()); return new Response(groupId, HttpStatus.OK); }
-     */
+/*
+    public Response getGroupChatsBasedOnUserId(long id){
+        User user = getUser(id);
+        Set<Group> groups = groupRepository.findAllByUser(user);
+        List<Long> groupId = groups.stream().map(Group::getId).collect(Collectors.toList());
+        return new Response(groupId, HttpStatus.OK);
+    }
+*/
     /**
-     * 1. Metode til å sende melding 3. Metode til å hente en chat TODO: paginate og sorter chat 4. Get all groupchats
-     * on user
+     * 1. Metode til å sende melding
+     * 3. Metode til å hente en chat
+     * TODO: paginate og sorter chat
+     * 4. Get all groupchats on user
      */
 }

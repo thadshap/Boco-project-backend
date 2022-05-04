@@ -61,7 +61,7 @@ public class UserIntegrationTest {
         public void getUserByEmail_WhenEmailCorrect() {
 
             // Create new user
-            User user = User.builder().firstName("firstName").lastName("lastName").email("karoline.wahls@hotmail.com")
+            User user = User.builder().firstName("firstName").lastName("lastName").email("karoline.wahl2@hotmail.com")
                     .password("pass1word").build();
 
             // Saving the user
@@ -238,7 +238,7 @@ public class UserIntegrationTest {
                 ResponseEntity<Object> res = userService.updateUser(wrongUserId, dto);
 
                 // Assert that the response code is NOT_FOUND
-                assertEquals(res.getStatusCodeValue(), HttpStatus.NOT_FOUND.value());
+                assertEquals(res.getStatusCodeValue(), HttpStatus.NO_CONTENT.value());
 
             } catch (IOException e) {
                 // Method fails if this exception is caught
@@ -275,7 +275,7 @@ public class UserIntegrationTest {
             ResponseEntity<Object> res = userService.getUser(wrongUserId);
 
             // HTTP response should be NOT_FOUND
-            assertEquals(res.getStatusCodeValue(), HttpStatus.NOT_FOUND.value());
+            assertEquals(res.getStatusCodeValue(), HttpStatus.NO_CONTENT.value());
         }
     }
 

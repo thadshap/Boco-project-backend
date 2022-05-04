@@ -7,7 +7,6 @@ import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,11 +41,7 @@ public class UserServiceImpl implements UserService {
     private MessageRepository messageRepository;
 
     @Autowired
-    private OuputMessageRepository ouputMessageRepository; // TODO wrong name
-    @Autowired
     private AdService adService;
-
-    private ModelMapper modelMapper = new ModelMapper();
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -131,7 +126,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            user.setMessages(null);
+
             userRepository.save(user);
 
             // Delete the user
@@ -196,9 +191,9 @@ public class UserServiceImpl implements UserService {
                 }
             }
             // If we get here, pictures are equal to null
-            return new Response("Denne brukeren har ikke profilbilde", HttpStatus.NOT_FOUND);
+            return new Response("Denne brukeren har ikke profilbilde", HttpStatus.NO_CONTENT);
         }
-        return new Response("Bruker med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
+        return new Response("Bruker med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
     @Override
@@ -248,12 +243,19 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * Method to return picture of user.
+     * @param userId id of user.
+     * @return returns user profile picture.
+     */
     @Override
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
-        return PictureReturnDto.builder().base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
-                .type(picture.get(0).getType()).build();
+        return PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .type(picture.get(0).getType())
+                .build();
     }
 
     /**
@@ -269,8 +271,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) {
         Optional<User> userFromDB = userRepository.findById(userId);
-        if (userFromDB.isEmpty()) {
-            return new Response("User not found", HttpStatus.NOT_FOUND);
+        if(userFromDB.isEmpty()){
+            return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
         if (userUpdateDto.getFirstName() != null) {
@@ -299,13 +301,20 @@ public class UserServiceImpl implements UserService {
     public Response getUser(Long userId) {
         Optional<User> userFromDB = userRepository.findById(userId);
         if (userFromDB.isEmpty()) {
-            return new Response("User not found", HttpStatus.NOT_FOUND);
+            return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User userGot = userFromDB.get();
-        UserReturnDto user = UserReturnDto.builder().id(userGot.getId()).firstName(userGot.getFirstName())
-                .lastName(userGot.getLastName()).email(userGot.getEmail()).role(userGot.getRole())
-                .verified(userGot.isVerified()).rating(userGot.getRating()).nrOfReviews(userGot.getNumberOfReviews())
-                .pictureUrl(userGot.getPictureUrl()).build();
+        UserReturnDto user = UserReturnDto.builder()
+                .id(userGot.getId())
+                .firstName(userGot.getFirstName())
+                .lastName(userGot.getLastName())
+                .email(userGot.getEmail())
+                .role(userGot.getRole())
+                .verified(userGot.isVerified())
+                .rating(userGot.getRating())
+                .nrOfReviews(userGot.getNumberOfReviews())
+                .pictureUrl(userGot.getPictureUrl())
+                .build();
 
         return new Response(user, HttpStatus.OK);
     }

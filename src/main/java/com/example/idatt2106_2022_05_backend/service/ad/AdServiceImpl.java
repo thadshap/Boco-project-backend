@@ -1,19 +1,14 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.*;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -25,13 +20,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +54,6 @@ public class AdServiceImpl implements AdService {
 
     @Autowired
     private CalendarService calendarService;
-
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -230,7 +223,7 @@ public class AdServiceImpl implements AdService {
         }
         // Return NOT_FOUND if there
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -444,19 +437,27 @@ public class AdServiceImpl implements AdService {
      * @return Response with page in body
      */
     @Override
-    public Response getPageOfAds(int sizeOfPage) {
+    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation){
         // Check if size of page is smaller than all ads
         List<Ad> ads = adRepository.findAll();
-        if (sizeOfPage <= ads.size()) {
-            Pageable pageOf = PageRequest.of(0, sizeOfPage);
-            List<AdDto> adDto = adRepository.findAll(pageOf).stream().map(ad -> modelMapper.map(ad, AdDto.class))
-                    .collect(Collectors.toList());
-            return new Response(adDto, HttpStatus.OK);
-        } else {
-            List<AdDto> adDtos = adRepository.findAll().stream().map(ad -> modelMapper.map(ad, AdDto.class))
-                    .collect(Collectors.toList());
-            return new Response(adDtos, HttpStatus.OK);
+        List<AdDto> adDtos = new ArrayList<>();
+        if(sizeOfPage <= ads.size()) {
+            Pageable pageOf = PageRequest.of(0,sizeOfPage);
+             adDtos = adRepository.findAll(pageOf).stream()
+                    .map( ad -> modelMapper.map(ad, AdDto.class)).
+                    collect(Collectors.toList());
+
         }
+        else {
+            adDtos = adRepository.findAll().stream()
+                    .map( ad -> modelMapper.map(ad, AdDto.class)).
+                            collect(Collectors.toList());
+        }
+        for(AdDto a: adDtos){
+            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+        }
+        adDtos.sort(Comparator.comparing(AdDto::getDistance));
+        return new Response(adDtos, HttpStatus.OK);
     }
 
     // Get all available ads
@@ -555,11 +556,20 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToReturn, HttpStatus.OK);
         }
         // If no ads were found in city
-        return new Response("No ads found in specified city", HttpStatus.NOT_FOUND);
+        return new Response("No ads found in specified city", HttpStatus.NO_CONTENT);
     }
 
     /**
      * Posts new ad
+     * @param adDto must contain:
+     *              - rental (being rented out or given away)
+     *              - duration (quantity of duration type)
+     *              - durationType (type of duration --> see "AdType" enum)
+     *              - categoryId (only the id of the nearest category)
+     *              - price
+     *              - street_address (of the item)
+     *              - postal_code (of the item)
+     *              - name (header of the ad)
      *
      * @param adDto
      *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
@@ -594,7 +604,7 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
 
         Optional<User> user = userRepository.findById(adDto.getUserId());
@@ -652,18 +662,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * support method that creates a dto of ad
-     *
-     * @param ad
-     *            ad
-     *
+     * @param ad ad
      * @return ad dto
-     *
-     * @throws IOException
-     *             if decompression of bytes fails
+     * @throws IOException if decompression of bytes fails
      */
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = modelMapper.map(ad, AdDto.class);
-        ;
 
         // decompressing and converting images in support method
         // convertPictures(ad, adDto);
@@ -678,16 +682,18 @@ public class AdServiceImpl implements AdService {
      * @param //
      *            adDto dto object to be returned
      *
-     * @throws IOException
-     *             if decompression fails
-     *
-     *             private void convertPictures(Ad ad, AdDto adDto) throws IOException { Set<Picture> pictures =
-     *             ad.getPictures();
-     *
-     *             Set<Image> images = adDto.getPicturesOut(); for(Picture picture : pictures){ ByteArrayInputStream bis
-     *             = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData())); Image image =
-     *             ImageIO.read(bis); images.add(image); } adDto.setPicturesOut(images); }
-     */
+    private void convertPictures(Ad ad, AdDto adDto) throws IOException {
+        Set<Picture> pictures = ad.getPictures();
+
+        Set<Image> images = adDto.getPicturesOut();
+        for(Picture picture : pictures){
+            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData()));
+            Image image = ImageIO.read(bis);
+            images.add(image);
+        }
+        adDto.setPicturesOut(images);
+    }
+    */
 
     /**
      * Method that calculates distance between two geolocations
@@ -714,13 +720,12 @@ public class AdServiceImpl implements AdService {
 
         Set<Review> reviews = adRepository.getReviewsByUserId(userId);
         // If the reviews-list contains anything
-        if (reviews.size() > 0) {
-            return new Response(
-                    adRepository.getReviewsByUserId(userId).stream()
-                            .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList()),
-                    HttpStatus.OK);
-        } else {
-            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NOT_FOUND);
+        if(reviews.size() > 0) {
+            return new Response(adRepository.getReviewsByUserId(userId).stream().map(review -> modelMapper
+                    .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
+        }
+        else {
+            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -865,12 +870,8 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     *
-     * @param ad_id
-     *            id
-     * @param chosenPicture
-     *            picture_id
-     *
+     * @param ad_id id
+     * @param chosenPicture picture_id
      * @return response with status ok or not found
      */
     @Override
@@ -906,97 +907,13 @@ public class AdServiceImpl implements AdService {
                 }
             }
             // If we get here, pictures are equal to null
-            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
         }
-        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
-    /**
-     * Method to get ads sorted on distance to user
-     *
-     * @param userGeoLocation
-     *            users location
-     *
-     * @return list of ads
-     *
-     * @throws IOException
-     *             exception
-     */
-    @Override
-    public Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
-        List<AdDto> ads = (List<AdDto>) getAllAdsWithDistance(userGeoLocation).getBody();
-        return new Response(ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList()),
-                HttpStatus.OK);
-    }
 
-    /**
-     * sorting method descending
-     *
-     * @param pageSize
-     *            page size
-     * @param sortBy
-     *            sorting by attribute
-     *
-     * @return response
-     */
-    @Override
-    public Response sortByDescending(int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-        List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()),
-                HttpStatus.OK);
 
-    }
-
-    /**
-     * sorting method ascending
-     *
-     * @param pageSize
-     *            page size
-     * @param sortBy
-     *            sort by attribute
-     *
-     * @return response
-     */
-    @Override
-    public Response sortByAscending(int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-        List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()),
-                HttpStatus.OK);
-    }
-
-    /**
-     * method to get newest ads
-     *
-     * @param pageSize
-     *            page size
-     *
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateAscending(int pageSize) {
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated));
-        return new Response(ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList())
-                .stream().limit(pageSize), HttpStatus.OK);
-    }
-
-    /**
-     * method to get oldest ads
-     *
-     * @param pageSize
-     *            page size
-     *
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateDescending(int pageSize) {
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-        return new Response(ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList())
-                .stream().limit(pageSize), HttpStatus.OK);
-    }
 
     @Override
     public Response searchThroughAds(String searchword) {
@@ -1029,51 +946,6 @@ public class AdServiceImpl implements AdService {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @Override
-    public Response sortArrayByPriceAscending(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getPrice));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByPriceDescending(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceAscending(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getDistance));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceDescending(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response getListWithinDistanceIntervall(List<AdDto> list, double limit) {
-        list.stream().filter(x -> x.getDistance() < limit).collect(Collectors.toList());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit) {
-        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
-        List<AdDto> ads = new ArrayList<>();
-
-        for (AdDto a : list) {
-            if (a.getPrice() < upperLimit && a.getPrice() > lowerLimit) {
-
-                logger.info("adding ad with price: " + a.getPrice());
-                ads.add(a);
-            }
-        }
-
-        return new Response(ads, HttpStatus.OK);
-    }
 
     public void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1105,25 +977,27 @@ public class AdServiceImpl implements AdService {
         List<Picture> pictures = pictureRepository.findByAd(ad);
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
-            returnDto.add(
-                    PictureReturnDto.builder().base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
-                            .type(pictures.get(i).getType()).build());
+            returnDto.add(PictureReturnDto.builder()
+                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .type(pictures.get(i).getType())
+                    .build());
             returnDto.get(i).setId(adId);
         }
         return returnDto;
     }
 
     @Override
-    public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getCreated));
-        return new Response(list, HttpStatus.OK);
+    public Response getFirstPictureForAd(long adId) {
+        Ad ad = adRepository.getById(adId);
+        List<Picture> pictures = pictureRepository.findByAd(ad);
+        PictureReturnDto returnDto = PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .type(pictures.get(0).getType())
+                .build();
+        returnDto.setId(adId);
+        return new Response(returnDto, HttpStatus.OK);
     }
 
-    @Override
-    public Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list) {
-        list.sort(Comparator.comparing(AdDto::getCreated).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
 
     @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
@@ -1140,8 +1014,11 @@ public class AdServiceImpl implements AdService {
         // }
         ad.setPictures(new HashSet<>());
         for (int i = 0; i < files.size(); i++) {
-            Picture picture = Picture.builder().filename(files.get(i).getName()).type(files.get(i).getContentType())
-                    .data(files.get(i).getBytes()).build();
+            Picture picture = Picture.builder()
+                    .filename(files.get(i).getName())
+                    .type(files.get(i).getContentType())
+                    .data(files.get(i).getBytes())
+                    .build();
             ad.getPictures().add(picture);
             picture.setAd(ad);
           //   System.out.println("here " + i);
@@ -1154,8 +1031,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
-        List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
-                userGeoLocation).getBody();
+        List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
         filterListOfAds.setList(list);
         return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
     }

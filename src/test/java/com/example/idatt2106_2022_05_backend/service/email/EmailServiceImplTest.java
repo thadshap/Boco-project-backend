@@ -48,8 +48,12 @@ class EmailServiceImplTest {
         variables.put("name", "Test Testesen");
         variables.put("url", "https://bocotest.web.com/");
 
-        mail = Email.builder().from("hassano19988991@gmail.com").to("andetel@stud.ntnu.no")
-                .template(new ThymeleafTemplate("verify_mail", variables)).subject("testing").build();
+        mail = Email.builder()
+                .from("hassano19988991@gmail.com")
+                .to("andetel@stud.ntnu.no")
+                .template(new ThymeleafTemplate("verify_mail", variables))
+                .subject("testing")
+                .build();
 
         Mockito.doNothing().when(mailSender).send(any(MimeMessage.class));
 

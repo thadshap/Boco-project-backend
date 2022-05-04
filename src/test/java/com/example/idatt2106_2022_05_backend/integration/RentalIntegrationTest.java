@@ -440,7 +440,7 @@ public class RentalIntegrationTest {
         RentalReviewDto dto = RentalReviewDto.builder().rating(5).build();
 
         // Delete rental
-        ResponseEntity<Object> response = rentalService.deleteRental(rentalFound.getId(), dto);
+        ResponseEntity<Object> response = rentalService.completeRental(rentalFound.getId(), dto);
         // Assert accepted http response
         assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
         // Assert that the rental now is not active
@@ -565,7 +565,7 @@ public class RentalIntegrationTest {
         ResponseEntity<Object> res = rentalService.updateRental(dto, 100000000L);
 
         // Retrieve the updated rental
-        assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
+        assertEquals(HttpStatus.NO_CONTENT.value(), res.getStatusCodeValue());
     }
 
     @SneakyThrows

@@ -44,6 +44,10 @@ public class SecurityServiceimpl implements SecurityService {
         return userRepository.findByEmail(email);
     }
 
+    /**
+     * Method to get the current user.
+     * @return current user making the call.
+     */
     @Override
     public User getCurrentUser() {
         return getUser();

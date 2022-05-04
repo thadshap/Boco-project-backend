@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
@@ -55,7 +54,7 @@ public class RentalController {
         if (!securityService.isRentalBorrower(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
-        return rentalService.deleteRental(rentalId, rentalDto);
+        return rentalService.completeRental(rentalId, rentalDto);
     }
 
     @PutMapping("/update/{rentalId}")

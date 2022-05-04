@@ -68,9 +68,6 @@ public class CalendarIntegrationTest {
     @Autowired
     PictureRepository pictureRepository;
 
-    @Autowired
-    OuputMessageRepository ouputMessageRepository;
-
     @Nested
     class CalendarCreatedTests {
 
@@ -98,7 +95,6 @@ public class CalendarIntegrationTest {
 
             reviewRepository.deleteAll();
             rentalRepository.deleteAll();
-            ouputMessageRepository.deleteAll();
             calendarDateRepository.deleteAll();
 
             categoryRepository.deleteAll();

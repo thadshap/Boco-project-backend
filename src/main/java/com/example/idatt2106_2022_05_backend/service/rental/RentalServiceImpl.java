@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import java.util.*;
 
 /**
@@ -97,11 +96,16 @@ public class RentalServiceImpl implements RentalService {
     // }
     // }
 
+    /**
+     * Method to activate rental objec for user.
+     * @param rentalId id of rental.
+     * @return returns response and status.
+     */
     @Override
-    public Response activateRental(Long rentalId) throws MessagingException {
+    public Response activateRental(Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
-        if (rentalOptional.isEmpty()) {
-            return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental is not found in the database", HttpStatus.NO_CONTENT);
         }
         Rental rental = rentalOptional.get();
         rental.setActive(true);
@@ -129,10 +133,10 @@ public class RentalServiceImpl implements RentalService {
      * @return returns HttpStatus and a response object with.
      */
     @Override
-    public Response deleteRental(Long rentalId, RentalReviewDto rating) {
+    public Response completeRental(Long rentalId, RentalReviewDto rating) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
-        if (rentalOptional.isEmpty()) {
-            return new Response("Rental is not found in the database", HttpStatus.NOT_FOUND);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental is not found in the database", HttpStatus.NO_CONTENT);
         }
         Rental rental = rentalOptional.get();
         rental.setRating(rating.getRating());
@@ -173,8 +177,8 @@ public class RentalServiceImpl implements RentalService {
     public Response updateRental(RentalUpdateDto rentalDto, Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
 
-        if (rentalOptional.isEmpty()) {
-            return new Response("Rental not found!", HttpStatus.NOT_FOUND);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental not found!", HttpStatus.NO_CONTENT);
         }
 
         Rental rental = rentalOptional.get();
@@ -210,17 +214,24 @@ public class RentalServiceImpl implements RentalService {
     public Response getRental(Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         System.out.println("rental id = " + rentalId);
-        if (rentalOptional.isEmpty()) {
-            return new Response("Rental not found!", HttpStatus.NOT_FOUND);
+        if (rentalOptional.isEmpty()){
+            return new Response("Rental not found!", HttpStatus.NO_CONTENT);
         }
         System.out.println("returning the rental");
         Rental rental = rentalOptional.get();
-        RentalDto rentalReturn = RentalDto.builder().id(rental.getId()).adId(rental.getAd().getId())
+        RentalDto rentalReturn = RentalDto.builder()
+                .id(rental.getId())
+                .adId(rental.getAd().getId())
                 .title(rental.getAd().getTitle())
                 .borrower(rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName())
                 .owner(rental.getOwner().getFirstName() + " " + rental.getOwner().getLastName())
-                .active(rental.isActive()).dateOfRental(rental.getDateOfRental()).deadline(rental.getDeadline())
-                .rentFrom(rental.getRentFrom()).rentTo(rental.getRentTo()).price(rental.getPrice()).build();
+                .active(rental.isActive())
+                .dateOfRental(rental.getDateOfRental())
+                .deadline(rental.getDeadline())
+                .rentFrom(rental.getRentFrom())
+                .rentTo(rental.getRentTo())
+                .price(rental.getPrice())
+                .build();
         return new Response(rentalReturn, HttpStatus.OK);
     }
 
@@ -240,29 +251,40 @@ public class RentalServiceImpl implements RentalService {
         List<Rental> rental = rentalRepository.getByOwner(user);
         rental.addAll(rentalRepository.getByBorrower(user));
 
-        if (rental.isEmpty()) {
-            return new Response("Rentals not found!", HttpStatus.NOT_FOUND);
+        if (rental.isEmpty()){
+            return new Response("Rentals not found!", HttpStatus.NO_CONTENT);
         }
         for (int i = 0; i < rental.size(); i++) {
-            RentalDto rentalReturn = RentalDto.builder().id(rental.get(i).getId()).adId(rental.get(i).getAd().getId())
+            RentalDto rentalReturn = RentalDto.builder()
+                    .id(rental.get(i).getId())
+                    .adId(rental.get(i).getAd().getId())
                     .title(rental.get(i).getAd().getTitle())
-                    .borrower(rental.get(i).getBorrower().getFirstName() + " "
-                            + rental.get(i).getBorrower().getLastName())
+                    .borrower(rental.get(i).getBorrower().getFirstName() + " " + rental.get(i).getBorrower().getLastName())
                     .owner(rental.get(i).getOwner().getFirstName() + " " + rental.get(i).getOwner().getLastName())
-                    .active(rental.get(i).isActive()).dateOfRental(rental.get(i).getDateOfRental())
-                    .deadline(rental.get(i).getDeadline()).rentFrom(rental.get(i).getRentFrom())
-                    .rentTo(rental.get(i).getRentTo()).price(rental.get(i).getPrice()).build();
+                    .active(rental.get(i).isActive())
+                    .dateOfRental(rental.get(i).getDateOfRental())
+                    .deadline(rental.get(i).getDeadline())
+                    .rentFrom(rental.get(i).getRentFrom())
+                    .rentTo(rental.get(i).getRentTo())
+                    .price(rental.get(i).getPrice())
+                    .build();
             rentals.getRentals().add(rentalReturn);
         }
         return new Response(rentals, HttpStatus.OK);
     }
 
+    /**
+     * Method to retrieve first picture from Ad of rental object.
+     * @param rentalId id of rental.
+     * @return returns response and status.
+     */
     @Override
     public Response getRentalPictureById(Long rentalId) {
         Rental rental = rentalRepository.getById(rentalId);
         List<Picture> pictures = pictureRepository.findByAd(rental.getAd());
         PictureReturnDto returnDto = PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData())).type(pictures.get(0).getType())
+                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .type(pictures.get(0).getType())
                 .build();
         returnDto.setId(rentalId);
         return new Response(returnDto, HttpStatus.OK);

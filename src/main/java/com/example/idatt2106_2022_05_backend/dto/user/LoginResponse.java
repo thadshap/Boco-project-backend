@@ -1,4 +1,4 @@
-package com.example.idatt2106_2022_05_backend.dto;
+package com.example.idatt2106_2022_05_backend.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

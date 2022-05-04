@@ -1,6 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.authorization;
 
-import com.example.idatt2106_2022_05_backend.dto.LoginResponse;
+import com.example.idatt2106_2022_05_backend.dto.user.LoginResponse;
 import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
@@ -13,7 +13,7 @@ import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.service.user.UserDetailsServiceImpl;
 import com.example.idatt2106_2022_05_backend.util.Response;
-import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
+//import com.example.idatt2106_2022_05_backend.util.registration.RegistrationComplete;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -285,7 +285,7 @@ public class AuthServiceImpl implements AuthService {
             return new Response(token, HttpStatus.ACCEPTED);
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bruker med forgotPasswordDto er ikke funnet!");
+        throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Bruker med forgotPasswordDto er ikke funnet!");
     }
 
     /**
@@ -338,7 +338,7 @@ public class AuthServiceImpl implements AuthService {
      * @return response.
      */
     @Override
-    public Response createUser(CreateAccountDto createAccount, String url) {
+    public Response createUser(CreateAccountDto createAccount, String url) throws MessagingException, IOException {
         if (userRepository.findByEmail(createAccount.getEmail()) != null) {
             return new Response("Mail is already registered", HttpStatus.IM_USED);
         }
@@ -347,7 +347,26 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
-        publisher.publishEvent(new RegistrationComplete(user, url));
+
+        String token = UUID.randomUUID().toString();
+        saveUserVerificationTokenForUser(token, user);
+
+        url = url + "/auth/verifyEmail?token=" + token;
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", user.getFirstName() + " " + user.getLastName());
+        variables.put("url", url);
+        variables.put("lagd", "sant");
+
+        Email email = Email.builder()
+                .from("BOCO@gmail.com")
+                .to(user.getEmail())
+                .template(new ThymeleafTemplate("verify_mail", variables))
+                .subject("Verifiser konto i BOCO")
+                .build();
+        emailService.sendEmail(email);
+
+        log.info("Click the link to verify your account: {}", url);
 
         return new Response("Verifiserings mail er sendt til mailen din !", HttpStatus.CREATED);
     }
@@ -415,7 +434,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<UserVerificationToken> verificationTokenOpt = userVerificationTokenRepository.findByToken(prevToken);
 
         if (verificationTokenOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found in repository");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Token not found in repository");
         }
         UserVerificationToken verificationToken = verificationTokenOpt.get();
 

@@ -1,10 +1,10 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
 import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,8 +39,8 @@ public interface AdService {
     // Get all available ads by user id
     Response getAllAvailableAdsByUser(long userId);
 
-    // Get a page of ads
-    Response getPageOfAds(int sizeOfPage);
+    //Get a page of ads
+    Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation);
 
     // Get all ads by postal code
     Response getAllAdsByPostalCode(int postalCode);
@@ -68,63 +68,22 @@ public interface AdService {
     // delete picture
     Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
 
-    // upload a new picture
-    // Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
-
-    // get nearest ads
-    Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException;
-
-    // generic sorting descending
-    Response sortByDescending(int pageSize, String sortBy);
-
-    // generic sort ascending
-    Response sortByAscending(int pageSize, String sortBy);
-
-    // get newest ads
-    Response sortByCreatedDateAscending(int pageSize);
-
-    // get oldest ads
-    Response sortByCreatedDateDescending(int pageSize);
 
     // Search in database
     Response searchThroughAds(String searchword);
 
-    // Sort an array by price
-    Response sortArrayByPriceAscending(List<AdDto> list);
-
-    // Sort an array by price descending
-    Response sortArrayByPriceDescending(List<AdDto> list);
-
-    // Sort an array based on distance ascending
-    Response sortArrayByDistanceAscending(List<AdDto> list);
-
-    // Sort an array based on distance descending
-    Response sortArrayByDistanceDescending(List<AdDto> list);
-
-    // Getting ads only within a distance intervall
-    Response getListWithinDistanceIntervall(List<AdDto> list, double limit);
-
-    // Getting all ads within a priceRange
-    Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit);
-    // Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
-
-    // Response uploadPictureToAd(long adId, MultipartFile file);
+    Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 
     List<PictureReturnDto> getAllPicturesForAd(long adId);
 
-    Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
+    Response getFirstPictureForAd(long adId);
 
     Response getAllSubCategories(String parentName);
 
     Response getAllCategories();
 
-    Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
-
-    Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
-
     Response getAllAdsWithFilter(FilterListOfAds filterListOfAds);
 
     Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
-    // Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
