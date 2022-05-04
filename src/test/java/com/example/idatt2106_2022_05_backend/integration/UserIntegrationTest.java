@@ -60,12 +60,17 @@ public class UserIntegrationTest {
         @Test
         public void getUserByEmail_WhenEmailCorrect() {
 
-            // Users exist in db because of dataloader
-            assertNotNull(userRepository.findAll());
+            // Create new user
+            User user = User.builder().firstName("firstName").lastName("lastName").email("karoline.wahls@hotmail.com")
+                    .password("pass1word").build();
 
-            // Retrieve a user and their email
-            User user = userRepository.findAll().get(0);
-            String correctEmail = user.getEmail();
+            // Saving the user
+            User userSaved = userRepository.save(user);
+
+            // User must exist in order to continue
+            assertNotNull(userSaved);
+
+            String correctEmail = userSaved.getEmail();
 
             // Get a user by email
             User userFound = userRepository.findByEmail(correctEmail);

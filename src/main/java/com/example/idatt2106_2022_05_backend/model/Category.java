@@ -34,7 +34,7 @@ public class Category {
 
     private String icon;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "category")
     private Set<Ad> ads;
 
     @PreRemove

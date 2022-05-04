@@ -36,6 +36,13 @@ public class Review {
     @JoinColumn(name = "ad_id")
     private Ad ad;
 
+    @PreRemove
+    private void removeRelationships() {
+        if (ad != null) {
+            setAd(null);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

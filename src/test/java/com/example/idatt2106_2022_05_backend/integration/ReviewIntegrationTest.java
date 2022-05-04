@@ -11,7 +11,6 @@ import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.review.ReviewService;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.mysql.cj.xdevapi.SessionFactory;
 import lombok.SneakyThrows;
 import org.hibernate.LazyInitializationException;
@@ -51,8 +50,6 @@ public class ReviewIntegrationTest {
     @Autowired
     CategoryRepository categoryRepository;
 
-    @Autowired
-    PictureUtility pictureService;
 
     @Autowired
     CalendarDateRepository calendarDateRepository;

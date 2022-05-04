@@ -96,10 +96,13 @@ public class AdIntegrationTest {
         reviewRepository.deleteAll();
         rentalRepository.deleteAll();
         pictureRepository.deleteAll();
-        adRepository.deleteAll();
         messageRepository.deleteAll();
         outputMessageRepository.deleteAll();
         userRepository.deleteAll();
+        adRepository.deleteAll();
+        // messageRepository.deleteAll();
+        // outputMessageRepository.deleteAll();
+        // userRepository.deleteAll();
         categoryRepository.deleteAll();
     }
 
@@ -231,10 +234,10 @@ public class AdIntegrationTest {
     }
 
     @Nested
-    class DeletePostTests {
+    class DeleteAdTests {
 
         @Test
-        public void whenPostExists_postIsDeleted() {
+        public void whenAdExists_postIsDeleted() throws IOException, InterruptedException {
             // The cleanup should have erased ads from this repo (EXCEPT ONE)
             assertEquals(0, adRepository.findAll().size());
 
@@ -243,24 +246,30 @@ public class AdIntegrationTest {
             Category category = categoryRepository.findAll().get(0);
 
             // Building an ad without persisting it
-            Ad newAd = Ad.builder().id(100L).title("title").description("").rental(true).rentedOut(false)
+            AdDto newAd = AdDto.builder().title("ad with a very specific title").description("").rental(true).rentedOut(false)
                     .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
-                    .user(user).category(category).build();
+                    .userId(user.getId()).categoryId(category.getId()).build();
 
-            newAd = adRepository.save(newAd);
+            adService.postNewAd(newAd);
+
+            // Retrieve the ad
+            Set<Ad> ads = adRepository.findByTitle("ad with a very specific title");
+            assertEquals(1, ads.size());
+
+            Ad ad = ads.stream().findFirst().get();
 
             // Assert that the ad was saved
             assertEquals(1, adRepository.findAll().size());
 
             // Delete the newly created ad
-            adService.deleteAd(newAd.getId());
+            adService.deleteAd(ad.getId());
 
             // Assert that the ad was deleted
             assertEquals(0, adRepository.findAll().size());
         }
 
         @Test
-        public void whenPostDoesNotExist_postIsNotDeleted() {
+        public void whenAdDoesNotExist_postIsNotDeleted() {
             // The cleanup should have erased ads from this repo
             assertEquals(0, adRepository.findAll().size());
 

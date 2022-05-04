@@ -10,7 +10,6 @@ import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Nested;
@@ -53,9 +52,6 @@ public class CategoryIntegrationTest {
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    PictureUtility pictureService;
 
     @Autowired
     CalendarDateRepository calendarDateRepository;
@@ -320,8 +316,12 @@ public class CategoryIntegrationTest {
         @SneakyThrows
         @Test
         public void getAllAdsForCategoryAndSubCategories() {
-            // Get a user
-            User user = userRepository.findAll().get(0);
+            // Create new user
+            User userCreation = User.builder().firstName("firstName").lastName("lastName").email("karoline.wahls@hotmail.com")
+                    .password("pass1word").build();
+
+            // Saving the user
+            User user = userRepository.save(userCreation);
 
             // Creating parent categories
             Category category1 = Category.builder().name("Flasks").parent(true).child(false).build();
@@ -375,8 +375,16 @@ public class CategoryIntegrationTest {
         @SneakyThrows
         @Test
         public void getAllAdsForSpecificCategory() {
-            // Retrieve a user
-            User user = userRepository.findAll().get(0);
+            // Create a user
+            User userCreation = User.builder().firstName("firstName").lastName("lastName").
+                    email("karoline.wahls@hotmail.com").
+                    password("pass1word").
+                    build();
+
+            // Saving the user
+            User user = userRepository.save(userCreation);
+
+            assertNotNull(user);
             // Create category
             Category category = Category.builder().name("Flasks1").parent(true).child(false).build();
 

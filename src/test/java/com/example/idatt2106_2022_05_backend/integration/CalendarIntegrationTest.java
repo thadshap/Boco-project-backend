@@ -3,10 +3,7 @@ package com.example.idatt2106_2022_05_backend.integration;
 import com.example.idatt2106_2022_05_backend.dto.CalendarDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.CalendarDate;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
@@ -66,7 +63,13 @@ public class CalendarIntegrationTest {
     ReviewRepository reviewRepository;
 
     @Autowired
+    MessageRepository messageRepository;
+
+    @Autowired
     PictureRepository pictureRepository;
+
+    @Autowired
+    OuputMessageRepository ouputMessageRepository;
 
     @Nested
     class CalendarCreatedTests {
@@ -74,14 +77,36 @@ public class CalendarIntegrationTest {
         @SneakyThrows
         @BeforeEach
         public void setUp() {
+            /**
             // Deleting due to threads
             reviewRepository.deleteAll();
             rentalRepository.deleteAll();
             pictureRepository.deleteAll();
+            calendarDateRepository.deleteAll();
             adRepository.deleteAll();
             userRepository.deleteAll();
             categoryRepository.deleteAll();
+            // calendarDateRepository.deleteAll();
+
+             */
+            messageRepository.deleteAll();
+            pictureRepository.deleteAll();
+
+            userRepository.deleteAll();
+
+            adRepository.deleteAll();
+
+            reviewRepository.deleteAll();
+            rentalRepository.deleteAll();
+            ouputMessageRepository.deleteAll();
             calendarDateRepository.deleteAll();
+
+            categoryRepository.deleteAll();
+            // userRepository.deleteAll();
+            // adRepository.deleteAll();
+            // adRepository.deleteAll();
+            // userRepository.deleteAll();
+            // categoryRepository.deleteAll();
 
             // Building a user
             User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
@@ -113,8 +138,9 @@ public class CalendarIntegrationTest {
         public void emptyDatabase() {
             reviewRepository.deleteAll();
             rentalRepository.deleteAll();
-            adRepository.deleteAll();
             userRepository.deleteAll();
+            adRepository.deleteAll();
+            //userRepository.deleteAll();
             categoryRepository.deleteAll();
             calendarDateRepository.deleteAll();
         }

@@ -34,8 +34,16 @@ public class CalendarDate {
     private boolean available;
 
     // Many-to-many connection with Ad. Ad is parent in this case.
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "dates")
+    @ManyToMany(mappedBy = "dates")
     @ToString.Exclude
     private Set<Ad> ads = new HashSet<>();
+
+    @PreRemove
+    private void removeRelationships() {
+        if (ads != null) {
+            setAds(null);
+        }
+    }
+
 
 }

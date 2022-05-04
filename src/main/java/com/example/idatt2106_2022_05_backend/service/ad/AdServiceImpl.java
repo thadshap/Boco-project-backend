@@ -16,7 +16,6 @@ import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,8 +61,6 @@ public class AdServiceImpl implements AdService {
     @Autowired
     private CalendarService calendarService;
 
-    @Autowired
-    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -243,22 +240,22 @@ public class AdServiceImpl implements AdService {
      *
      * public void getCategoryHierarchies() { List<Category> allCategories = categoryRepository.findAll();
      * List<Category> mainCategories = new ArrayList<>();
-     * 
+     *
      * // List of parents contains list of children which contains list of children's children
      * List<List<List<Category>>> listsToReturn = new ArrayList<>();
-     * 
+     *
      * int placementOfParent = 0;
-     * 
+     *
      * // Find all the parent categories for(Category category : allCategories) { if(category.isParent()) {
      * mainCategories.add(category); } placementOfParent ++; }
-     * 
+     *
      * // From main categories, find all the children for(Category parentCategory : mainCategories) { // Create a list
      * for each category ArrayList<Category> children = new ArrayList<>(); // Add the list to the list of all lists
      * listsToReturn.add(children);
-     * 
+     *
      * // Iterate over all categories for each parentCategory for (Category aCategory : allCategories) { // Create a
      * list for each sub-category ArrayList<Category> childrenOfChildren = new ArrayList<>();
-     * 
+     *
      * // Add the list to the list of all lists listsToReturn.add(children); // Counter to retrieve the placement in
      * list of lists (due to enhanced for loop) placementOfCurrentList ++; // If the category is not a parent
      * if(!aCategory.isParent()) { // If the parentName of the category is the parentCategory
@@ -272,7 +269,7 @@ public class AdServiceImpl implements AdService {
      *
      * @param name
      *            is the name of this category
-     * 
+     *
      * @return a list of ads
      */
     @Override
@@ -324,16 +321,16 @@ public class AdServiceImpl implements AdService {
      *            is an empty list that is being filled up with sub-categories as the method recursively iterates
      * @param start
      *            is a measure of incrementation-depth that ends when recursions == listIn.size()
-     * 
+     *
      * @return listOut
      *
      *         private List<Category> findAllSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, int
      *         start) { // Base-case int arrayLength = start;
-     * 
+     *
      *         // If the position in the array is equal to the size of the array we are at the end if(arrayLength ==
      *         listIn.size()) { // Return the list that now contains all sub-categories return listOut; } else{ // get a
      *         hold of all subcategories String nameOfCurrentCategory = listIn.get(arrayLength).getName();
-     * 
+     *
      *         // Iterate through all categories for(Category category : listIn) { if(category.getParentName() != null)
      *         { // If a category has current category as parent category
      *         if(category.getParentName().equalsIgnoreCase(nameOfCurrentCategory)) { listOut.add(category); } } } } //
@@ -348,7 +345,7 @@ public class AdServiceImpl implements AdService {
      *            is a list containing all categories in db
      * @param listOut
      *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     * 
+     *
      * @return listOut
      */
     private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
@@ -440,10 +437,10 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Get a page of ads
-     * 
+     *
      * @param sizeOfPage
      *            number of the page size
-     * 
+     *
      * @return Response with page in body
      */
     @Override
@@ -563,7 +560,7 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Posts new ad
-     * 
+     *
      * @param adDto
      *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
      *            durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
@@ -628,12 +625,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method that goes through all ads and returns the with the calculated distance
-     * 
+     *
      * @param userGeoLocation
      *            users location
-     * 
+     *
      * @return a list of ads including the distance to the users location
-     * 
+     *
      * @throws IOException
      *             if decompression pictures fails
      */
@@ -655,12 +652,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * support method that creates a dto of ad
-     * 
+     *
      * @param ad
      *            ad
-     * 
+     *
      * @return ad dto
-     * 
+     *
      * @throws IOException
      *             if decompression of bytes fails
      */
@@ -675,18 +672,18 @@ public class AdServiceImpl implements AdService {
 
     /**
      * support method to decompress pictures
-     * 
+     *
      * @param //
      *            ad ad object from database
      * @param //
      *            adDto dto object to be returned
-     * 
+     *
      * @throws IOException
      *             if decompression fails
      *
      *             private void convertPictures(Ad ad, AdDto adDto) throws IOException { Set<Picture> pictures =
      *             ad.getPictures();
-     * 
+     *
      *             Set<Image> images = adDto.getPicturesOut(); for(Picture picture : pictures){ ByteArrayInputStream bis
      *             = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData())); Image image =
      *             ImageIO.read(bis); images.add(image); } adDto.setPicturesOut(images); }
@@ -694,7 +691,7 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method that calculates distance between two geolocations
-     * 
+     *
      * @param lat1
      *            latitude user
      * @param long1
@@ -703,7 +700,7 @@ public class AdServiceImpl implements AdService {
      *            latitude item
      * @param long2
      *            longitude item
-     * 
+     *
      * @return distance in km
      */
     public double calculateDistance(double lat1, double long1, double lat2, double long2) {
@@ -733,6 +730,7 @@ public class AdServiceImpl implements AdService {
         Optional<Ad> foundAd = adRepository.findById(adId);
 
         if (foundAd.isPresent()) {
+
             Ad ad = foundAd.get();
 
             // Update the ad
@@ -783,22 +781,13 @@ public class AdServiceImpl implements AdService {
         // If the ad exists
         if (ad.isPresent()) {
 
-            // Delete the ad's pictures
-            ad.get().setPictures(null);
-
-            // Delete the ad from its category
-            ad.get().getCategory().getAds().remove(ad.get());
-
-            // Delete the ad from its user
-            ad.get().getUser().getAds().remove(ad.get());
-
             // Delete the pictures from the ad
             if (ad.get().getPictures() != null) {
                 for (Picture picture : ad.get().getPictures()) {
                     picture.setAd(null);
                     picture.setUser(null);
-                    ad.get().getUser().setPicture(null);
                     pictureRepository.save(picture);
+                    ad.get().getUser().setPicture(null);
                     userRepository.save(ad.get().getUser());
                 }
             }
@@ -808,23 +797,30 @@ public class AdServiceImpl implements AdService {
                     if (Objects.equals(picture.getAd().getId(), ad.get().getId())) {
                         picture.setAd(null);
                         pictureRepository.save(picture);
+                        // Delete the ad's pictures
+                        ad.get().setPictures(null);
+                        pictureRepository.delete(picture);
                     }
                 }
             }
+
+            // Delete the ad's pictures
+            ad.get().setPictures(null);
 
             // Get all the rentals
             Set<Rental> rentals = ad.get().getRentals();
             if (rentals != null) {
                 for (Rental rental : rentals) {
                     rental.setAd(null);
+                    rental.setActive(false);
                     rentalRepository.save(rental);
                 }
             }
+
             // Delete its rentals
             ad.get().setRentals(null);
 
             Set<Review> reviews = ad.get().getReviews();
-
             if (reviews != null) {
                 for (Review review : reviews) {
                     review.setAd(null);
@@ -835,19 +831,29 @@ public class AdServiceImpl implements AdService {
             // Delete the reviews todo save these somewhere else during next iteration!
             ad.get().setReviews(null);
 
+            /**
             // Delete the ad from the dates
             for (CalendarDate date : ad.get().getDates()) {
                 date.getAds().remove(ad.get());
             }
-
-            ad.get().setPictures(null);
+             */
 
             // Delete the dates from the ad
             ad.get().setDates(null);
 
-            ad.get().setUser(null);
+            // Delete the ad from its category
+            ad.get().getCategory().getAds().remove(ad.get());
+
+            // Delete the ad from its user
+            // ad.get().getUser().getAds().remove(ad.get());
+            // ad.get().setUser(null);
+            ad.get().getUser().getAds().remove(ad.get());
+
+
+            adRepository.save(ad.get());
 
             // Delete the ad
+            adRepository.delete(ad.get());
             adRepository.deleteById(adId);
 
             // HttpResponse = OK
@@ -859,12 +865,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     * 
+     *
      * @param ad_id
      *            id
      * @param chosenPicture
      *            picture_id
-     * 
+     *
      * @return response with status ok or not found
      */
     @Override
@@ -885,11 +891,14 @@ public class AdServiceImpl implements AdService {
                         picture.setAd(null);
                         picture.setUser(null);
 
+                        // Update the ad
+                        adRepository.save(ad.get());
+
                         // Delete the PICTURE
                         pictureRepository.delete(picture);
 
                         // Update the ad
-                        adRepository.save(ad.get());
+                        // adRepository.save(ad.get());
 
                         return new Response("Slettet bildet", HttpStatus.OK);
                     }
@@ -904,12 +913,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get ads sorted on distance to user
-     * 
+     *
      * @param userGeoLocation
      *            users location
-     * 
+     *
      * @return list of ads
-     * 
+     *
      * @throws IOException
      *             exception
      */
@@ -922,12 +931,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * sorting method descending
-     * 
+     *
      * @param pageSize
      *            page size
      * @param sortBy
      *            sorting by attribute
-     * 
+     *
      * @return response
      */
     @Override
@@ -941,12 +950,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * sorting method ascending
-     * 
+     *
      * @param pageSize
      *            page size
      * @param sortBy
      *            sort by attribute
-     * 
+     *
      * @return response
      */
     @Override
@@ -959,10 +968,10 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to get newest ads
-     * 
+     *
      * @param pageSize
      *            page size
-     * 
+     *
      * @return response with list
      */
     @Override
@@ -975,10 +984,10 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to get oldest ads
-     * 
+     *
      * @param pageSize
      *            page size
-     * 
+     *
      * @return response with list
      */
     @Override
@@ -1082,7 +1091,7 @@ public class AdServiceImpl implements AdService {
 
             String lat = position.get("lat").asText();
             String lng = position.get("lng").asText();
-            System.out.println(label + " is located at " + lat + "," + lng + ".");
+            // System.out.println(label + " is located at " + lat + "," + lng + ".");
             if (!lng.equals("") && !lat.equals("")) {
                 ad.setLat(Double.parseDouble(lat));
                 ad.setLng(Double.parseDouble(lng));
@@ -1120,9 +1129,9 @@ public class AdServiceImpl implements AdService {
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
         Optional<Ad> adOptional = adRepository.findById(adId);
         if (adOptional.isEmpty()) {
-            return null;
+            return new Response("Could not find ad", HttpStatus.NOT_FOUND);
         }
-        System.out.println("here");
+        // System.out.println("here");
         Ad ad = adOptional.get();
         // String filename = file.getName().split("\\.")[1];
         // if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") ||
@@ -1135,7 +1144,7 @@ public class AdServiceImpl implements AdService {
                     .data(files.get(i).getBytes()).build();
             ad.getPictures().add(picture);
             picture.setAd(ad);
-            System.out.println("here " + i);
+          //   System.out.println("here " + i);
             pictureRepository.save(picture);
         }
         adRepository.save(ad);

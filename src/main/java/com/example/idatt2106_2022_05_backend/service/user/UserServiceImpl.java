@@ -6,7 +6,6 @@ import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PictureUtility pictureService;
 
     @Autowired
     private AdRepository adRepository;
@@ -121,7 +117,7 @@ public class UserServiceImpl implements UserService {
              * for(OutputMessage message : messages) { if(Objects.equals(message.getUser().getId(), user.getId())) {
              * message.setUser(null); message.setGroup(null); ouputMessageRepository.save(message);
              * ouputMessageRepository.delete(message); } }
-             * 
+             *
              * Set<OutputMessage> outputMessages = user.getMessages(); if(outputMessages != null) { for(OutputMessage
              * message : outputMessages) { message.setUser(null); ouputMessageRepository.save(message);
              * ouputMessageRepository.delete(message); } }
@@ -160,44 +156,56 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Response deleteProfilePicture(long userId, byte[] chosenPicture) {
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> userFound = userRepository.findById(userId);
 
         // If present
-        if (user.isPresent()) {
-            Picture profilePicture = user.get().getPicture();
-            if (profilePicture != null) {
+        if (userFound.isPresent()) {
+
+            // Get the user
+            User user = userFound.get();
+
+            // If the user has a profile picture
+            if(user.getPicture() != null) {
+
+                // Get the profile picture
+                Picture profilePicture = user.getPicture();
+
+                // Check to see if the profile picture is the same as the argument
                 if (Arrays.equals(profilePicture.getData(), chosenPicture)) {
 
                     // Remove this picture from user
-                    user.get().setPicture(null);
-                    userRepository.save(user.get());
+                    user.setPicture(null); // todo maybe to this about 10 lines below?
+                    userRepository.save(user);
 
                     // Set the foreign keys of the picture equal to null
                     profilePicture.setAd(null);
                     profilePicture.setUser(null);
                     pictureRepository.save(profilePicture);
 
-                    // Remove this picture from user
-                    user.get().setPicture(null);
-
                     // Delete the PICTURE
                     pictureRepository.delete(profilePicture);
 
                     // Update the user //todo or take this first
-                    userRepository.save(user.get());
+                    userRepository.save(user);
 
                     return new Response("Slettet bildet", HttpStatus.OK);
                 }
+                else {
+                    // If we get here, pictures are equal to null
+                    return new Response("Denne brukeren har et annet profilbilde", HttpStatus.NOT_FOUND);
+                }
             }
             // If we get here, pictures are equal to null
-            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+            return new Response("Denne brukeren har ikke profilbilde", HttpStatus.NOT_FOUND);
         }
-        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
+        return new Response("Bruker med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
     }
 
     @Override
     public Response updatePicture(Long userId, MultipartFile file) throws IOException {
-        User user = userRepository.getById(userId);
+        // User user = userRepository.getById(userId);
+        Optional<User> userFound = userRepository.findById(userId);
+
         System.out.println(file.getName());
         System.out.println(file.getContentType());
         // String filename = file.getName().split("\\.")[1];
@@ -205,14 +213,39 @@ public class UserServiceImpl implements UserService {
         // !filename.equalsIgnoreCase("jpeg") ){
         // return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
         // }
-        Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType()).data(file.getBytes())
-                .build();
-        user.setPicture(picture);
-        picture.setUser(user);
-        pictureRepository.deleteByUser(user);
-        userRepository.save(user);
-        pictureRepository.save(picture);
-        return new Response("Bildet er lagret", HttpStatus.OK);
+        if(userFound.isPresent()) {
+            // Get the user
+            User user = userFound.get();
+
+            // Create the picture entity using the multipart-file
+            Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType()).data(file.getBytes())
+                    .build();
+
+            if(user.getPicture() != null) {
+                // Delete the current photo
+                pictureRepository.findById(user.getPicture().getId()).get().setUser(null);
+                user.setPicture(null);
+                userRepository.save(user);
+                pictureRepository.deleteByUser(user);
+
+                // Set the new photo
+                user.setPicture(picture);
+                picture.setUser(user);
+                userRepository.save(user);
+                pictureRepository.save(picture);
+            }
+            else {
+                user.setPicture(picture);
+                picture.setUser(user);
+                userRepository.save(user);
+                pictureRepository.save(picture);
+            }
+            return new Response("Bildet er lagret", HttpStatus.OK);
+        }
+        else {
+            return new Response("Brukeren ble ikke funnet", HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @Override

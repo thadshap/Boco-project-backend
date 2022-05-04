@@ -36,7 +36,7 @@ public class Picture {
     @JoinColumn(name = "ad_id")
     private Ad ad;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne()
     private User user;
 
     @PreRemove

@@ -78,7 +78,7 @@ public class User {
     private Set<Review> reviews = new HashSet<>();
 
     // One to many relationship w/ ad
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads;
 
@@ -95,11 +95,10 @@ public class User {
         ads.add(newAd);
     }
 
+
     @PreRemove
     void remove() {
-        if (ads != null) {
-            setAds(null);
-        }
+
         if (reviews != null) {
             setReviews(null);
         }

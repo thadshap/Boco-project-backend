@@ -49,7 +49,7 @@ class EmailServiceImplTest {
         variables.put("url", "https://bocotest.web.com/");
 
         mail = Email.builder().from("hassano19988991@gmail.com").to("andetel@stud.ntnu.no")
-                .template(new ThymeleafTemplate("reset_your_password", variables)).subject("testing").build();
+                .template(new ThymeleafTemplate("verify_mail", variables)).subject("testing").build();
 
         Mockito.doNothing().when(mailSender).send(any(MimeMessage.class));
 
@@ -62,11 +62,11 @@ class EmailServiceImplTest {
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
 
-    /**
+
     @Test
     void testSendEmail() throws MessagingException, IOException {
         emailService.sendEmail(mail);
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
-    */
+
 }

@@ -87,11 +87,11 @@ public class Ad {
     private Set<Picture> pictures = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
@@ -106,7 +106,7 @@ public class Ad {
     private Set<Review> reviews = new HashSet<>();
 
     // Many to many connection to CalendarDate modelled by the "calendar" table (not modelled)
-    @ManyToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE })
     @JoinTable(name = "calendar", joinColumns = { @JoinColumn(name = "ad_id") }, inverseJoinColumns = {
             @JoinColumn(name = "date_id") })
     private Set<CalendarDate> dates = new HashSet<>();
@@ -125,6 +125,22 @@ public class Ad {
         return "/ad-photos/" + id + "/" + photos;
     }
 
+
+    @PreRemove
+    private void removeRelationships() {
+        if (dates != null) {
+            setDates(null);
+        }
+        if(user != null) {
+            setUser(null);
+        }
+        if(category != null) {
+            setCategory(null);
+        }
+    }
+
+
+/**
     @PreRemove
     private void removeRelationships() {
         if (pictures != null) {
@@ -146,7 +162,7 @@ public class Ad {
             setUser(null);
         }
     }
-
+*/
     @Override
     public boolean equals(Object o) {
         if (this == o)
