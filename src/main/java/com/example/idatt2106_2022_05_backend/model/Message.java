@@ -22,7 +22,7 @@ public class Message {
     @Column(name="message_id", nullable=false)
     private Long id;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", length = 2000,nullable = false)
     private String content;
 
     @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
