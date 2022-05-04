@@ -37,7 +37,4 @@ public class Group {
             inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
     private Set<User> users;
-
-    @OneToMany(cascade = {CascadeType.REMOVE})
-    private Set<Message> messages;
 }

@@ -56,7 +56,7 @@ class EmailServiceImplTest {
         mail = Email.builder()
                 .from("hassano19988991@gmail.com")
                 .to("andetel@stud.ntnu.no")
-                .template(new ThymeleafTemplate("reset_your_password", variables))
+                .template(new ThymeleafTemplate("verify_mail", variables))
                 .subject("testing")
                 .build();
 

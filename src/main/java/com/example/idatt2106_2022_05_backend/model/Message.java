@@ -37,5 +37,4 @@ public class Message {
     @JoinColumn(name = "group_id")
     private Group group;
 
-
 }

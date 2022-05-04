@@ -1,9 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
-import com.example.idatt2106_2022_05_backend.dto.GroupDto;
-import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
 import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.User;
@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -40,7 +41,6 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     UserRepository userRepository;
 
-
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
@@ -51,12 +51,12 @@ public class ChatServiceImpl implements ChatService {
     //private support method
     private Group getGroup(long id) {
         return groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke gruppechat"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
     }
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke brukeren"));
     }
 
     private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
@@ -112,10 +112,10 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void broadcast(MessageDto message) {
         logger.info("Go to service");
-        Message outputMessage = new Message();
+//        OutputMessage outputMessage = new OutputMessage();
 
         //String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
-        outputMessage.setContent(message.getContent());
+//        outputMessage.setText(message.getContent());
 
         //TODO: Add user check and set in outputmessage
         //outputMessage.setFrom();
@@ -124,7 +124,7 @@ public class ChatServiceImpl implements ChatService {
         //String path = "topic/messages/"+messageDestination;
 
         String time = new SimpleDateFormat("HH:mm").format(new Date());
-        //outputMessage.setTimestamp(time);
+//        outputMessage.setTime(time);
         //ouputMessageRepository.save(outputMessage);
         //String path = "topic/messages/"+ message.getGroupId();
         //logger.info("Sending "+message.getContent() + " to :" + path);
@@ -132,7 +132,16 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
-
+    @Override
+    public Response getChat(long id) {
+//        Group group = getGroup(id);
+//        List<OutputMessage> messageDtos = ouputMessageRepository.findAllByGroup(group);
+//        messageDtos.sort(Comparator.comparing(OutputMessage::getTime));
+//        return new Response(messageDtos.stream()
+//                .map(message -> modelMapper.map(message, MessageDto.class))
+//                .collect(Collectors.toList()), HttpStatus.OK);
+        return null;
+    }
 
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
@@ -261,7 +270,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND); //TODO occupied place
         }
 
         users.add(user);
@@ -277,13 +286,13 @@ public class ChatServiceImpl implements ChatService {
         User user = userRepository.findByEmail(email);
 
         if(user == null) {
-            return new Response("Could not find user with email: " + email, HttpStatus.NOT_FOUND);
+            return new Response("Could not find user with email: " + email, HttpStatus.NO_CONTENT);
         }
 
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND);//TODO occupied already
         }
 
         users.add(user);

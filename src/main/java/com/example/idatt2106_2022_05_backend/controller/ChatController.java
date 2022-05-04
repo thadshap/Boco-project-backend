@@ -1,10 +1,8 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
-import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
-import com.example.idatt2106_2022_05_backend.model.Message;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.util.Response;
@@ -16,9 +14,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/api")

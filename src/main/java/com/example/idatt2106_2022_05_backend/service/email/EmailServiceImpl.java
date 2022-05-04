@@ -1,25 +1,16 @@
 package com.example.idatt2106_2022_05_backend.service.email;
 
 import com.example.idatt2106_2022_05_backend.model.Email;
-import com.nimbusds.jose.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 
 /**
  * Implementation of {@link EmailService}
