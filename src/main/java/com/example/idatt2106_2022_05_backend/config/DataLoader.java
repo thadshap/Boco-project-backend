@@ -407,6 +407,10 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(gravemaskin);
             adRepository.save(elsykker);
 
+            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").duration(1).durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(64.3).lng(10.4).build();
+            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.4).lng(10.39).category(ballSport).build();
+            adRepository.save(handyball);
+            adRepository.save(ball);
 
 
 
@@ -448,35 +452,16 @@ public class DataLoader implements ApplicationRunner {
                 ad.setDates(calendarService.addFutureDates(ad.getId()));
             }
 
-            // Adding the sets
-            Set<Ad> ads1 = new HashSet<>();
-            ads1.add(pc);
-            telt.setAds(ads1);
+            for(Ad a:adRepository.findAll()){
+                Set<Ad> adsy = new HashSet<>();
+                adsy.add(a);
+                a.getCategory().setAds(adsy);;
+                categoryRepository.save(a.getCategory());
+            }
 
-            Set<Ad> ads2 = new HashSet<>();
-            ads2.add(tux);
-            verktoy.setAds(ads2);
-
-            Set<Ad> ads3 = new HashSet<>();
-            ads3.add(pc);
-            datamaskin.setAds(ads3);
-
-            categoryRepository.save(telt);
-            categoryRepository.save(verktoy);
-            categoryRepository.save(datamaskin);
-            adRepository.saveAll(ads);
-
-            Group group1 = Group.builder()
-                    .name("gruppechat1")
-                    .build();
-
-            Group group2 = Group.builder()
-                    .name("gruppechat2")
-                    .build();
-
-            Group group3 = Group.builder()
-                    .name("gruppechat3")
-                    .build();
+            Group group1 = Group.builder().name("gruppechat1").build();
+            Group group2 = Group.builder().name("gruppechat2").build();
+            Group group3 = Group.builder().name("gruppechat3").build();
 
             Set<User> users1 = new HashSet<>();
             users1.add(user1);
@@ -497,27 +482,9 @@ public class DataLoader implements ApplicationRunner {
             groupRepository.save(group2);
             groupRepository.save(group3);
 
-            Message message1 = Message.builder()
-                    .content("Hei!")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message2 = Message.builder()
-                    .content("Halo")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message3 = Message.builder()
-                    .content("Så fint vær idag.")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
+            Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
+            Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
+            Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
             Message message4 = Message.builder()
                     .content("Nei")
                     .group(group1)
