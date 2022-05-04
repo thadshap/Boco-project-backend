@@ -40,7 +40,7 @@ public interface AdService {
     Response getAllAvailableAdsByUser(long userId);
 
     //Get a page of ads
-    Response getPageOfAds(int sizeOfPage);
+    Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation);
 
     // Get all ads by postal code
     Response getAllAdsByPostalCode(int postalCode);
@@ -68,27 +68,9 @@ public interface AdService {
     //delete picture
     Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
 
-    //upload a new picture
-    // Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
-
-    //get newest ads
-    Response sortByCreatedDateAscending(int pageSize);
-
-    //get oldest ads
-    Response sortByCreatedDateDescending(int pageSize);
 
     //Search in database
     Response searchThroughAds(String searchword);
-
-    //Getting ads only within a distance intervall
-    Response getListWithinDistanceIntervall(List<AdDto> list, double limit);
-
-    //Getting all ads within a priceRange
-    Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit);
-
-    // Response uploadNewPicture(long ad_id, MultipartFile file) throws IOException;
-
-    // Response uploadPictureToAd(long adId, MultipartFile file);
 
     Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 
@@ -100,13 +82,8 @@ public interface AdService {
 
     Response getAllCategories();
 
-    Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list);
-
-    Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list);
-
     Response getAllAdsWithFilter(FilterListOfAds filterListOfAds);
 
     Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
-    //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }

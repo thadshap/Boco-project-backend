@@ -413,11 +413,15 @@ public class DataLoader implements ApplicationRunner {
                     rental(true).user(user2).category(grill).created(LocalDate.now()).lat(64.4).lng(10.3).build();
 
             Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").duration(1).postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
-                    user(user3).lat(64.3).lng(10.4).created(LocalDate.now()).category(pizzaovn).build();
+                    user(user3).lat(64.3).durationType(AdType.DAY).lng(10.4).created(LocalDate.now()).category(pizzaovn).build();
 
             Ad koleboks = Ad.builder().title("Kjøleboks leies ut").description("Kjøleboks leies ut til arrangementer").duration(3).durationType(AdType.DAY).streetAddress("Fjordvegen 2").postalCode(9999).city("Båtsfjord").
                     price(100).user(user4).rental(true).category(otherKitchen).created(LocalDate.now()).lat(71.0).lng(60).build();
             //Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").
+            adRepository.save(kjokkenmaskin);
+            adRepository.save(grillen);
+            adRepository.save(pizzaspade);
+            adRepository.save(koleboks);
 
             Rental rental = Rental.builder()
                     .rentFrom(LocalDate.now().plusDays(2))
