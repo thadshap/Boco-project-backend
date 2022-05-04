@@ -39,5 +39,5 @@ public class Group {
     private Set<User> users;
 
     @OneToMany(cascade = {CascadeType.REMOVE})
-    private Set<OutputMessage> messages;
+    private Set<Message> messages;
 }
