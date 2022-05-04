@@ -7,6 +7,7 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -40,6 +41,9 @@ public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private PictureRepository pictureRepository;
+
+    @Autowired
+    private ChatService chatService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -93,6 +97,9 @@ public class RentalServiceImpl implements RentalService {
         userRepository.save(owner);
         adRepository.save(ad);
         rentalRepository.save(rental);
+
+        chatService.sendRentalMessage(rentalDto);
+
         return new Response("Rental object is now created", HttpStatus.OK);
     }
 

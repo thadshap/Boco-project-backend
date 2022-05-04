@@ -4,9 +4,12 @@ import com.example.idatt2106_2022_05_backend.dto.GroupDto;
 import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
+import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Group;
 import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.repository.AdRepository;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
 import com.example.idatt2106_2022_05_backend.repository.MessageRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
@@ -44,6 +47,9 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
+    @Autowired
+    AdRepository adRepository;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
@@ -77,6 +83,41 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return null;
+    };
+
+    @Override
+    public void sendRentalMessage(RentalDto rentalDto){
+        User owner = userRepository.findByEmail(rentalDto.getOwner());
+        User borrower = userRepository.findByEmail(rentalDto.getBorrower());
+        Set<User> users = new HashSet<>();
+        users.add(owner);
+        users.add(borrower);
+
+        Group group = checkIfUsersHavePrivateGroup(users);
+
+        if (group == null){
+            logger.debug("New Group being created for rental message.");
+            group = Group.builder()
+                    .name("NAME")
+                    .users(users)
+                    .build();
+            groupRepository.save(group);
+        }
+        Ad ad = adRepository.findById(rentalDto.getAdId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke ad"));
+
+        String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
+                "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
+                "Pris: " + rentalDto.getPrice() + "kr \n" +
+                "LENKE TIL RENTALS STED";
+
+        Message message = new Message();
+        message.setContent(content);
+        message.setUser(borrower);
+        message.setGroup(group);
+        message.setTimestamp(Timestamp.from(Instant.now()));
+
+        messageRepository.save(message);
     };
 
     /*
