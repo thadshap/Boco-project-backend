@@ -98,7 +98,7 @@ public class RentalServiceImpl implements RentalService {
         rentalRepository.save(rental);
 
         rentalDto.setId(rental.getId());
-        chatService.sendRentalMessage(rentalDto);
+        chatService.sendRentalMessage(rentalDto, "token");
 
         return new Response("Rental object is now created", HttpStatus.OK);
     }
