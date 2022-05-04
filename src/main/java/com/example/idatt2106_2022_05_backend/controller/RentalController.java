@@ -39,37 +39,37 @@ public class RentalController {
         return rentalService.createRental(rentalDto);
     }
 
-    @GetMapping("/approve/{rentalId}")
+//    @GetMapping("/approve/{rentalId}")
+//    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
+//    public ModelAndView approveRental(@RequestParam("token") String token, @PathVariable Long rentalId) throws MessagingException {
+//        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
+//        if(!securityService.isRentalOwnerByToken(rentalId, token)){
+//            return new ModelAndView("approve")
+//                    .addObject("title", "Du har ikke tilgang på forespørselen.");
+//        }
+//        return rentalService.approveRental(rentalId, token);
+//    }
+
+    @PatchMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public ModelAndView approveRental(@RequestParam("token") String token, @PathVariable Long rentalId) throws MessagingException {
+    public ModelAndView activateRental(@PathVariable Long rentalId) throws MessagingException, IOException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwnerByToken(rentalId, token)){
+        if(!securityService.isRentalOwner(rentalId)){
             return new ModelAndView("approve")
                     .addObject("title", "Du har ikke tilgang på forespørselen.");
         }
-        return rentalService.approveRental(rentalId, token);
+        return rentalService.activateRental(rentalId);
     }
 
-    @GetMapping("/activate/{rentalId}")
+    @DeleteMapping("/decline/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public ModelAndView activateRental(@RequestParam("token") String token, @PathVariable String rentalId) throws MessagingException, IOException {
-        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwnerByToken(Long.valueOf(rentalId), token)){
-            return new ModelAndView("approve")
-                    .addObject("title", "Du har ikke tilgang på forespørselen.");
-        }
-        return rentalService.activateRental(Long.valueOf(rentalId), token);
-    }
-
-    @GetMapping("/decline/{rentalId}")
-    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public ModelAndView declineRental(@RequestParam("token") String token, @PathVariable String rentalId) throws MessagingException, IOException {
+    public ModelAndView declineRental(@PathVariable Long rentalId) throws MessagingException, IOException {
     log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwnerByToken(Long.valueOf(rentalId), token)){
+        if(!securityService.isRentalOwner(rentalId)){
         return new ModelAndView("approve")
                 .addObject("title", "Du har ikke tilgang på forespørselen.");
     }
-        return rentalService.declineRental(Long.valueOf(rentalId), token);
+        return rentalService.declineRental(rentalId);
     }
 
     @DeleteMapping("/delete/{rentalId}")

@@ -113,35 +113,35 @@ public class RentalServiceImpl implements RentalService {
         System.out.println(token);
 
         rentalDto.setId(rental.getId());
-        chatService.sendRentalMessage(rentalDto, "token");
+        chatService.sendRentalMessage(rentalDto, token);
 
         return new Response("Rental object is now created", HttpStatus.OK);
     }
 
-    @Override
-    public ModelAndView approveRental(Long rentalId, String token) {
-        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
-        ModelAndView view = new ModelAndView("approve");
-        if(rentalOpt.isEmpty()) {
-            return view.addObject("title", "Kunne desverre ikke finne leieforespørsel!");
-        }
-        Rental rental = rentalOpt.get();
-        Ad ad = adRepository.getById(rental.getAd().getId());
-        User borrower = rental.getBorrower();
-        System.out.println(borrower.getEmail());
-        System.out.println(rental.getOwner().getEmail());
-
-        view.addObject("title", rental.getAd().getTitle());
-        view.addObject("borrower", borrower.getFirstName() + " " +
-                borrower.getLastName() + " har ett oenske om aa leie dette produktet med disse datoene.");
-        view.addObject("rentFrom", "Leie fra: " + rental.getRentTo());
-        view.addObject("rentTo", "Leie til: " + rental.getRentTo());
-        view.addObject("price", rental.getPrice() + ",- kr");
-        view.addObject("accept","http://localhost:8443/rental/activate/" + rental.getId() + "/?token=" + token);
-        view.addObject("decline","http://localhost:8443/decline/activate/" + rental.getId() + "/?token=" + token);
-        System.out.println("rental id = " + rental.getId());
-        return view;
-    }
+//    @Override
+//    public ModelAndView approveRental(Long rentalId, String token) {
+//        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+//        ModelAndView view = new ModelAndView("approve");
+//        if(rentalOpt.isEmpty()) {
+//            return view.addObject("title", "Kunne desverre ikke finne leieforespørsel!");
+//        }
+//        Rental rental = rentalOpt.get();
+//        Ad ad = adRepository.getById(rental.getAd().getId());
+//        User borrower = rental.getBorrower();
+//        System.out.println(borrower.getEmail());
+//        System.out.println(rental.getOwner().getEmail());
+//
+//        view.addObject("title", rental.getAd().getTitle());
+//        view.addObject("borrower", borrower.getFirstName() + " " +
+//                borrower.getLastName() + " har ett oenske om aa leie dette produktet med disse datoene.");
+//        view.addObject("rentFrom", "Leie fra: " + rental.getRentTo());
+//        view.addObject("rentTo", "Leie til: " + rental.getRentTo());
+//        view.addObject("price", rental.getPrice() + ",- kr");
+//        view.addObject("accept","http://localhost:8443/rental/activate/" + rental.getId() + "/?token=" + token);
+//        view.addObject("decline","http://localhost:8443/decline/activate/" + rental.getId() + "/?token=" + token);
+//        System.out.println("rental id = " + rental.getId());
+//        return view;
+//    }
 
     /**
      * Method to activate rental objec for user.
@@ -149,27 +149,27 @@ public class RentalServiceImpl implements RentalService {
      * @return returns response and status.
      */
     @Override
-    public ModelAndView activateRental(Long rentalId, String token) throws MessagingException, IOException {
-        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+    public ModelAndView activateRental(Long rentalId) throws MessagingException, IOException {
+//        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
         }
-        if (accToken.equals(null)) {
-            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
-        }
+//        if (accToken.equals(null)) {
+//            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
+//        }
 
-        User user = accToken.getUser();
-        Calendar cal = Calendar.getInstance();
+//        User user = accToken.getUser();
+//        Calendar cal = Calendar.getInstance();
 
         Rental rental = rentalOptional.get();
         rental.setActive(true);
 
-        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-            acceptRentalTokenRepository.delete(accToken);
-            rentalRepository.deleteById(rentalId);
-            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
-        }
+//        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+//            acceptRentalTokenRepository.delete(accToken);
+//            rentalRepository.deleteById(rentalId);
+//            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
+//        }
 
         Set<CalendarDate> cld = rental.getAd().getDates();
         for (CalendarDate calDate: cld) {
@@ -179,7 +179,7 @@ public class RentalServiceImpl implements RentalService {
             }
         }
         rentalRepository.save(rental);
-        acceptRentalTokenRepository.delete(accToken);
+//        acceptRentalTokenRepository.delete(accToken);
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
         variables.put("url", "http://localhost:8080/rentals");
@@ -197,27 +197,25 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public ModelAndView declineRental(Long rentalId, String token) throws MessagingException, IOException {
-        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+    public ModelAndView declineRental(Long rentalId) throws MessagingException, IOException {
+//        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
         }
-        if (accToken.equals(null)) {
-            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
-        }
-        Calendar cal = Calendar.getInstance();
-
+//        if (accToken.equals(null)) {
+//            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
+//        }
+//        Calendar cal = Calendar.getInstance();
         Rental rental = rentalOptional.get();
         rental.setActive(true);
-
-        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-            acceptRentalTokenRepository.delete(accToken);
-            rentalRepository.deleteById(rentalId);
-            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
-        }
+//        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
+//            acceptRentalTokenRepository.delete(accToken);
+//            rentalRepository.deleteById(rentalId);
+//            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
+//        }
         rentalRepository.deleteById(rentalId);
-        acceptRentalTokenRepository.delete(accToken);
+//        acceptRentalTokenRepository.delete(accToken);
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
         variables.put("url", "http://localhost:8080/rentals");
