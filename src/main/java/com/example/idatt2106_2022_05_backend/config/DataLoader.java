@@ -531,8 +531,7 @@ public class DataLoader implements ApplicationRunner {
             */
             // Persist the 3 ads
 
-            adRepository.save(borre);
-            adRepository.save(tux);
+            adRepository.save(fruit);
             adRepository.save(pc);
             adRepository.save(charger);
             adRepository.save(motherBoard);
@@ -545,7 +544,7 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(tent);
 
             Rental rental = Rental.builder()
-                    .ad(borre)
+                    .ad(matte)
                     .owner(user1)
                     .borrower(user2)
                     .price(10000)
@@ -611,7 +610,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             Review review = Review.builder()
-                    .ad(borre)
+                    .ad(fruit)
                     .user(user3)
                     .description("veldig bra anbefaler dette produktet!")
                     .rating(9)
@@ -619,7 +618,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(borre)
+                    .ad(fruit)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -627,7 +626,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(borre)
+                    .ad(fruit)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -635,7 +634,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(borre)
+                    .ad(fruit)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -698,7 +697,7 @@ public class DataLoader implements ApplicationRunner {
 
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();
-            ads1.add(tux);
+            ads1.add(pc);
             telt.setAds(ads1);
 
             Set<Ad> ads2 = new HashSet<>();

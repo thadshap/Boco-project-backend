@@ -93,7 +93,7 @@ public class User {
 
     @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "user")
     @ToString.Exclude
-    private Set<OutputMessage> messages;
+    private Set<Message> messages;
 
     public void setAd(Ad newAd) {
         ads.add(newAd);
