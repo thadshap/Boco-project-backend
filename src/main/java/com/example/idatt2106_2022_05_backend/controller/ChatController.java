@@ -105,5 +105,4 @@ public class ChatController {
     public Response addUserToGroupByEmail(@PathVariable long groupId, @PathVariable String email) {
         return chatService.addUserToGroupByEmail(groupId, email);
     }
-
 }
