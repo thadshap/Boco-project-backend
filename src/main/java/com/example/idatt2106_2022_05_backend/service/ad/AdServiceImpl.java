@@ -481,22 +481,27 @@ public class AdServiceImpl implements AdService {
      * @return Response with page in body
      */
     @Override
-    public Response getPageOfAds(int sizeOfPage){
+    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation){
         // Check if size of page is smaller than all ads
         List<Ad> ads = adRepository.findAll();
+        List<AdDto> adDtos = new ArrayList<>();
         if(sizeOfPage <= ads.size()) {
             Pageable pageOf = PageRequest.of(0,sizeOfPage);
-            List<AdDto> adDto = adRepository.findAll(pageOf).stream()
+             adDtos = adRepository.findAll(pageOf).stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                     collect(Collectors.toList());
-            return new Response(adDto, HttpStatus.OK);
+
         }
         else {
-            List<AdDto> adDtos = adRepository.findAll().stream()
+            adDtos = adRepository.findAll().stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                             collect(Collectors.toList());
-            return new Response(adDtos, HttpStatus.OK);
         }
+        for(AdDto a: adDtos){
+            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+        }
+        adDtos.sort(Comparator.comparing(AdDto::getDistance));
+        return new Response(adDtos, HttpStatus.OK);
     }
 
     // Get all available ads
@@ -908,33 +913,8 @@ public class AdServiceImpl implements AdService {
         return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
-    /**
-     * method to get newest ads
-     * @param pageSize page size
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateAscending(int pageSize){
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated));
-        return new Response(ads.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                .limit(pageSize), HttpStatus.OK);
-    }
 
-    /**
-     * method to get oldest ads
-     * @param pageSize page size
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateDescending(int pageSize){
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-        return new Response(ads.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                .limit(pageSize), HttpStatus.OK);
-    }
+
 
     @Override
     public Response searchThroughAds(String searchword){
@@ -967,27 +947,6 @@ public class AdServiceImpl implements AdService {
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @Override
-    public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
-        list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
-        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
-        List<AdDto> ads = new ArrayList<>();
-
-        for(AdDto a: list){
-            if(a.getPrice()<upperLimit && a.getPrice()>lowerLimit){
-
-                logger.info("adding ad with price: "+ a.getPrice());
-                ads.add(a);
-            }
-        }
-
-        return new Response(ads, HttpStatus.OK);
-    }
 
     public void setCoordinatesOnAd(Ad ad)
             throws IOException, InterruptedException {
@@ -1041,18 +1000,6 @@ public class AdServiceImpl implements AdService {
         return new Response(returnDto, HttpStatus.OK);
     }
 
-
-    @Override
-    public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getCreated));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getCreated).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
 
     @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
