@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.model.Group;
+import com.example.idatt2106_2022_05_backend.model.Message;
 import com.example.idatt2106_2022_05_backend.model.OutputMessage;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.GroupRepository;
@@ -17,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
@@ -66,6 +66,26 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke brukeren"));
     }
 
+    private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
+        List<User> users = new ArrayList<>(usr);
+        User userOne = users.get(0);
+        User userTwo = users.get(1);
+
+        Set<Group> grps = userOne.getGroupChats();
+        List<Group> groups = new ArrayList<>(grps);
+
+        for (int i = 0; i < groups.size(); i++) {
+            Group group = groups.get(i);
+            if (group.getUsers().size() == 2) {
+                if (group.getUsers().contains(userTwo)) {
+                    return group;
+                }
+            }
+        }
+
+        return null;
+    };
+
     /*
         @Override
         public Response getAllMessagesByGroupId(long groupId){
@@ -87,17 +107,17 @@ public class ChatServiceImpl implements ChatService {
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (int i = 0; i < msL.size(); i++) {
-            com.example.idatt2106_2022_05_backend.model.Message ms = msL.get(i);
+            Message ms = msL.get(i);
             String ts = ms.getTimestamp().toString().split("\\.")[0];
-
-            //messageDtoList.add(new MessageDto(ms.getUser().getId(), ms.getContent(), ts));
+            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(), ms.getUser().getFirstName(), ms.getUser().getLastName());
+            messageDtoList.add(messageDto);
         }
 
         return new Response(messageDtoList, HttpStatus.OK);
     }
 
     @Override
-    public void broadcast(MessageDto message){
+    public void broadcast(MessageDto message) {
         logger.info("Go to service");
         OutputMessage outputMessage = new OutputMessage();
 
@@ -132,7 +152,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
-        //TODO check if users exist, are same
         if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
             return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
         }
@@ -159,12 +178,19 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
-        //TODO check if users exist, multiple of same user given
+        //TODO multiple of same user given?
         List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
         Set<User> users = new HashSet<>();
 
         for (int i = 0; i < userIds.size(); i++) {
             users.add(getUser(userIds.get(i)));
+        }
+
+        if (users.size() == 2) {
+            Group group = checkIfUsersHavePrivateGroup(users);
+            if (group != null) {
+                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
+            }
         }
 
         Group newGroup = Group.builder()
@@ -182,13 +208,34 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Response changeGroupNameFromGroupId(long groupId, String newName) {
-        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()){
+        if (newName == null || newName.isEmpty() || newName.trim().isEmpty()) {
             return new Response("New name given is empty", HttpStatus.BAD_REQUEST);
         }
         Group group = getGroup(groupId);
         group.setName(newName);
         groupRepository.save(group);
         return new Response("Group name changed", HttpStatus.OK);
+    }
+
+    @Override
+    public MessageDto sendMessage(Long groupId, MessageDto messageDto) {
+        User user = getUser(messageDto.getUserId());
+        Group group = getGroup(groupId);
+        Timestamp ts = Timestamp.from(Instant.now());
+        Message message = Message.builder()
+                .timestamp(ts)
+                .content(messageDto.getContent())
+                .group(group)
+                .user(user)
+                .build();
+
+        messageRepository.save(message);
+
+        messageDto.setFirstName(user.getFirstName());
+        messageDto.setLastName(user.getLastName());
+        messageDto.setTimeStamp(ts.toString().split("\\.")[0]);
+
+        return messageDto;
     }
 
     public Response getGroupChatsBasedOnUserId(long id) {
@@ -226,6 +273,28 @@ public class ChatServiceImpl implements ChatService {
     public Response addUserToGroupById(long groupId, long userId) {
         Group group = getGroup(groupId);
         User user = getUser(userId);
+        Set<User> users = group.getUsers();
+
+        if (group.getUsers().contains(user)) {
+            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+        }
+
+        users.add(user);
+        group.setUsers(users);
+        groupRepository.save(group);
+
+        return new Response("User added to group", HttpStatus.OK);
+    }
+
+    @Override
+    public Response addUserToGroupByEmail(long groupId, String email) {
+        Group group = getGroup(groupId);
+        User user = userRepository.findByEmail(email);
+
+        if(user == null) {
+            return new Response("Could not find user with email: " + email, HttpStatus.NOT_FOUND);
+        }
+
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {

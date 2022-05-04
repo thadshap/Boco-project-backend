@@ -91,5 +91,5 @@ public interface AdService {
 
     Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds);
 
+    //Ad setLagLongFromAdress(Ad ad) throws IOException, InterruptedException;
 }
-

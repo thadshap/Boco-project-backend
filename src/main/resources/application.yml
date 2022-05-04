@@ -48,7 +48,7 @@ server:
   port: 8443
 #logging:
   #level:
-    #ROOT: debug
+    #ROOT: info
 #org:
 #  apache:
 #    tomcat:

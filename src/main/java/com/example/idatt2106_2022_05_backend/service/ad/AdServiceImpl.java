@@ -998,6 +998,7 @@ public class AdServiceImpl implements AdService {
                     .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
                     .type(pictures.get(i).getType())
                     .build());
+            returnDto.get(i).setId(adId);
         }
         return returnDto;
     }

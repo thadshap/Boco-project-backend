@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class RentalReviewDto {
 
     private double rating;
+
+    private String review;
 }

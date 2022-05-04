@@ -1,26 +1,19 @@
 package com.example.idatt2106_2022_05_backend.config;
 
-import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
-import org.bouncycastle.est.CACertsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
@@ -34,31 +27,38 @@ import java.util.Set;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        private AdRepository adRepository;
+    @Autowired
+    private AdRepository adRepository;
 
-        private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-        private CalendarDateRepository calDateRepository;
+    @Autowired
+    private CalendarDateRepository calDateRepository;
 
-        private RentalRepository rentalRepository;
+    @Autowired
+    private RentalRepository rentalRepository;
 
-        private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
-        private PictureRepository pictureRepository;
+    @Autowired
+    private PictureRepository pictureRepository;
 
-        private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        private GroupRepository groupRepository;
+    private GroupRepository groupRepository;
 
-        private MessageRepository messageRepository;
+    private MessageRepository messageRepository;
 
-        @Autowired
-        CalendarService calendarService;
+    @Autowired
+    CalendarService calendarService;
 
-        @Autowired
-        AdService adService;
+    @Autowired
+    AdService adService;
 
     /**
      * Constructor of the class.
@@ -71,7 +71,7 @@ public class DataLoader implements ApplicationRunner {
      * @param messageRepository repository of the {@link Message} object
      */
     public DataLoader(UserRepository userRepository, AdRepository adRepository,
-                          CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
+                      CategoryRepository categoryRepository, CalendarDateRepository calDateRepository,
                       RentalRepository rentalRepository, ReviewRepository reviewRepository,
                       PictureRepository pictureRepository, GroupRepository groupRepository, MessageRepository messageRepository) {
 
@@ -441,7 +441,7 @@ public class DataLoader implements ApplicationRunner {
                     category(datamaskin).
                     build();
 
-            Ad p = Ad.builder().
+            Ad sove = Ad.builder().
                     title("Sovepose og primus").
                     description("Leier ut sovepose og primus, leies ut kun sammen").
                     rental(true).
@@ -457,7 +457,7 @@ public class DataLoader implements ApplicationRunner {
                     category(otherOutdoor).
                     build();
 
-            Ad pa = Ad.builder().
+            Ad newHammer = Ad.builder().
                     title("Ny Hammer").
                     description("Leier ut en ny hammer").
                     rental(true).
@@ -473,7 +473,7 @@ public class DataLoader implements ApplicationRunner {
                     category(verktoy).
                     build();
 
-            Ad pan = Ad.builder().
+            Ad matte = Ad.builder().
                     title("Skolebøker Matematikk 3").
                     description("Leier ut matematiske metoder 3 boka").
                     rental(true).
@@ -489,7 +489,7 @@ public class DataLoader implements ApplicationRunner {
                     category(books).
                     build();
 
-            Ad pant = Ad.builder().
+            Ad klovn = Ad.builder().
                     title("Klovnekostyme").
                     description("Leier ut ett klovne-sett").
                     rental(true).
@@ -505,7 +505,7 @@ public class DataLoader implements ApplicationRunner {
                     category(otherhobby).
                     build();
 
-            Ad pantss = Ad.builder().
+            Ad tent = Ad.builder().
                     title("Nytt telt").
                     description("Lavvo med plass til 8").
                     rental(true).
@@ -531,21 +531,21 @@ public class DataLoader implements ApplicationRunner {
             */
             // Persist the 3 ads
 
-            adRepository.save(pants);
-            adRepository.save(fruit);
+            adRepository.save(borre);
+            adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
             adRepository.save(motherBoard);
 
 
-            adRepository.save(p);
-            adRepository.save(pa);
-            adRepository.save(pan);
-            adRepository.save(pant);
-            adRepository.save(pantss);
+            adRepository.save(sove);
+            adRepository.save(newHammer);
+            adRepository.save(matte);
+            adRepository.save(klovn);
+            adRepository.save(tent);
 
             Rental rental = Rental.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .owner(user1)
                     .borrower(user2)
                     .price(10000)
@@ -559,7 +559,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .owner(user1)
                     .borrower(user2)
                     .price(1000)
@@ -572,7 +572,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .owner(user1)
                     .borrower(user2)
                     .price(100)
@@ -585,7 +585,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -598,7 +598,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             rental = Rental.builder()
-                    .ad(p)
+                    .ad(sove)
                     .owner(user3)
                     .borrower(user1)
                     .price(3000)
@@ -611,7 +611,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
 
             Review review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("veldig bra anbefaler dette produktet!")
                     .rating(9)
@@ -619,7 +619,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -627,7 +627,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -635,7 +635,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pants)
+                    .ad(borre)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -643,7 +643,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pan)
+                    .ad(matte)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -651,7 +651,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pant)
+                    .ad(klovn)
                     .user(user3)
                     .description("ten out of ten would buy again")
                     .rating(6)
@@ -659,7 +659,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(pa)
+                    .ad(newHammer)
                     .user(user4)
                     .description("two out of ten would never buy again")
                     .rating(1)
@@ -667,7 +667,7 @@ public class DataLoader implements ApplicationRunner {
             reviewRepository.save(review);
 
             review = Review.builder()
-                    .ad(p)
+                    .ad(sove)
                     .user(user2)
                     .description("Elendig produkt")
                     .rating(6)
@@ -698,7 +698,7 @@ public class DataLoader implements ApplicationRunner {
 
             // Adding the sets
             Set<Ad> ads1 = new HashSet<>();
-            ads1.add(fruit);
+            ads1.add(tux);
             telt.setAds(ads1);
 
             Set<Ad> ads2 = new HashSet<>();
