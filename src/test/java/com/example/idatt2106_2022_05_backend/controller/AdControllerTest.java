@@ -33,7 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+/**
 @SpringBootTest(webEnvironment = MOCK)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -63,31 +63,17 @@ class AdControllerTest {
 
     private Set<Ad> ads;
 
-
     @BeforeEach
     void setUp() {
 
         // Initializing ad for use in our test-cases
-        ad = Ad.builder().
-                id(1L).
-                title("Shoes").
-                description("Renting out a pair of shoes in size 36").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("Project Road 4").
-                postalCode(7234).
-                build();
+        ad = Ad.builder().id(1L).title("Shoes").description("Renting out a pair of shoes in size 36").rental(true)
+                .durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4").postalCode(7234)
+                .build();
 
         // Building a user
-        user = User.builder().
-                id(2L).
-                firstName("firstName").
-                lastName("lastName").
-                email("user.name@hotmail.com").
-                password("pass1word").
-                build();
+        user = User.builder().id(2L).firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
 
         // Persist add
         userRepository.save(user);
@@ -117,13 +103,13 @@ class AdControllerTest {
     }
 
     @AfterEach
-    public void cleanup(){
+    public void cleanup() {
         List<User> users = userRepository.findAll();
-        for(User user : users){
+        for (User user : users) {
             user.setAds(null);
         }
         List<Ad> allAds = adRepository.findAll();
-        for(Ad ad : allAds){
+        for (Ad ad : allAds) {
             ad.setUser(null);
             ad.setCategory(null);
             adRepository.delete(ad);
@@ -136,123 +122,90 @@ class AdControllerTest {
     void getAdById() throws Exception {
 
         // Mocking that we retrieve an element from the repository (we are after all not testing repo now)
-        Mockito.when(adService.getAdById(1L)).
-                thenReturn(new Response(ad,HttpStatus.OK));
+        Mockito.when(adService.getAdById(1L)).thenReturn(new Response(ad, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get("/ads/1").
-                        contentType(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andExpect(jsonPath("$.title").value(ad.getTitle()));
+        mockMvc.perform(get("/ads/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(ad.getTitle()));
     }
 
     @Test
     void getAllAds() throws Exception {
-        Mockito.when(adService.getAllAds()).
-                thenReturn(new Response(ads,HttpStatus.OK));
+        Mockito.when(adService.getAllAds()).thenReturn(new Response(ads, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get("/ads").
-                        contentType(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk());
+        mockMvc.perform(get("/ads").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
     @Test
     void getAllAvailableAds() throws Exception {
-        Mockito.when(adService.getAllAvailableAds()).
-                thenReturn(new Response(ads,HttpStatus.OK));
+        Mockito.when(adService.getAllAvailableAds()).thenReturn(new Response(ads, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get("/ads/available").
-                        contentType(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()); //todo test that size = 1 ?
+        mockMvc.perform(get("/ads/available").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()); // todo
+                                                                                                                   // test
+                                                                                                                   // that
+                                                                                                                   // size
+                                                                                                                   // =
+                                                                                                                   // 1
+                                                                                                                   // ?
     }
 
     @Test
     void getAvailableAdsByUserId() throws Exception {
-        Mockito.when(adService.getAllAvailableAdsByUser(2L)).
-                thenReturn(new Response(ads,HttpStatus.OK));
+        Mockito.when(adService.getAllAvailableAdsByUser(2L)).thenReturn(new Response(ads, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get("/ads/available/2").
-                        contentType(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()); //todo test that size = 1
+        mockMvc.perform(get("/ads/available/2").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()); // todo
+                                                                                                                     // test
+                                                                                                                     // that
+                                                                                                                     // size
+                                                                                                                     // =
+                                                                                                                     // 1
     }
 
     @Test
     void getAdByPostalCode() throws Exception {
-        Mockito.when(adService.getAllAdsByPostalCode(7234)).
-                thenReturn(new Response(ads,HttpStatus.OK));
+        Mockito.when(adService.getAllAdsByPostalCode(7234)).thenReturn(new Response(ads, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(post("/ads").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"postalCode\" : 7234\n" +
-                                "}")).
-                andExpect(status().isOk());
+        mockMvc.perform(
+                post("/ads").contentType(MediaType.APPLICATION_JSON).content("{\n" + "\t\"postalCode\" : 7234\n" + "}"))
+                .andExpect(status().isOk());
     }
 
     @Test
     void getAllAdsByRentalType() throws Exception {
-        Mockito.when(adService.getAllAdsByRentalType(true)).
-                thenReturn(new Response(ads,HttpStatus.OK));
+        Mockito.when(adService.getAllAdsByRentalType(true)).thenReturn(new Response(ads, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(post("/ads").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content("{\n" +
-                                "\t\"rentalType\" : 7234\n" +
-                                "}")).
-                andExpect(status().isOk());
+        mockMvc.perform(
+                post("/ads").contentType(MediaType.APPLICATION_JSON).content("{\n" + "\t\"rentalType\" : 7234\n" + "}"))
+                .andExpect(status().isOk());
     }
 
     @WithMockUser(value = "spring")
     @Test
     void postAd() throws Exception {
-        Ad ad = Ad.builder().
-                title("Pants").
-                description("Renting out a pair of pants in size 36").
-                rental(true).
-                durationType(AdType.MONTH).
-                duration(2).
-                price(100).
-                streetAddress("Project Road 4").
-                postalCode(7200).
-                user(user).
-                category(category).
-                build();
+        Ad ad = Ad.builder().title("Pants").description("Renting out a pair of pants in size 36").rental(true)
+                .durationType(AdType.MONTH).duration(2).price(100).streetAddress("Project Road 4").postalCode(7200)
+                .user(user).category(category).build();
         adRepository.save(ad);
 
         // Simulating input dto from frontend contain new ad
-        AdDto inputAd = AdDto.builder().
-                title("Pants").
-                description("Renting out a pair of pants in size 37").
-                rental(true).
-                durationType(AdType.MONTH).
-                duration(2).
-                price(100).
-                streetAddress("Project Road 4").
-                postalCode(7200).
-                userId(2).
-                categoryId(3).
-                build();
+        AdDto inputAd = AdDto.builder().title("Pants").description("Renting out a pair of pants in size 37")
+                .rental(true).durationType(AdType.MONTH).duration(2).price(100).streetAddress("Project Road 4")
+                .postalCode(7200).userId(2).categoryId(3).build();
 
-        this.mockMvc.perform(post(requestMapping + "/ads/newAd").
-                         with(user("USER")).
-                         contentType(MediaType.APPLICATION_JSON).
-                         content("\t\"title\" : \"Pants\",\n" +
-                                "\t\"description\" : \"Renting out a pair of pants in size 37\",\n" +
-                                "\t\"rental\" : true,\n" +
-                                "\t\"durationType\" : \"MONTH\",\n" +
-                                "\t\"duration\" : 2,\n" +
-                                "\t\"price\" : 100,\n" +
-                                "\t\"streetAddress\" : \"Project Road 4\",\n" +
-                                "\t\"postalCode\" : 7200,\n" +
-                                "\t\"userId\" : 2,\n" +
-                                "\t\"categoryId\" : 3")).
-                andExpect(status().isOk()).
-                andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        this.mockMvc
+                .perform(post(requestMapping + "/ads/newAd").with(user("USER")).contentType(MediaType.APPLICATION_JSON)
+                        .content("\t\"title\" : \"Pants\",\n"
+                                + "\t\"description\" : \"Renting out a pair of pants in size 37\",\n"
+                                + "\t\"rental\" : true,\n" + "\t\"durationType\" : \"MONTH\",\n"
+                                + "\t\"duration\" : 2,\n" + "\t\"price\" : 100,\n"
+                                + "\t\"streetAddress\" : \"Project Road 4\",\n" + "\t\"postalCode\" : 7200,\n"
+                                + "\t\"userId\" : 2,\n" + "\t\"categoryId\" : 3"))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @WithMockUser(value = "spring")
@@ -260,51 +213,36 @@ class AdControllerTest {
     void getReviewsByUserId() throws Exception {
         Set<Review> reviews = new HashSet<>();
 
-        Review review = Review.builder().
-                id(5L).
-                description("Great shoes!").
-                rating(5).
-                build();
+        Review review = Review.builder().id(5L).description("Great shoes!").rating(5).build();
 
         reviews.add(review);
 
-        Mockito.when(adService.getReviewsByUserId(2L)).
-                thenReturn(new Response(reviews,HttpStatus.OK));
+        Mockito.when(adService.getReviewsByUserId(2L)).thenReturn(new Response(reviews, HttpStatus.OK));
 
         // Performing the get operation
-        mockMvc.perform(get(requestMapping +"users/ads/reviews/" + 2).
-                        contentType(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk());
+        mockMvc.perform(get(requestMapping + "users/ads/reviews/" + 2).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @WithMockUser(value = "spring")
     @Test
     void updateTitle() throws Exception {
-        this.mockMvc.perform(put(requestMapping + "ads/" + 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "\t\"title\" : \"newTitle\"\n" +
-                                "}"))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(put(requestMapping + "ads/" + 1).contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" + "\t\"title\" : \"newTitle\"\n" + "}")).andExpect(status().isOk());
     }
 
     @WithMockUser(value = "spring")
     @Test
     void updateDescription() throws Exception {
-        this.mockMvc.perform(put(requestMapping + "ads/" + 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "\t\"description\" : \"newDescription\"\n" +
-                                "}"))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(put(requestMapping + "ads/" + 1).contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" + "\t\"description\" : \"newDescription\"\n" + "}")).andExpect(status().isOk());
     }
-
 
     @WithMockUser(value = "spring")
     @Test
     void deleteAdReturnsDeleteSuccessMessage() throws Exception {
 
-        this.mockMvc.perform(delete(requestMapping + "ads/" + ad.getId()))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(delete(requestMapping + "ads/" + ad.getId())).andExpect(status().isOk());
     }
-}
+    */
+

@@ -18,7 +18,6 @@ public interface CalendarDateRepository extends JpaRepository<CalendarDate, Long
     // Get all dates between date 1 and date 2
     Set<CalendarDate> findByDateBetween(LocalDate date1, LocalDate date2);
 
-
     // Get all available dates between for current month
     // Get all dates left in current month
 

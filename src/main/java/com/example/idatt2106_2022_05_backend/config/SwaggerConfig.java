@@ -41,7 +41,7 @@ public class SwaggerConfig {
     private String description = "Api Documentation for backend endpoints\n";
     private String contactName = "Hasan Omarzae";
     private String contactEmail = "BOCO@ntnu.no";
-    private Contact contact = new Contact(contactName, "www.boco.no",  contactEmail);
+    private Contact contact = new Contact(contactName, "www.boco.no", contactEmail);
 
     @Bean
     public Docket api() {

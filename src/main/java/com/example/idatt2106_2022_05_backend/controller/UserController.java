@@ -33,7 +33,7 @@ public class UserController {
     @ApiOperation(value = "Endpoint to update user", response = Response.class)
     public Response update(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
-        if(!securityService.isUser(userId)){
+        if (!securityService.isUser(userId)) {
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
         return userService.updateUser(userId, userUpdateDto);
@@ -41,9 +41,10 @@ public class UserController {
 
     @PutMapping("/profilePicture/{userId}")
     @ApiOperation(value = "Endpoint to update user profile picture", response = Response.class)
-    public Response updatePicture(@PathVariable Long userId, @RequestPart("file") MultipartFile file) throws IOException {
+    public Response updatePicture(@PathVariable Long userId, @RequestPart("file") MultipartFile file)
+            throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
-        if(!securityService.isUser(userId)){
+        if (!securityService.isUser(userId)) {
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
         return userService.updatePicture(userId, file);
@@ -53,33 +54,33 @@ public class UserController {
     @ApiOperation(value = "Endpoint to get user profile picture", response = Response.class)
     public PictureReturnDto getPicture(@PathVariable Long userId) throws IOException {
         log.debug("[X] Call to update user with id = {}", userId);
-//        if(!securityService.isUser(userId)){
-//            return null;
-//        }
+        // if(!securityService.isUser(userId)){
+        // return null;
+        // }
         return userService.getPicture(userId);
     }
 
-//    @DeleteMapping("/profilePicture")
-//    @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
-//    public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
-//        if(!securityService.userPicture(updatePictureDto.getId(), updatePictureDto)){
-//            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
-//        }
-//        try {
-//            return userService.deleteProfilePicture(updatePictureDto.getUserId(),
-//                    updatePictureDto.getMultipartFile().getBytes());
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
-//    }
+    // @DeleteMapping("/profilePicture")
+    // @ApiOperation(value = "Endpoint to delete profile picture", response = Response.class)
+    // public Response deleteProfilePicture(@ModelAttribute UpdatePictureDto updatePictureDto) {
+    // if(!securityService.userPicture(updatePictureDto.getId(), updatePictureDto)){
+    // return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+    // }
+    // try {
+    // return userService.deleteProfilePicture(updatePictureDto.getUserId(),
+    // updatePictureDto.getMultipartFile().getBytes());
+    //
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    // return new Response("Could not delete profile picture (controller error)", HttpStatus.NOT_FOUND);
+    // }
 
     @DeleteMapping("/{userId}")
     @ApiOperation(value = "Endpoint to delete user", response = Response.class)
     public Response deleteUser(@PathVariable Long userId) {
         log.debug("[X] Call to delete user with id = {}", userId);
-        if(!securityService.isUser(userId)){
+        if (!securityService.isUser(userId)) {
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
         return userService.deleteUser(userId);
@@ -88,8 +89,8 @@ public class UserController {
     @GetMapping("/{userId}")
     @ApiOperation(value = "Endpoint to get user", response = UserReturnDto.class)
     public Response getUser(@PathVariable Long userId, Authentication auth) {
-//        UserDetails user = (UserDetails)auth.getPrincipal();
-//        System.out.println(user.getUsername());
+        // UserDetails user = (UserDetails)auth.getPrincipal();
+        // System.out.println(user.getUsername());
         log.debug("[X] Call to get user with id = {}", userId);
         return userService.getUser(userId);
     }

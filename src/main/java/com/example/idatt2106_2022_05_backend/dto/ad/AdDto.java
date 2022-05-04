@@ -80,8 +80,8 @@ public class AdDto {
     @ApiModelProperty(notes = "is the number of ads to present using pagination")
     private int sizeOfPage;
 
-//    @ApiModelProperty(notes = "array of files for posting pictures in ad")
-//    Set<MultipartFile> pictures;
+    // @ApiModelProperty(notes = "array of files for posting pictures in ad")
+    // Set<MultipartFile> pictures;
 
     @ApiModelProperty(notes = "date")
     private LocalDate created;

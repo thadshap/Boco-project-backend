@@ -79,27 +79,26 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to get user from facebook and log them in to.
-     * @param accessToken access code to get user information from facebook.
+     *
+     * @param accessToken
+     *            access code to get user information from facebook.
+     *
      * @return user login dto.
      */
     @Override
     public Response loginUserFacebook(String accessToken) {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
-        System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " " + facebookUser.getLastName() + " " +
-                facebookUser.getPicture() + " " + facebookUser.getEmail());
+        System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " "
+                + facebookUser.getLastName() + " " + facebookUser.getPicture() + " " + facebookUser.getEmail());
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
-        if (userDetails == null){
+        if (userDetails == null) {
             System.out.println("user details is null");
-            User user = User.builder()
-                    .email(facebookUser.getEmail())
-                    .firstName(facebookUser.getFirstName())
-                    .lastName(facebookUser.getLastName())
-                    .verified(true)
-                    .password(passwordEncoder.encode(generatePassword(8)))
-                    .build();
+            User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
+                    .lastName(facebookUser.getLastName()).verified(true)
+                    .password(passwordEncoder.encode(generatePassword(8))).build();
             userRepository.save(user);
             userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
             System.out.println("user is saved");
@@ -110,31 +109,32 @@ public class AuthServiceImpl implements AuthService {
         System.out.println(token);
         User user = userRepository.findByEmail(facebookUser.getEmail());
         System.out.println(user.getEmail());
-        LoginResponse jwt = LoginResponse.builder()
-                .id(user.getId())
-                .token(token)
-                .build();
+        LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
     /**
      * method to get user information form google and log them in to the application
-     * @param socialLoginRequest id of the google user
+     *
+     * @param socialLoginRequest
+     *            id of the google user
+     *
      * @return returns user login dto and jwt token
+     *
      * @throws GeneralSecurityException
      * @throws IOException
      */
     @Override
-    public Response loginUserGoogle(SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException {
+    public Response loginUserGoogle(SocialLoginRequest socialLoginRequest)
+            throws GeneralSecurityException, IOException {
         URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + socialLoginRequest.getId_token());
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
-//        "666906861821-cgtait2m7uotr9ra4bm7j6s2hndseoel.apps.googleusercontent.com"
+        // "666906861821-cgtait2m7uotr9ra4bm7j6s2hndseoel.apps.googleusercontent.com"
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer content = new StringBuffer();
 
@@ -304,9 +304,8 @@ public class AuthServiceImpl implements AuthService {
 
         if ((resetPasswordToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
             resetPasswordTokenRepository.delete(resetPasswordToken);
-            view = new ModelAndView("expired");
-            view.addObject("txt1", "Det ser ut som at valideringstiden har utløpt. Du kan forespør om å bytte passord på nytt på login siden.");
-            view.addObject("url", "http://localhost:8080/login");
+            view.addObject("txt1", "Tidsfristen for å endre passord er gått ut!!!");
+            view.addObject("txt2", "Trykk på glemt passord på innloggings siden for å kunne endre på nytt.");
             return view;
         }
 

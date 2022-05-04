@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Service implementation for CRUD on Review
  */
 @Service
-public class ReviewServiceImpl implements ReviewService{
+public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     ReviewRepository reviewRepository;
@@ -39,11 +39,12 @@ public class ReviewServiceImpl implements ReviewService{
      * Method validate creation of a new review
      * @param newReviewDto reviewDto
      */
-    private void validate(ReviewDto newReviewDto){
-        if(newReviewDto.getDescription().length()>200){
+    private void validate(ReviewDto newReviewDto) {
+        if (newReviewDto.getDescription().length() > 200) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Beskrivelsen kan ikke være mere enn 200 tegn");
 
-        }if(0>newReviewDto.getRating() && newReviewDto.getRating()>10){
+        }
+        if (0 > newReviewDto.getRating() && newReviewDto.getRating() > 10) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skalaen for rangering er 1-10");
         }
     }
@@ -53,10 +54,10 @@ public class ReviewServiceImpl implements ReviewService{
      * @param ad ad
      * @param newPostingUser user
      */
-    private boolean validateUser(Ad ad, User newPostingUser){
+    private boolean validateUser(Ad ad, User newPostingUser) {
         List<Review> allreviews = reviewRepository.getAllByAd(ad);
-        for(Review r: allreviews){
-            if(r.getUser().getId() == newPostingUser.getId()){
+        for (Review r : allreviews) {
+            if (r.getUser().getId() == newPostingUser.getId()) {
                 return false;
             }
         }
@@ -68,20 +69,23 @@ public class ReviewServiceImpl implements ReviewService{
      * @param newReviewDto dto
      * @return Review
      */
-    public Response createNewReview(ReviewDto newReviewDto){
-        Review review = new Review();
+    public Response createNewReview(ReviewDto newReviewDto) {
         validate(newReviewDto);
+
+        Review review = new Review();
 
         review.setDescription(newReviewDto.getDescription());
         review.setRating(newReviewDto.getRating());
 
-        //checking that the same user does not post twice per ad
-        User user = userRepository.getById(newReviewDto.getUserId());
-        Optional<Ad> ad = adRepository.findById(newReviewDto.getAdId());
-        if(ad.isPresent()){
-            if(validateUser(ad.get(), user)) {
+        // checking that the same user does not post twice per ad
+        Optional<User> user = userRepository.findById(newReviewDto.getUserId());
 
-                review.setUser(user);
+        Optional<Ad> ad = adRepository.findById(newReviewDto.getAdId());
+        if (ad.isPresent() && user.isPresent()) {
+
+            if (validateUser(ad.get(), user.get())) {
+
+                review.setUser(user.get());
 
                 // Setting ad
                 review.setAd(ad.get());
@@ -89,35 +93,33 @@ public class ReviewServiceImpl implements ReviewService{
                 Review reviewSaved = reviewRepository.save(review);
 
                 // Set the review to the list of reviews for the user
-                user.getReviews().add(reviewSaved);
-                //user.addReview(reviewSaved);
+                user.get().addReview(reviewSaved);
+
+                // user.addReview(reviewSaved);
 
                 // Persist the change
-                userRepository.save(user);
+                userRepository.save(user.get());
 
                 // Retrieve the user that owns the ad
                 User ownerOfAd = ad.get().getUser();
 
                 // Increment the number of reviews for the user
-                ownerOfAd.setNumberOfReviews(user.getNumberOfReviews() + 1); // todo if getNumberOfReviews == null implement check
+                ownerOfAd.setNumberOfReviews(user.get().getNumberOfReviews() + 1); // todo if getNumberOfReviews == null
+                                                                                   // implement check
 
                 // Add the rating to the total rating of the user
-                ownerOfAd.setRating(user.getRating() + newReviewDto.getRating());
+                ownerOfAd.setRating(user.get().getRating() + newReviewDto.getRating());
 
                 // Persist the users changes
                 userRepository.save(ownerOfAd);
 
                 return new Response("Omtalen ble lagret", HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new Response("en bruker kan kun post 1 omtale per annonse", HttpStatus.BAD_REQUEST);
             }
         }
         return new Response("Kunne ikke finne en annonse med gitt ID.", HttpStatus.BAD_REQUEST);
     }
-
-
-
 
     /**
      * Method retrieves all reviews on an ad
@@ -125,9 +127,9 @@ public class ReviewServiceImpl implements ReviewService{
      * @return list of reviews
      */
     @Override
-    public Response getReviewsByAdId(long ad_id){
+    public Response getReviewsByAdId(long ad_id) {
         Optional<Ad> ad = adRepository.findById(ad_id);
-        if(ad.isPresent()) {
+        if (ad.isPresent()) {
             List<ReviewDto> reviews = reviewRepository.getAllByAd(ad.get()).stream()
                     .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
 
@@ -148,18 +150,18 @@ public class ReviewServiceImpl implements ReviewService{
      * @return response
      */
     @Override
-    public Response deleteReview(long ad_id, long user_id){
+    public Response deleteReview(long ad_id, long user_id) {
         Optional<Review> review = reviewRepository.getByAdAndUser(adRepository.getById(ad_id),
-                             userRepository.getById(user_id));
-        if(review.isPresent()){
+                userRepository.getById(user_id));
+        if (review.isPresent()) {
 
             // Remove the rating from the original ad and user
             Optional<User> userFound = userRepository.findById(review.get().getUser().getId());
             Optional<Ad> adFound = adRepository.findById(ad_id);
-            if(userFound.isPresent() && adFound.isPresent()) {
+            if (userFound.isPresent() && adFound.isPresent()) {
 
                 // If the user who wrote the review is the user trying to delete it
-                if(userFound.get().getId().equals(user_id)) {
+                if (userFound.get().getId().equals(user_id)) {
 
                     // Remove the review from the user that created it
                     userFound.get().getReviews().remove(review.get());

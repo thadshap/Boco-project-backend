@@ -57,37 +57,28 @@ public class AuthIntegrationTests {
 
         @Test
         public void userSaved_WhenCorrectInput() {
-            CreateAccountDto newUser = CreateAccountDto.builder().
-                    firstName("new user").
-                    lastName("last name").
-                    email("e.mail@hotmail.com").
-                    password("Tulling").
-                    matchingPassword("Tulling").
-                    build();
+            CreateAccountDto newUser = CreateAccountDto.builder().firstName("new user").lastName("last name")
+                    .email("e.mail@hotmail.com").password("Tulling").matchingPassword("Tulling").build();
 
             // Save the user
-//            User result = authService.createUser(newUser);
+            // User result = authService.createUser(newUser);
 
             // Assert that the user exists in db
-//            Optional<User> userFound = userRepository.findById(result.getId());
-//            assertTrue(userFound.isPresent());
+            // Optional<User> userFound = userRepository.findById(result.getId());
+            // assertTrue(userFound.isPresent());
         }
 
         @Test
         public void userNotSaved_WhenWrongInput() {
             // Missing the matching password attribute
-            CreateAccountDto newUser = CreateAccountDto.builder().
-                    firstName("new user").
-                    lastName("last name").
-                    email("e.mail@hotmail.com").
-                    password("Tulling").
-                    build();
+            CreateAccountDto newUser = CreateAccountDto.builder().firstName("new user").lastName("last name")
+                    .email("e.mail@hotmail.com").password("Tulling").build();
 
             // Save the user
-//            User result = authService.createUser(newUser);
+            // User result = authService.createUser(newUser);
 
             // Assert that the user returned is null
-//            assertNull(result);
+            // assertNull(result);
         }
     }
 

@@ -48,7 +48,7 @@ public class ChatServiceImpl implements ChatService {
 
     private Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
 
-    //private support method
+    // private support method
     private Group getGroup(long id) {
         return groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
@@ -80,16 +80,12 @@ public class ChatServiceImpl implements ChatService {
     };
 
     /*
-        @Override
-        public Response getAllMessagesByGroupId(long groupId){
-            Group group = getGroup(groupId);
-                List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream()
-                        .map(message -> modelMapper.map(message, MessageDto.class))
-                        .collect(Collectors.toList());
-
-            return new Response(messageDtoList, HttpStatus.OK);
-        }
-    */
+     * @Override public Response getAllMessagesByGroupId(long groupId){ Group group = getGroup(groupId);
+     * List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream() .map(message ->
+     * modelMapper.map(message, MessageDto.class)) .collect(Collectors.toList());
+     *
+     * return new Response(messageDtoList, HttpStatus.OK); }
+     */
 
     @Override
     public Response getAllMessagesByGroupId(long groupId) {
@@ -102,7 +98,8 @@ public class ChatServiceImpl implements ChatService {
         for (int i = 0; i < msL.size(); i++) {
             Message ms = msL.get(i);
             String ts = ms.getTimestamp().toString().split("\\.")[0];
-            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(), ms.getUser().getFirstName(), ms.getUser().getLastName());
+            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(),
+                    ms.getUser().getFirstName(), ms.getUser().getLastName());
             messageDtoList.add(messageDto);
         }
 

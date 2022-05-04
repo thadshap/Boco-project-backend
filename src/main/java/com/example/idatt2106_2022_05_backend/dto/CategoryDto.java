@@ -25,6 +25,9 @@ public class CategoryDto {
     @ApiModelProperty(notes = "true if this is a parent-category; false if this is a sub-category")
     private boolean parent;
 
+    @ApiModelProperty(notes = "true if this is a child-category; false only if this is if on top of the hierarchy")
+    private boolean child;
+
     @ApiModelProperty(notes = "name of the parent-category if this category has one")
     private String parentName;
 

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "token returned to user upon authentication")
 public class LoginResponse {
 
-//    @ApiOperation(notes = "user id")
+    // @ApiOperation(notes = "user id")
     private Long id;
 
     @ApiModelProperty(notes = "token String")

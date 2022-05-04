@@ -38,6 +38,6 @@ public interface SecurityService {
 
     boolean isUserByEmail(String borrower);
 
-//    boolean userRentalAccess(Long userId);
+    // boolean userRentalAccess(Long userId);
 
 }
