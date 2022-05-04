@@ -37,6 +37,8 @@ public interface ChatService {
 
     void sendRentalMessage(RentalDto rentalDto);
 
+    Response getGroupUsersByGroupId(long groupId);
+
     //Response getGroupChatsBasedOnUserId(long id);
 
 }

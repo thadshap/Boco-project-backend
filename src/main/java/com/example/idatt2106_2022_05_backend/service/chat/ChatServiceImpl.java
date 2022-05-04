@@ -85,6 +85,14 @@ public class ChatServiceImpl implements ChatService {
         return null;
     };
 
+    /**
+     *
+     * Method to send a rental message from borrower to owner.
+     *
+     * @param rentalDto
+     *      {@link RentalDto} object with information to update a rental
+     *
+     */
     @Override
     public void sendRentalMessage(RentalDto rentalDto){
         User owner = userRepository.findByEmail(rentalDto.getOwner());
@@ -118,26 +126,22 @@ public class ChatServiceImpl implements ChatService {
         message.setTimestamp(Timestamp.from(Instant.now()));
 
         messageRepository.save(message);
-    };
+    }
 
-    /*
-        @Override
-        public Response getAllMessagesByGroupId(long groupId){
-            Group group = getGroup(groupId);
-                List<MessageDto> messageDtoList = messageRepository.findAllByGroup(group).stream()
-                        .map(message -> modelMapper.map(message, MessageDto.class))
-                        .collect(Collectors.toList());
-
-            return new Response(messageDtoList, HttpStatus.OK);
-        }
-    */
-
+    /**
+     *
+     * Method to get all messages in a group-
+     *
+     * @param groupId id of group to get messages from
+     *
+     * @return returns HttpStatus and a response object with.
+     */
     @Override
     public Response getAllMessagesByGroupId(long groupId) {
         Group group = getGroup(groupId);
 
-        Set<com.example.idatt2106_2022_05_backend.model.Message> messages = messageRepository.findAllByGroup(group);
-        List<com.example.idatt2106_2022_05_backend.model.Message> msL = new ArrayList<>(messages);
+        Set<Message> messages = messageRepository.findAllByGroup(group);
+        List<Message> msL = new ArrayList<>(messages);
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (int i = 0; i < msL.size(); i++) {
@@ -148,6 +152,27 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return new Response(messageDtoList, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * Method to get all userIds in a group
+     *
+     * @param groupId id of group to get users from
+     * @return returns HttpStatus and a response object with.
+     */
+    @Override
+    public Response getGroupUsersByGroupId(long groupId) {
+        Group group = getGroup(groupId);
+
+        List<User> users = new ArrayList<>(group.getUsers());
+        List<Long> userIds = new ArrayList<>();
+
+        for (int i = 0; i < users.size(); i++) {
+            userIds.add(users.get(i).getId());
+        }
+
+        return new Response(userIds, HttpStatus.OK);
     }
 
     @Override
@@ -173,8 +198,13 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
-
-
+    /**
+     *
+     * Method to create a new group with two users.
+     *
+     * @param privateGroupDto
+     * @return
+     */
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
         //TODO check if group with the users already exists
@@ -333,18 +363,5 @@ public class ChatServiceImpl implements ChatService {
 
         return new Response("User added to group", HttpStatus.OK);
     }
-/*
-    public Response getGroupChatsBasedOnUserId(long id){
-        User user = getUser(id);
-        Set<Group> groups = groupRepository.findAllByUser(user);
-        List<Long> groupId = groups.stream().map(Group::getId).collect(Collectors.toList());
-        return new Response(groupId, HttpStatus.OK);
-    }
-*/
-    /**
-     * 1. Metode til å sende melding
-     * 3. Metode til å hente en chat
-     * TODO: paginate og sorter chat
-     * 4. Get all groupchats on user
-     */
+
 }
