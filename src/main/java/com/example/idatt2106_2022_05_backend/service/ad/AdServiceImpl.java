@@ -491,22 +491,27 @@ public class AdServiceImpl implements AdService {
      * @return Response with page in body
      */
     @Override
-    public Response getPageOfAds(int sizeOfPage){
+    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation){
         // Check if size of page is smaller than all ads
         List<Ad> ads = adRepository.findAll();
+        List<AdDto> adDtos = new ArrayList<>();
         if(sizeOfPage <= ads.size()) {
             Pageable pageOf = PageRequest.of(0,sizeOfPage);
-            List<AdDto> adDto = adRepository.findAll(pageOf).stream()
+            adDtos = adRepository.findAll(pageOf).stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                     collect(Collectors.toList());
-            return new Response(adDto, HttpStatus.OK);
         }
+        //If there are less ads than the pageSize
         else {
-            List<AdDto> adDtos = adRepository.findAll().stream()
+            adDtos = adRepository.findAll().stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                             collect(Collectors.toList());
-            return new Response(adDtos, HttpStatus.OK);
         }
+        for(AdDto a: adDtos){
+            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+        }
+        adDtos.sort(Comparator.comparing(AdDto::getDistance));
+        return new Response(adDtos, HttpStatus.OK);
     }
 
     // Get all available ads
@@ -817,7 +822,11 @@ public class AdServiceImpl implements AdService {
         return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
 
-    // delete ad
+    /**
+     * Deletes ad by id
+     * @param adId id
+     * @return Response entity
+     */
     @Override
     public Response deleteAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
@@ -919,84 +928,20 @@ public class AdServiceImpl implements AdService {
     }
 
     /**
-     * Method to get ads sorted on distance to user
-     * @param userGeoLocation users location
-     * @return list of ads
-     * @throws IOException exception
+     * Method that checks for a String in title on ad and category name
+     * @param searchWord String searchword
+     * @return response entity
      */
     @Override
-    public Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
-        List<AdDto> ads = (List<AdDto>) getAllAdsWithDistance(userGeoLocation).getBody();
-        return new Response(ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList()), HttpStatus.OK);
-    }
-
-    /**
-     * sorting method descending
-     * @param pageSize page size
-     * @param sortBy sorting by attribute
-     * @return response
-     */
-    @Override
-    public Response sortByDescending(int pageSize, String sortBy){
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-        List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
-
-    }
-
-    /**
-     * sorting method ascending
-     * @param pageSize page size
-     * @param sortBy sort by attribute
-     * @return response
-     */
-    @Override
-    public Response sortByAscending(int pageSize, String sortBy){
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-        List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
-    }
-
-    /**
-     * method to get newest ads
-     * @param pageSize page size
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateAscending(int pageSize){
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated));
-        return new Response(ads.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                .limit(pageSize), HttpStatus.OK);
-    }
-
-    /**
-     * method to get oldest ads
-     * @param pageSize page size
-     * @return response with list
-     */
-    @Override
-    public Response sortByCreatedDateDescending(int pageSize){
-        List<Ad> ads = adRepository.findAll();
-        ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-        return new Response(ads.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                .limit(pageSize), HttpStatus.OK);
-    }
-
-    @Override
-    public Response searchThroughAds(String searchword){
+    public Response searchThroughAds(String searchWord){
         //List to be filled with corresponding ads
         List<Ad> adsContainingSearchWord = new ArrayList<>();
 
         List<Ad> ads = adRepository.findAll();
 
-        //Checking all titles for searchword
+        //Checking all titles for searchWord
         for(Ad a: ads){
-            if(a.getTitle().toLowerCase().contains(searchword.toLowerCase())){
+            if(a.getTitle().toLowerCase().contains(searchWord.toLowerCase())){
                 adsContainingSearchWord.add(a);
             }
         }
@@ -1004,7 +949,7 @@ public class AdServiceImpl implements AdService {
 
         //Adding all ads with the category
         for(Category c: categories){
-            if(c.getName().toLowerCase().contains(searchword.toLowerCase())) {
+            if(c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
                 for (Ad a : c.getAds()) {
                     if(!adsContainingSearchWord.contains(a)) {
                         adsContainingSearchWord.add(a);
@@ -1018,54 +963,8 @@ public class AdServiceImpl implements AdService {
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @Override
-    public Response sortArrayByPriceAscending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getPrice));
-        return new Response(list, HttpStatus.OK);
-    }
 
-    @Override
-    public Response sortArrayByPriceDescending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceAscending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getDistance));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceDescending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
-        list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
-        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
-        List<AdDto> ads = new ArrayList<>();
-
-        for(AdDto a: list){
-            if(a.getPrice()<upperLimit && a.getPrice()>lowerLimit){
-
-                logger.info("adding ad with price: "+ a.getPrice());
-                ads.add(a);
-            }
-        }
-
-        return new Response(ads, HttpStatus.OK);
-    }
-
-    public void setCoordinatesOnAd(Ad ad)
-            throws IOException, InterruptedException {
+    private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
 
@@ -1104,19 +1003,6 @@ public class AdServiceImpl implements AdService {
         return returnDto;
     }
 
-
-    @Override
-    public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getCreated));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getCreated).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
     @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
         Optional<Ad> adOptional = adRepository.findById(adId);
@@ -1145,19 +1031,31 @@ public class AdServiceImpl implements AdService {
         return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
+    /**
+     * Get ads based on category with filter
+     * @param filterListOfAds filter
+     * @return response entity containing ads
+     */
     @Override
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds){
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
         List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
+        logger.info("finished getting ads");
         filterListOfAds.setList(list);
         return new Response(getAllAdsWithFilter(filterListOfAds),HttpStatus.OK);
     }
 
+    /**
+     * Method that filters by price or
+     * @param filterListOfAds filter
+     * @return response entity
+     */
     @Override
     public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
         List<Ad> ads = new ArrayList<>();
         if(filterListOfAds.getList()!=null) {
             for(AdDto a: filterListOfAds.getList()){
+                logger.info("got ad: "+ a.getTitle());
                 ads.add(adRepository.getById(a.getAdId()));
             }
         }else{
@@ -1193,6 +1091,9 @@ public class AdServiceImpl implements AdService {
             //excluding those that are outside the limit of distance
             if(filterListOfAds.getUpperLimit()!=0 && filterListOfAds.getFilterType().toLowerCase().equals("distance")){
                 list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
+            }
+            for(AdDto a: list){
+                logger.info("Ads to be returned: "+ a.getTitle());
             }
             return new Response(list, HttpStatus.OK);
         }
