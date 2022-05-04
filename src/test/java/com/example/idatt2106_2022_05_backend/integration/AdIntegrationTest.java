@@ -2,12 +2,14 @@ package com.example.idatt2106_2022_05_backend.integration;
 
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -901,80 +903,151 @@ public class AdIntegrationTest {
         }
 
         // Should return ads
+        @SneakyThrows
         @Test
-        public void searchByDistance_WhenAdsExistWithinDistance() {
+        public void getAdsWithCategoryAndFilter() {
+            User user = userRepository.findAll().get(0);
 
-        }
+            // Fetch the category
+            Category category1 = categoryRepository.findAll().get(0);
+            Category category2 = categoryRepository.findAll().get(1);
 
-        // Should return no ads
-        @Test
-        public void searchByDistance_WhenNoAdsExistWithinDistance() {
 
-        }
+            // Create a couple of ads with different prices and addresses (but with the same category)
+            AdDto adDto1 = AdDto.builder().title("random title1").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(10).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user.getId()).categoryId(category1.getId()).build();
 
-        @Test
-        public void sortByDescendingTitle() {
+            AdDto adDto2 = AdDto.builder().title("random title2").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("Rønvikgata 5").postalCode(8006)
+                    .city("bodø").userId(user.getId()).categoryId(category1.getId()).build();
 
-        }
+            AdDto adDto3 = AdDto.builder().title("random title3").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(1000).streetAddress("Kjerkgata 3").postalCode(7374)
+                    .city("røros").userId(user.getId()).categoryId(category1.getId()).build();
 
-        @Test
-        public void sortByAscendingTitle() {
+            // Creating an ad with a different category
+            AdDto adDto4 = AdDto.builder().title("random title4").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).duration(2).price(1000).streetAddress("Kjerkgata 3").postalCode(7374)
+                    .city("røros").userId(user.getId()).categoryId(category2.getId()).build();
 
-        }
 
-        @Test
-        public void sortByCreatedDateAscending() {
 
-        }
+            // Persist the ad
+            adService.postNewAd(adDto1);
+            adService.postNewAd(adDto2);
+            adService.postNewAd(adDto3);
+            adService.postNewAd(adDto4);
 
-        @Test
-        public void sortByCreatedDateDescending() {
 
-        }
+            // Get the ads
+            Optional<Ad> adFound1 = adRepository.findByTitle("random title1").stream().findFirst();
+            Optional<Ad> adFound2 = adRepository.findByTitle("random title2").stream().findFirst();
+            Optional<Ad> adFound3 = adRepository.findByTitle("random title3").stream().findFirst();
+            Optional<Ad> adFound4 = adRepository.findByTitle("random title4").stream().findFirst();
 
-        @Test
-        public void adReturned_WhenSearchingForPartsOfExistingTitle() {
 
-        }
+            // Assert that all are found
+            assertTrue(adFound1.isPresent());
+            assertTrue(adFound2.isPresent());
+            assertTrue(adFound3.isPresent());
+            assertTrue(adFound4.isPresent());
 
-        @Test
-        public void nothingReturned_WhenSearchingForPartsOfNonExistingTitle() {
 
-        }
+            Ad ad1 = adFound1.get();
+            Ad ad2 = adFound2.get();
+            Ad ad3 = adFound3.get();
+            Ad ad4 = adFound3.get();
 
-        @Test
-        public void adsAreSortedByPriceAscending() {
+            // Add the ids to the dtos
+            adDto1.setAdId(ad1.getId());
+            adDto2.setAdId(ad2.getId());
+            adDto3.setAdId(ad3.getId());
+            adDto4.setAdId(ad4.getId());
 
-        }
+            // Create a random latitude and longitude simulating the position of the user
+            double lat = 63.411080;
+            double lng = 10.401449;
 
-        @Test
-        public void adsAreSortedByPriceDescending() {
+            // To perform this method a FilterListOfAds-object is needed
+            FilterListOfAds filterListOfAds = new FilterListOfAds();
 
-        }
+            // Generating the attributes needed for the filterListOfAds
+            List<AdDto> adList = new ArrayList<>();
+            adList.add(adDto1);
+            adList.add(adDto2);
+            adList.add(adDto3);
+            adList.add(adDto4);
 
-        @Test
-        public void adsAreSortedByDistanceAscending() {
 
-        }
+            // Price and distance (distance) are possible filters
+            String filterType1 = "price";
+            String filterType2 = "distance";
 
-        @Test
-        public void adsAreSortedByDistanceDescending() {
+            // The filters need upper limits
+            Double upperPrice = 700.0;
+            Double upperDistance = 1000.0;
 
-        }
+            // The filters need lower limits
+            Double lowerPrice = 200.0;
+            Double lowerDistance = 10.0;
 
-        @Test
-        public void adsWithinDistanceAreReturned() {
+            // Only 3 of 4 ads are in this category
+            String category = category1.getName();
 
-        }
+            // We now have all we need to start creating the object
+            filterListOfAds.setList(adList);
+            filterListOfAds.setLat(lat);
+            filterListOfAds.setLng(lng);
 
-        @Test
-        public void adsWithingPriceRanceAreReturned() {
+            // Filter ads on price
+            filterListOfAds.setFilterType(filterType1);
+            filterListOfAds.setLowerLimit(lowerPrice);
+            filterListOfAds.setUpperLimit(upperPrice);
+            filterListOfAds.setLowestValueFirst(false);
 
-        }
+            ResponseEntity<Object> response0 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result0 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(HttpStatus.OK.value(), response0.getStatusCodeValue());
+            assertEquals(result0.size(), 2);
 
-        @Test
-        public void adsAreGivenCoordinates_WhenAdExists() {
+            // Filter ads on price with the lowest value first
+            filterListOfAds.setLowestValueFirst(true);
+            ResponseEntity<Object> response1 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result1 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(HttpStatus.OK.value(), response1.getStatusCodeValue());
+            assertEquals(result1.size(), 2);
+            assertTrue((result1.get(0).getPrice()) < (result1.get(1).getPrice()));
 
+
+            // Filter ads on price and category --> this should return no more than 3
+            filterListOfAds.setLowestValueFirst(false);
+            filterListOfAds.setCategory(category);
+            ResponseEntity<Object> response2 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result2 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(HttpStatus.OK.value(), response2.getStatusCodeValue());
+            assertEquals(result2.size(), 2);
+
+
+            // Filter ads on distance
+            filterListOfAds.setFilterType(filterType2);
+            filterListOfAds.setLowerLimit(lowerDistance);
+            filterListOfAds.setUpperLimit(upperDistance);
+            filterListOfAds.setCategory(null); //todo use "" if null gives error
+
+            ResponseEntity<Object> response3 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result3 = getAdsWithCategoryAndFilter(filterListOfAds);
+
+            assertEquals(HttpStatus.OK.value(), response3.getStatusCodeValue());
+            assertEquals(result3.size(), 2);
+
+            // Filter ads on distance and category
+            filterListOfAds.setCategory(category); //todo use "" if null gives error
+            ResponseEntity<Object> response4 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result4 = getAdsWithCategoryAndFilter(filterListOfAds);
+
+            assertEquals(HttpStatus.OK.value(), response4.getStatusCodeValue());
+            assertEquals(result4.size(), 2);
         }
 
         /**
@@ -1003,6 +1076,131 @@ public class AdIntegrationTest {
             }
             return ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList());
         }
+
+        public List<AdDto> getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
+            UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
+            List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation);
+            filterListOfAds.setList(list);
+            return getAllAdsWithFilter(filterListOfAds);
+        }
+
+        public List<AdDto> getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
+            List<Ad> ads = new ArrayList<>();
+            if (filterListOfAds.getList() != null) {
+                for (AdDto a : filterListOfAds.getList()) {
+                    ads.add(adRepository.getById(a.getAdId()));
+                }
+            } else {
+                ads = adRepository.findAll();
+            }
+            List<AdDto> list = new ArrayList<>();
+            if (filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+                list = ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+            }
+
+            if (filterListOfAds.getFilterType().toLowerCase().equals("price")) {
+
+                for (Ad a : ads) {
+                    if (a.getPrice() < filterListOfAds.getUpperLimit() && a.getPrice() > filterListOfAds.getLowerLimit()) {
+
+                        list.add(modelMapper.map(a, AdDto.class));
+                    }
+                }
+            }
+            // Returning array with nearest location
+            if (filterListOfAds.getLat() != 0 && filterListOfAds.getLng() != 0) {
+                for (AdDto a : list) {
+                    a.setDistance(
+                            calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(), a.getLng()));
+                }
+                // setting them in the right order
+                if (filterListOfAds.isLowestValueFirst()) {
+                    list.sort(Comparator.comparing(AdDto::getDistance));
+                } else {
+                    list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+                }
+                // excluding those that are outside the limit of distance
+                if (filterListOfAds.getUpperLimit() != 0
+                        && filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+                    list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
+                }
+                return list;
+            }
+
+            return null;
+        }
+
+        public ArrayList<AdDto> getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
+
+            // Retrieve all categories from database
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+
+            // List of subCategories found using recursive function
+            List<Category> subCategories = findSubCategories(categories, new ArrayList<>(), name, 0);
+
+            ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+            // Iterate over all sub-categories found
+            for (Category category : subCategories) {
+                // Iterate over all ads in category
+                if (category.getAds() != null) {
+                    for (Ad ad : category.getAds()) {
+                        // Create dto
+                        AdDto dto = castObject(ad);
+                        // Add to list
+                        adsToBeReturned.add(dto);
+                    }
+                }
+            }
+            // Calculation and setting distance for ads
+            for (AdDto a : adsToBeReturned) {
+                a.setDistance(
+                        calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            }
+            // sort so nearest ads comes first
+            adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+
+            // Now all ads are returned
+            return adsToBeReturned;
+        }
+
+        private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
+                                                 int start) {
+
+            // Position in array == start
+            int arrayLength = start;
+
+            // Base case: If the position in the array is equal to the size of the array
+            if (arrayLength == listIn.size()) {
+                // Return the list that now contains all sub-categories
+                return listOut;
+            } else {
+                // Iterate through all categories
+                for (int i = start; i < listIn.size(); i++) {
+                    Category category = listIn.get(i);
+
+                    // If the category is a sub-class
+                    if (category.getParentName() != null) {
+
+                        // If a category has current category as parent category
+                        if (category.getParentName().equalsIgnoreCase(parentName)) {
+
+                            // Add the category to the list to be returned
+                            listOut.add(category);
+
+                            // This category is now the new parent
+                            parentName = category.getName();
+
+                            // Call on the function recursively from the start for this category
+                            findSubCategories(listIn, listOut, parentName, start);
+                        }
+                    }
+                }
+                // Increment the list and call on the function recursively
+                return findSubCategories(listIn, listOut, parentName, start + 1);
+            }
+        }
+
 
         private AdDto castObject(Ad ad) {
             AdDto adDto = modelMapper.map(ad, AdDto.class);

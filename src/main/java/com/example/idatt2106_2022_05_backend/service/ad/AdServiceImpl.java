@@ -347,10 +347,6 @@ public class AdServiceImpl implements AdService {
         // Position in array == start
         int arrayLength = start;
 
-        // Make a counter and if it is not == 1 && base case is not reached when the loop ends,
-        // call on the function again from parentName == arrayLength.getName
-        int loopCounter = 0;
-
         // Base case: If the position in the array is equal to the size of the array
         if (arrayLength == listIn.size()) {
             // Return the list that now contains all sub-categories
