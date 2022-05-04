@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
@@ -153,6 +154,10 @@ public class ChatServiceImpl implements ChatService {
             Message ms = msL.get(i);
 
             PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
+            //TODO change when getPicture changes
+            if(pRDto == null){
+                pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+            }
 
             String ts = ms.getTimestamp().toString().split("\\.")[0];
             MessageDto messageDto = new MessageDto(
@@ -331,6 +336,10 @@ public class ChatServiceImpl implements ChatService {
         messageRepository.save(message);
 
         PictureReturnDto pRDto = userService.getPicture(messageDto.getUserId());
+        //TODO change when getPicture changes
+        if(pRDto == null){
+            pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+        }
 
         messageDto.setFirstName(user.getFirstName());
         messageDto.setLastName(user.getLastName());
