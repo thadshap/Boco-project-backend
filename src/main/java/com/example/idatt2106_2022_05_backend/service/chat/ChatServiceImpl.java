@@ -1,9 +1,9 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
-import com.example.idatt2106_2022_05_backend.dto.GroupDto;
-import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Group;
