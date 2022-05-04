@@ -3,7 +3,6 @@ package com.example.idatt2106_2022_05_backend.service.chat;
 import com.example.idatt2106_2022_05_backend.dto.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.PrivateGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ public interface ChatService {
 
     //MessageDto saveMessage(MessageDto message, long groupId);
 
-    //Response getChat(long id);
+    Response getChat(long id);
 
     Response createTwoUserGroup(PrivateGroupDto privateGroupDto);
 
@@ -34,10 +33,6 @@ public interface ChatService {
     MessageDto sendMessage(Long groupId, MessageDto content);
 
     Response addUserToGroupByEmail(long groupId, String email);
-
-    void sendRentalMessage(RentalDto rentalDto);
-
-    Response getGroupUsersByGroupId(long groupId);
 
     //Response getGroupChatsBasedOnUserId(long id);
 

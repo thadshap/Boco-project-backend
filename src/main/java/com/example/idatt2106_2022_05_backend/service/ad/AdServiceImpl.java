@@ -1,21 +1,15 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.*;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,9 +51,6 @@ public class AdServiceImpl implements AdService {
 
     @Autowired
     private RentalRepository rentalRepository;
-
-    @Autowired
-    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -107,7 +97,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToReturn, HttpStatus.OK);
         }
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -140,7 +130,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
+            return new Response("Could not find specified category", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -236,7 +226,7 @@ public class AdServiceImpl implements AdService {
         }
         // Return NOT_FOUND if there
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -466,7 +456,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adDto, HttpStatus.OK);
         }
         else{
-            return new Response("Fant ikke annonsen i databasen",HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen i databasen",HttpStatus.NO_CONTENT);
         }
     }
 
@@ -491,27 +481,22 @@ public class AdServiceImpl implements AdService {
      * @return Response with page in body
      */
     @Override
-    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation){
+    public Response getPageOfAds(int sizeOfPage){
         // Check if size of page is smaller than all ads
         List<Ad> ads = adRepository.findAll();
-        List<AdDto> adDtos = new ArrayList<>();
         if(sizeOfPage <= ads.size()) {
             Pageable pageOf = PageRequest.of(0,sizeOfPage);
-            adDtos = adRepository.findAll(pageOf).stream()
+            List<AdDto> adDto = adRepository.findAll(pageOf).stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                     collect(Collectors.toList());
+            return new Response(adDto, HttpStatus.OK);
         }
-        //If there are less ads than the pageSize
         else {
-            adDtos = adRepository.findAll().stream()
+            List<AdDto> adDtos = adRepository.findAll().stream()
                     .map( ad -> modelMapper.map(ad, AdDto.class)).
                             collect(Collectors.toList());
+            return new Response(adDtos, HttpStatus.OK);
         }
-        for(AdDto a: adDtos){
-            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
-        }
-        adDtos.sort(Comparator.comparing(AdDto::getDistance));
-        return new Response(adDtos, HttpStatus.OK);
     }
 
     // Get all available ads
@@ -548,7 +533,7 @@ public class AdServiceImpl implements AdService {
             }
         }
         else{
-            return new Response("Could not find user with specified id", HttpStatus.NOT_FOUND);
+            return new Response("Could not find user with specified id", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -570,7 +555,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -616,7 +601,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToReturn, HttpStatus.OK);
         }
         // If no ads were found in city
-        return new Response("No ads found in specified city", HttpStatus.NOT_FOUND);
+        return new Response("No ads found in specified city", HttpStatus.NO_CONTENT);
     }
 
 
@@ -662,7 +647,7 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
 
         Optional<User> user = userRepository.findById(adDto.getUserId());
@@ -672,7 +657,7 @@ public class AdServiceImpl implements AdService {
             newAd.setUser(user.get());
         }
         else {
-            return new Response("could not find user", HttpStatus.NOT_FOUND);
+            return new Response("could not find user", HttpStatus.NO_CONTENT);
         }
 
         // Checking if dto contains any of the nullable attributes
@@ -769,7 +754,7 @@ public class AdServiceImpl implements AdService {
                     .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
         }
         else {
-            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NOT_FOUND);
+            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -817,16 +802,12 @@ public class AdServiceImpl implements AdService {
             adRepository.save(ad);
         }
         else {
-            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NO_CONTENT);
         }
         return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
 
-    /**
-     * Deletes ad by id
-     * @param adId id
-     * @return Response entity
-     */
+    // delete ad
     @Override
     public Response deleteAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
@@ -882,7 +863,7 @@ public class AdServiceImpl implements AdService {
             return new Response("Annonsen er slettet", HttpStatus.OK);
         }
         else {
-            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -922,26 +903,49 @@ public class AdServiceImpl implements AdService {
                 }
             }
             // If we get here, pictures are equal to null
-            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
         }
-        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
     /**
-     * Method that checks for a String in title on ad and category name
-     * @param searchWord String searchword
-     * @return response entity
+     * method to get newest ads
+     * @param pageSize page size
+     * @return response with list
      */
     @Override
-    public Response searchThroughAds(String searchWord){
+    public Response sortByCreatedDateAscending(int pageSize){
+        List<Ad> ads = adRepository.findAll();
+        ads.sort(Comparator.comparing(Ad::getCreated));
+        return new Response(ads.stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+                .limit(pageSize), HttpStatus.OK);
+    }
+
+    /**
+     * method to get oldest ads
+     * @param pageSize page size
+     * @return response with list
+     */
+    @Override
+    public Response sortByCreatedDateDescending(int pageSize){
+        List<Ad> ads = adRepository.findAll();
+        ads.sort(Comparator.comparing(Ad::getCreated).reversed());
+        return new Response(ads.stream()
+                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
+                .limit(pageSize), HttpStatus.OK);
+    }
+
+    @Override
+    public Response searchThroughAds(String searchword){
         //List to be filled with corresponding ads
         List<Ad> adsContainingSearchWord = new ArrayList<>();
 
         List<Ad> ads = adRepository.findAll();
 
-        //Checking all titles for searchWord
+        //Checking all titles for searchword
         for(Ad a: ads){
-            if(a.getTitle().toLowerCase().contains(searchWord.toLowerCase())){
+            if(a.getTitle().toLowerCase().contains(searchword.toLowerCase())){
                 adsContainingSearchWord.add(a);
             }
         }
@@ -949,7 +953,7 @@ public class AdServiceImpl implements AdService {
 
         //Adding all ads with the category
         for(Category c: categories){
-            if(c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
+            if(c.getName().toLowerCase().contains(searchword.toLowerCase())) {
                 for (Ad a : c.getAds()) {
                     if(!adsContainingSearchWord.contains(a)) {
                         adsContainingSearchWord.add(a);
@@ -963,8 +967,30 @@ public class AdServiceImpl implements AdService {
                 .map(ad1 -> modelMapper.map(ad1, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
+    @Override
+    public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
+        list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
+        return new Response(list, HttpStatus.OK);
+    }
 
-    private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
+    @Override
+    public Response getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit){
+        logger.debug("Got to service with limits: " + String.valueOf(upperLimit) + String.valueOf(lowerLimit));
+        List<AdDto> ads = new ArrayList<>();
+
+        for(AdDto a: list){
+            if(a.getPrice()<upperLimit && a.getPrice()>lowerLimit){
+
+                logger.info("adding ad with price: "+ a.getPrice());
+                ads.add(a);
+            }
+        }
+
+        return new Response(ads, HttpStatus.OK);
+    }
+
+    public void setCoordinatesOnAd(Ad ad)
+            throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
 
@@ -1004,6 +1030,31 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Response getFirstPictureForAd(long adId) {
+        Ad ad = adRepository.getById(adId);
+        List<Picture> pictures = pictureRepository.findByAd(ad);
+        PictureReturnDto returnDto = PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .type(pictures.get(0).getType())
+                .build();
+        returnDto.setId(adId);
+        return new Response(returnDto, HttpStatus.OK);
+    }
+
+
+    @Override
+    public Response sortArrayOfAdsByDateNewestFirst(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getCreated));
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
+    public Response sortArrayOfAdsByDateOldestFirst(List<AdDto> list){
+        list.sort(Comparator.comparing(AdDto::getCreated).reversed());
+        return new Response(list, HttpStatus.OK);
+    }
+
+    @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
         Optional<Ad> adOptional = adRepository.findById(adId);
         if (adOptional.isEmpty()){
@@ -1031,31 +1082,19 @@ public class AdServiceImpl implements AdService {
         return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
-    /**
-     * Get ads based on category with filter
-     * @param filterListOfAds filter
-     * @return response entity containing ads
-     */
     @Override
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds){
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
         List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
-        logger.info("finished getting ads");
         filterListOfAds.setList(list);
         return new Response(getAllAdsWithFilter(filterListOfAds),HttpStatus.OK);
     }
 
-    /**
-     * Method that filters by price or
-     * @param filterListOfAds filter
-     * @return response entity
-     */
     @Override
     public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
         List<Ad> ads = new ArrayList<>();
         if(filterListOfAds.getList()!=null) {
             for(AdDto a: filterListOfAds.getList()){
-                logger.info("got ad: "+ a.getTitle());
                 ads.add(adRepository.getById(a.getAdId()));
             }
         }else{
@@ -1091,9 +1130,6 @@ public class AdServiceImpl implements AdService {
             //excluding those that are outside the limit of distance
             if(filterListOfAds.getUpperLimit()!=0 && filterListOfAds.getFilterType().toLowerCase().equals("distance")){
                 list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
-            }
-            for(AdDto a: list){
-                logger.info("Ads to be returned: "+ a.getTitle());
             }
             return new Response(list, HttpStatus.OK);
         }

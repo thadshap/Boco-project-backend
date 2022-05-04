@@ -91,10 +91,6 @@ public class User {
     )
     private Set<Group> groupChats;
 
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "user")
-    @ToString.Exclude
-    private Set<Message> messages;
-
     public void setAd(Ad newAd) {
         ads.add(newAd);
     }

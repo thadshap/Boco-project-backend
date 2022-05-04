@@ -1,11 +1,11 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.*;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
-import com.example.idatt2106_2022_05_backend.model.Picture;
+import com.example.idatt2106_2022_05_backend.dto.ad.UpdatePictureDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -15,14 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 import java.util.List;
 
 @Slf4j
@@ -155,16 +151,47 @@ public class AdController {
         return adService.getAllPicturesForAd(adId);
     }
 
-    @PostMapping("/ads/page/{sizeOfPage}")
+    @GetMapping("/ads/picture/{adId}")
+    public Response getPictureForAd(@PathVariable long adId) {
+        //TODO
+        return adService.getFirstPictureForAd(adId);
+    }
+
+    @GetMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
-    public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation){
-        return adService.getPageOfAds(sizeOfPage, userGeoLocation);
+    public Response getPageOfAds(@PathVariable int sizeOfPage){
+        return adService.getPageOfAds(sizeOfPage);
+    }
+
+
+    @GetMapping("/ads/newest/{pageSize}")
+    @ApiOperation(value = "sorting all ads by when they are created")
+    public Response getNewest(@PathVariable int pageSize){
+        return adService.sortByCreatedDateAscending(pageSize);
+    }
+
+    @GetMapping("/ads/oldest/{pageSize}")
+    @ApiOperation(value = "sorting all ads by creation oldest")
+    public Response getOldest(@PathVariable int pageSize){
+
+        return adService.sortByCreatedDateDescending(pageSize);
     }
 
     @GetMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
     public Response searchInAdsAndCategories(@PathVariable String searchWord){
         return adService.searchThroughAds(searchWord);
+    }
+
+    @PostMapping("/filterByDistance")
+    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds){
+        return adService.getListWithinDistanceIntervall(filterListOfAds.getList(), filterListOfAds.getUpperLimit());
+    }
+
+    @PostMapping("/getListWithinPriceRange")
+    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
+        logger.info("got to controller");
+        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
     }
 
     // Get all categories
@@ -203,6 +230,16 @@ public class AdController {
         return adService.getAllAdsInCity(cityName);
     }
 
+    @PostMapping("/list/newestFirst")
+    public Response sortAdsNewestFirst(@RequestBody List<AdDto> list){
+        return adService.sortArrayOfAdsByDateNewestFirst(list);
+    }
+
+    @PostMapping("/list/oldestFirst")
+    public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
+        return adService.sortArrayOfAdsByDateOldestFirst(list);
+    }
+
     @PostMapping("/ads/filter")
     public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
         logger.info("in controller");
@@ -213,4 +250,5 @@ public class AdController {
     public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
         return adService.getAdsWithCategoryAndFilter(filterListOfAds);
     }
+
 }

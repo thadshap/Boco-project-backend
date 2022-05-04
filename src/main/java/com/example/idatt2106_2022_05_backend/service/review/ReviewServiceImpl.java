@@ -14,10 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -137,7 +135,7 @@ public class ReviewServiceImpl implements ReviewService{
             return new Response(reviews, HttpStatus.OK);
         }
         else {
-            return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NOT_FOUND);
+            return new Response("fant ingen omtaler på denne annonsen", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -195,7 +193,7 @@ public class ReviewServiceImpl implements ReviewService{
             return new Response("Omtalen ble slettet", HttpStatus.OK);
         }
         else {
-            return new Response("fant ikke omtalen", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke omtalen", HttpStatus.NO_CONTENT);
         }
     }
 }
