@@ -46,11 +46,12 @@ public class ChatController {
         return msgDto;
     }
 
-
+    /*
     @RequestMapping("/group/{id}")
     public Response onOpen(@PathVariable long id){
         return chatService.getChat(id);
     }
+     */
 
     @PostMapping("/create/group")
     @ApiOperation(value = "Endpoint to create a two-user group", response = Response.class)
