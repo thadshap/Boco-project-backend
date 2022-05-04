@@ -7,6 +7,8 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
+import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.service.email.EmailService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.modelmapper.ModelMapper;
@@ -49,6 +51,9 @@ public class RentalServiceImpl implements RentalService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private ChatService chatService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     /**
@@ -83,7 +88,6 @@ public class RentalServiceImpl implements RentalService {
         rentalDto.setActive(false);
         User owner = userRepository.getByEmail(rentalDto.getOwner());
         User borrower = userRepository.getByEmail(rentalDto.getBorrower());
-        System.out.println(rentalDto.getBorrower());
         Rental rental = Rental.builder()
                 .borrower(borrower)
                 .owner(owner)
@@ -98,8 +102,8 @@ public class RentalServiceImpl implements RentalService {
         borrower.getRentalsBorrowed().add(rental);
         owner.getRentalsOwned().add(rental);
         ad.getRentals().add(rental);
-        userRepository.save(owner);
         userRepository.save(borrower);
+        userRepository.save(owner);
         adRepository.save(ad);
         rentalRepository.save(rental);
 
@@ -107,6 +111,10 @@ public class RentalServiceImpl implements RentalService {
         AcceptRentalToken resetToken = new AcceptRentalToken(owner, token);
         acceptRentalTokenRepository.save(resetToken);
         System.out.println(token);
+
+        rentalDto.setId(rental.getId());
+        chatService.sendRentalMessage(rentalDto, "token");
+
         return new Response("Rental object is now created", HttpStatus.OK);
     }
 

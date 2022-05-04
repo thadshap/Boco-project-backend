@@ -255,6 +255,10 @@ public class UserServiceImpl implements UserService {
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
+        //temp fix so backend does not crash when no picture found
+        if (picture.size() == 0) {
+            return null;
+        }
         return PictureReturnDto.builder()
                 .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
                 .type(picture.get(0).getType())
