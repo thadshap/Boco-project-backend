@@ -4,10 +4,7 @@ import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
-import com.example.idatt2106_2022_05_backend.repository.ReviewRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
+import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +96,7 @@ public class UserServiceImpl implements UserService {
             user.setRentalsBorrowed(null);
 
             // Get the reviews
-            Set<Review> reviews = user.getReviews();
+            List<Review> reviews = user.getReviews();
             if (reviews != null) {
                 for (Review review : reviews) {
                     review.setUser(null);

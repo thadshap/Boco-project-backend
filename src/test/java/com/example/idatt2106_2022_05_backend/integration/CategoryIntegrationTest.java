@@ -365,7 +365,7 @@ public class CategoryIntegrationTest {
 
             // Testing service method as well
             UserGeoLocation dto = new UserGeoLocation();
-            dto.setAmount(1);
+//            dto.setAmount(1);
             dto.setLng(63.98);
             dto.setLat(63.98);
             ResponseEntity<Object> response = adService.getAllAdsInCategoryAndSubCategories("Flasks", dto);
