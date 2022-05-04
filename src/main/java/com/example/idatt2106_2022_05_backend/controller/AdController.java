@@ -155,78 +155,16 @@ public class AdController {
         return adService.getAllPicturesForAd(adId);
     }
 
-    @GetMapping("/ads/page/{sizeOfPage}")
+    @PostMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
-    public Response getPageOfAds(@PathVariable int sizeOfPage){
-        return adService.getPageOfAds(sizeOfPage);
-    }
-
-    @PostMapping("/ads/sort/distance")
-    @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
-    public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
-        return adService.sortByDistance(userGeoLocation);
-    }
-
-    @PostMapping("/ads/sort/descending")
-    @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
-    public Response getSortedDescending(@RequestBody SortingAdsDto sortingDto){
-        return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
-    }
-
-    @PostMapping("/ads/sort/ascending")
-    @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
-    public Response getSortedAscending(@RequestBody SortingAdsDto sortingDto){
-        return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
-    }
-
-    @GetMapping("/ads/newest/{pageSize}")
-    @ApiOperation(value = "sorting all ads by when they are created")
-    public Response getNewest(@PathVariable int pageSize){
-        return adService.sortByCreatedDateAscending(pageSize);
-    }
-
-    @GetMapping("/ads/oldest/{pageSize}")
-    @ApiOperation(value = "sorting all ads by creation oldest")
-    public Response getOldest(@PathVariable int pageSize){
-
-        return adService.sortByCreatedDateDescending(pageSize);
+    public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation){
+        return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
     @GetMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
     public Response searchInAdsAndCategories(@PathVariable String searchWord){
         return adService.searchThroughAds(searchWord);
-    }
-
-    @PostMapping("/sort/list/price/ascending")
-    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByPriceAscending(list);
-    }
-
-    @PostMapping("/sort/list/price/descending")
-    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByPriceDescending(list);
-    }
-
-    @PostMapping("/sort/list/distance/ascending")
-    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByDistanceAscending(list);
-    }
-
-    @PostMapping("/sort/list/distance/descending")
-    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByDistanceDescending(list);
-    }
-
-    @PostMapping("/filterByDistance")
-    public Response filterByDistance(@RequestBody FilterListOfAds filterListOfAds){
-        return adService.getListWithinDistanceIntervall(filterListOfAds.getList(), filterListOfAds.getUpperLimit());
-    }
-
-    @PostMapping("/getListWithinPriceRange")
-    public Response getAdsInPriceRange(@RequestBody FilterListOfAds filterListOfAds){
-        logger.info("got to controller");
-        return adService.getListOfAdsWithinPriceRange(filterListOfAds.getList(), filterListOfAds.getUpperLimit(), filterListOfAds.getLowerLimit());
     }
 
     // Get all categories
@@ -265,16 +203,6 @@ public class AdController {
         return adService.getAllAdsInCity(cityName);
     }
 
-    @PostMapping("/list/newestFirst")
-    public Response sortAdsNewestFirst(@RequestBody List<AdDto> list){
-        return adService.sortArrayOfAdsByDateNewestFirst(list);
-    }
-
-    @PostMapping("/list/oldestFirst")
-    public Response sortAdsOldestFirst(@RequestBody List<AdDto> list){
-        return adService.sortArrayOfAdsByDateOldestFirst(list);
-    }
-
     @PostMapping("/ads/filter")
     public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
         logger.info("in controller");
@@ -285,5 +213,4 @@ public class AdController {
     public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
         return adService.getAdsWithCategoryAndFilter(filterListOfAds);
     }
-
 }

@@ -714,7 +714,6 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(datamaskin);
             adRepository.saveAll(ads);
 
-
             File file = new File("src/main/resources/images/pants.jpg");
             byte[] fileContent = Files.readAllBytes(file.toPath());
             Picture picture = Picture.builder()
