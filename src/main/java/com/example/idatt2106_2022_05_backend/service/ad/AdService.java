@@ -48,7 +48,7 @@ public interface AdService {
     // Get all ads by rental type
     Response getAllAdsByRentalType(boolean rentalType);
 
-    //post new add
+    // post new add
     Response getAllAdsInCity(String city);
 
     Response postNewAd(AdDto adDto) throws IOException, InterruptedException;
@@ -59,17 +59,17 @@ public interface AdService {
     // update ad title
     Response updateAd(Long adId, AdUpdateDto adUpdateDto);
 
-    //getting all ads with calculated distance
+    // getting all ads with calculated distance
     Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException;
 
     // delete ad
     Response deleteAd(long adId);
 
-    //delete picture
+    // delete picture
     Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
 
 
-    //Search in database
+    // Search in database
     Response searchThroughAds(String searchword);
 
     Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;

@@ -52,48 +52,49 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response createRental(RentalDto rentalDto) {
-        if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
+        if (rentalDto.getBorrower().equals(rentalDto.getOwner())) {
             return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
         }
-        Ad ad = adRepository.getById(rentalDto.getAdId());
-        Set<CalendarDate> cld = ad.getDates();
-//        for (CalendarDate calDate : cld) {
-//            if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
-//                    && calDate.isAvailable())){
-//                return new Response("Rental is not available in those dates", HttpStatus.NO_CONTENT);
-//            }
-//        }
-        if (rentalDto.isActive()){
-            for (CalendarDate calDate: cld) {
-                if(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())){
-                    calDate.setAvailable(false);
-                    dayDateRepository.save(calDate);
+        Optional<Ad> ad = adRepository.findById(rentalDto.getAdId());
+        if (ad.isPresent()) {
+            Set<CalendarDate> cld = ad.get().getDates();
+
+            if (rentalDto.isActive()) {
+                for (CalendarDate calDate : cld) {
+                    if (calDate.getDate().isBefore(rentalDto.getRentTo())
+                            && calDate.getDate().isAfter(rentalDto.getRentFrom())) {
+                        calDate.setAvailable(false);
+                        dayDateRepository.save(calDate);
+                    }
                 }
             }
+            rentalDto.setActive(false);
+            User owner = userRepository.getByEmail(rentalDto.getOwner());
+            User borrower = userRepository.getByEmail(rentalDto.getBorrower());
+            Rental rental = Rental.builder().borrower(borrower).owner(owner).ad(ad.get())
+                    .dateOfRental(rentalDto.getDateOfRental()).rentFrom(rentalDto.getRentFrom())
+                    .rentTo(rentalDto.getRentTo()).deadline(rentalDto.getDeadline()).active(rentalDto.isActive())
+                    .price(rentalDto.getPrice()).build();
+            borrower.getRentalsBorrowed().add(rental);
+            owner.getRentalsOwned().add(rental);
+            ad.get().getRentals().add(rental);
+            userRepository.save(borrower);
+            userRepository.save(owner);
+            adRepository.save(ad.get());
+            rentalRepository.save(rental);
+            return new Response("Rental object is now created", HttpStatus.OK);
+        } else {
+            return new Response("Owner and/or borrower not present", HttpStatus.NOT_FOUND);
         }
-        rentalDto.setActive(false);
-        User owner = userRepository.getByEmail(rentalDto.getOwner());
-        User borrower = userRepository.getByEmail(rentalDto.getBorrower());
-        Rental rental = Rental.builder()
-                .borrower(borrower)
-                .owner(owner)
-                .ad(ad)
-                .dateOfRental(rentalDto.getDateOfRental())
-                .rentFrom(rentalDto.getRentFrom())
-                .rentTo(rentalDto.getRentTo())
-                .deadline(rentalDto.getDeadline())
-                .active(rentalDto.isActive())
-                .price(rentalDto.getPrice())
-                .build();
-        borrower.getRentalsBorrowed().add(rental);
-        owner.getRentalsOwned().add(rental);
-        ad.getRentals().add(rental);
-        userRepository.save(borrower);
-        userRepository.save(owner);
-        adRepository.save(ad);
-        rentalRepository.save(rental);
-        return new Response("Rental object is now created", HttpStatus.OK);
     }
+    // Ad ad = adRepository.getById(rentalDto.getAdId());
+
+    // for (CalendarDate calDate : cld) {
+    // if(!(calDate.getDate().isBefore(rentalDto.getRentTo()) && calDate.getDate().isAfter(rentalDto.getRentFrom())
+    // && calDate.isAvailable())){
+    // return new Response("Rental is not available in those dates", HttpStatus.NOT_FOUND);
+    // }
+    // }
 
     /**
      * Method to activate rental objec for user.
@@ -109,17 +110,17 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setActive(true);
         Set<CalendarDate> cld = rental.getAd().getDates();
-        for (CalendarDate calDate: cld) {
-            if(calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())){
+        for (CalendarDate calDate : cld) {
+            if (calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())) {
                 calDate.setAvailable(false);
                 dayDateRepository.save(calDate);
             }
         }
         rentalRepository.save(rental);
-        //TODO check if right user gets confirm email
+        // TODO check if right user gets confirm email
 
-//        emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
-//                "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
+        // emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
+        // "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
         return new Response("Rental has been activated", HttpStatus.ACCEPTED);
     }
 
@@ -140,22 +141,25 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalOptional.get();
         rental.setRating(rating.getRating());
         rental.setActive(false);
-        User user = userRepository.getById(rental.getOwner().getId());
-        user.setNumberOfReviews(user.getNumberOfReviews()+1);
-        user.setRating((user.getRating()+rating.getRating())/user.getNumberOfReviews());
-        Review review = Review.builder()
-                .user(user)
-                .description(rating.getReview())
-                .rating((int)rating.getRating())
-                .ad(rental.getAd())
-                .build();
-        user.getReviews().add(review);
-        Ad ad = rental.getAd();
-        ad.getReviews().add(review);
-        adRepository.save(ad);
-        userRepository.save(user);
-        rentalRepository.save(rental);
-        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
+        // User user = userRepository.getById(rental.getOwner().getId());
+        Optional<User> userFound = userRepository.findById(rental.getOwner().getId());
+        if (userFound.isPresent()) {
+            User user = userFound.get();
+            user.setNumberOfReviews(user.getNumberOfReviews() + 1);
+            user.setRating((user.getRating() + rating.getRating()) / user.getNumberOfReviews());
+            Review review = Review.builder().user(user).description(rating.getReview()).rating((int) rating.getRating())
+                    .ad(rental.getAd()).build();
+            user.getReviews().add(review);
+            Ad ad = rental.getAd();
+            ad.getReviews().add(review);
+            adRepository.save(ad);
+            userRepository.save(user);
+            rentalRepository.save(rental);
+            return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
+        } else {
+            return new Response("Could not find user", HttpStatus.NOT_FOUND);
+        }
+
     }
 
     /**
@@ -176,20 +180,25 @@ public class RentalServiceImpl implements RentalService {
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NO_CONTENT);
         }
+
         Rental rental = rentalOptional.get();
-        if (rentalDto.getRentFrom() != null){
+
+        if (rentalDto.getRentFrom() != null) {
             rental.setRentFrom(rentalDto.getRentFrom());
         }
-        if (rentalDto.getRentTo() != null){
+        if (rentalDto.getRentTo() != null) {
             rental.setRentTo(rentalDto.getRentTo());
         }
-        if (rentalDto.getDeadline() != null){
+        if (rentalDto.getDeadline() != null) {
             rental.setDeadline(rentalDto.getDeadline());
         }
-        if (!(rentalDto.getPrice() <= 0)){
+        if (rentalDto.getPrice() >= 0) {
             rental.setPrice(rentalDto.getPrice());
         }
+
+        // Persist the changes
         rentalRepository.save(rental);
+
         return new Response("Rental updated", HttpStatus.ACCEPTED);
     }
 

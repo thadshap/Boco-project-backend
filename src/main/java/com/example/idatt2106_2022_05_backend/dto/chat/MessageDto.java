@@ -15,7 +15,7 @@ public class MessageDto {
 
     private String content;
     private String timeStamp;
-    //User sending
+    // User sending
     private long userId;
     private String firstName;
     private String lastName;

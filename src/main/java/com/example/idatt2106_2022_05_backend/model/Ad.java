@@ -65,11 +65,11 @@ public class Ad {
     private String city;
 
     // Coordinates latitude
-    @Column(name="lat")
+    @Column(name = "lat")
     private double lat;
 
     // Coordinates longitude
-    @Column(name="lng")
+    @Column(name = "lng")
     private double lng;
 
     // Created timestamp --> for use in calculating ad-expiration
@@ -82,16 +82,16 @@ public class Ad {
     private String photos;
 
     // Is nullable
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE}, mappedBy = "ad")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "ad")
     @ToString.Exclude
     private Set<Picture> pictures = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ad", cascade = CascadeType.REMOVE)
@@ -106,12 +106,9 @@ public class Ad {
     private Set<Review> reviews = new HashSet<>();
 
     // Many to many connection to CalendarDate modelled by the "calendar" table (not modelled)
-    @ManyToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "calendar",
-            joinColumns = { @JoinColumn(name = "ad_id") },
-            inverseJoinColumns = { @JoinColumn(name = "date_id") }
-    )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE })
+    @JoinTable(name = "calendar", joinColumns = { @JoinColumn(name = "ad_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "date_id") })
     private Set<CalendarDate> dates = new HashSet<>();
 
     // Add a new picture
@@ -122,37 +119,56 @@ public class Ad {
     // Adding a getter to retrieve the image path of the photos of this specific ad
     @Transient
     public String getPhotosImagePath() {
-        if (photos == null || id == null) return null;
+        if (photos == null || id == null)
+            return null;
 
         return "/ad-photos/" + id + "/" + photos;
     }
 
+
     @PreRemove
-    private void removeRelationships(){
-        if(pictures != null){
-            setPictures(null);
-        }
-        if(category != null) {
-            setCategory(null);
-        }
-        if(reviews != null){
-            setReviews(null);
-        }
-        if (rentals != null) {
-            setRentals(null);
-        }
-        if(dates != null) {
+    private void removeRelationships() {
+        if (dates != null) {
             setDates(null);
         }
         if(user != null) {
             setUser(null);
         }
+        if(category != null) {
+            setCategory(null);
+        }
     }
 
+
+/**
+    @PreRemove
+    private void removeRelationships() {
+        if (pictures != null) {
+            setPictures(null);
+        }
+        if (category != null) {
+            setCategory(null);
+        }
+        if (rentals != null) {
+            setRentals(null);
+        }
+        if (reviews != null) {
+            setReviews(null);
+        }
+        if (dates != null) {
+            setDates(null);
+        }
+        if (user != null) {
+            setUser(null);
+        }
+    }
+*/
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         Ad ad = (Ad) o;
         return id != null && Objects.equals(id, ad.id);
     }

@@ -36,13 +36,25 @@ public class Picture {
     @JoinColumn(name = "ad_id")
     private Ad ad;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne()
     private User user;
+
+    @PreRemove
+    private void removeRelationships() {
+        if (user != null) {
+            setUser(null);
+        }
+        if (ad != null) {
+            setAd(null);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         Picture picture = (Picture) o;
         return id != null && Objects.equals(id, picture.id);
     }

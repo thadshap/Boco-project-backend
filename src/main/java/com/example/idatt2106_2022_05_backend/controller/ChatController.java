@@ -28,14 +28,12 @@ public class ChatController {
 
     Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    //TODO: fix send message, save message
-    //TODO: subcribe on groupchat, get path
-/*
-    @GetMapping("/user/groupchat/{userId}")
-    public Response getGroupChatSubscriptions(@PathVariable long id){
-        return chatService.getGroupChatsBasedOnUserId(id);
-    }
-*/
+    // TODO: fix send message, save message
+    // TODO: subcribe on groupchat, get path
+    /*
+     * @GetMapping("/user/groupchat/{userId}") public Response getGroupChatSubscriptions(@PathVariable long id){ return
+     * chatService.getGroupChatsBasedOnUserId(id); }
+     */
 
     @MessageMapping("/chat/{groupId}")
     @SendTo("/topic/messages/{groupId}")
@@ -46,12 +44,11 @@ public class ChatController {
         return msgDto;
     }
 
-    /*
     @RequestMapping("/group/{id}")
-    public Response onOpen(@PathVariable long id){
+    public Response onOpen(@PathVariable long id) {
         return chatService.getChat(id);
     }
-     */
+
 
     @PostMapping("/create/group")
     @ApiOperation(value = "Endpoint to create a two-user group", response = Response.class)
@@ -62,9 +59,10 @@ public class ChatController {
 
     @PostMapping("/create/group/list")
     @ApiOperation(value = "Endpoint to create a group from list of userId", response = Response.class)
-    public Response createGroupFromUserIds(@RequestBody ListGroupDto listGroupDto){
+    public Response createGroupFromUserIds(@RequestBody ListGroupDto listGroupDto) {
         return chatService.createGroupFromUserIds(listGroupDto);
     }
+
     @PutMapping("/group/name/{groupId}/{newName}")
     @ApiOperation(value = "Endpoint to change group name from groupId", response = Response.class)
     public Response changeGroupNameFromGroupId(@PathVariable long groupId, @PathVariable String newName) {
@@ -73,7 +71,7 @@ public class ChatController {
 
     @GetMapping("/user/groupchat/{userId}")
     @ApiOperation(value = "Endpoint to get all groups by user id", response = Response.class)
-    public Response getGroupChatSubscriptions(@PathVariable long userId){
+    public Response getGroupChatSubscriptions(@PathVariable long userId) {
         return chatService.getGroupChatsBasedOnUserId(userId);
     }
 

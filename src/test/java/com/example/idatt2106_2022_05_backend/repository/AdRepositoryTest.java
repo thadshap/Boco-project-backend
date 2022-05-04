@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
 @DataJpaTest
 class AdRepositoryTest {
 
@@ -36,37 +36,20 @@ class AdRepositoryTest {
         Set<Review> reviews = new HashSet<>();
 
         // Building a user
-        User user = User.builder().
-                id(1L).
-                firstName("firstName").
-                lastName("lastName").
-                email("user.name@hotmail.com").
-                password("pass1word").
-                build();
+        User user = User.builder().id(1L).firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
 
         // Building a category
-        Category category = Category.builder().
-                id(3L).
-                name("Shoes").
-                build();
+        Category category = Category.builder().id(3L).name("Shoes").build();
 
         // Building an ad --> id is automatically created upon persisting
-        Ad ad = Ad.builder().
-                title("Shoes").
-                description("Renting out a pair of shoes in size 36").
-                rental(true).
-                durationType(AdType.WEEK).
-                duration(2).
-                price(100).
-                streetAddress("Project Road 4").
-                postalCode(7234).
-                build();
+        Ad ad = Ad.builder().title("Shoes").description("Renting out a pair of shoes in size 36").rental(true)
+                .durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4").postalCode(7234)
+                .build();
 
-        Review review = Review.builder().
-                id(5L).
-                description("Great shoes!").
-                rating(5).
-                user(user). // todo might have to persist before doing these things
+        Review review = Review.builder().id(5L).description("Great shoes!").rating(5).user(user). // todo might have to
+                                                                                                  // persist before
+                                                                                                  // doing these things
                 build();
 
         // Set the foreign keys for the ad
@@ -130,3 +113,4 @@ class AdRepositoryTest {
         assertEquals(ads.size(), 1);
     }
 }
+ */

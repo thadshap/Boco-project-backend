@@ -29,11 +29,18 @@ public class JWTConfig extends OncePerRequestFilter {
 
     /**
      * Method to check if user that is requesting has a valid JWT
-     * @param httpServletRequest http request
-     * @param httpServletResponse http response
-     * @param filterChain filter chain
-     * @throws ServletException throws exception on filter error
-     * @throws IOException throws exception on IO request fail
+     * 
+     * @param httpServletRequest
+     *            http request
+     * @param httpServletResponse
+     *            http response
+     * @param filterChain
+     *            filter chain
+     * 
+     * @throws ServletException
+     *             throws exception on filter error
+     * @throws IOException
+     *             throws exception on IO request fail
      */
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

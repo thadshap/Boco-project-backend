@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
+/**
 @Service
 public class PictureUtility {
 
@@ -29,7 +29,7 @@ public class PictureUtility {
 
     @Autowired
     private PictureRepository pictureRepository;
-
+/**
     public static byte[] compressImage(byte[] data) {
 
         Deflater deflater = new Deflater();
@@ -67,10 +67,9 @@ public class PictureUtility {
     }
 
     /**
-     * Support-method to create and save Picture.
-     * To use, set either adId or userId equal to the desired id.
-     * The other id must be set to 0.
-     */
+     * Support-method to create and save Picture. To use, set either adId or userId equal to the desired id. The other
+     * id must be set to 0.
+
     public Response savePicture(MultipartFile file, long adId, long userId) throws IOException {
 
         // Ensures that content of multipartFile is present
@@ -79,8 +78,7 @@ public class PictureUtility {
         }
         // If this is true an exception is returned (only one at a time)
         if (adId < 0 && userId < 0) {
-            return new Response("Both ad and user cannot be edited at the same time",
-                    HttpStatus.NOT_FOUND);
+            return new Response("Both ad and user cannot be edited at the same time", HttpStatus.NOT_FOUND);
         }
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -124,7 +122,7 @@ public class PictureUtility {
             // Find the ad
             Optional<User> userFound = userRepository.findById(userId);
 
-            if(userFound.isPresent()) {
+            if (userFound.isPresent()) {
 
                 // Set attributes for the new entity
                 filePicture.setFilename(fileName);
@@ -145,11 +143,11 @@ public class PictureUtility {
 
                 // Return OK
                 return new Response("Successfully added new photo to ad", HttpStatus.CREATED);
-            }
-            else {
+            } else {
                 return new Response("Could not find ad with specified id", HttpStatus.NOT_FOUND);
             }
         }
         return null;
     }
 }
+ */

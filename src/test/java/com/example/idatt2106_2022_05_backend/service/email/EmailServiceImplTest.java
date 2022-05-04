@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class EmailServiceImplTest {
 
-
     @SpyBean
     private JavaMailSender mailSender;
 
@@ -41,13 +40,9 @@ class EmailServiceImplTest {
 
     private Email mail;
 
-
     @BeforeEach
     void setUp() {
-        String message =
-        "name"+ "Test Testesen" +
-        "Testing" + "Min test" +
-        "url" + "https://bocotest.web.com/";
+        String message = "name" + "Test Testesen" + "Testing" + "Min test" + "url" + "https://bocotest.web.com/";
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", "Test Testesen");
@@ -66,15 +61,16 @@ class EmailServiceImplTest {
 
     @Test
     void sendEmail() throws MessagingException {
-        emailService.sendEmail("hassano19988991@gmail.com","ken@robin.no", "Activity closed","name"+ "Test Testesen" +
-                "Testing" + "Min test" +
-                "url" + "https://bocotest.web.com/");
+        emailService.sendEmail("hassano19988991@gmail.com", "ken@robin.no", "Activity closed",
+                "name" + "Test Testesen" + "Testing" + "Min test" + "url" + "https://bocotest.web.com/");
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
+
 
     @Test
     void testSendEmail() throws MessagingException, IOException {
         emailService.sendEmail(mail);
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
+
 }

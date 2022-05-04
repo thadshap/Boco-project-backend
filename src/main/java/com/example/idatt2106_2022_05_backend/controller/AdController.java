@@ -44,7 +44,7 @@ public class AdController {
         return new Response("Could not get ads", HttpStatus.NOT_FOUND);
     }
 
-    //TODO: GetMapping?
+    // TODO: GetMapping?
     @PostMapping("/ads/available/true")
     @ApiOperation(value = "Endpoint to get avaliable ads", response = Response.class)
     public Response getAllAvailableAds() {
@@ -131,23 +131,24 @@ public class AdController {
 
     // Not in use
     /**
-    @PostMapping("/ads/picture")
-    @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class)
-    public Response uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
-        log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId());
-        return adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile());
-    }
+     * @PostMapping("/ads/picture")
+     *
+     * @ApiOperation(value = "Endpoint to add a picture an ad", response = Response.class) public Response
+     *                     uploadNewPicture(@ModelAttribute UpdatePictureDto updatePictureDto) throws IOException {
+     *                     log.debug("[X] Picture to added for ad with id = {}", updatePictureDto.getId()); return
+     *                     adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile()); }
      */
 
     @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
-    public Response adPicture(@PathVariable Long userId,@PathVariable Long adId, @RequestPart List<MultipartFile> files) throws IOException {
-        //TODO
+    public Response adPicture(@PathVariable Long userId, @PathVariable Long adId,
+            @RequestPart List<MultipartFile> files) throws IOException {
+        // TODO
         return adService.storeImageForAd(adId, files);
     }
 
     @GetMapping("/ads/pictures/{adId}")
     public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
-        //TODO
+        // TODO
         return adService.getAllPicturesForAd(adId);
     }
 
@@ -157,62 +158,67 @@ public class AdController {
         return adService.getFirstPictureForAd(adId);
     }
 
+
     @PostMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
-    public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation){
+    public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
+
+
+
     @GetMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@PathVariable String searchWord){
+    public Response searchInAdsAndCategories(@PathVariable String searchWord) {
         return adService.searchThroughAds(searchWord);
     }
 
     // Get all categories
     @GetMapping("/categories")
-    public Response getAllCategories(){
+    public Response getAllCategories() {
         return adService.getAllCategories();
     }
 
     // Get sub-categories for a category
     @GetMapping("/categories/{parentCategoryName}")
-    public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName){
+    public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName) {
         return adService.getAllSubCategories(parentCategoryName);
     }
 
     // Get all ads for specific category id
     @GetMapping("/categories/ads/{categoryId}")
-    public Response getAllAdsInCategory(@PathVariable long categoryId){
+    public Response getAllAdsInCategory(@PathVariable long categoryId) {
         return adService.getAllAdsInCategory(categoryId);
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
     @PostMapping("/categoriesRecursive/{categoryName}")
-    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName, @RequestBody UserGeoLocation userGeoLocation){
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
+            @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     // Get all parent categories
     @GetMapping("/categories/parent")
-    public Response getAllParentCategories(){
+    public Response getAllParentCategories() {
         return adService.getAllParentCategories();
     }
 
     // Get all ads in city
     @GetMapping("/ads/city/{cityName}")
-    public Response getAllAdsInCity(@PathVariable String cityName){
+    public Response getAllAdsInCity(@PathVariable String cityName) {
         return adService.getAllAdsInCity(cityName);
     }
 
     @PostMapping("/ads/filter")
-    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds){
+    public Response filterAds(@RequestBody FilterListOfAds filterListOfAds) {
         logger.info("in controller");
         return adService.getAllAdsWithFilter(filterListOfAds);
     }
 
     @PostMapping("/ads/category/filter")
-    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds){
+    public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds) {
         return adService.getAdsWithCategoryAndFilter(filterListOfAds);
     }
 
