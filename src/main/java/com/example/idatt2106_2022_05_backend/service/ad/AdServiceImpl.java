@@ -1,21 +1,15 @@
 package com.example.idatt2106_2022_05_backend.service.ad;
 
-import com.example.idatt2106_2022_05_backend.dto.*;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.dto.CategoryDto;
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.AdRepository;
-import com.example.idatt2106_2022_05_backend.repository.CategoryRepository;
-import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
-import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,9 +51,6 @@ public class AdServiceImpl implements AdService {
 
     @Autowired
     private RentalRepository rentalRepository;
-
-    @Autowired
-    private PictureUtility pictureService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -107,7 +97,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToReturn, HttpStatus.OK);
         }
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -140,7 +130,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
+            return new Response("Could not find specified category", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -236,7 +226,7 @@ public class AdServiceImpl implements AdService {
         }
         // Return NOT_FOUND if there
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -466,7 +456,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adDto, HttpStatus.OK);
         }
         else{
-            return new Response("Fant ikke annonsen i databasen",HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen i databasen",HttpStatus.NO_CONTENT);
         }
     }
 
@@ -543,7 +533,7 @@ public class AdServiceImpl implements AdService {
             }
         }
         else{
-            return new Response("Could not find user with specified id", HttpStatus.NOT_FOUND);
+            return new Response("Could not find user with specified id", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -565,7 +555,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToBeReturned, HttpStatus.OK);
         }
         else {
-            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -611,7 +601,7 @@ public class AdServiceImpl implements AdService {
             return new Response(adsToReturn, HttpStatus.OK);
         }
         // If no ads were found in city
-        return new Response("No ads found in specified city", HttpStatus.NOT_FOUND);
+        return new Response("No ads found in specified city", HttpStatus.NO_CONTENT);
     }
 
 
@@ -657,7 +647,7 @@ public class AdServiceImpl implements AdService {
         }
         // If the category given is null or wrong, the ad cannot be created
         else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
 
         Optional<User> user = userRepository.findById(adDto.getUserId());
@@ -667,7 +657,7 @@ public class AdServiceImpl implements AdService {
             newAd.setUser(user.get());
         }
         else {
-            return new Response("could not find user", HttpStatus.NOT_FOUND);
+            return new Response("could not find user", HttpStatus.NO_CONTENT);
         }
 
         // Checking if dto contains any of the nullable attributes
@@ -764,7 +754,7 @@ public class AdServiceImpl implements AdService {
                     .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
         }
         else {
-            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NOT_FOUND);
+            return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -812,7 +802,7 @@ public class AdServiceImpl implements AdService {
             adRepository.save(ad);
         }
         else {
-            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NO_CONTENT);
         }
         return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
@@ -873,7 +863,7 @@ public class AdServiceImpl implements AdService {
             return new Response("Annonsen er slettet", HttpStatus.OK);
         }
         else {
-            return new Response("Fant ikke annonsen", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke annonsen", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -913,50 +903,9 @@ public class AdServiceImpl implements AdService {
                 }
             }
             // If we get here, pictures are equal to null
-            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
         }
-        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Method to get ads sorted on distance to user
-     * @param userGeoLocation users location
-     * @return list of ads
-     * @throws IOException exception
-     */
-    @Override
-    public Response sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
-        List<AdDto> ads = (List<AdDto>) getAllAdsWithDistance(userGeoLocation).getBody();
-        return new Response(ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList()), HttpStatus.OK);
-    }
-
-    /**
-     * sorting method descending
-     * @param pageSize page size
-     * @param sortBy sorting by attribute
-     * @return response
-     */
-    @Override
-    public Response sortByDescending(int pageSize, String sortBy){
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-        List<Ad> list =  adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
-
-    }
-
-    /**
-     * sorting method ascending
-     * @param pageSize page size
-     * @param sortBy sort by attribute
-     * @return response
-     */
-    @Override
-    public Response sortByAscending(int pageSize, String sortBy){
-        Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-        List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-        return new Response(list.stream()
-                .map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()), HttpStatus.OK);
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -1019,30 +968,6 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Response sortArrayByPriceAscending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getPrice));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByPriceDescending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceAscending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getDistance));
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
-    public Response sortArrayByDistanceDescending(List<AdDto> list){
-        list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-        return new Response(list, HttpStatus.OK);
-    }
-
-    @Override
     public Response getListWithinDistanceIntervall(List<AdDto> list, double limit){
         list.stream().filter(x -> x.getDistance()<limit).collect(Collectors.toList());
         return new Response(list, HttpStatus.OK);
@@ -1102,6 +1027,18 @@ public class AdServiceImpl implements AdService {
             returnDto.get(i).setId(adId);
         }
         return returnDto;
+    }
+
+    @Override
+    public Response getFirstPictureForAd(long adId) {
+        Ad ad = adRepository.getById(adId);
+        List<Picture> pictures = pictureRepository.findByAd(ad);
+        PictureReturnDto returnDto = PictureReturnDto.builder()
+                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .type(pictures.get(0).getType())
+                .build();
+        returnDto.setId(adId);
+        return new Response(returnDto, HttpStatus.OK);
     }
 
 

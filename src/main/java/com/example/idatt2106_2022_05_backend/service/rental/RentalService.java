@@ -13,7 +13,7 @@ public interface RentalService {
 
     Response activateRental(Long rentalId) throws MessagingException;
 
-    Response deleteRental(Long rentalId, RentalReviewDto rentalDto);
+    Response completeRental(Long rentalId, RentalReviewDto rentalDto);
 
     Response updateRental(RentalUpdateDto rentalDto, Long rentalId);
 

@@ -1,11 +1,11 @@
 package com.example.idatt2106_2022_05_backend.controller;
 
 import com.example.idatt2106_2022_05_backend.dto.*;
-import com.example.idatt2106_2022_05_backend.dto.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
-import com.example.idatt2106_2022_05_backend.dto.UpdatePictureDto;
-import com.example.idatt2106_2022_05_backend.model.Picture;
+import com.example.idatt2106_2022_05_backend.dto.ad.UpdatePictureDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -15,14 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 import java.util.List;
 
 @Slf4j
@@ -155,29 +151,18 @@ public class AdController {
         return adService.getAllPicturesForAd(adId);
     }
 
+    @GetMapping("/ads/picture/{adId}")
+    public Response getPictureForAd(@PathVariable long adId) {
+        //TODO
+        return adService.getFirstPictureForAd(adId);
+    }
+
     @GetMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
     public Response getPageOfAds(@PathVariable int sizeOfPage){
         return adService.getPageOfAds(sizeOfPage);
     }
 
-    @PostMapping("/ads/sort/distance")
-    @ApiOperation(value = "Endpoint to request an amount of ads with calculated distance")
-    public Response getSortedByDistance(@RequestBody UserGeoLocation userGeoLocation) throws IOException {
-        return adService.sortByDistance(userGeoLocation);
-    }
-
-    @PostMapping("/ads/sort/descending")
-    @ApiOperation(value = "gets a page of given size and sorted by an attribute, descending")
-    public Response getSortedDescending(@RequestBody SortingAdsDto sortingDto){
-        return adService.sortByDescending(sortingDto.getPageSize(), sortingDto.getSortBy());
-    }
-
-    @PostMapping("/ads/sort/ascending")
-    @ApiOperation(value = "gets a page of given size and sorted by an attribute ascending")
-    public Response getSortedAscending(@RequestBody SortingAdsDto sortingDto){
-        return adService.sortByAscending(sortingDto.getPageSize(), sortingDto.getSortBy());
-    }
 
     @GetMapping("/ads/newest/{pageSize}")
     @ApiOperation(value = "sorting all ads by when they are created")
@@ -196,26 +181,6 @@ public class AdController {
     @ApiOperation(value = "method to search through")
     public Response searchInAdsAndCategories(@PathVariable String searchWord){
         return adService.searchThroughAds(searchWord);
-    }
-
-    @PostMapping("/sort/list/price/ascending")
-    public Response sortArrayByPriceAscending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByPriceAscending(list);
-    }
-
-    @PostMapping("/sort/list/price/descending")
-    public Response sortArrayByPriceDescending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByPriceDescending(list);
-    }
-
-    @PostMapping("/sort/list/distance/ascending")
-    public Response sortArrayByDistanceAscending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByDistanceAscending(list);
-    }
-
-    @PostMapping("/sort/list/distance/descending")
-    public Response sortArrayByDistanceDescending(@RequestBody List<AdDto> list){
-        return adService.sortArrayByDistanceDescending(list);
     }
 
     @PostMapping("/filterByDistance")

@@ -4,11 +4,12 @@ import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
-import com.example.idatt2106_2022_05_backend.repository.*;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
+import com.example.idatt2106_2022_05_backend.repository.RentalRepository;
+import com.example.idatt2106_2022_05_backend.repository.ReviewRepository;
+import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
-import com.example.idatt2106_2022_05_backend.util.PictureUtility;
 import com.example.idatt2106_2022_05_backend.util.Response;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,11 +28,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PictureUtility pictureService;
-
-    @Autowired
-    private AdRepository adRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -44,8 +40,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AdService adService;
-
-    private ModelMapper modelMapper = new ModelMapper();
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -150,9 +144,9 @@ public class UserServiceImpl implements UserService {
                 }
             }
             // If we get here, pictures are equal to null
-            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NOT_FOUND);
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
         }
-        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NOT_FOUND);
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
     @Override
@@ -177,6 +171,11 @@ public class UserServiceImpl implements UserService {
         return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
+    /**
+     * Method to return picture of user.
+     * @param userId id of user.
+     * @return returns user profile picture.
+     */
     @Override
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
@@ -201,7 +200,7 @@ public class UserServiceImpl implements UserService {
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
         Optional<User> userFromDB = userRepository.findById(userId);
         if(userFromDB.isEmpty()){
-            return new Response("User not found", HttpStatus.NOT_FOUND);
+            return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
         if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
@@ -230,7 +229,7 @@ public class UserServiceImpl implements UserService {
     public Response getUser(Long userId) {
         Optional<User> userFromDB = userRepository.findById(userId);
         if (userFromDB.isEmpty()) {
-            return new Response("User not found", HttpStatus.NOT_FOUND);
+            return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User userGot = userFromDB.get();
         UserReturnDto user = UserReturnDto.builder()
