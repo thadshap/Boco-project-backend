@@ -510,6 +510,7 @@ public class AdServiceImpl implements AdService {
         for(AdDto a: adDtos){
             a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
         }
+        adDtos.sort(Comparator.comparing(AdDto::getDistance));
         return new Response(adDtos, HttpStatus.OK);
     }
 
