@@ -1027,9 +1027,26 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
+
+        // If there is a category we sort for it
+        if(filterListOfAds.getCategory() != null) {
+            List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
+                    userGeoLocation).getBody();
+            System.out.println(list.size());
+            filterListOfAds.setList(list);
+            return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
+        }
+        // If there is no category we do not sort for it
+        else {
+            return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
+        }
+        /**
         List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
+        System.out.println(list.toString());
         filterListOfAds.setList(list);
+        // TODO ELSE() retrieve all ads and filter them!
         return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
+         */
     }
 
     @Override
@@ -1037,7 +1054,7 @@ public class AdServiceImpl implements AdService {
         List<Ad> ads = new ArrayList<>();
         if (filterListOfAds.getList() != null) {
             for (AdDto a : filterListOfAds.getList()) {
-                ads.add(adRepository.getById(a.getAdId()));
+                ads.add(adRepository.findById(a.getAdId()).get());
             }
         } else {
             ads = adRepository.findAll();

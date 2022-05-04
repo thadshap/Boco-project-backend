@@ -989,7 +989,7 @@ public class AdIntegrationTest {
             Double upperDistance = 1000.0;
 
             // The filters need lower limits
-            Double lowerPrice = 200.0;
+            Double lowerPrice = 9.0;
             Double lowerDistance = 10.0;
 
             // Only 3 of 4 ads are in this category
@@ -1017,7 +1017,7 @@ public class AdIntegrationTest {
             List<AdDto> result1 = getAdsWithCategoryAndFilter(filterListOfAds);
             assertEquals(HttpStatus.OK.value(), response1.getStatusCodeValue());
             assertEquals(result1.size(), 2);
-            assertTrue((result1.get(0).getPrice()) < (result1.get(1).getPrice()));
+            assertTrue((result1.get(0).getPrice()) > (result1.get(1).getPrice()));
 
 
             // Filter ads on price and category --> this should return no more than 3
@@ -1079,16 +1079,27 @@ public class AdIntegrationTest {
 
         public List<AdDto> getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
             UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
-            List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation);
-            filterListOfAds.setList(list);
-            return getAllAdsWithFilter(filterListOfAds);
+
+            // If there is a category we sort for it
+            if(filterListOfAds.getCategory() != null) {
+                List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
+                        userGeoLocation);
+                System.out.println(list.size());
+                filterListOfAds.setList(list);
+                getAllAdsWithFilter(filterListOfAds);
+            }
+            // If there is no category we do not sort for it
+            else {
+                return getAllAdsWithFilter(filterListOfAds);
+            }
+            return null;
         }
 
         public List<AdDto> getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
             List<Ad> ads = new ArrayList<>();
             if (filterListOfAds.getList() != null) {
                 for (AdDto a : filterListOfAds.getList()) {
-                    ads.add(adRepository.getById(a.getAdId()));
+                    ads.add(adRepository.findById(a.getAdId()).get());
                 }
             } else {
                 ads = adRepository.findAll();
@@ -1215,122 +1226,5 @@ public class AdIntegrationTest {
             double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
             return dist / 1000;
         }
-
-        private List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
-            List<AdDto> ads = getAllAdsWithDistance(userGeoLocation);
-            return ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList());
-        }
-
-        private List<AdDto> sortByDescending(int pageSize, String sortBy) {
-            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
-
-        }
-
-        private List<AdDto> sortByAscending(int pageSize, String sortBy) {
-            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
-        }
-
-        private Stream<AdDto> sortByCreatedDateAscending(int pageSize) {
-            List<Ad> ads = adRepository.findAll();
-            ads.sort(Comparator.comparing(Ad::getCreated));
-            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                    .limit(pageSize);
-        }
-
-        private Stream<AdDto> sortByCreatedDateDescending(int pageSize) {
-            List<Ad> ads = adRepository.findAll();
-            ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                    .limit(pageSize);
-        }
-
-        private List<AdDto> searchThroughAds(String searchWord) {
-            // List to be filled with corresponding ads
-            List<Ad> adsContainingSearchWord = new ArrayList<>();
-
-            List<Ad> ads = adRepository.findAll();
-
-            // Checking all titles for searchWord
-            for (Ad a : ads) {
-                if (a.getTitle().toLowerCase().contains(searchWord.toLowerCase())) {
-                    adsContainingSearchWord.add(a);
-                }
-            }
-            List<Category> categories = categoryRepository.findAll();
-
-            // Adding all ads with the category
-            for (Category c : categories) {
-                if (c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
-                    for (Ad a : c.getAds()) {
-                        if (!adsContainingSearchWord.contains(a)) {
-                            adsContainingSearchWord.add(a);
-                        }
-                    }
-                }
-            }
-
-            // Casting objects to Dto and returning
-            return adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
-                    .collect(Collectors.toList());
-        }
-
-        private List<AdDto> sortArrayByPriceAscending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getPrice));
-            return list;
-        }
-
-        private List<AdDto> sortArrayByPriceDescending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-            return list;
-        }
-
-        private List<AdDto> sortArrayByDistanceAscending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getDistance));
-            return list;
-        }
-
-        private List<AdDto> sortArrayByDistanceDescending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-            return list;
-        }
-
-        private List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit) {
-            list.stream().filter(x -> x.getDistance() < limit).collect(Collectors.toList());
-            return list;
-        }
-
-        private List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit) {
-            list.stream().filter(x -> lowerLimit < x.getPrice() && x.getPrice() < upperLimit)
-                    .collect(Collectors.toList());
-            return list;
-        }
-
-        private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Geocoder geocoder = new Geocoder();
-
-            String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
-            JsonNode responseJSONNode = objectMapper.readTree(response);
-            JsonNode items = responseJSONNode.get("items");
-
-            for (JsonNode item : items) {
-                JsonNode address = item.get("address");
-                String label = address.get("label").asText();
-                JsonNode position = item.get("position");
-
-                String lat = position.get("lat").asText();
-                String lng = position.get("lng").asText();
-                System.out.println(label + " is located at " + lat + "," + lng + ".");
-                if (!lng.equals("") && !lat.equals("")) {
-                    ad.setLat(Double.parseDouble(lat));
-                    ad.setLng(Double.parseDouble(lng));
-                }
-            }
-        }
-
     }
 }
