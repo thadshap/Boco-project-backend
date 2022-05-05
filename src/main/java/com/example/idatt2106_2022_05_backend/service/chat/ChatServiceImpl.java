@@ -139,6 +139,7 @@ public class ChatServiceImpl implements ChatService {
         message.setGroup(group);
         message.setTimestamp(Timestamp.from(Instant.now()));
 
+        groupRepository.save(group);
         messageRepository.save(message);
     }
 
@@ -256,13 +257,14 @@ public class ChatServiceImpl implements ChatService {
         for (int i = 0; i < userIds.size(); i++) {
             users.add(getUser(userIds.get(i)));
         }
-
+        /*
         if (users.size() == 2) {
             Group group = checkIfUsersHavePrivateGroup(users);
             if (group != null) {
                 return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
             }
         }
+        */
 
         Group newGroup = Group.builder()
                 .name(listGroupDto.getGroupName())
