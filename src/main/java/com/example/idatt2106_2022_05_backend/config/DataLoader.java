@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -450,8 +451,6 @@ public class DataLoader implements ApplicationRunner {
             }
 
 
-
-
             File pb = new File("src/main/resources/static/images/anders.jpg");
             savepb(pb, user1);
             pb = new File("src/main/resources/static/images/hasan.jpg");
@@ -587,10 +586,6 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message3);
             messageRepository.save(message4);
             messageRepository.save(message5);
-
-            groupRepository.save(group1);
-            groupRepository.save(group2);
-            groupRepository.save(group3);
         }
 
     private void fileContent(Ad ad, File file) throws IOException {

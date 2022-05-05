@@ -139,7 +139,7 @@ public class AdController {
      *                     adService.uploadNewPicture(updatePictureDto.getId(), updatePictureDto.getMultipartFile()); }
      */
 
-    @PutMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
+    @PostMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
     public Response adPicture(@PathVariable Long userId, @PathVariable Long adId,
             @RequestPart List<MultipartFile> files) throws IOException {
         // TODO
