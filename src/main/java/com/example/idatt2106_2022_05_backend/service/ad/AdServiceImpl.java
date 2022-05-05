@@ -292,6 +292,26 @@ public class AdServiceImpl implements AdService {
                 }
             }
         }
+
+        // Find the parent category
+        Set<Category> parentCategories = categoryRepository.findByName(name);
+
+        // There should only be ONE category in the set
+        Category parentCategory = parentCategories.stream().findFirst().get();
+
+        // Now, also add the ads connected to only the parent category to the list!
+        if(parentCategory.getAds() != null) {
+            for (Ad ad : parentCategory.getAds()) {
+                AdDto dto = null;
+                try {
+                    dto = castObject(ad);
+                    adsToBeReturned.add(dto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         // Calculation and setting distance for ads
         for (AdDto a : adsToBeReturned) {
             a.setDistance(
