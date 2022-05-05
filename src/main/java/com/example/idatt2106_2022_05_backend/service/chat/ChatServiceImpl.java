@@ -75,7 +75,7 @@ public class ChatServiceImpl implements ChatService {
      * @param usrs List of two users to check
      * @return returns group if a group is found, null if no group is found
      */
-    private Group checkIfUsersHavePrivateGroup(Set<User> usrs) {
+    private Group checkIfUsersHavePrivateGroup(Set<User> usrs, String name) {
         List<User> users = new ArrayList<>(usrs);
         User userOne = users.get(0);
         User userTwo = users.get(1);
@@ -86,7 +86,7 @@ public class ChatServiceImpl implements ChatService {
         for (int i = 0; i < groups.size(); i++) {
             Group group = groups.get(i);
             if (group.getUsers().size() == 2) {
-                if (group.getUsers().contains(userTwo)) {
+                if (group.getUsers().contains(userTwo) && group.getName().equals(name)) {
                     return group;
                 }
             }
@@ -110,23 +110,15 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = new HashSet<>();
         users.add(owner);
         users.add(borrower);
-        /*
-        Group group = checkIfUsersHavePrivateGroup(users);
-
-        if (group == null){
-            logger.debug("New Group being created for rental message.");
-            group = Group.builder()
-                    .name("NAME")
-                    .users(users)
-                    .build();
-            groupRepository.save(group);
-        }
-        */
 
         Ad ad = adRepository.findById(rentalDto.getAdId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke ad"));
 
-        Group group = Group.builder().name(ad.getTitle()).users(users).build();
+        Group group = checkIfUsersHavePrivateGroup(users, ad.getTitle());
+
+        if (group == null){
+            group = Group.builder().name(ad.getTitle()).users(users).build();
+        }
 
         String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
@@ -257,14 +249,14 @@ public class ChatServiceImpl implements ChatService {
         for (int i = 0; i < userIds.size(); i++) {
             users.add(getUser(userIds.get(i)));
         }
-        /*
+
         if (users.size() == 2) {
-            Group group = checkIfUsersHavePrivateGroup(users);
+            Group group = checkIfUsersHavePrivateGroup(users, listGroupDto.getGroupName());
             if (group != null) {
                 return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
             }
         }
-        */
+
 
         Group newGroup = Group.builder()
                 .name(listGroupDto.getGroupName())
@@ -292,19 +284,36 @@ public class ChatServiceImpl implements ChatService {
     public Response createGroupFromUserEmail(EmailListGroupDto emailListGroupDto) {
         List<String> emails = new ArrayList<>(emailListGroupDto.getEmails());
         Set<User> users = new HashSet<>();
+        Set<String> failedEmails = new HashSet<>();
 
         for (int i = 0; i < emails.size(); i++) {
             User user = userRepository.findByEmail(emails.get(i));
             if(user == null) {
                 logger.debug("Did not find user with email: " + emails.get(i));
+                failedEmails.add(emails.get(i));
             } else {
                 users.add(userRepository.findByEmail(emails.get(i)));
             }
         }
+        if(users.size() < 2) {
+            return new Response(EmailListGroupReturnDto
+                    .builder()
+                    .succeeded(false)
+                    .failedEmails(failedEmails)
+                    .groupName(null)
+                    .groupId(1L)
+                    .build(), HttpStatus.OK);
+        }
+
         if (users.size() == 2) {
-            Group group = checkIfUsersHavePrivateGroup(users);
+            Group group = checkIfUsersHavePrivateGroup(users, emailListGroupDto.getGroupName());
             if (group != null) {
-                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
+                return new Response(EmailListGroupReturnDto
+                        .builder()
+                        .succeeded(true)
+                        .failedEmails(failedEmails)
+                        .groupName(group.getName())
+                        .groupId(group.getId()).build(), HttpStatus.OK);
             }
         }
 
@@ -318,7 +327,12 @@ public class ChatServiceImpl implements ChatService {
         groupDto.setGroupId(newGroup.getId());
         groupDto.setGroupName(newGroup.getName());
 
-        return new Response(groupDto, HttpStatus.OK);
+        return new Response(EmailListGroupReturnDto
+                .builder()
+                .succeeded(true)
+                .failedEmails(failedEmails)
+                .groupName(newGroup.getName())
+                .groupId(newGroup.getId()).build(), HttpStatus.OK);
     }
 
     /**
