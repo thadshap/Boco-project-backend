@@ -19,17 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -104,7 +101,7 @@ public class ChatServiceImpl implements ChatService {
      *
      */
     @Override
-    public void sendRentalMessage(RentalDto rentalDto, String token){
+    public void sendRentalMessage(RentalDto rentalDto){
         User owner = userRepository.findByEmail(rentalDto.getOwner());
         User borrower = userRepository.findByEmail(rentalDto.getBorrower());
         Set<User> users = new HashSet<>();

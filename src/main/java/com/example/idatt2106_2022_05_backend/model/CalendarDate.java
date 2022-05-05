@@ -21,7 +21,7 @@ import java.util.Set;
 public class CalendarDate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "date_id", nullable = false)
     private Long id;
 

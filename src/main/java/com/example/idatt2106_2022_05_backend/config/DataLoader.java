@@ -114,20 +114,19 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user9);
 
             // Create main-categories
-            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa-kitchen-set").build();
-            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa-car-side").build();
-            Category sport = Category.builder().name("Sport").parent(true).icon("fa-baseball-bat-ball").build();
-            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa-computer").build();
-            Category sound = Category.builder().name("Lyd").icon("fa-volume-high").parent(true).build();
-            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa-guitar").build();
-            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fa-shirt").build();
-            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fa-paintbrush").build();
-            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa-house-chimney").build();
+            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa fa-cutlery").build();
+            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa fa-car").build();
+            Category sport = Category.builder().name("Sport").parent(true).icon("fas fa-biking").build();
+            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa fa-laptop").build();
+            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).build();
+            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa fa-guitar").build();
+            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fas fa-tshirt").build();
+            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fas fa-running").build();
+            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa fa-home").build();
 
             //persisting categories
             categoryRepository.save(kitchen);
             categoryRepository.save(vehicle);
-            categoryRepository.save(sport);
             categoryRepository.save(sport);
             categoryRepository.save(computer);
             categoryRepository.save(sound);
@@ -467,7 +466,8 @@ public class DataLoader implements ApplicationRunner {
             savepb(pb, user8);
             pb = new File("src/main/resources/static/images/leo.jpg");
             savepb(pb, user9);
-
+            pb = new File("src/main/resources/static/images/obama.jpg");
+            savepb(pb, user3);
 
             File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             fileContent(borremaskin, file);
@@ -541,6 +541,11 @@ public class DataLoader implements ApplicationRunner {
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);
 
+            file = new File("src/main/resources/static/images/brod.jpg");
+            fileContent(kjokkenmaskin, file);
+
+
+
             Group group1 = Group.builder().name("gruppechat1").build();
             Group group2 = Group.builder().name("gruppechat2").build();
             Group group3 = Group.builder().name("gruppechat3").build();
@@ -564,6 +569,8 @@ public class DataLoader implements ApplicationRunner {
             groupRepository.save(group2);
             groupRepository.save(group3);
 
+            adRepository.save(borremaskin);
+
             Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
             Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
             Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
@@ -586,6 +593,16 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message3);
             messageRepository.save(message4);
             messageRepository.save(message5);
+/*
+            Set<CalendarDate> dates = borremaskin.getDates();
+            for (CalendarDate d : dates){
+                d.setAvailable(false);
+            }
+            borremaskin.setDates(dates);
+
+            adRepository.save(borremaskin);
+
+ */
         }
 
     private void fileContent(Ad ad, File file) throws IOException {

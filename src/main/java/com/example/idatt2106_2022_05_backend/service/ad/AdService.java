@@ -70,7 +70,7 @@ public interface AdService {
 
 
     // Search in database
-    Response searchThroughAds(String searchword);
+    Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation);
 
     Response storeImageForAd(long adId, List<MultipartFile> file) throws IOException;
 

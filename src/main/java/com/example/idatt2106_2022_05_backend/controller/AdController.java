@@ -158,20 +158,16 @@ public class AdController {
         return adService.getFirstPictureForAd(adId);
     }
 
-
     @PostMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
     public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
-
-
-
-    @GetMapping("/search/{searchWord}")
+    @PostMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@PathVariable String searchWord) {
-        return adService.searchThroughAds(searchWord);
+    public Response searchInAdsAndCategories(@PathVariable String searchWord, UserGeoLocation userGeoLocation) {
+        return adService.searchThroughAds(searchWord, userGeoLocation);
     }
 
     // Get all categories

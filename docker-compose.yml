@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  bocogruppe5_db:
+    image: mysql:latest
+    container_name: bocogruppe5
+    restart: always
+    volumes:
+      - ~/mysql/:/var/lib/mysql:delegated
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=hello
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+      - MYSQL_DATABASE=bocogruppe5
