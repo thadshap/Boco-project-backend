@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -65,6 +66,12 @@ public class JWTConfig extends OncePerRequestFilter {
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }else{
+                //throw new HttpClientErrorException.Unauthorized();
+                //HttpServletResponse response = (HttpServletResponse) httpServletRequest;
+                //response.setStatus(401);
+                //response.setHeader("JWT token is expired", "Expired token");
+                //filterChain.doFilter(httpServletRequest, response);
             }
 
         }
