@@ -98,6 +98,7 @@ public class User {
         ads.add(newAd);
     }
 
+    /**
     @PreRemove
     void remove(){
         if(ads != null) {
@@ -122,6 +123,7 @@ public class User {
             setUserVerificationToken(null);
         }
     }
+    */
 
     public void addReview(Review newReview) {
         reviews.add(newReview);

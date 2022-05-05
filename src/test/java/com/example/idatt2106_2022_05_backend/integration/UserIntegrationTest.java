@@ -210,8 +210,8 @@ public class UserIntegrationTest {
                 // Extract a response entity using UserService
                 ResponseEntity<Object> res = userService.updateUser(user.getId(), dto);
 
-                // Assert that the response code is OK
-                assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
+                // Assert that the response is null (returned when there is no attribute in dto)
+                assertEquals(res, null);
 
                 // Assert that the updated user and the previous user is the same
                 assertEquals(user, userRepository.findById(user.getId()).get());

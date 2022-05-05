@@ -338,8 +338,9 @@ public class CategoryIntegrationTest {
             // Create ad for parent
             AdDto ad1 = AdDto.builder().title("Flask the best one")
                     .description("Renting out best flask ever without specific category....").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Sagbakken 2")
-                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category1Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).
+                    streetAddress("Sagbakken 2").postalCode(7234).city("Ler").
+                    userId(user.getId()).categoryId(category1Saved.getId()).build();
 
             // Create ad for child layer 1
             AdDto ad2 = AdDto.builder().title("Drink flasks").description("Renting out drink flask").rental(true)

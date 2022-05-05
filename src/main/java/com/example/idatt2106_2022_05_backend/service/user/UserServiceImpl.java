@@ -294,7 +294,13 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
             }
         }
-        return null;
+        // if all fields are empty
+        else if(     userUpdateDto.getFirstName() == null &&
+                userUpdateDto.getLastName() == null &&
+                userUpdateDto.getPassword() == null) {
+            return null;
+        }
+        return new Response("User updated", HttpStatus.OK);
     }
 
     /**

@@ -620,11 +620,14 @@ public class AdServiceImpl implements AdService {
         // Persisting the entities
         Ad savedAd = adRepository.save(newAd);
 
+        // Set the dates for the ad!
+        newAd.setDates(calendarService.addFutureDates(savedAd.getId()));
+
         user.get().setAd(newAd);
         userRepository.save(user.get());
 
-        // Set the dates for the ad!
-        newAd.setDates(calendarService.addFutureDates(savedAd.getId()));
+        category.get().getAds().add(newAd);
+        categoryRepository.save(category.get());
 
         return new Response(newAd.getId(), HttpStatus.CREATED);
     }
