@@ -91,7 +91,7 @@ public class PictureIntegrationTest {
 
             // Create ads as well
             AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
-                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .rental(true).durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2")
                     .postalCode(7120).city("Trondheim").userId(user.getId()).categoryId(it.getId()).build();
 
             // persist ad
@@ -268,7 +268,7 @@ public class PictureIntegrationTest {
 
             // Create ads as well
             AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
-                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .rental(true).durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2")
                     .postalCode(7120).city("Trondheim").userId(user.getId()).categoryId(it.getId()).build();
 
             // persist ad

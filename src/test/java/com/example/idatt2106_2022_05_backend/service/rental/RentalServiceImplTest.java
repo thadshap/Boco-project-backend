@@ -74,7 +74,7 @@ class RentalServiceImplTest {
                 .build();
 
         ad = Ad.builder().title("New pants").description("Renting out a pair of pants in size 36").rental(true)
-                .durationType(AdType.MONTH).duration(2).price(100).streetAddress("Project Road 4").postalCode(7200)
+                .durationType(AdType.MONTH).price(100).streetAddress("Project Road 4").postalCode(7200)
                 .user(user).build();
 
         rental = Rental.builder().id(1L).dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().plusDays(1))

@@ -24,10 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -341,18 +338,19 @@ public class CategoryIntegrationTest {
             // Create ad for parent
             AdDto ad1 = AdDto.builder().title("Flask the best one")
                     .description("Renting out best flask ever without specific category....").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
-                    .postalCode(7234).userId(user.getId()).categoryId(category1Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).
+                    streetAddress("Sagbakken 2").postalCode(7234).city("Ler").
+                    userId(user.getId()).categoryId(category1Saved.getId()).build();
 
             // Create ad for child layer 1
             AdDto ad2 = AdDto.builder().title("Drink flasks").description("Renting out drink flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
-                    .postalCode(7234).userId(user.getId()).categoryId(category2Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2")
+                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category2Saved.getId()).build();
 
             // Ad for the 2nd layer child
             AdDto ad3 = AdDto.builder().title("Metal flask").description("Renting out metal flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
-                    .postalCode(7234).userId(user.getId()).categoryId(category3Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2")
+                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category3Saved.getId()).build();
 
             // Persist the ads
             adService.postNewAd(ad1);
@@ -365,11 +363,15 @@ public class CategoryIntegrationTest {
 
             // Testing service method as well
             UserGeoLocation dto = new UserGeoLocation();
-//            dto.setAmount(1);
             dto.setLng(63.98);
             dto.setLat(63.98);
+
+            ArrayList<AdDto> result = getAllAdsInCategoryAndSubCategories("Flasks", dto);
+
+            System.out.println(result.toString());
             ResponseEntity<Object> response = adService.getAllAdsInCategoryAndSubCategories("Flasks", dto);
             assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            assertEquals(3, result.size());
         }
 
         @SneakyThrows
@@ -394,17 +396,17 @@ public class CategoryIntegrationTest {
             // Create ad for parent
             AdDto ad1 = AdDto.builder().title("Flask the best one")
                     .description("Renting out best flask ever without specific category....").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Project Road 4")
                     .postalCode(7234).userId(user.getId()).categoryId(categorySaved.getId()).build();
 
             // Create ad for child layer 1
             AdDto ad2 = AdDto.builder().title("Drink flasks").description("Renting out drink flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Project Road 4")
                     .postalCode(7234).userId(user.getId()).categoryId(categorySaved.getId()).build();
 
             // Ad for the 2nd layer child
             AdDto ad3 = AdDto.builder().title("Metal flask").description("Renting out metal flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Project Road 4")
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Project Road 4")
                     .postalCode(7234).userId(user.getId()).categoryId(categorySaved.getId()).build();
 
             // Persist the ads
@@ -420,6 +422,51 @@ public class CategoryIntegrationTest {
             // Testing service method as well
             ResponseEntity<Object> response = adService.getAllAdsInCategory("Flasks1");
             assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+        }
+
+        /********************** Code from ad service related to methods (for testing) ***********************/
+
+        public ArrayList<AdDto> getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
+
+            // Retrieve all categories from database
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+
+            // List of subCategories found using recursive function
+            List<Category> subCategories = findSubCategories(categories, new ArrayList<>(), name, 0);
+
+            ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+            // Iterate over all sub-categories found
+            for (Category category : subCategories) {
+                // Iterate over all ads in category
+                if (category.getAds() != null) {
+                    for (Ad ad : category.getAds()) {
+                        try {
+                            // Create dto
+                            AdDto dto = castObject(ad);
+                            // Add to list
+                            adsToBeReturned.add(dto);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            // Calculation and setting distance for ads
+            for (AdDto a : adsToBeReturned) {
+                a.setDistance(
+                        calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            }
+            // sort so nearest ads comes first
+            adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+
+            // Now all ads are returned
+            return adsToBeReturned;
+        }
+
+        public double calculateDistance(double lat1, double long1, double lat2, double long2) {
+            double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
+            return dist / 1000;
         }
     }
 }

@@ -122,7 +122,7 @@ public class CalendarIntegrationTest {
 
             // Create ads as well
             AdDto speaker1 = AdDto.builder().title("New speaker").description("Renting out a brand new speaker")
-                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .rental(true).durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2")
                     .postalCode(7120).lat(63.401920).lng(10.443579).city("Trondheim").userId(user.getId())
                     .categoryId(it.getId()).build();
 
@@ -209,7 +209,7 @@ public class CalendarIntegrationTest {
 
             // Create new ad
             AdDto speaker = AdDto.builder().title("new ad for category").description("Renting out a brand new speaker")
-                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .rental(true).durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2")
                     .postalCode(7120).city("Trondheim").lat(63.401920).lng(10.443579).userId(user.getId())
                     .categoryId(category.getId()).build();
 
@@ -252,9 +252,11 @@ public class CalendarIntegrationTest {
 
             // Create new ad
             AdDto speaker = AdDto.builder().title("New ad for testing and such")
-                    .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
-                    .price(100).streetAddress("Speaker street 2").postalCode(7120).city("Trondheim").lat(63.401920)
-                    .lng(10.443579).userId(user.getId()).categoryId(category.getId()).build();
+                    .description("Renting out a brand new speaker").rental(true)
+                    .durationType(AdType.WEEK).price(100)
+                    .streetAddress("Speaker street 2").postalCode(7120)
+                    .city("Trondheim").lat(63.401920).lng(10.443579).
+                    userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad --> the dates are now also persisted
             ResponseEntity<Object> r = adService.postNewAd(speaker);
@@ -339,7 +341,7 @@ public class CalendarIntegrationTest {
 
             // Create new ad
             AdDto speaker = AdDto.builder().title("New ad for testing").description("Renting out a brand new speaker")
-                    .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2")
+                    .rental(true).durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2")
                     .postalCode(7120).city("Trondheim").lat(63.401920).lng(10.443579).userId(user.getId())
                     .categoryId(category.getId()).build();
 
