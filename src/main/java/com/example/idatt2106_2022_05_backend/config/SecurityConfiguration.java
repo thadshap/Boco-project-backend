@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 //import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
+import com.example.idatt2106_2022_05_backend.exception.JwtAuthEntrypointException;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
@@ -35,6 +36,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JWTConfig jwtConfig;
+
+    @Autowired
+    private JwtAuthEntrypointException jwtAuthEntrypointException;
 
     private static final String[] WHITELIST_URLS = {
             "/**",
@@ -94,7 +98,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.POST, "/user/").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().authenticated().and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthEntrypointException)
 //                .and()
 //                .x509()
 //                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")

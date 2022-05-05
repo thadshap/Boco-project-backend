@@ -91,15 +91,15 @@ public class DataLoader implements ApplicationRunner {
         public void run(ApplicationArguments args) throws IOException {
 
             // Create users
-            User user1 = User.builder().firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user2 = User.builder().firstName("Brage").lastName("Minge").email("bragem@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user3 = User.builder().firstName("Hasan").lastName("Rehman").email("hasano@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user4 = User.builder().firstName("Maiken Louise").lastName("Brechan").email("maiken@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user5 = User.builder().firstName("Thadsha").lastName("Paramsothy").email("thadsha@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user6 = User.builder().firstName("Karoline").lastName("Wahl").email("karoline@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user7 = User.builder().firstName("Eirin").lastName("Svinsås").email("eirin@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user8 = User.builder().firstName("Leo").lastName("Leosen").email("leo@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user9 = User.builder().firstName("Johannes").lastName("Herman").email("johannes@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user1 = User.builder().numberOfReviews(3).rating(8.2).firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user2 = User.builder().numberOfReviews(4).rating(3.1).firstName("Brage").lastName("Minge").email("bragem@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user3 = User.builder().numberOfReviews(100).rating(9).firstName("Hasan").lastName("Rehman").email("hasano@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user4 = User.builder().numberOfReviews(860).rating(10).firstName("Maiken Louise").lastName("Brechan").email("maiken@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user5 = User.builder().numberOfReviews(3).rating(9.0).firstName("Thadsha").lastName("Paramsothy").email("thadsha@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user6 = User.builder().numberOfReviews(1200).rating(6).firstName("Karoline").lastName("Wahl").email("karoline@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user7 = User.builder().numberOfReviews(12).rating(1).firstName("Eirin").lastName("Svinsås").email("eirin@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user8 = User.builder().numberOfReviews(60).rating(5).firstName("Leo").lastName("Leosen").email("leo@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user9 = User.builder().numberOfReviews(2).rating(7).firstName("Johannes").lastName("Herman").email("johannes@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
             // Persist the users
 
             userRepository.save(user1);
