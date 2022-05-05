@@ -110,7 +110,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = new HashSet<>();
         users.add(owner);
         users.add(borrower);
-
+        /*
         Group group = checkIfUsersHavePrivateGroup(users);
 
         if (group == null){
@@ -121,8 +121,12 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             groupRepository.save(group);
         }
+        */
+
         Ad ad = adRepository.findById(rentalDto.getAdId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke ad"));
+
+        Group group = Group.builder().name(ad.getTitle()).users(users).build();
 
         String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
