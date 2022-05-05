@@ -20,7 +20,7 @@ public class JWTUtil implements Serializable {
 
     private String secret = "verysecretive";
 
-    public static final long TOKEN_VALIDITY = 10 * 60 * 60;
+    public static final long TOKEN_VALIDITY = 30 * 60 * 60;
 
     /**
      * Method to retrieve email from the JWToken.

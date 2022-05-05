@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -442,59 +443,13 @@ public class DataLoader implements ApplicationRunner {
                 ad.setDates(calendarService.addFutureDates(ad.getId()));
             }
 
+
             for(Ad a:adRepository.findAll()){
                 Set<Ad> adsy = new HashSet<>();
                 adsy.add(a);
                 a.getCategory().setAds(adsy);;
                 categoryRepository.save(a.getCategory());
             }
-
-            Group group1 = Group.builder().name("gruppechat1").build();
-            Group group2 = Group.builder().name("gruppechat2").build();
-            Group group3 = Group.builder().name("gruppechat3").build();
-
-            Set<User> users1 = new HashSet<>();
-            users1.add(user1);
-            users1.add(user2);
-            group1.setUsers(users1);
-
-            Set<User> users2 = new HashSet<>();
-            users2.add(user1);
-            users2.add(user3);
-            group2.setUsers(users2);
-
-            Set<User> users3 = new HashSet<>();
-            users3.add(user3);
-            users3.add(user4);
-            group3.setUsers(users3);
-
-            groupRepository.save(group1);
-            groupRepository.save(group2);
-            groupRepository.save(group3);
-
-            Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
-            Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
-            Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
-            Message message4 = Message.builder()
-                    .content("Nei")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message5 = Message.builder()
-                    .content("-(^__^)-")
-                    .group(group2)
-                    .user(user3)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            messageRepository.save(message1);
-            messageRepository.save(message2);
-            messageRepository.save(message3);
-            messageRepository.save(message4);
-            messageRepository.save(message5);
-
 
             File pb = new File("src/main/resources/static/images/anders.jpg");
             savepb(pb, user1);
@@ -585,6 +540,63 @@ public class DataLoader implements ApplicationRunner {
 
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);
+
+            file = new File("src/main/resources/static/images/brod.jpg");
+            fileContent(kjokkenmaskin, file);
+
+
+
+            Group group1 = Group.builder().name("gruppechat1").build();
+            Group group2 = Group.builder().name("gruppechat2").build();
+            Group group3 = Group.builder().name("gruppechat3").build();
+
+            Set<User> users1 = new HashSet<>();
+            users1.add(user1);
+            users1.add(user2);
+            group1.setUsers(users1);
+
+            Set<User> users2 = new HashSet<>();
+            users2.add(user1);
+            users2.add(user3);
+            group2.setUsers(users2);
+
+            Set<User> users3 = new HashSet<>();
+            users3.add(user3);
+            users3.add(user4);
+            group3.setUsers(users3);
+
+            groupRepository.save(group1);
+            groupRepository.save(group2);
+            groupRepository.save(group3);
+
+            Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
+            Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
+            Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
+            Message message4 = Message.builder()
+                    .content("Nei")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message5 = Message.builder()
+                    .content("-(^__^)-")
+                    .group(group2)
+                    .user(user3)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            messageRepository.save(message1);
+            messageRepository.save(message2);
+            messageRepository.save(message3);
+            messageRepository.save(message4);
+            messageRepository.save(message5);
+
+            Set<CalendarDate> dates = borremaskin.getDates();
+            for (CalendarDate e: dates){
+                e.setAvailable(false);
+            }
+            borremaskin.setDates(dates);
         }
 
     private void fileContent(Ad ad, File file) throws IOException {

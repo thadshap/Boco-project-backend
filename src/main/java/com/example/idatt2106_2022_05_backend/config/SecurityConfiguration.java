@@ -49,7 +49,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/rental/activate/**",
             "/rental/decline/**",
             "/api/ads/**",
-            "/api/ads/**",
             "/api/users/**",
             "/api/search/**",
             "/api/sort/**",
@@ -89,7 +88,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
             cors.setAllowedOrigins(List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
@@ -98,9 +97,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.POST, "/user/").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/courses/**").permitAll()
-                .anyRequest().authenticated().and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthEntrypointException)
+                .anyRequest().authenticated()
 //                .and()
 //                .x509()
 //                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
@@ -122,7 +119,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthEntrypointException);
     }
 
     @Override

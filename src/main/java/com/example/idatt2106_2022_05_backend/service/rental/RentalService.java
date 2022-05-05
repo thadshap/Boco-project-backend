@@ -5,11 +5,13 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.util.Response;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 
+@Service
 public interface RentalService {
     Response createRental(RentalDto rentalDto);
 
