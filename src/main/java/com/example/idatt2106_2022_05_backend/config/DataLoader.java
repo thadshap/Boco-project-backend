@@ -569,6 +569,8 @@ public class DataLoader implements ApplicationRunner {
             groupRepository.save(group2);
             groupRepository.save(group3);
 
+            adRepository.save(borremaskin);
+
             Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
             Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
             Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
@@ -591,12 +593,16 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message3);
             messageRepository.save(message4);
             messageRepository.save(message5);
-
+/*
             Set<CalendarDate> dates = borremaskin.getDates();
-            for (CalendarDate e: dates){
-                e.setAvailable(false);
+            for (CalendarDate d : dates){
+                d.setAvailable(false);
             }
             borremaskin.setDates(dates);
+
+            adRepository.save(borremaskin);
+
+ */
         }
 
     private void fileContent(Ad ad, File file) throws IOException {
