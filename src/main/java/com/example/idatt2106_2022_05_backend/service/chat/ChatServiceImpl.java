@@ -1,10 +1,7 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
 import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
-import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
-import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
-import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
-import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.*;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Group;
@@ -195,29 +192,6 @@ public class ChatServiceImpl implements ChatService {
         return new Response(userIds, HttpStatus.OK);
     }
 
-    @Override
-    public void broadcast(MessageDto message) {
-        logger.info("Go to service");
-        Message outputMessage = new Message();
-
-        //String text = new String((byte[])message.getPayload(), StandardCharsets.UTF_8);
-        outputMessage.setContent(message.getContent());
-
-        //TODO: Add user check and set in outputmessage
-        //outputMessage.setFrom();
-
-        //String messageDestination = destination.get(0).split(" ")[0];
-        //String path = "topic/messages/"+messageDestination;
-
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
-        //outputMessage.setTimestamp(time);
-        //ouputMessageRepository.save(outputMessage);
-        //String path = "topic/messages/"+ message.getGroupId();
-        //logger.info("Sending "+message.getContent() + " to :" + path);
-        //simpMessagingTemplate.convertAndSend(path, message);
-
-    }
-
     /**
      *
      * Method to create a new group with two users.
@@ -281,6 +255,48 @@ public class ChatServiceImpl implements ChatService {
 
         Group newGroup = Group.builder()
                 .name(listGroupDto.getGroupName())
+                .users(users)
+                .build();
+        groupRepository.save(newGroup);
+
+        GroupDto groupDto = new GroupDto();
+        groupDto.setGroupId(newGroup.getId());
+        groupDto.setGroupName(newGroup.getName());
+
+        return new Response(groupDto, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * Method to create a new group from a list of emails.
+     *
+     * @param emailListGroupDto
+     *          {@link EmailListGroupDto} object with information needed to create a multiple user group.
+     *
+     * @return returns HttpStatus and created group.
+     */
+    @Override
+    public Response createGroupFromUserEmail(EmailListGroupDto emailListGroupDto) {
+        List<String> emails = new ArrayList<>(emailListGroupDto.getEmails());
+        Set<User> users = new HashSet<>();
+
+        for (int i = 0; i < emails.size(); i++) {
+            User user = userRepository.findByEmail(emails.get(i));
+            if(user == null) {
+                logger.debug("Did not find user with email: " + emails.get(i));
+            } else {
+                users.add(userRepository.findByEmail(emails.get(i)));
+            }
+        }
+        if (users.size() == 2) {
+            Group group = checkIfUsersHavePrivateGroup(users);
+            if (group != null) {
+                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
+            }
+        }
+
+        Group newGroup = Group.builder()
+                .name(emailListGroupDto.getGroupName())
                 .users(users)
                 .build();
         groupRepository.save(newGroup);

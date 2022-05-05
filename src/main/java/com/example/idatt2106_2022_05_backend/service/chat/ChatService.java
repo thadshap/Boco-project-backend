@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.service.chat;
 
+import com.example.idatt2106_2022_05_backend.dto.chat.EmailListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
@@ -24,9 +25,6 @@ public interface ChatService {
 
     Response addUserToGroupById(long groupId, long userId);
 
-
-    void broadcast(MessageDto message);
-
     Response createGroupFromUserIds(ListGroupDto listGroupDto);
 
     Response changeGroupNameFromGroupId(long groupId, String newName);
@@ -38,6 +36,8 @@ public interface ChatService {
     void sendRentalMessage(RentalDto rentalDto, String token);
 
     Response getGroupUsersByGroupId(long groupId);
+
+    Response createGroupFromUserEmail(EmailListGroupDto emailListGroupDto);
 
     //Response getGroupChatsBasedOnUserId(long id);
 
