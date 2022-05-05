@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.dto.chat;
 
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@ApiModel(description = "Data transfer object for message, used for sending messages with websocket")
 public class MessageDto {
 
     private String content;

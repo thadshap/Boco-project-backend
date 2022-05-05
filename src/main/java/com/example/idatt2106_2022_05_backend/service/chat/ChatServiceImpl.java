@@ -68,8 +68,15 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke brukeren"));
     }
 
-    private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
-        List<User> users = new ArrayList<>(usr);
+    /**
+     *
+     * Helping method to check if two users have a two-user group with each other.
+     *
+     * @param usrs List of two users to check
+     * @return returns group if a group is found, null if no group is found
+     */
+    private Group checkIfUsersHavePrivateGroup(Set<User> usrs) {
+        List<User> users = new ArrayList<>(usrs);
         User userOne = users.get(0);
         User userTwo = users.get(1);
 
