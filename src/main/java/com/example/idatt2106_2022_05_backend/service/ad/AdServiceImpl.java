@@ -997,6 +997,9 @@ public class AdServiceImpl implements AdService {
     public List<PictureReturnDto> getAllPicturesForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
+        if (pictures.isEmpty()){
+            return null;
+        }
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
@@ -1004,9 +1007,6 @@ public class AdServiceImpl implements AdService {
                     .type(pictures.get(i).getType())
                     .build());
             returnDto.get(i).setId(adId);
-        }
-        if (returnDto.isEmpty()){
-            return null;
         }
         return returnDto;
     }
@@ -1015,16 +1015,16 @@ public class AdServiceImpl implements AdService {
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        List<PictureReturnDto> returnDto = new ArrayList<>();
+        if (pictures.isEmpty()){
+            return new Response("Ad with title \"" + ad.getTitle() + "\" has no pictures", HttpStatus.NOT_FOUND);
+        }List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
                     .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
                     .type(pictures.get(i).getType())
                     .build());
             returnDto.get(i).setId(adId);
-        }
-        if (returnDto.get(0) == null){
-            return new Response("Ad with title \"" + ad.getTitle() + "\" has no pictures", HttpStatus.NOT_FOUND);
+
         }
         return new Response(returnDto.get(0), HttpStatus.OK);
     }

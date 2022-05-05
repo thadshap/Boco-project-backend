@@ -753,6 +753,7 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message3);
             messageRepository.save(message4);
             messageRepository.save(message5);
+            System.out.println("finnished");
         }
 
     private void fileContent(Ad ad, File file) throws IOException {
