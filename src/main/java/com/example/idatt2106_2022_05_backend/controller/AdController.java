@@ -214,6 +214,11 @@ public class AdController {
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
+    @GetMapping("/categories/level")
+    public Response getAllAdsInCategoryRecursively() {
+        return adService.getAllCategoriesWithLevel();
+    }
+
     // Get all parent categories
     @GetMapping("/categories/parent")
     public Response getAllParentCategories() {

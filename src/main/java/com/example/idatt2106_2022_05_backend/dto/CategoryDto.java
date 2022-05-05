@@ -34,6 +34,8 @@ public class CategoryDto {
     @ApiModelProperty(notes = "icon name of the category")
     private String icon;
 
+    private int level;
+
     @ApiModelProperty(notes = "list containing the ids of the ads that the original Category entity contains")
     private List<Long> adIds;
 }

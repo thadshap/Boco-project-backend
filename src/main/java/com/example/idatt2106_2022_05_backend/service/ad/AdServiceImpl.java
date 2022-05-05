@@ -209,6 +209,19 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Response getAllCategoriesWithLevel(){
+        List<Category> categories = categoryRepository.findAll();
+        ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
+        for (int i = 0; i < categories.size(); i++) {
+            categoriesToReturn.get(i).setLevel(categories.get(i).getLevel());
+            categoriesToReturn.get(i).setParentName(categories.get(i).getParentName());
+            categoriesToReturn.get(i).setName(categories.get(i).getName());
+            categoriesToReturn.get(i).setId(categories.get(i).getId());
+        }
+        return new Response(categoriesToReturn, HttpStatus.OK);
+    }
+
+    @Override
     public Response getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
 

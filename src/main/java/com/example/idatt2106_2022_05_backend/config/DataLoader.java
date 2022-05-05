@@ -112,15 +112,15 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user9);
 
             // Create main-categories
-            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa fa-cutlery").build();
-            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa fa-car").build();
-            Category sport = Category.builder().name("Sport").parent(true).icon("fas fa-biking").build();
-            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa fa-laptop").build();
-            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).build();
-            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa fa-guitar").build();
-            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fas fa-tshirt").build();
-            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fas fa-running").build();
-            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa fa-home").build();
+            Category kitchen = Category.builder().name("Kjøkken").parent(true).level(1).icon("fa fa-cutlery").build();
+            Category vehicle = Category.builder().name("Kjøretøy").parent(true).level(1).icon("fa fa-car").build();
+            Category sport = Category.builder().name("Sport").parent(true).level(1).icon("fas fa-biking").build();
+            Category computer = Category.builder().name("Data og datautstyr").parent(true).level(1).icon("fa fa-laptop").build();
+            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).level(1).build();
+            Category instruments = Category.builder().name("Instrumenter").parent(true).level(1).icon("fa fa-guitar").build();
+            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).level(1).icon("fas fa-tshirt").build();
+            Category hobby = Category.builder().name("Hobby og fritid").parent(true).level(1).icon("fas fa-running").build();
+            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).level(1).icon("fa fa-home").build();
 
             //persisting categories
             categoryRepository.save(kitchen);
@@ -134,24 +134,24 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(garden);
 
             // Create sub-categories kitchen
-            Category kitchenmachine = Category.builder().name("Kjøkkenmaskin").parentName(kitchen.getName()).child(true).build();
-            Category grill = Category.builder().child(true).name("Grill").parentName(kitchen.getName()).build();
-            Category pizzaovn = Category.builder().child(true).name("Pizzaovn").parentName(kitchen.getName()).build();
-            Category otherKitchen = Category.builder().name("Annet").parentName(kitchen.getName()).child(true).build();
+            Category kitchenmachine = Category.builder().level(2).name("Kjøkkenmaskin").parentName(kitchen.getName()).child(true).build();
+            Category grill = Category.builder().level(2).child(true).name("Grill").parentName(kitchen.getName()).build();
+            Category pizzaovn = Category.builder().level(2).child(true).name("Pizzaovn").parentName(kitchen.getName()).build();
+            Category otherKitchen = Category.builder().level(2).name("Annet").parentName(kitchen.getName()).child(true).build();
             categoryRepository.save(kitchenmachine);
             categoryRepository.save(grill);
             categoryRepository.save(pizzaovn);
             categoryRepository.save(otherKitchen);
 
             //Sub-categories for vehicle
-            Category car = Category.builder().name("Bil").child(true).parentName(vehicle.getName()).build();
-            Category boat = Category.builder().name("Båt").child(true).parentName(vehicle.getName()).build();
-            Category bike = Category.builder().name("Sykkel").child(true).parentName(vehicle.getName()).build();
-            Category bikey = Category.builder().name("Sparkesykkel").child(true).parentName(vehicle.getName()).build();
-            Category scooter = Category.builder().name("Moped").child(true).parentName(vehicle.getName()).build();
-            Category hanger = Category.builder().name("Tilhenger").child(true).parentName(vehicle.getName()).build();
-            Category digger = Category.builder().name("Gravemaskin").child(true).parentName(vehicle.getName()).build();
-            Category otherVehicle = Category.builder().name("Annet").child(true).parentName(vehicle.getName()).build();
+            Category car = Category.builder().level(2).name("Bil").child(true).parentName(vehicle.getName()).build();
+            Category boat = Category.builder().level(2).name("Båt").child(true).parentName(vehicle.getName()).build();
+            Category bike = Category.builder().level(2).name("Sykkel").child(true).parentName(vehicle.getName()).build();
+            Category bikey = Category.builder().level(2).name("Sparkesykkel").child(true).parentName(vehicle.getName()).build();
+            Category scooter = Category.builder().level(2).name("Moped").child(true).parentName(vehicle.getName()).build();
+            Category hanger = Category.builder().level(2).name("Tilhenger").child(true).parentName(vehicle.getName()).build();
+            Category digger = Category.builder().level(2).name("Gravemaskin").child(true).parentName(vehicle.getName()).build();
+            Category otherVehicle = Category.builder().level(2).name("Annet").child(true).parentName(vehicle.getName()).build();
             categoryRepository.save(car);
             categoryRepository.save(boat);
             categoryRepository.save(bike);
@@ -162,34 +162,34 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherVehicle);
 
             //Sub-categories for sport
-            Category ballSport = Category.builder().name("Ballsport").child(true).parent(false).parentName(sport.getName()).build();
-            Category waterSport = Category.builder().name("Vannsport").child(true).parent(false).parentName(sport.getName()).build();
-            Category skis = Category.builder().name("Ski og skiutstyr").child(true).parent(false).parentName(sport.getName()).build();
-            Category outdoorlife = Category.builder().name("Friluftsliv").child(true).parent(false).parentName(sport.getName()).build();
+            Category ballSport = Category.builder().level(2).name("Ballsport").child(true).parent(false).parentName(sport.getName()).build();
+            Category waterSport = Category.builder().level(2).name("Vannsport").child(true).parent(false).parentName(sport.getName()).build();
+            Category skis = Category.builder().level(2).name("Ski og skiutstyr").child(true).parent(false).parentName(sport.getName()).build();
+            Category outdoorlife = Category.builder().level(2).name("Friluftsliv").child(true).parent(false).parentName(sport.getName()).build();
             categoryRepository.save(ballSport);
             categoryRepository.save(waterSport);
             categoryRepository.save(skis);
             categoryRepository.save(outdoorlife);
 
             //Sub-categories for ballsport
-            Category handball = Category.builder().name("Håndball").child(true).parentName(ballSport.getName()).build();
-            Category fotball = Category.builder().name("Fotball").child(true).parentName(ballSport.getName()).build();
-            Category basket = Category.builder().name("Basketball").child(true).parentName(ballSport.getName()).build();
-            Category ballSportother = Category.builder().name("Annet").child(true).parentName(ballSport.getName()).build();
+            Category handball = Category.builder().level(3).name("Håndball").child(true).parentName(ballSport.getName()).build();
+            Category fotball = Category.builder().level(3).name("Fotball").child(true).parentName(ballSport.getName()).build();
+            Category basket = Category.builder().level(3).name("Basketball").child(true).parentName(ballSport.getName()).build();
+            Category ballSportother = Category.builder().level(3).name("Annet").child(true).parentName(ballSport.getName()).build();
             categoryRepository.save(handball);
             categoryRepository.save(fotball);
             categoryRepository.save(basket);
             categoryRepository.save(ballSportother);
 
             //Sub-categories for watersport
-            Category lifewest = Category.builder().name("Redningsvest").child(true).parentName(waterSport.getName()).build();
-            Category divingequipment = Category.builder().name("Dykkerutstyr").child(true).parentName(waterSport.getName()).build();
-            Category wetsuit = Category.builder().name("Våtdrakt").child(true).parentName(waterSport.getName()).build();
-            Category badedyre = Category.builder().name("Badedyr").child(true).parentName(waterSport.getName()).build();
-            Category parasail = Category.builder().name("Parasail").child(true).parentName(waterSport.getName()).build();
-            Category tube = Category.builder().name("Tube").child(true).parentName(waterSport.getName()).build();
-            Category paddle = Category.builder().name("Paddlebrett").child(true).parentName(waterSport.getName()).build();
-            Category waterski =Category.builder().name("Vannski").child(true).parentName(waterSport.getName()).build();
+            Category lifewest = Category.builder().level(3).name("Redningsvest").child(true).parentName(waterSport.getName()).build();
+            Category divingequipment = Category.builder().level(3).name("Dykkerutstyr").child(true).parentName(waterSport.getName()).build();
+            Category wetsuit = Category.builder().level(3).name("Våtdrakt").child(true).parentName(waterSport.getName()).build();
+            Category badedyre = Category.builder().level(3).name("Badedyr").child(true).parentName(waterSport.getName()).build();
+            Category parasail = Category.builder().level(3).name("Parasail").child(true).parentName(waterSport.getName()).build();
+            Category tube = Category.builder().level(3).name("Tube").child(true).parentName(waterSport.getName()).build();
+            Category paddle = Category.builder().level(3).name("Paddlebrett").child(true).parentName(waterSport.getName()).build();
+            Category waterski =Category.builder().level(3).name("Vannski").child(true).parentName(waterSport.getName()).build();
             categoryRepository.save(lifewest);
             categoryRepository.save(divingequipment);
             categoryRepository.save(badedyre);
@@ -200,14 +200,14 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(waterski);
 
             //sub-categories for ski
-            Category slalomski = Category.builder().name("Slalomski").child(true).parentName(skis.getName()).build();
-            Category slalomsko = Category.builder().name("Slalomsko").child(true).parentName(skis.getName()).build();
-            Category slalomstaver = Category.builder().name("Slalomstaver").child(true).parentName(skis.getName()).build();
-            Category helmet = Category.builder().name("Hjelm").child(true).parentName(skis.getName()).build();
-            Category skoyteski = Category.builder().name("Skøyteski").child(true).parentName(skis.getName()).build();
-            Category klassiske = Category.builder().name("Klassiske ski").child(true).parentName(skis.getName()).build();
-            Category fellesski = Category.builder().name("Felleski").child(true).parentName(skis.getName()).build();
-            Category otherski = Category.builder().name("Annet").child(true).parentName(skis.getName()).build();
+            Category slalomski = Category.builder().level(3).name("Slalomski").child(true).parentName(skis.getName()).build();
+            Category slalomsko = Category.builder().level(3).name("Slalomsko").child(true).parentName(skis.getName()).build();
+            Category slalomstaver = Category.builder().level(3).name("Slalomstaver").child(true).parentName(skis.getName()).build();
+            Category helmet = Category.builder().level(3).name("Hjelm").child(true).parentName(skis.getName()).build();
+            Category skoyteski = Category.builder().level(3).name("Skøyteski").child(true).parentName(skis.getName()).build();
+            Category klassiske = Category.builder().level(3).name("Klassiske ski").child(true).parentName(skis.getName()).build();
+            Category fellesski = Category.builder().level(3).name("Felleski").child(true).parentName(skis.getName()).build();
+            Category otherski = Category.builder().level(3).name("Annet").child(true).parentName(skis.getName()).build();
             categoryRepository.save(slalomski);
             categoryRepository.save(slalomsko);
             categoryRepository.save(slalomstaver);
@@ -219,12 +219,12 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherski);
 
             //sub-categories for outdoor living
-            Category telt = Category.builder().name("Telt").child(true).parentName(outdoorlife.getName()).build();
-            Category fishingequipment = Category.builder().child(true).name("Fiskeutstyr").parentName(outdoorlife.getName()).build();
-            Category kano = Category.builder().name("Kano").child(true).parentName(outdoorlife.getName()).build();
-            Category kajakk  = Category.builder().name("Kajakk").child(true).parentName(outdoorlife.getName()).build();
-            Category clohting = Category.builder().name("Ytterklær").child(true).parentName(outdoorlife.getName()).build();
-            Category otherOutdoor = Category.builder().name("Annte").child(true).parentName(outdoorlife.getName()).build();
+            Category telt = Category.builder().level(3).name("Telt").child(true).parentName(outdoorlife.getName()).build();
+            Category fishingequipment = Category.builder().level(3).child(true).name("Fiskeutstyr").parentName(outdoorlife.getName()).build();
+            Category kano = Category.builder().level(3).name("Kano").child(true).parentName(outdoorlife.getName()).build();
+            Category kajakk  = Category.builder().level(3).name("Kajakk").child(true).parentName(outdoorlife.getName()).build();
+            Category clohting = Category.builder().level(3).name("Ytterklær").child(true).parentName(outdoorlife.getName()).build();
+            Category otherOutdoor = Category.builder().level(3).name("Annte").child(true).parentName(outdoorlife.getName()).build();
             categoryRepository.save(telt);
             categoryRepository.save(fishingequipment);
             categoryRepository.save(kajakk);
@@ -233,14 +233,14 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherOutdoor);
 
             //sub-categories data
-            Category screen = Category.builder().name("Skjerm").child(true).parentName(computer.getName()).build();
-            Category datamaskin = Category.builder().name("Datamaskin").child(true).parentName(computer.getName()).build();
-            Category spill =Category.builder().name("Spill").child(true).parentName(computer.getName()).build();
-            Category spillkonsoll = Category.builder().name("Spillkonsoll").child(true).parentName(computer.getName()).build();
-            Category kabler  = Category.builder().name("Ledninger").child(true).parentName(computer.getName()).build();
-            Category mobil =Category.builder().name("Mobil").child(true).parentName(computer.getName()).build();
-            Category kampera = Category.builder().name("Kamera").child(true).parentName(computer.getName()).build();
-            Category otherComputer =Category.builder().name("Annet").child(true).parentName(computer.getName()).build();
+            Category screen = Category.builder().level(2).name("Skjerm").child(true).parentName(computer.getName()).build();
+            Category datamaskin = Category.builder().level(2).name("Datamaskin").child(true).parentName(computer.getName()).build();
+            Category spill =Category.builder().level(2).name("Spill").child(true).parentName(computer.getName()).build();
+            Category spillkonsoll = Category.builder().level(2).name("Spillkonsoll").child(true).parentName(computer.getName()).build();
+            Category kabler  = Category.builder().level(2).name("Ledninger").child(true).parentName(computer.getName()).build();
+            Category mobil =Category.builder().level(2).name("Mobil").child(true).parentName(computer.getName()).build();
+            Category kampera = Category.builder().level(2).name("Kamera").child(true).parentName(computer.getName()).build();
+            Category otherComputer =Category.builder().level(2).name("Annet").child(true).parentName(computer.getName()).build();
             categoryRepository.save(screen);
             categoryRepository.save(datamaskin);
             categoryRepository.save(spill);
@@ -251,11 +251,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherComputer);
 
             //Sub-categories sound
-            Category speaker = Category.builder().name("Høytaler").child(true).parentName(sound.getName()).build();
-            Category cd = Category.builder().name("CD-spiller").child(true).parentName(sound.getName()).build();
-            Category lp = Category.builder().name("Platespiller").child(true).parentName(sound.getName()).build();
-            Category headphones = Category.builder().name("Hodetelefoner").child(true).parentName(sound.getName()).build();
-            Category othersound = Category.builder().name("Annet").child(true).parentName(sound.getName()).build();
+            Category speaker = Category.builder().level(2).name("Høytaler").child(true).parentName(sound.getName()).build();
+            Category cd = Category.builder().level(2).name("CD-spiller").child(true).parentName(sound.getName()).build();
+            Category lp = Category.builder().level(2).name("Platespiller").child(true).parentName(sound.getName()).build();
+            Category headphones = Category.builder().level(2).name("Hodetelefoner").child(true).parentName(sound.getName()).build();
+            Category othersound = Category.builder().level(2).name("Annet").child(true).parentName(sound.getName()).build();
             categoryRepository.save(speaker);
             categoryRepository.save(cd);
             categoryRepository.save(lp);
@@ -263,11 +263,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(othersound);
 
             //Other instrument
-            Category blow = Category.builder().name("Blåseinstrument").child(true).parentName(instruments.getName()).build();
-            Category streng = Category.builder().name("Strengeinstrument").child(true).parentName(instruments.getName()).build();
-            Category elektronisk = Category.builder().name("Elektriske instrumenter").child(true).parentName(instruments.getName()).build();
-            Category slag = Category.builder().name("Slaginstrument").child(true).parentName(instruments.getName()).build();
-            Category otherinstrument = Category.builder().name("Annet").child(true).parentName(instruments.getName()).build();
+            Category blow = Category.builder().level(2).name("Blåseinstrument").child(true).parentName(instruments.getName()).build();
+            Category streng = Category.builder().level(2).name("Strengeinstrument").child(true).parentName(instruments.getName()).build();
+            Category elektronisk = Category.builder().level(2).name("Elektriske instrumenter").child(true).parentName(instruments.getName()).build();
+            Category slag = Category.builder().level(2).name("Slaginstrument").child(true).parentName(instruments.getName()).build();
+            Category otherinstrument = Category.builder().level(2).name("Annet").child(true).parentName(instruments.getName()).build();
             categoryRepository.save(blow);
             categoryRepository.save(streng);
             categoryRepository.save(elektronisk);
@@ -275,11 +275,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherinstrument);
 
             //sub-categories for Clothes
-            Category clothes = Category.builder().name("Klær").child(true).parentName(clohting.getName()).build();
-            Category veske = Category.builder().name("Vesker").child(true).parentName(clothing.getName()).build();
-            Category sko = Category.builder().name("Sko").child(true).parentName(clothing.getName()).build();
-            Category smykker = Category.builder().name("Smykker").child(true).parentName(clothing.getName()).build();
-            Category otherclothes = Category.builder().name("Annet").child(true).parentName(clohting.getName()).build();
+            Category clothes = Category.builder().level(2).name("Klær").child(true).parentName(clohting.getName()).build();
+            Category veske = Category.builder().level(2).name("Vesker").child(true).parentName(clothing.getName()).build();
+            Category sko = Category.builder().level(2).name("Sko").child(true).parentName(clothing.getName()).build();
+            Category smykker = Category.builder().level(2).name("Smykker").child(true).parentName(clothing.getName()).build();
+            Category otherclothes = Category.builder().level(2).name("Annet").child(true).parentName(clohting.getName()).build();
             categoryRepository.save(clothes);
             categoryRepository.save(veske);
             categoryRepository.save(smykker);
@@ -287,12 +287,12 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherclothes);
 
             //Sub-categories for hobby
-            Category brettspill = Category.builder().name("Brettspill").child(true).parentName(hobby.getName()).build();
-            Category books = Category.builder().name("Bøker").child(true).parentName(hobby.getName()).build();
-            Category sklie = Category.builder().name("Sklie").child(true).parentName(hobby.getName()).build();
-            Category hoppeslott = Category.builder().name("Hoppeslott").child(true).parentName(hobby.getName()).build();
-            Category pynt = Category.builder().name("Pyntegjenstander").child(true).parentName(hobby.getName()).build();
-            Category otherhobby = Category.builder().name("Annet").child(true).parentName(hobby.getName()).build();
+            Category brettspill = Category.builder().level(2).name("Brettspill").child(true).parentName(hobby.getName()).build();
+            Category books = Category.builder().level(2).name("Bøker").child(true).parentName(hobby.getName()).build();
+            Category sklie = Category.builder().level(2).name("Sklie").child(true).parentName(hobby.getName()).build();
+            Category hoppeslott = Category.builder().level(2).name("Hoppeslott").child(true).parentName(hobby.getName()).build();
+            Category pynt = Category.builder().level(2).name("Pyntegjenstander").child(true).parentName(hobby.getName()).build();
+            Category otherhobby = Category.builder().level(2).name("Annet").child(true).parentName(hobby.getName()).build();
             categoryRepository.save(brettspill);
             categoryRepository.save(books);
             categoryRepository.save(sklie);
@@ -301,11 +301,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherhobby);
 
             //sub-categories for gardening
-            Category verktoy = Category.builder().name("Verktøy").child(true).parentName(garden.getName()).build();
-            Category container = Category.builder().name("Container").child(true).parentName(garden.getName()).build();
-            Category stoler = Category.builder().name("Stoler og bord").child(true).parentName(garden.getName()).build();
-            Category hage = Category.builder().name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
-            Category othergarden = Category.builder().name("Annet").child(true).parentName(garden.getName()).build();
+            Category verktoy = Category.builder().level(2).name("Verktøy").child(true).parentName(garden.getName()).build();
+            Category container = Category.builder().level(2).name("Container").child(true).parentName(garden.getName()).build();
+            Category stoler = Category.builder().level(2).name("Stoler og bord").child(true).parentName(garden.getName()).build();
+            Category hage = Category.builder().level(2).name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
+            Category othergarden = Category.builder().level(2).name("Annet").child(true).parentName(garden.getName()).build();
             categoryRepository.save(verktoy);
             categoryRepository.save(container);
             categoryRepository.save(stoler);
@@ -313,8 +313,8 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(othergarden);
 
             //sub-categories for hage
-            Category trillebor = Category.builder().child(true).name("Trillebår").parentName(hage.getName()).build();
-            Category hageverktoy = Category.builder().child(true).name("Hageredskaper").parentName(hage.getName()).build();
+            Category trillebor = Category.builder().level(3).child(true).name("Trillebår").parentName(hage.getName()).build();
+            Category hageverktoy = Category.builder().level(3).child(true).name("Hageredskaper").parentName(hage.getName()).build();
             categoryRepository.save(trillebor);
             categoryRepository.save(hageverktoy);
 
@@ -402,7 +402,7 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(handyball);
             adRepository.save(ball);
 
-            Rental rental = Rental.builder().rentFrom(LocalDate.now().plusDays(2)).dateOfRental(LocalDate.now()).build();
+            Rental rental = Rental.builder().rentFrom(LocalDate.now().minusDays(2)).rentTo(LocalDate.now().minusDays(1)).active(false).dateOfRental(LocalDate.now().minusDays(4)).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
