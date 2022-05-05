@@ -434,6 +434,10 @@ public class ChatServiceImpl implements ChatService {
             users.remove(user);
             group.setUsers(users);
             groupRepository.save(group);
+            if (group.getUsers().size() == 0) {
+
+                groupRepository.delete(group);
+            }
             return new Response("User removed", HttpStatus.OK);
         }
 
