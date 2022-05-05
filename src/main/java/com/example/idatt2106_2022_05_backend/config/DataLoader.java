@@ -361,14 +361,6 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(klovn);
             adRepository.save(tent);
 
-            for(Ad a: adRepository.findAll()){
-                Set<Ad> ads1 = new HashSet<>();
-                ads1.add(a);
-
-                telt.setAds(ads1);
-
-            }
-
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).duration(1).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.43).lng(10.4).build();
             Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).duration(4).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
@@ -411,8 +403,6 @@ public class DataLoader implements ApplicationRunner {
             Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.4).lng(10.39).category(ballSport).build();
             adRepository.save(handyball);
             adRepository.save(ball);
-
-
 
             Rental rental = Rental.builder().rentFrom(LocalDate.now().plusDays(2)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
@@ -505,18 +495,24 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message4);
             messageRepository.save(message5);
 
-            File pb = new File("src/main/resources/static/images/anders.jpg");
-            byte[] fileoneContent = Files.readAllBytes(pb.toPath());
-            Picture picture1 = Picture.builder()
-                    .filename(pb.getName())
-                    .data(fileoneContent)
-                    .type(Files.probeContentType(pb.toPath()))
-                    .build();
 
-            user1.setPicture(picture1);
-            picture1.setUser(user1);
-            userRepository.save(user1);
-            pictureRepository.save(picture1);
+            File pb = new File("src/main/resources/static/images/anders.jpg");
+            savepb(pb, user1);
+            pb = new File("src/main/resources/static/images/hasan.jpg");
+            savepb(pb,user2);
+            pb = new File("src/main/resources/static/images/maiken.jpg");
+            savepb(pb, user4);
+            pb = new File("src/main/resources/static/images/thadsha.jpeg");
+            savepb(pb,user5);
+            pb = new File("src/main/resources/static/images/karoline.jpg");
+            savepb(pb, user6);
+            pb = new File("src/main/resources/static/images/eirin.jpg");
+            savepb(pb, user7);
+            pb = new File("src/main/resources/static/images/johannes.jpg");
+            savepb(pb, user8);
+            pb = new File("src/main/resources/static/images/leo.jpg");
+            savepb(pb, user9);
+
 
             File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             fileContent(borremaskin, file);
@@ -605,5 +601,17 @@ public class DataLoader implements ApplicationRunner {
         picture.setAd(ad);
         adRepository.save(ad);
         pictureRepository.save(picture);
+    }
+
+    public void savepb(File pb, User user) throws IOException {
+        byte[] fileContent =  Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        userRepository.save(user);
+        pictureRepository.save(picture1);
     }
 }
