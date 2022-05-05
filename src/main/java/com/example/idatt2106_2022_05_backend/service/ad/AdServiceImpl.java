@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ *
+ */
 @Service
 public class AdServiceImpl implements AdService {
 
@@ -983,6 +986,9 @@ public class AdServiceImpl implements AdService {
                     .build());
             returnDto.get(i).setId(adId);
         }
+        if (returnDto.isEmpty()){
+            return null;
+        }
         return returnDto;
     }
 
@@ -997,6 +1003,9 @@ public class AdServiceImpl implements AdService {
                     .type(pictures.get(i).getType())
                     .build());
             returnDto.get(i).setId(adId);
+        }
+        if (returnDto.get(0) == null){
+            return new Response("Ad with title \"" + ad.getTitle() + "\" has no pictures", HttpStatus.NOT_FOUND);
         }
         return new Response(returnDto.get(0), HttpStatus.OK);
     }

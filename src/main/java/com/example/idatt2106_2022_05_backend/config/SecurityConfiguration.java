@@ -80,7 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
-            cors.setAllowedOrigins(List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
+            cors.setAllowedOrigins(List.of("http://localhost:8080/"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
@@ -95,11 +95,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .x509()
 //                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
-
-                // Relax CSRF on the WebSocket due to needing direct access from apps
-                //.csrf().ignoringAntMatchers("/ws/**").and()
-                //.authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
-
 //                .formLogin().permitAll().loginPage("/auth/login")
 //                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()

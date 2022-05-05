@@ -46,15 +46,10 @@ public class RentalServiceImpl implements RentalService {
     private PictureRepository pictureRepository;
 
     @Autowired
-    private AcceptRentalTokenRepository acceptRentalTokenRepository;
-
-    @Autowired
     private ReviewRepository reviewRepository;
 
     @Autowired
     private ChatService chatService;
-
-    private ModelMapper modelMapper = new ModelMapper();
 
     /**
      * Method to create Rental object
@@ -67,7 +62,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response createRental(RentalDto rentalDto) throws MessagingException, IOException {
         if (rentalDto.getBorrower().equals(rentalDto.getOwner())){
-            return new Response("Cannot borrow your own Ad", HttpStatus.NOT_ACCEPTABLE);
+            return new Response("Cannot borrow your own Ad", HttpStatus.NO_CONTENT);
         }
         Ad ad = adRepository.findById(rentalDto.getAdId()).get();
         Set<CalendarDate> cld = ad.getDates();
@@ -133,7 +128,7 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public ModelAndView activateRental(Long rentalId) throws MessagingException, IOException {
-//        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
@@ -166,26 +161,23 @@ public class RentalServiceImpl implements RentalService {
         return new ModelAndView("approve").addObject("title", "Rental has been activated");
     }
 
+    /**
+     * Method to decline offer of borrower.
+     * @param rentalId id of rental.
+     * @return returns a view that shows a window with result.
+     * @throws MessagingException thrown when email fails.
+     * @throws IOException thrown when email fails.
+     */
     @Override
     public ModelAndView declineRental(Long rentalId) throws MessagingException, IOException {
-//        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
             return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
         }
-//        if (accToken.equals(null)) {
-//            return new ModelAndView("approve").addObject("title", "Ikke gyldig token!");
-//        }
-//        Calendar cal = Calendar.getInstance();
+
         Rental rental = rentalOptional.get();
         rental.setActive(true);
-//        if ((accToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-//            acceptRentalTokenRepository.delete(accToken);
-//            rentalRepository.deleteById(rentalId);
-//            return new ModelAndView("expired").addObject("txt1", "Det ser ut som at valideringstiden har utløpt.");
-//        }
-        rentalRepository.deleteById(rentalId);
-//        acceptRentalTokenRepository.delete(accToken);
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
         variables.put("url", "http://localhost:8080/rentals");
@@ -197,6 +189,7 @@ public class RentalServiceImpl implements RentalService {
                 .subject("Låneforespørsel hos BOCO er avslått")
                 .build();
         emailService.sendEmail(email);
+        rentalRepository.deleteById(rentalId);
         return new ModelAndView("approve").addObject("title","Rental is deleted");
     }
 
@@ -353,6 +346,9 @@ public class RentalServiceImpl implements RentalService {
     public Response getRentalPictureById(Long rentalId) {
         Rental rental = rentalRepository.getById(rentalId);
         List<Picture> pictures = pictureRepository.findByAd(rental.getAd());
+        if(pictures.isEmpty()){
+            return new Response("No pictures found for rental with ad title \"" + rental.getAd().getTitle() + "\"",HttpStatus.NO_CONTENT);
+        }
         PictureReturnDto returnDto = PictureReturnDto.builder()
                 .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
                 .type(pictures.get(0).getType())
