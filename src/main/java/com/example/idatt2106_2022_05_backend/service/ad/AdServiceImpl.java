@@ -882,7 +882,7 @@ public class AdServiceImpl implements AdService {
 
 
     @Override
-    public Response searchThroughAds(String searchword) {
+    public Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation) {
         // List to be filled with corresponding ads
         List<Ad> adsContainingSearchWord = new ArrayList<>();
 
@@ -907,9 +907,13 @@ public class AdServiceImpl implements AdService {
             }
         }
         if(adsContainingSearchWord.size()>0) {
+            List<AdDto> list = adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
+                    .collect(Collectors.toList());
+            for(AdDto a: list){
+                a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            }
             // Casting objects to Dto and returning
-            return new Response(adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
-                    .collect(Collectors.toList()), HttpStatus.OK);
+            return new Response(list, HttpStatus.OK);
         }
         return new Response("Fant ingen annonser med dette søkeordet.", HttpStatus.NO_CONTENT);
     }
