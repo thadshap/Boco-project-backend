@@ -114,20 +114,19 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user9);
 
             // Create main-categories
-            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa-kitchen-set").build();
-            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa-car-side").build();
-            Category sport = Category.builder().name("Sport").parent(true).icon("fa-baseball-bat-ball").build();
-            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa-computer").build();
-            Category sound = Category.builder().name("Lyd").icon("fa-volume-high").parent(true).build();
-            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa-guitar").build();
-            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fa-shirt").build();
-            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fa-paintbrush").build();
-            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa-house-chimney").build();
+            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa fa-cutlery").build();
+            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa fa-car").build();
+            Category sport = Category.builder().name("Sport").parent(true).icon("fas fa-biking").build();
+            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa fa-laptop").build();
+            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).build();
+            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa fa-guitar").build();
+            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fas fa-tshirt").build();
+            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fas fa-running").build();
+            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa fa-home").build();
 
             //persisting categories
             categoryRepository.save(kitchen);
             categoryRepository.save(vehicle);
-            categoryRepository.save(sport);
             categoryRepository.save(sport);
             categoryRepository.save(computer);
             categoryRepository.save(sound);
