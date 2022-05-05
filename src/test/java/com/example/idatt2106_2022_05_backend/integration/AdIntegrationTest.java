@@ -102,8 +102,9 @@ public class AdIntegrationTest {
         rentalRepository.deleteAll();
         pictureRepository.deleteAll();
         messageRepository.deleteAll();
-        userRepository.deleteAll();
         adRepository.deleteAll();
+        userRepository.deleteAll();
+        // adRepository.deleteAll();
         // messageRepository.deleteAll();
         // outputMessageRepository.deleteAll();
         // userRepository.deleteAll();

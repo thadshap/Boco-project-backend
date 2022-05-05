@@ -275,22 +275,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
         Optional<User> userFromDB = userRepository.findById(userId);
-        if(userFromDB.isEmpty()){
+        if (userFromDB.isEmpty()) {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
-        if ((!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) && userUpdateDto.getFirstName() != null) {
-            user.setFirstName(userUpdateDto.getFirstName());
+        if (userUpdateDto.getFirstName() != null) {
+            if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
+                user.setFirstName(userUpdateDto.getFirstName());
+            }
         }
-        if ((!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) && userUpdateDto.getLastName() != null) {
-            user.setLastName(userUpdateDto.getLastName());
+        if (userUpdateDto.getLastName() != null) {
+            if (!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) {
+                user.setLastName(userUpdateDto.getLastName());
+            }
         }
-        if ((!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) && userUpdateDto.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+        if (userUpdateDto.getPassword() != null) {
+            if (!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            }
         }
-        System.out.println(user.getFirstName() + " " + user.getEmail());
-        userRepository.save(user);
-        return new Response("User updated", HttpStatus.OK);
+        return null;
     }
 
     /**
