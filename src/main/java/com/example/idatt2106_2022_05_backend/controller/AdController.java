@@ -190,13 +190,13 @@ public class AdController {
     }
 
     // Get all categories
-    @GetMapping("/categories")
+    @GetMapping("/categories")//TODO delete
     public Response getAllCategories() {
         return adService.getAllCategories();
     }
 
     // Get sub-categories for a category
-    @GetMapping("/categories/{parentCategoryName}")
+    @GetMapping("/categories/{parentCategoryName}")//TODO delete
     public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName) {
         return adService.getAllSubCategories(parentCategoryName);
     }
@@ -208,7 +208,7 @@ public class AdController {
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @PostMapping("/categoriesRecursive/{categoryName}")
+    @PostMapping("/categoriesRecursive/{categoryName}")//TODO delete if no tests
     public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
             @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
@@ -220,7 +220,7 @@ public class AdController {
     }
 
     // Get all parent categories
-    @GetMapping("/categories/parent")
+    @GetMapping("/categories/parent")//TODO delete
     public Response getAllParentCategories() {
         return adService.getAllParentCategories();
     }
