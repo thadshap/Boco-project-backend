@@ -338,10 +338,10 @@ public class DataLoader implements ApplicationRunner {
             Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
                     durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(60.9).lng(10.4).
                     streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
-            Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).
+            Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).duration(2).price(200).created(LocalDate.now()).lat(59.4).lng(10.4).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
-            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
+            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").user(user6).description("Leier ut matematiske metoder 3 boka").rental(true).
                     durationType(AdType.MONTH).duration(2).price(100).created(LocalDate.now()).lat(63.4).lng(11.4).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
             Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.4).lng(10.5).
@@ -406,13 +406,13 @@ public class DataLoader implements ApplicationRunner {
 
             Rental rental = Rental.builder().rentFrom(LocalDate.now().plusDays(2)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(klovn).owner(user1).borrower(user2).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(matte).owner(user1).borrower(user2).price(100).active(true).deadline(LocalDate.now().plusDays(5)).rentTo(LocalDate.now().plusDays(9)).rentFrom(LocalDate.now().plusDays(6)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(matte).owner(user6).borrower(user9).price(100).active(true).deadline(LocalDate.now().plusDays(5)).rentTo(LocalDate.now().plusDays(9)).rentFrom(LocalDate.now().plusDays(6)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(newHammer).owner(user3).borrower(user1).price(3000).active(false).deadline(LocalDate.now().plusDays(7)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(8)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().plusDays(7)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(8)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user3).borrower(user1).price(3000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
