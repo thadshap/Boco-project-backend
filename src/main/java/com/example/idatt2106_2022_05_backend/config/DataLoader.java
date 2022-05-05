@@ -338,10 +338,10 @@ public class DataLoader implements ApplicationRunner {
             Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
                     durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(60.9).lng(10.4).
                     streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
-            Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).
+            Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).duration(2).price(200).created(LocalDate.now()).lat(59.4).lng(10.4).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
-            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
+            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").user(user6).description("Leier ut matematiske metoder 3 boka").rental(true).
                     durationType(AdType.MONTH).duration(2).price(100).created(LocalDate.now()).lat(63.4).lng(11.4).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
             Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.4).lng(10.5).
@@ -360,14 +360,6 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(matte);
             adRepository.save(klovn);
             adRepository.save(tent);
-
-            for(Ad a: adRepository.findAll()){
-                Set<Ad> ads1 = new HashSet<>();
-                ads1.add(a);
-
-                telt.setAds(ads1);
-
-            }
 
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).duration(1).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.43).lng(10.4).build();
@@ -407,18 +399,20 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(gravemaskin);
             adRepository.save(elsykker);
 
-
-
+            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").duration(1).durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(64.3).lng(10.4).build();
+            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.4).lng(10.39).category(ballSport).build();
+            adRepository.save(handyball);
+            adRepository.save(ball);
 
             Rental rental = Rental.builder().rentFrom(LocalDate.now().plusDays(2)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(klovn).owner(user1).borrower(user2).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(matte).owner(user1).borrower(user2).price(100).active(true).deadline(LocalDate.now().plusDays(5)).rentTo(LocalDate.now().plusDays(9)).rentFrom(LocalDate.now().plusDays(6)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(matte).owner(user6).borrower(user9).price(100).active(true).deadline(LocalDate.now().plusDays(5)).rentTo(LocalDate.now().plusDays(9)).rentFrom(LocalDate.now().plusDays(6)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(newHammer).owner(user3).borrower(user1).price(3000).active(false).deadline(LocalDate.now().plusDays(7)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(8)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().plusDays(7)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(8)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user3).borrower(user1).price(3000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
@@ -448,35 +442,16 @@ public class DataLoader implements ApplicationRunner {
                 ad.setDates(calendarService.addFutureDates(ad.getId()));
             }
 
-            // Adding the sets
-            Set<Ad> ads1 = new HashSet<>();
-            ads1.add(pc);
-            telt.setAds(ads1);
+            for(Ad a:adRepository.findAll()){
+                Set<Ad> adsy = new HashSet<>();
+                adsy.add(a);
+                a.getCategory().setAds(adsy);;
+                categoryRepository.save(a.getCategory());
+            }
 
-            Set<Ad> ads2 = new HashSet<>();
-            ads2.add(tux);
-            verktoy.setAds(ads2);
-
-            Set<Ad> ads3 = new HashSet<>();
-            ads3.add(pc);
-            datamaskin.setAds(ads3);
-
-            categoryRepository.save(telt);
-            categoryRepository.save(verktoy);
-            categoryRepository.save(datamaskin);
-            adRepository.saveAll(ads);
-
-            Group group1 = Group.builder()
-                    .name("gruppechat1")
-                    .build();
-
-            Group group2 = Group.builder()
-                    .name("gruppechat2")
-                    .build();
-
-            Group group3 = Group.builder()
-                    .name("gruppechat3")
-                    .build();
+            Group group1 = Group.builder().name("gruppechat1").build();
+            Group group2 = Group.builder().name("gruppechat2").build();
+            Group group3 = Group.builder().name("gruppechat3").build();
 
             Set<User> users1 = new HashSet<>();
             users1.add(user1);
@@ -497,27 +472,9 @@ public class DataLoader implements ApplicationRunner {
             groupRepository.save(group2);
             groupRepository.save(group3);
 
-            Message message1 = Message.builder()
-                    .content("Hei!")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message2 = Message.builder()
-                    .content("Halo")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message3 = Message.builder()
-                    .content("Så fint vær idag.")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
+            Message message1 = Message.builder().content("Hei!").group(group1).user(user1).timestamp(Timestamp.from(Instant.now())).build();
+            Message message2 = Message.builder().content("Halo").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
+            Message message3 = Message.builder().content("Så fint vær idag.").group(group1).user(user2).timestamp(Timestamp.from(Instant.now())).build();
             Message message4 = Message.builder()
                     .content("Nei")
                     .group(group1)
@@ -538,18 +495,24 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message4);
             messageRepository.save(message5);
 
-            File pb = new File("src/main/resources/static/images/anders.jpg");
-            byte[] fileoneContent = Files.readAllBytes(pb.toPath());
-            Picture picture1 = Picture.builder()
-                    .filename(pb.getName())
-                    .data(fileoneContent)
-                    .type(Files.probeContentType(pb.toPath()))
-                    .build();
 
-            user1.setPicture(picture1);
-            picture1.setUser(user1);
-            userRepository.save(user1);
-            pictureRepository.save(picture1);
+            File pb = new File("src/main/resources/static/images/anders.jpg");
+            savepb(pb, user1);
+            pb = new File("src/main/resources/static/images/hasan.jpg");
+            savepb(pb,user2);
+            pb = new File("src/main/resources/static/images/maiken.jpg");
+            savepb(pb, user4);
+            pb = new File("src/main/resources/static/images/thadsha.jpeg");
+            savepb(pb,user5);
+            pb = new File("src/main/resources/static/images/karoline.jpg");
+            savepb(pb, user6);
+            pb = new File("src/main/resources/static/images/eirin.jpg");
+            savepb(pb, user7);
+            pb = new File("src/main/resources/static/images/johannes.jpg");
+            savepb(pb, user8);
+            pb = new File("src/main/resources/static/images/leo.jpg");
+            savepb(pb, user9);
+
 
             File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             fileContent(borremaskin, file);
@@ -638,5 +601,17 @@ public class DataLoader implements ApplicationRunner {
         picture.setAd(ad);
         adRepository.save(ad);
         pictureRepository.save(picture);
+    }
+
+    public void savepb(File pb, User user) throws IOException {
+        byte[] fileContent =  Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .data(fileContent)
+                .type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        userRepository.save(user);
+        pictureRepository.save(picture1);
     }
 }
