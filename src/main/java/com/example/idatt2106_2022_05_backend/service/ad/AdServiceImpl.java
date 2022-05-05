@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Service class implementation of {@link AdService}
  */
 @Service
 public class AdServiceImpl implements AdService {
@@ -63,6 +63,12 @@ public class AdServiceImpl implements AdService {
     private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
 
     // Get all ads
+
+    /**
+     * Method to get all ads.
+     * @return all ads.
+     * @throws IOException modelmapper.
+     */
     @Override
     public Response getAllAds() throws IOException {
         List<Ad> allAds = adRepository.findAll();
@@ -78,7 +84,11 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
-    // Get all ads in category by category name
+    /**
+     * Method to get all ads in a category by category name.
+     * @param name name of category.
+     * @return returns ads if found.
+     */
     @Override
     public Response getAllAdsInCategory(String name) {
         Set<Category> categories = categoryRepository.findByName(name);
@@ -111,7 +121,11 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all ads in category by category id
+    /**
+     * Method to get all ads in category by category id
+     * @param categoryId
+     * @return
+     */
     @Override
     public Response getAllAdsInCategory(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
@@ -143,6 +157,11 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to get all ads in sub category
+     * @param parentName name of parent category.
+     * @return returns
+     */
     @Override
     public Response getAllSubCategories(String parentName) {
         // List that will be returned

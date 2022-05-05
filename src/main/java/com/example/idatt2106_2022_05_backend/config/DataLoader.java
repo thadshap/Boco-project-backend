@@ -50,8 +50,10 @@ public class DataLoader implements ApplicationRunner {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Autowired
     private GroupRepository groupRepository;
 
+    @Autowired
     private MessageRepository messageRepository;
 
     @Autowired
@@ -82,8 +84,6 @@ public class DataLoader implements ApplicationRunner {
             this.rentalRepository = rentalRepository;
             this.reviewRepository = reviewRepository;
             this.pictureRepository = pictureRepository;
-            this.groupRepository = groupRepository;
-            this.messageRepository = messageRepository;
             this.groupRepository = groupRepository;
             this.messageRepository = messageRepository;
         }
@@ -157,7 +157,7 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(hobby);
             categoryRepository.save(garden);
 
-            System.out.println("categories: " + categoryRepository.findAll());
+            System.out.println("categories: " + categoryRepository.findAll().size());
 
             // Create sub-categories kitchen
             Category kitchenmachine = Category.builder().name("Kjøkkenmaskin").
@@ -644,48 +644,8 @@ public class DataLoader implements ApplicationRunner {
             groupRepository.save(group2);
             groupRepository.save(group3);
 
-            Message message1 = Message.builder()
-                    .content("Hei!")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
 
-            Message message2 = Message.builder()
-                    .content("Halo")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message3 = Message.builder()
-                    .content("Så fint vær idag.")
-                    .group(group1)
-                    .user(user2)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message4 = Message.builder()
-                    .content("Nei")
-                    .group(group1)
-                    .user(user1)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            Message message5 = Message.builder()
-                    .content("-(^__^)-")
-                    .group(group2)
-                    .user(user3)
-                    .timestamp(Timestamp.from(Instant.now()))
-                    .build();
-
-            messageRepository.save(message1);
-            messageRepository.save(message2);
-            messageRepository.save(message3);
-            messageRepository.save(message4);
-            messageRepository.save(message5);
-
-        File fileone = new File("src/main/resources/static/images/borrmaskin.jpg");
+            File fileone = new File("src/main/resources/static/images/borrmaskin.jpg");
             byte[] fileoneContent = Files.readAllBytes(fileone.toPath());
             Picture pictureone = Picture.builder()
                     .filename(fileone.getName())
@@ -748,6 +708,51 @@ public class DataLoader implements ApplicationRunner {
 
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);
+
+            groupRepository.save(group1);
+            groupRepository.save(group2);
+            groupRepository.save(group3);
+
+            Message message1 = Message.builder()
+                    .content("Hei!")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message2 = Message.builder()
+                    .content("Halo")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message3 = Message.builder()
+                    .content("Så fint vær idag.")
+                    .group(group1)
+                    .user(user2)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message4 = Message.builder()
+                    .content("Nei")
+                    .group(group1)
+                    .user(user1)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            Message message5 = Message.builder()
+                    .content("-(^__^)-")
+                    .group(group2)
+                    .user(user3)
+                    .timestamp(Timestamp.from(Instant.now()))
+                    .build();
+
+            messageRepository.save(message1);
+            messageRepository.save(message2);
+            messageRepository.save(message3);
+            messageRepository.save(message4);
+            messageRepository.save(message5);
         }
 
     private void fileContent(Ad ad, File file) throws IOException {
