@@ -870,6 +870,26 @@ public class AdIntegrationTest {
         @SneakyThrows
         @Test
         public void getAllAdsSortedByDistance() {
+            User user1 = userRepository.findAll().get(0);
+            Category category1 = categoryRepository.findAll().get(0);
+
+            // Creating ad without coordinates
+            AdDto ad1 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+            AdDto ad2 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+            AdDto ad3 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+
+
+            // Persist the ad
+            adService.postNewAd(ad1);
+            adService.postNewAd(ad2);
+            adService.postNewAd(ad3);
+
             // Verify that the db contains at least 3 ads
             assertTrue(adRepository.findAll().size() >= 3);
 
