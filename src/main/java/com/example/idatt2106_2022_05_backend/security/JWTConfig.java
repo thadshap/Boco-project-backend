@@ -66,14 +66,7 @@ public class JWTConfig extends OncePerRequestFilter {
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }else{
-                //throw new HttpClientErrorException.Unauthorized();
-                //HttpServletResponse response = (HttpServletResponse) httpServletRequest;
-                //response.setStatus(401);
-                //response.setHeader("JWT token is expired", "Expired token");
-                //filterChain.doFilter(httpServletRequest, response);
             }
-
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
