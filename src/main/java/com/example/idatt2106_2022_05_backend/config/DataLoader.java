@@ -466,7 +466,8 @@ public class DataLoader implements ApplicationRunner {
             savepb(pb, user8);
             pb = new File("src/main/resources/static/images/leo.jpg");
             savepb(pb, user9);
-
+            pb = new File("src/main/resources/static/images/obama.jpg");
+            savepb(pb, user3);
 
             File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             fileContent(borremaskin, file);
