@@ -30,7 +30,7 @@ public class Group {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_group",
             joinColumns = {@JoinColumn(name = "group_id")},

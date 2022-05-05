@@ -2,14 +2,16 @@ package com.example.idatt2106_2022_05_backend.integration;
 
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.chat.MessageDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.PrivateGroupDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Group;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
+import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -24,12 +26,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -64,6 +66,8 @@ public class ChatIntegrationTest {
     @Autowired
     ChatService chatService;
 
+    @Autowired
+    RentalService rentalService;
 
     @Autowired
     ReviewRepository reviewRepository;
@@ -83,9 +87,9 @@ public class ChatIntegrationTest {
 
 
         // Saving the users
-        userRepository.save(user1);
-        userRepository.save(user2);
-        userRepository.save(user3);
+        User user1Saved = userRepository.save(user1);
+        User user2Saved = userRepository.save(user2);
+        User user3Saved = userRepository.save(user3);
 
 
         // Building categories
@@ -104,21 +108,86 @@ public class ChatIntegrationTest {
         categoryRepository.save(it);
 
         // Building an ad-dto with foreign keys
+        /**
         AdDto ad = AdDto.builder().
-                title("Nike shoes").
+                title("Nike shoes generic title").
                 description("Renting out a pair of shoes in size 40").
                 rental(true).
                 rentedOut(false).
                 durationType(AdType.WEEK).
                 price(100).
-                streetAddress("Project Road 4").
-                postalCode(7234).
+                streetAddress("Fjordvegen 2").
+                postalCode(9990).
+                city("Båtsfjord").
                 userId(user1.getId()).
                 categoryId(it.getId()).
                 build();
+         */
 
-            // Post the ad
-            adService.postNewAd(ad);
+        Ad ad = Ad.builder().
+                title("Nike shoes generic title").
+                description("Renting out a pair of shoes in size 40").
+                rental(true).
+                rentedOut(false).
+                durationType(AdType.WEEK).
+                price(100).
+                streetAddress("Fjordvegen 2").
+                postalCode(9990).
+                city("Båtsfjord").
+                user(user1).
+                category(it).
+                build();
+
+        // Post the ad
+        Ad adSaved = adRepository.save(ad);
+        //adService.postNewAd(ad);
+
+        // Retrieve the ad
+        // Set<Ad> ads = adRepository.findByTitle("Nike shoes generic title");
+        // Ad adFound = ads.stream().findFirst().get();
+
+        assertNotNull(adSaved);
+
+        // Generate a rental dto
+        /**
+        RentalDto dto = RentalDto.builder().
+                adId(adSaved.getId()).
+                owner(user1Saved.getEmail()).
+                borrower(user2Saved.getEmail()).
+                active(false).
+                dateOfRental(LocalDate.now()).
+                rentFrom(LocalDate.now().plusDays(1)).
+                rentTo(LocalDate.now().plusWeeks(1)).
+                deadline(LocalDate.now().plusDays(2)).build();
+
+        // Create a rental
+        rentalService.createRental(dto);
+         */
+        Rental rental = Rental.builder().
+                ad(adSaved).
+                owner(user1Saved).
+                borrower(user2Saved).
+                active(false).
+                dateOfRental(LocalDate.now()).
+                rentFrom(LocalDate.now().plusDays(1)).
+                rentTo(LocalDate.now().plusWeeks(1)).
+                deadline(LocalDate.now().plusDays(2)).build();
+        rentalRepository.save(rental);
+
+        // Creating a group chat
+        // Creating list to hold user ids
+        Set<Long> ids = new HashSet<>();
+        ids.add(user1Saved.getId());
+        ids.add(user2Saved.getId());
+        ids.add(user3Saved.getId());
+
+        // ListGroupDto needed to call on method
+        ListGroupDto dto = new ListGroupDto();
+        dto.setGroupName("Group for tests");
+        dto.setUserIds(ids);
+
+        // Creating a group chat
+        chatService.createGroupFromUserIds(dto);
     }
 
     @AfterEach
@@ -133,6 +202,7 @@ public class ChatIntegrationTest {
         // outputMessageRepository.deleteAll();
         // userRepository.deleteAll();
         categoryRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Nested
@@ -152,6 +222,9 @@ public class ChatIntegrationTest {
                 assertNotNull(user1);
                 assertNotNull(user2);
 
+                // Get current size of group chat repo
+                int sizeAtStart = groupRepository.findAll().size();
+
                 // To perform this method a PrivateGroupDto is needed
                 PrivateGroupDto dto = new PrivateGroupDto();
                 dto.setGroupName("Chat");
@@ -162,6 +235,11 @@ public class ChatIntegrationTest {
                 ResponseEntity<Object> response = chatService.createTwoUserGroup(dto);
                 assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
 
+                int sizeAtEnd = groupRepository.findAll().size();
+
+                // Assert that another group is added
+                assertNotEquals(sizeAtStart, sizeAtEnd);
+                assertEquals(sizeAtStart + 1, sizeAtEnd);
                 // Perform the copied version from service
                 GroupDto result = Methods.this.createTwoUserGroup(dto);
                 assertNotNull(result);
@@ -169,17 +247,119 @@ public class ChatIntegrationTest {
 
             @Test
             public void createGroupFromUserIds() {
+                // Retrieve 3 users from db
+                User user1 = userRepository.findAll().get(0);
+                User user2 = userRepository.findAll().get(1);
+                User user3 = userRepository.findAll().get(2);
 
+                // Assert that users exist
+                assertNotNull(user1);
+                assertNotNull(user2);
+                assertNotNull(user3);
+
+                // Creating list to hold user ids
+                Set<Long> ids = new HashSet<>();
+                ids.add(user1.getId());
+                ids.add(user2.getId());
+                ids.add(user3.getId());
+
+                // ListGroupDto needed to call on method
+                ListGroupDto dto = new ListGroupDto();
+                dto.setGroupName("Group for tests");
+                dto.setUserIds(ids);
+
+                // Testing method
+                ResponseEntity<Object> response = chatService.createGroupFromUserIds(dto);
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Testing body of method using copied over method
+                GroupDto result = Methods.this.createGroupFromUserIds(dto);
+                assertNotNull(result);
+
+                // Fetch the created group
+                Optional<Group> groupFound = groupRepository.findById(result.getGroupId());
+                assertTrue(groupFound.isPresent());
+
+                Group group = groupFound.get();
+
+                // Assert that all 3 users are saved into the group-chat
+                assertEquals(group.getUsers().size(),3);
             }
 
             @Test
             public void sendRentalMessage() {
+                // Get two users
+                User user1 = userRepository.findAll().get(0);
+                User user2 = userRepository.findAll().get(1);
+
+                // Assert that users exist
+                assertNotNull(user1);
+                assertNotNull(user2);
+
+                // Get an ad
+                Ad ad = adRepository.findAll().get(0);
+
+                // A rental is created in the setUp --> retrieving it
+                Rental rental = rentalRepository.findAll().get(0);
+
+                // Assert that the rental was found
+                assertNotNull(rental);
+
+                assertEquals(ad.getId(), rental.getAd().getId());
+
+
+                // Create a rental dto
+                RentalDto dto = RentalDto.builder().
+                        adId(ad.getId()).
+                        rentTo(rental.getRentTo()).
+                        rentFrom(rental.getRentFrom()).
+                        borrower(rental.getBorrower().getEmail()).
+                        owner(rental.getOwner().getEmail()).
+                        price(ad.getPrice()).id(rental.getId()).
+                        build();
+
+                // Get the number of messages in db before we run the method
+                int prevNumber = messageRepository.findAll().size();
+
+                // Performing the message
+                chatService.sendRentalMessage(dto);
+
+                // Get the new number of messages in db
+                int newNumber = messageRepository.findAll().size();
+
+                // Assert that they are different
+                assertNotEquals(prevNumber, newNumber);
+
                 // Assert that this method saves a message in repo
             }
 
             @Test
             public void sendMessage() {
+                // Retrieve a user and group
+                User user = userRepository.findAll().get(0);
+                Group group = groupRepository.findAll().get(0);
 
+                // Assert not null
+                assertNotNull(user);
+                assertNotNull(group);
+
+                // MessageDto needed to perform method
+                MessageDto dto = new MessageDto();
+                dto.setContent("A message..");
+                dto.setUserId(user.getId());
+
+                // Retrieve the old amount of messages in db
+                int oldAmount = messageRepository.findAll().size();
+
+                // Performing method
+                MessageDto response = chatService.sendMessage(group.getId(), dto);
+
+                // Retrieve the new amount of messages in db
+                int newAmount = messageRepository.findAll().size();
+                assertNotEquals(oldAmount, newAmount);
+
+                // Assert that an encoding was created
+                assertFalse(response.getBase64().isEmpty());
             }
         }
 
@@ -267,6 +447,60 @@ public class ChatIntegrationTest {
                 return null;
             }
         }
+
+        public GroupDto createGroupFromUserIds(ListGroupDto listGroupDto) {
+            //TODO multiple of same user given?
+            List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
+            Set<User> users = new HashSet<>();
+
+            for (int i = 0; i < userIds.size(); i++) {
+                users.add(getUser(userIds.get(i)));
+            }
+
+            if (users.size() == 2) {
+                Group group = checkIfUsersHavePrivateGroup(users);
+                if (group != null) {
+                    return new GroupDto(group.getId(),group.getName());
+                }
+            }
+
+            Group newGroup = Group.builder()
+                    .name(listGroupDto.getGroupName())
+                    .users(users)
+                    .build();
+            groupRepository.save(newGroup);
+
+            GroupDto groupDto = new GroupDto();
+            groupDto.setGroupId(newGroup.getId());
+            groupDto.setGroupName(newGroup.getName());
+
+            return groupDto;
+        }
+
+        private User getUser(long userId) {
+            return userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke brukeren"));
+        }
+
+        private Group checkIfUsersHavePrivateGroup(Set<User> usr) {
+            List<User> users = new ArrayList<>(usr);
+            User userOne = users.get(0);
+            User userTwo = users.get(1);
+
+            Set<Group> grps = userOne.getGroupChats();
+            List<Group> groups = new ArrayList<>(grps);
+
+            for (int i = 0; i < groups.size(); i++) {
+                Group group = groups.get(i);
+                if (group.getUsers().size() == 2) {
+                    if (group.getUsers().contains(userTwo)) {
+                        return group;
+                    }
+                }
+            }
+
+            return null;
+        };
     }
 
 }
