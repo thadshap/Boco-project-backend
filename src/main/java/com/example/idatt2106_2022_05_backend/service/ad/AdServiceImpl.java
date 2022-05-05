@@ -384,7 +384,7 @@ public class AdServiceImpl implements AdService {
 
         for (Category category : allCategories) {
             if (category.isParent()) {
-                CategoryDto dto = CategoryDto.builder().id(category.getId()).name(category.getName())
+                CategoryDto dto = CategoryDto.builder().child(category.isChild()).parent(category.isParent()).id(category.getId()).name(category.getName())
                         .icon(category.getIcon()).build();
                 categoriesToReturn.add(dto);
             }

@@ -164,9 +164,6 @@ public class AdController {
         return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
-
-
-
     @PostMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
     public Response searchInAdsAndCategories(@PathVariable String searchWord, UserGeoLocation userGeoLocation) {
