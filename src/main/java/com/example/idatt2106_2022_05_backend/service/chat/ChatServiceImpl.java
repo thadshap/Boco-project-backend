@@ -100,7 +100,7 @@ public class ChatServiceImpl implements ChatService {
      *
      */
     @Override
-    public void sendRentalMessage(RentalDto rentalDto, String token){
+    public void sendRentalMessage(RentalDto rentalDto){
         User owner = userRepository.findByEmail(rentalDto.getOwner());
         User borrower = userRepository.findByEmail(rentalDto.getBorrower());
         Set<User> users = new HashSet<>();
@@ -123,7 +123,7 @@ public class ChatServiceImpl implements ChatService {
         String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
                 "Pris: " + rentalDto.getPrice() + "kr \n" +
-                "http://localhost:8080/rental/approve/" + rentalDto.getId() + "/?token=" + token;
+                "http://localhost:8080/rental/approve_rental/?rentalId=" + rentalDto.getId();
 
         Message message = new Message();
         message.setContent(content);

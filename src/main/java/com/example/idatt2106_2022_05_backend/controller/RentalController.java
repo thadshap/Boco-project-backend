@@ -31,24 +31,13 @@ public class RentalController {
 
     @PostMapping("/create")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public Response createRental(@RequestBody RentalDto rentalDto) {
+    public Response createRental(@RequestBody RentalDto rentalDto) throws MessagingException, IOException {
         log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
         if(!securityService.isUserByEmail(rentalDto.getBorrower()) && !securityService.isVerifiedUser(0L)){
             return new Response("Du kan ikke leie dette produktet.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.createRental(rentalDto);
     }
-
-//    @GetMapping("/approve/{rentalId}")
-//    @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-//    public ModelAndView approveRental(@RequestParam("token") String token, @PathVariable Long rentalId) throws MessagingException {
-//        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-//        if(!securityService.isRentalOwnerByToken(rentalId, token)){
-//            return new ModelAndView("approve")
-//                    .addObject("title", "Du har ikke tilgang på forespørselen.");
-//        }
-//        return rentalService.approveRental(rentalId, token);
-//    }
 
     @PatchMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)

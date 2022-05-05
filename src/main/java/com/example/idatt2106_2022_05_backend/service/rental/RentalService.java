@@ -11,7 +11,7 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 
 public interface RentalService {
-    Response createRental(RentalDto rentalDto);
+    Response createRental(RentalDto rentalDto) throws MessagingException, IOException;
 
 //    ModelAndView approveRental(Long rentalId, String token);
 
