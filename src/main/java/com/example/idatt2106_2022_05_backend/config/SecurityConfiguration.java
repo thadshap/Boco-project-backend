@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 //import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
+import com.example.idatt2106_2022_05_backend.exception.JwtAuthEntrypointException;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
@@ -36,12 +37,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTConfig jwtConfig;
 
+    @Autowired
+    private JwtAuthEntrypointException jwtAuthEntrypointException;
+
     private static final String[] WHITELIST_URLS = {
             "/**",
             "/auth/**",
             "/ws",
             "/ws/**",
-            "/api/ads/**",
             "/api/ads/**",
             "/api/users/**",
             "/api/search/**",
@@ -107,7 +110,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthEntrypointException);
     }
 
     @Override

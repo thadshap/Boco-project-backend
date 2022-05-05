@@ -167,10 +167,10 @@ public class AdController {
 
 
 
-    @GetMapping("/search/{searchWord}")
+    @PostMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@PathVariable String searchWord) {
-        return adService.searchThroughAds(searchWord);
+    public Response searchInAdsAndCategories(@PathVariable String searchWord, UserGeoLocation userGeoLocation) {
+        return adService.searchThroughAds(searchWord, userGeoLocation);
     }
 
     // Get all categories
