@@ -213,10 +213,13 @@ public class AdServiceImpl implements AdService {
         List<Category> categories = categoryRepository.findAll();
         ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
         for (int i = 0; i < categories.size(); i++) {
-            categoriesToReturn.get(i).setLevel(categories.get(i).getLevel());
-            categoriesToReturn.get(i).setParentName(categories.get(i).getParentName());
-            categoriesToReturn.get(i).setName(categories.get(i).getName());
-            categoriesToReturn.get(i).setId(categories.get(i).getId());
+            categoriesToReturn.add(CategoryDto.builder()
+                            .level(categories.get(i).getLevel())
+                            .icon(categories.get(i).getIcon())
+                            .parentName(categories.get(i).getParentName())
+                            .name(categories.get(i).getName())
+                            .id(categories.get(i).getId())
+                            .build());
         }
         return new Response(categoriesToReturn, HttpStatus.OK);
     }
