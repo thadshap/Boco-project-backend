@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.GroupDto;
 import com.example.idatt2106_2022_05_backend.dto.chat.ListGroupDto;
@@ -12,6 +13,7 @@ import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.chat.ChatService;
 import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
+import com.example.idatt2106_2022_05_backend.service.user.UserService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +49,11 @@ public class ChatIntegrationTest {
     GroupRepository groupRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     RentalRepository rentalRepository;
+
     @Autowired
     UserRepository userRepository;
 
@@ -367,7 +373,40 @@ public class ChatIntegrationTest {
         class GetTests {
             @Test
             public void getAllMessagesByGroupId() {
+                // Retrieve a user and group
+                User user = userRepository.findAll().get(0);
+                Group group = groupRepository.findAll().get(0);
 
+                // Assert not null
+                assertNotNull(user);
+                assertNotNull(group);
+
+                // MessageDto needed to perform method
+                MessageDto dto = new MessageDto();
+                dto.setContent("A message..");
+                dto.setUserId(user.getId());
+
+                // Get number of messages for the group currently
+                int oldNumber = Methods.this.getAllMessagesByGroupId(group.getId()).size();
+                assertTrue(oldNumber == 0);
+
+                // Performing method to set up the test
+                chatService.sendMessage(group.getId(), dto);
+                chatService.sendMessage(group.getId(), dto);
+
+
+                // Get the messages for the group
+                ResponseEntity<Object> response = chatService.getAllMessagesByGroupId(group.getId());
+                assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+
+                // Use copied over method in order to count the messages --> there should be 1!
+                List<MessageDto> result = Methods.this.getAllMessagesByGroupId(group.getId());
+
+                // Assert that a message was sent
+                assertNotEquals(oldNumber, result.size());
+
+                // 2 because the method was performed three times above
+                assertEquals(result.size(), 2);
             }
 
             @Test
@@ -446,6 +485,41 @@ public class ChatIntegrationTest {
             else {
                 return null;
             }
+        }
+
+        public List<MessageDto> getAllMessagesByGroupId(long groupId) {
+            Group group = getGroup(groupId);
+
+            Set<Message> messages = messageRepository.findAllByGroup(group);
+            List<Message> msL = new ArrayList<>(messages);
+            List<MessageDto> messageDtoList = new ArrayList<>();
+
+            for (int i = 0; i < msL.size(); i++) {
+                Message ms = msL.get(i);
+
+                PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
+                //TODO change when getPicture changes
+                if(pRDto == null){
+                    pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+                }
+
+                String ts = ms.getTimestamp().toString().split("\\.")[0];
+                MessageDto messageDto = new MessageDto(
+                        ms.getContent(),
+                        ts, ms.getUser().getId(),
+                        ms.getUser().getFirstName(),
+                        ms.getUser().getLastName(),
+                        pRDto.getType(),
+                        pRDto.getBase64());
+                messageDtoList.add(messageDto);
+            }
+
+            return messageDtoList;
+        }
+
+        private Group getGroup(long id) {
+            return groupRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
         }
 
         public GroupDto createGroupFromUserIds(ListGroupDto listGroupDto) {
