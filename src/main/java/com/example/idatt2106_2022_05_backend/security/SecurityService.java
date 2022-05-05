@@ -1,18 +1,8 @@
 package com.example.idatt2106_2022_05_backend.security;
 
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Rental;
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.model.User;
-import com.example.idatt2106_2022_05_backend.repository.*;
-import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.social.google.api.plus.Activity;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Service class to
@@ -37,6 +27,8 @@ public interface SecurityService {
     boolean userPicture(long id, long userId);
 
     boolean isUserByEmail(String borrower);
+
+    boolean isReviewOwner(ReviewDto reviewDto);
 
     // boolean userRentalAccess(Long userId);
 

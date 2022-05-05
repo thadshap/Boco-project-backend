@@ -50,6 +50,8 @@ public class User {
 
     private String pictureUrl;
 
+    private boolean emailVerified;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_type")
     private AuthenticationType authType;

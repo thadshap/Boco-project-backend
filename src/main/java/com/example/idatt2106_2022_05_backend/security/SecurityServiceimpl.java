@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.security;
 
+import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service class to verify user access.
@@ -96,7 +101,7 @@ public class SecurityServiceimpl implements SecurityService {
     @Override
     public boolean isVerifiedUser(Long userId) {
         User user = getUser();
-        return user.isVerified();
+        return user.isEmailVerified();
     }
 
     /**
@@ -183,6 +188,16 @@ public class SecurityServiceimpl implements SecurityService {
     public boolean isUserByEmail(String borrower) {
         User user = getUser();
         return user != null && user.getEmail().equals(borrower);
+    }
+
+    @Override
+    public boolean isReviewOwner(ReviewDto reviewDto) {
+        Ad ad = adRepository.getById(reviewDto.getAdId());
+        User user = getUser();
+        if (ad != null && user != null) {
+            return ad.getReviews().contains(user);
+        }
+        return false;
     }
 
     // /**

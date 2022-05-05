@@ -318,6 +318,9 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User userGot = userFromDB.get();
+        if (userGot.getRating() > 8){
+            userGot.setVerified(true);
+        }
         UserReturnDto user = UserReturnDto.builder()
                 .id(userGot.getId())
                 .firstName(userGot.getFirstName())

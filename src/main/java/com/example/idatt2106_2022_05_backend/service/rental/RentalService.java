@@ -17,9 +17,9 @@ public interface RentalService {
 
 //    ModelAndView approveRental(Long rentalId, String token);
 
-    ModelAndView activateRental(Long rentalId) throws MessagingException, IOException;
+    Response activateRental(Long rentalId) throws MessagingException, IOException;
 
-    ModelAndView declineRental(Long rentalId) throws MessagingException, IOException;
+    Response declineRental(Long rentalId) throws MessagingException, IOException;
 
     Response completeRental(Long rentalId, RentalReviewDto rentalDto);
 

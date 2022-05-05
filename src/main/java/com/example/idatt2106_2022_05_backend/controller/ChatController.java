@@ -36,16 +36,8 @@ public class ChatController {
     public MessageDto sendMessage(@DestinationVariable Long groupId, MessageDto messageDto) {
         logger.debug("Message sent to groupId: " + groupId + " from " + messageDto.getUserId());
         MessageDto msgDto = chatService.sendMessage(groupId, messageDto);
-
         return msgDto;
     }
-
-    @RequestMapping("/group/{id}")
-    public Response onOpen(@PathVariable long id) {
-//        return chatService.getChat(id);
-        return null;
-    }
-
 
     @PostMapping("/create/group")
     @ApiOperation(value = "Endpoint to create a two-user group", response = Response.class)

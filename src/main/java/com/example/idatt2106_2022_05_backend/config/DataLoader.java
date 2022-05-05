@@ -162,10 +162,10 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherVehicle);
 
             //Sub-categories for sport
-            Category ballSport = Category.builder().name("Ballsport").child(true).parent(true).parentName(sport.getName()).build();
-            Category waterSport = Category.builder().name("Vannsport").child(true).parent(true).parentName(sport.getName()).build();
-            Category skis = Category.builder().name("Ski og skiutstyr").child(true).parent(true).parentName(sport.getName()).build();
-            Category outdoorlife = Category.builder().name("Friluftsliv").child(true).parent(true).parentName(sport.getName()).build();
+            Category ballSport = Category.builder().name("Ballsport").child(true).parent(false).parentName(sport.getName()).build();
+            Category waterSport = Category.builder().name("Vannsport").child(true).parent(false).parentName(sport.getName()).build();
+            Category skis = Category.builder().name("Ski og skiutstyr").child(true).parent(false).parentName(sport.getName()).build();
+            Category outdoorlife = Category.builder().name("Friluftsliv").child(true).parent(false).parentName(sport.getName()).build();
             categoryRepository.save(ballSport);
             categoryRepository.save(waterSport);
             categoryRepository.save(skis);
@@ -304,7 +304,7 @@ public class DataLoader implements ApplicationRunner {
             Category verktoy = Category.builder().name("Verktøy").child(true).parentName(garden.getName()).build();
             Category container = Category.builder().name("Container").child(true).parentName(garden.getName()).build();
             Category stoler = Category.builder().name("Stoler og bord").child(true).parentName(garden.getName()).build();
-            Category hage = Category.builder().name("Hage og uteliv").child(true).parent(true).parentName(garden.getName()).build();
+            Category hage = Category.builder().name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
             Category othergarden = Category.builder().name("Annet").child(true).parentName(garden.getName()).build();
             categoryRepository.save(verktoy);
             categoryRepository.save(container);
