@@ -164,18 +164,10 @@ public class AdController {
         return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
-    // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @PostMapping("/categoriesRecursive/{categoryName}")
-    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
-                                                   @RequestBody UserGeoLocation userGeoLocation) {
-        return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
-    }
-
-
-    @GetMapping("/search/{searchWord}")
+    @PostMapping("/search/{searchWord}")
     @ApiOperation(value = "method to search through")
-    public Response searchInAdsAndCategories(@PathVariable String searchWord) {
-        return adService.searchThroughAds(searchWord);
+    public Response searchInAdsAndCategories(@PathVariable String searchWord, UserGeoLocation userGeoLocation) {
+        return adService.searchThroughAds(searchWord, userGeoLocation);
     }
 
     // Get all categories
@@ -194,6 +186,13 @@ public class AdController {
     @GetMapping("/categories/ads/{categoryId}")
     public Response getAllAdsInCategory(@PathVariable long categoryId) {
         return adService.getAllAdsInCategory(categoryId);
+    }
+
+    // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
+    @PostMapping("/categoriesRecursive/{categoryName}")
+    public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
+            @RequestBody UserGeoLocation userGeoLocation) {
+        return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     // Get all parent categories

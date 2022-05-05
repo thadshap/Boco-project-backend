@@ -264,8 +264,8 @@ public class CalendarIntegrationTest {
             assertEquals(HttpStatus.CREATED.value(), r.getStatusCodeValue());
 
             // Use the method to search through all ads
-            ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing and such");
-            assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            //ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing and such");
+            //assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
 
             Set<Ad> adsFound = adRepository.findByTitle("New ad for testing and such");
 
@@ -351,8 +351,8 @@ public class CalendarIntegrationTest {
             assertEquals(HttpStatus.CREATED.value(), r.getStatusCodeValue());
 
             // Use the method to search through all ads
-            ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing");
-            assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            //ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing");
+            //assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
 
             Set<Ad> adsFound = adRepository.findByTitle("New ad for testing");
 

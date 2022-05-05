@@ -15,7 +15,6 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
@@ -70,10 +69,10 @@ public class User {
 
     // private Set<UserGroup> userGroup
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<Rental> rentalsOwned;
 
-    @OneToMany(mappedBy = "borrower", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "borrower", cascade = CascadeType.REMOVE)
     private List<Rental> rentalsBorrowed;
 
     // PS: These reviews are those that are WRITTEN by this user (not owned)
@@ -85,6 +84,10 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
     @ToString.Exclude
     private Set<Ad> ads;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE }, mappedBy = "user")
+    @ToString.Exclude
+    private Set<Message> messages;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -98,32 +101,30 @@ public class User {
         ads.add(newAd);
     }
 
-    /**
-    @PreRemove
-    void remove(){
-        if(ads != null) {
-            setAds(null);
-        }
-        if(reviews != null) {
-            setReviews(null);
-        }
-        if(rentalsBorrowed != null) {
-            setRentalsBorrowed(null); //todo talk about this logic
-        }
-        if(rentalsOwned != null) {
-            setRentalsOwned(null);
-        }
-        if(picture != null) {
-            setPicture(null);
-        }
-        if(resetPasswordToken != null) {
-            setResetPasswordToken(null);
-        }
-        if(userVerificationToken != null) {
-            setUserVerificationToken(null);
-        }
-    }
-    */
+//    @PreRemove
+//    void remove(){
+//        if(ads != null) {
+//            setAds(null);
+//        }
+//        if(reviews != null) {
+//            setReviews(null);
+//        }
+//        if(rentalsBorrowed != null) {
+//            setRentalsBorrowed(null); //todo talk about this logic
+//        }
+//        if(rentalsOwned != null) {
+//            setRentalsOwned(null);
+//        }
+//        if(picture != null) {
+//            setPicture(null);
+//        }
+//        if(resetPasswordToken != null) {
+//            setResetPasswordToken(null);
+//        }
+//        if(userVerificationToken != null) {
+//            setUserVerificationToken(null);
+//        }
+//    }
 
     public void addReview(Review newReview) {
         reviews.add(newReview);

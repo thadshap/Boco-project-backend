@@ -1,6 +1,7 @@
 package com.example.idatt2106_2022_05_backend.config;
 
 //import com.example.idatt2106_2022_05_backend.security.DatabaseLoginHandler;
+import com.example.idatt2106_2022_05_backend.exception.JwtAuthEntrypointException;
 import com.example.idatt2106_2022_05_backend.security.JWTConfig;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuth2UserServiceImpl;
 //import com.example.idatt2106_2022_05_backend.security.oauth.OAuthLoginHandler;
@@ -36,12 +37,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTConfig jwtConfig;
 
+    @Autowired
+    private JwtAuthEntrypointException jwtAuthEntrypointException;
+
     private static final String[] WHITELIST_URLS = {
             "/**",
             "/auth/**",
             "/ws",
             "/ws/**",
-            "/api/ads/**",
             "/api/ads/**",
             "/api/users/**",
             "/api/search/**",
@@ -80,8 +83,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().configurationSource(request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
-            cors.setAllowedOrigins(List.of("http://localhost:8080/", "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam"));
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedOrigins(List.of("http://localhost:8080/"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
         }).and().csrf().disable().authorizeRequests()
@@ -95,11 +98,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .x509()
 //                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
-
-                // Relax CSRF on the WebSocket due to needing direct access from apps
-                //.csrf().ignoringAntMatchers("/ws/**").and()
-                //.authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
-
 //                .formLogin().permitAll().loginPage("/auth/login")
 //                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()
@@ -112,7 +110,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     res.getOutputStream().println("{ \"message\": \"Tilgang er ikke gitt.\"}");
                 }).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.headers().frameOptions().disable();
-        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtConfig, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthEntrypointException);
     }
 
     @Override

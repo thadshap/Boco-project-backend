@@ -118,13 +118,13 @@ public class UserServiceImpl implements UserService {
              * ouputMessageRepository.delete(message); } }
              */
             // Get messages
-            List<Message> messages = messageRepository.findAll();
-            for (Message message : messages) {
-                if (message.getUser().getId() == user.getId()) {
-                    message.setUser(null);
-                    messageRepository.save(message);
-                }
-            }
+//            List<Message> messages = messageRepository.findAll();
+//            for (Message message : messages) {
+//                if (message.getUser().getId() == user.getId()) {
+//                    message.setUser(null);
+//                    messageRepository.save(message);
+//                }
+//            }
 
 
             userRepository.save(user);
@@ -196,18 +196,18 @@ public class UserServiceImpl implements UserService {
         return new Response("Bruker med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Method to update to update profile picture.
+     * @param userId id of user.
+     * @param file picture file.
+     * @return response if user exists or not.
+     * @throws IOException when retrieving bytes from file.
+     */
     @Override
     public Response updatePicture(Long userId, MultipartFile file) throws IOException {
         // User user = userRepository.getById(userId);
         Optional<User> userFound = userRepository.findById(userId);
 
-        System.out.println(file.getName());
-        System.out.println(file.getContentType());
-        // String filename = file.getName().split("\\.")[1];
-        // if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") ||
-        // !filename.equalsIgnoreCase("jpeg") ){
-        // return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
-        // }
         if(userFound.isPresent()) {
             // Get the user
             User user = userFound.get();

@@ -39,12 +39,4 @@ public class Geocoder {
         // logger.info("Recieved response: " + geocodingResponse.body());
         return String.valueOf(geocodingResponse.body());
     }
-    /*
-     * public static void main(String[] args) throws IOException, InterruptedException { AdServiceImpl adService = new
-     * AdServiceImpl(); Ad ad = new Ad(); ad.setCity("Pozuelo de Alarcon"); ad.setStreetAddress("C.Manuel Roses 15C");
-     * ad.setPostalCode(28223); adService.setCoordinatesOnAd(ad); System.out.println("This ads coordianates are: " +
-     * ad.getLat()+ " "+ ad.getLng() );
-     * 
-     * }
-     */
 }

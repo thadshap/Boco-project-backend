@@ -23,11 +23,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service class implementation of {@link AdService}
+ */
 @Service
 public class AdServiceImpl implements AdService {
 
@@ -60,6 +64,12 @@ public class AdServiceImpl implements AdService {
     private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
 
     // Get all ads
+
+    /**
+     * Method to get all ads.
+     * @return all ads.
+     * @throws IOException modelmapper.
+     */
     @Override
     public Response getAllAds() throws IOException {
         List<Ad> allAds = adRepository.findAll();
@@ -71,11 +81,17 @@ public class AdServiceImpl implements AdService {
             AdDto newAd = castObject(ad);
             adsToBeReturned.add(newAd);
         }
-
+        if(adsToBeReturned.size()==0){
+            return new Response(adsToBeReturned, HttpStatus.NO_CONTENT);
+        }
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
-    // Get all ads in category by category name
+    /**
+     * Method to get all ads in a category by category name.
+     * @param name name of category.
+     * @return returns ads if found.
+     */
     @Override
     public Response getAllAdsInCategory(String name) {
         Set<Category> categories = categoryRepository.findByName(name);
@@ -104,11 +120,15 @@ public class AdServiceImpl implements AdService {
             // Return the ads
             return new Response(adsToReturn, HttpStatus.OK);
         } else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
-    // Get all ads in category by category id
+    /**
+     * Method to get all ads in category by category id
+     * @param categoryId
+     * @return
+     */
     @Override
     public Response getAllAdsInCategory(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
@@ -317,48 +337,23 @@ public class AdServiceImpl implements AdService {
             a.setDistance(
                     calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
         }
-        // sort so nearest ads comes first
-        adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+        if(adsToBeReturned.size()>0) {
+            // sort so nearest ads comes first
+            adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
 
-        // Now all ads are returned
-        return new Response(adsToBeReturned, HttpStatus.OK);
+            // Now all ads are returned
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }else {
+            return new Response("Fant ingen tilhørende kategori.", HttpStatus.NO_CONTENT);
+        }
     }
 
     /**
      * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
      * sub-categories and so on)
      *
-     * @param listIn
-     *            is a list containing all categories in db
-     * @param listOut
-     *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     * @param start
-     *            is a measure of incrementation-depth that ends when recursions == listIn.size()
-     *
-     * @return listOut
-     *
-     *         private List<Category> findAllSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, int
-     *         start) { // Base-case int arrayLength = start;
-     *
-     *         // If the position in the array is equal to the size of the array we are at the end if(arrayLength ==
-     *         listIn.size()) { // Return the list that now contains all sub-categories return listOut; } else{ // get a
-     *         hold of all subcategories String nameOfCurrentCategory = listIn.get(arrayLength).getName();
-     *
-     *         // Iterate through all categories for(Category category : listIn) { if(category.getParentName() != null)
-     *         { // If a category has current category as parent category
-     *         if(category.getParentName().equalsIgnoreCase(nameOfCurrentCategory)) { listOut.add(category); } } } } //
-     *         Increment the starting point from the list return findSubCategories(listIn, listOut, start + 1); }
-     */
-
-    /**
-     * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
-     * sub-categories and so on)
-     *
-     * @param listIn
-     *            is a list containing all categories in db
-     * @param listOut
-     *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories as the method recursively iterates
      * @return listOut
      */
     private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
@@ -405,7 +400,7 @@ public class AdServiceImpl implements AdService {
 
         for (Category category : allCategories) {
             if (category.isParent()) {
-                CategoryDto dto = CategoryDto.builder().id(category.getId()).name(category.getName())
+                CategoryDto dto = CategoryDto.builder().child(category.isChild()).parent(category.isParent()).id(category.getId()).name(category.getName())
                         .icon(category.getIcon()).build();
                 categoriesToReturn.add(dto);
             }
@@ -472,8 +467,12 @@ public class AdServiceImpl implements AdService {
         for(AdDto a: adDtos){
             a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
         }
-        adDtos.sort(Comparator.comparing(AdDto::getDistance));
-        return new Response(adDtos, HttpStatus.OK);
+        //exceptionhandling
+        if(adDtos.size()>0) {
+            adDtos.sort(Comparator.comparing(AdDto::getDistance));
+            return new Response(adDtos, HttpStatus.OK);
+        }
+        return new Response("Fant ingen annonser på denne forespørselen", HttpStatus.NO_CONTENT);
     }
 
     // Get all available ads
@@ -508,7 +507,7 @@ public class AdServiceImpl implements AdService {
                 return new Response("Could not find any available ads for that user", HttpStatus.NO_CONTENT);
             }
         } else {
-            return new Response("Could not find user with specified id", HttpStatus.NOT_FOUND);
+            return new Response("Could not find user with specified id", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -526,10 +525,10 @@ public class AdServiceImpl implements AdService {
         }
 
         // If the db contains any available ads
-        if (availableAds.size() != 0) {
+        if (availableAds.size() > 0) {
             return new Response(adsToBeReturned, HttpStatus.OK);
         } else {
-            return new Response("Could not find any available ads", HttpStatus.NOT_FOUND);
+            return new Response("Could not find any available ads", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -674,8 +673,13 @@ public class AdServiceImpl implements AdService {
             // Adding all ads to list and then response
             ads.add(adDto);
         }
-        return new Response(ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList()),
-                HttpStatus.OK);
+        //In case no ads were found
+        if(ads.size()>0) {
+            return new Response(ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList()),
+                    HttpStatus.OK);
+        }
+
+        return new Response("Fant ingen ads.", HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -691,27 +695,6 @@ public class AdServiceImpl implements AdService {
         // convertPictures(ad, adDto);
         return adDto;
     }
-
-    /**
-     * support method to decompress pictures
-     *
-     * @param //
-     *            ad ad object from database
-     * @param //
-     *            adDto dto object to be returned
-     *
-    private void convertPictures(Ad ad, AdDto adDto) throws IOException {
-        Set<Picture> pictures = ad.getPictures();
-
-        Set<Image> images = adDto.getPicturesOut();
-        for(Picture picture : pictures){
-            ByteArrayInputStream bis = new ByteArrayInputStream(PictureUtility.decompressImage(picture.getData()));
-            Image image = ImageIO.read(bis);
-            images.add(image);
-        }
-        adDto.setPicturesOut(images);
-    }
-    */
 
     /**
      * Method that calculates distance between two geolocations
@@ -931,7 +914,7 @@ public class AdServiceImpl implements AdService {
 
 
     @Override
-    public Response searchThroughAds(String searchword) {
+    public Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation) {
         // List to be filled with corresponding ads
         List<Ad> adsContainingSearchWord = new ArrayList<>();
 
@@ -955,14 +938,20 @@ public class AdServiceImpl implements AdService {
                 }
             }
         }
-
-        // Casting objects to Dto and returning
-        return new Response(adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
-                .collect(Collectors.toList()), HttpStatus.OK);
+        if(adsContainingSearchWord.size()>0) {
+            List<AdDto> list = adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
+                    .collect(Collectors.toList());
+            for(AdDto a: list){
+                a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            }
+            // Casting objects to Dto and returning
+            return new Response(list, HttpStatus.OK);
+        }
+        return new Response("Fant ingen annonser med dette søkeordet.", HttpStatus.NO_CONTENT);
     }
 
 
-    public void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
+    private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
 
@@ -978,7 +967,7 @@ public class AdServiceImpl implements AdService {
 
             String lat = position.get("lat").asText();
             String lng = position.get("lng").asText();
-            // System.out.println(label + " is located at " + lat + "," + lng + ".");
+            // logger.debug(label + " is located at " + lat + "," + lng + ".");
             if (!lng.equals("") && !lat.equals("")) {
                 ad.setLat(Double.parseDouble(lat));
                 ad.setLng(Double.parseDouble(lng));
@@ -990,6 +979,9 @@ public class AdServiceImpl implements AdService {
     public List<PictureReturnDto> getAllPicturesForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
+        if (pictures.isEmpty()){
+            return null;
+        }
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
@@ -1005,13 +997,16 @@ public class AdServiceImpl implements AdService {
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        List<PictureReturnDto> returnDto = new ArrayList<>();
+        if (pictures.isEmpty()){
+            return new Response("Annonse med tittel \"" + ad.getTitle() + "\" har ingen bilder", HttpStatus.NOT_FOUND);
+        }List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
                     .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
                     .type(pictures.get(i).getType())
                     .build());
             returnDto.get(i).setId(adId);
+
         }
         return new Response(returnDto.get(0), HttpStatus.OK);
     }
@@ -1023,13 +1018,8 @@ public class AdServiceImpl implements AdService {
         if (adOptional.isEmpty()) {
             return new Response("Could not find ad", HttpStatus.NOT_FOUND);
         }
-        // System.out.println("here");
         Ad ad = adOptional.get();
-        // String filename = file.getName().split("\\.")[1];
-        // if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") ||
-        // !filename.equalsIgnoreCase("jpeg") ){
-        // return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
-        // }
+
         ad.setPictures(new HashSet<>());
         for (int i = 0; i < files.size(); i++) {
             Picture picture = Picture.builder()
