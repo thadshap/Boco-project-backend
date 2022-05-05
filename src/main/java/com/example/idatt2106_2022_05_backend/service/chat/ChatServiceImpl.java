@@ -301,7 +301,7 @@ public class ChatServiceImpl implements ChatService {
                     .succeeded(false)
                     .failedEmails(failedEmails)
                     .groupName(null)
-                    .groupId(1L)
+                    .groupId(null)
                     .build(), HttpStatus.OK);
         }
 

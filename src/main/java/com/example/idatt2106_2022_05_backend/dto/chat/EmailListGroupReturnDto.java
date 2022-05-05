@@ -22,7 +22,7 @@ public class EmailListGroupReturnDto {
     private String groupName;
 
     @ApiModelProperty(notes = "id of the created group")
-    private long groupId;
+    private Long groupId;
 
     @ApiModelProperty(notes = "emails of users not added in group")
     private Set<String> failedEmails;
