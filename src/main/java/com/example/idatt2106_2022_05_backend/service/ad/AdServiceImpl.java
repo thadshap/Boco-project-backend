@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -71,7 +72,9 @@ public class AdServiceImpl implements AdService {
             AdDto newAd = castObject(ad);
             adsToBeReturned.add(newAd);
         }
-
+        if(adsToBeReturned.size()==0){
+            return new Response(adsToBeReturned, HttpStatus.NO_CONTENT);
+        }
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
@@ -104,7 +107,7 @@ public class AdServiceImpl implements AdService {
             // Return the ads
             return new Response(adsToReturn, HttpStatus.OK);
         } else {
-            return new Response("Fant ikke kategorien", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -136,7 +139,7 @@ public class AdServiceImpl implements AdService {
             // Return the adDto-list
             return new Response(adsToBeReturned, HttpStatus.OK);
         } else {
-            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien.", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -297,48 +300,23 @@ public class AdServiceImpl implements AdService {
             a.setDistance(
                     calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
         }
-        // sort so nearest ads comes first
-        adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+        if(adsToBeReturned.size()>0) {
+            // sort so nearest ads comes first
+            adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
 
-        // Now all ads are returned
-        return new Response(adsToBeReturned, HttpStatus.OK);
+            // Now all ads are returned
+            return new Response(adsToBeReturned, HttpStatus.OK);
+        }else {
+            return new Response("Fant ingen tilhørende kategori.", HttpStatus.NO_CONTENT);
+        }
     }
 
     /**
      * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
      * sub-categories and so on)
      *
-     * @param listIn
-     *            is a list containing all categories in db
-     * @param listOut
-     *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     * @param start
-     *            is a measure of incrementation-depth that ends when recursions == listIn.size()
-     *
-     * @return listOut
-     *
-     *         private List<Category> findAllSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, int
-     *         start) { // Base-case int arrayLength = start;
-     *
-     *         // If the position in the array is equal to the size of the array we are at the end if(arrayLength ==
-     *         listIn.size()) { // Return the list that now contains all sub-categories return listOut; } else{ // get a
-     *         hold of all subcategories String nameOfCurrentCategory = listIn.get(arrayLength).getName();
-     *
-     *         // Iterate through all categories for(Category category : listIn) { if(category.getParentName() != null)
-     *         { // If a category has current category as parent category
-     *         if(category.getParentName().equalsIgnoreCase(nameOfCurrentCategory)) { listOut.add(category); } } } } //
-     *         Increment the starting point from the list return findSubCategories(listIn, listOut, start + 1); }
-     */
-
-    /**
-     * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
-     * sub-categories and so on)
-     *
-     * @param listIn
-     *            is a list containing all categories in db
-     * @param listOut
-     *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     *
+     * @param listIn is a list containing all categories in db
+     * @param listOut is an empty list that is being filled up with sub-categories as the method recursively iterates
      * @return listOut
      */
     private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
