@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -385,8 +386,8 @@ public class RentalIntegrationTest {
         Rental rentalFound = rentalRepository.save(rental);
 
         // Activate rental
-//        ResponseEntity<Object> response = rentalService.activateRental(rentalFound.getId());
-//        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+        ModelAndView response = rentalService.activateRental(rentalFound.getId());
+        assertEquals(HttpStatus.OK.value(), response.getStatus().value());
         assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 

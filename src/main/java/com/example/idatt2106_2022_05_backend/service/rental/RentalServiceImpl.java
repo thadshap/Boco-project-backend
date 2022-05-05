@@ -167,7 +167,14 @@ public class RentalServiceImpl implements RentalService {
                 .build();
         emailService.sendEmail(email);
 
-        return new ModelAndView("approve").addObject("title", "Rental has been activated");
+        // Create model and view
+        ModelAndView view = new ModelAndView("approve").
+                            addObject("title", "Rental has been activated");
+        view.setStatus(HttpStatus.OK);
+
+        // Return model
+        return view;
+        // return new ModelAndView("approve").addObject("title", "Rental has been activated");
     }
 
     @Override
@@ -222,23 +229,31 @@ public class RentalServiceImpl implements RentalService {
         rental.setRating(rating.getRating());
         rental.setActive(false);
         rental.setReviewed(true);
-        User user = userRepository.getById(rental.getOwner().getId());
-        user.setNumberOfReviews(user.getNumberOfReviews()+1);
-        user.setRating((user.getRating()+rating.getRating())/user.getNumberOfReviews());
-        Review review = Review.builder()
-                .user(user)
-                .description(rating.getReview())
-                .rating((int)rating.getRating())
-                .ad(rental.getAd())
-                .build();
-        user.getReviews().add(review);
-        Ad ad = rental.getAd();
-        ad.getReviews().add(review);
-        reviewRepository.save(review);
-        adRepository.save(ad);
-        userRepository.save(user);
-        rentalRepository.save(rental);
-        return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
+        // Try to find the user
+        Optional<User> userFound = userRepository.findById(rental.getOwner().getId());
+        if(userFound.isPresent()) {
+            User user = userFound.get();
+            user.setNumberOfReviews(user.getNumberOfReviews()+1);
+            user.setRating((user.getRating()+rating.getRating())/user.getNumberOfReviews());
+            Review review = Review.builder()
+                    .user(user)
+                    .description(rating.getReview())
+                    .rating((int)rating.getRating())
+                    .ad(rental.getAd())
+                    .build();
+            user.getReviews().add(review);
+            Ad ad = rental.getAd();
+            ad.getReviews().add(review);
+            reviewRepository.save(review);
+            adRepository.save(ad);
+            userRepository.save(user);
+            rentalRepository.save(rental);
+            return new Response("Rental has been deactivated", HttpStatus.ACCEPTED);
+        }
+        else {
+            // User was not present!
+            return new Response("User was not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
