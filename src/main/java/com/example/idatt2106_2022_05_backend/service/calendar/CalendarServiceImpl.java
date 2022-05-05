@@ -116,6 +116,11 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    /**
+     * Helper method to set dates for an ad.
+     * @param dto calendar dto.
+     * @return return response if dates are set or not.
+     */
     private Response setDates(CalendarDto dto) {
         // Verify that all dates in the specified span are the opposite of what is specified in dto
 
@@ -171,11 +176,11 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     /**
-     * Method to add dates to Calender
+     * Method to add dates to Calendar.
      * 
-     * @param adId
+     * @param adId id of ad.
      * 
-     * @return
+     * @return returns a list of calendar dtos.
      */
     @Override
     public Set<CalendarDate> addFutureDates(long adId) {
@@ -224,7 +229,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     /**
-     *
+     * Method to see if dates are available or not.
      * @param dto
      *            contains: id
      *

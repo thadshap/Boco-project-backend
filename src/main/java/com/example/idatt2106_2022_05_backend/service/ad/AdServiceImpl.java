@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service class implementation of {@link AdService}
+ */
 @Service
 public class AdServiceImpl implements AdService {
 
@@ -61,6 +64,12 @@ public class AdServiceImpl implements AdService {
     private Logger logger = LoggerFactory.getLogger(AdServiceImpl.class);
 
     // Get all ads
+
+    /**
+     * Method to get all ads.
+     * @return all ads.
+     * @throws IOException modelmapper.
+     */
     @Override
     public Response getAllAds() throws IOException {
         List<Ad> allAds = adRepository.findAll();
@@ -78,7 +87,11 @@ public class AdServiceImpl implements AdService {
         return new Response(adsToBeReturned, HttpStatus.OK);
     }
 
-    // Get all ads in category by category name
+    /**
+     * Method to get all ads in a category by category name.
+     * @param name name of category.
+     * @return returns ads if found.
+     */
     @Override
     public Response getAllAdsInCategory(String name) {
         Set<Category> categories = categoryRepository.findByName(name);
@@ -111,7 +124,11 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all ads in category by category id
+    /**
+     * Method to get all ads in category by category id
+     * @param categoryId
+     * @return
+     */
     @Override
     public Response getAllAdsInCategory(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
@@ -139,7 +156,7 @@ public class AdServiceImpl implements AdService {
             // Return the adDto-list
             return new Response(adsToBeReturned, HttpStatus.OK);
         } else {
-            return new Response("Fant ikke kategorien.", HttpStatus.NO_CONTENT);
+            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -947,6 +964,9 @@ public class AdServiceImpl implements AdService {
     public List<PictureReturnDto> getAllPicturesForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
+        if (pictures.isEmpty()){
+            return null;
+        }
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
@@ -962,15 +982,18 @@ public class AdServiceImpl implements AdService {
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        if(pictures.size()>0) {
-            PictureReturnDto returnDto = PictureReturnDto.builder()
-                    .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
-                    .type(pictures.get(0).getType())
-                    .build();
-            returnDto.setId(adId);
-            return new Response(returnDto, HttpStatus.OK);
+        if (pictures.isEmpty()){
+            return new Response("Annonse med tittel \"" + ad.getTitle() + "\" har ingen bilder", HttpStatus.NOT_FOUND);
+        }List<PictureReturnDto> returnDto = new ArrayList<>();
+        for (int i = 0; i < pictures.size(); i++) {
+            returnDto.add(PictureReturnDto.builder()
+                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .type(pictures.get(i).getType())
+                    .build());
+            returnDto.get(i).setId(adId);
+
         }
-        return new Response("Fant ingen bilder for denne annonsen", HttpStatus.NO_CONTENT);
+        return new Response(returnDto.get(0), HttpStatus.OK);
     }
 
 

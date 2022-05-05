@@ -33,7 +33,7 @@ public interface ChatService {
 
     Response addUserToGroupByEmail(long groupId, String email);
 
-    void sendRentalMessage(RentalDto rentalDto, String token);
+    void sendRentalMessage(RentalDto rentalDto);
 
     Response getGroupUsersByGroupId(long groupId);
 
