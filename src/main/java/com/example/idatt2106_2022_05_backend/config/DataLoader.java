@@ -443,13 +443,13 @@ public class DataLoader implements ApplicationRunner {
                 ad.setDates(calendarService.addFutureDates(ad.getId()));
             }
 
-
             for(Ad a:adRepository.findAll()){
                 Set<Ad> adsy = new HashSet<>();
                 adsy.add(a);
                 a.getCategory().setAds(adsy);;
                 categoryRepository.save(a.getCategory());
             }
+
 
             File pb = new File("src/main/resources/static/images/anders.jpg");
             savepb(pb, user1);
@@ -541,11 +541,6 @@ public class DataLoader implements ApplicationRunner {
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);
 
-            file = new File("src/main/resources/static/images/brod.jpg");
-            fileContent(kjokkenmaskin, file);
-
-
-
             Group group1 = Group.builder().name("gruppechat1").build();
             Group group2 = Group.builder().name("gruppechat2").build();
             Group group3 = Group.builder().name("gruppechat3").build();
@@ -591,12 +586,6 @@ public class DataLoader implements ApplicationRunner {
             messageRepository.save(message3);
             messageRepository.save(message4);
             messageRepository.save(message5);
-
-            Set<CalendarDate> dates = borremaskin.getDates();
-            for (CalendarDate e: dates){
-                e.setAvailable(false);
-            }
-            borremaskin.setDates(dates);
         }
 
     private void fileContent(Ad ad, File file) throws IOException {
