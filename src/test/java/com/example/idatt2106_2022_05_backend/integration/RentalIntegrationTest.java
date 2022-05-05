@@ -14,6 +14,7 @@ import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -386,7 +387,7 @@ public class RentalIntegrationTest {
         Rental rentalFound = rentalRepository.save(rental);
 
         // Activate rental
-        ModelAndView response = rentalService.activateRental(rentalFound.getId());
+        Response response = rentalService.activateRental(rentalFound.getId());
         assertEquals(HttpStatus.OK.value(), response.getStatus().value());
         assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }

@@ -117,15 +117,18 @@ public class RentalServiceImpl implements RentalService {
      * @return returns response and status.
      */
     @Override
-    public ModelAndView activateRental(Long rentalId) throws MessagingException, IOException {
+    public Response activateRental(Long rentalId) throws MessagingException, IOException {
 
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
-            return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
+            return new Response("Leiforhold ikke funnet", HttpStatus.NO_CONTENT);
         }
-
         // If the rental exists, we retrieve it
         Rental rental = rentalOptional.get();
+        if (rental.isActive()){
+            return new Response("Leieforhold er allerede godtatt", HttpStatus.OK);
+        }
+
         rental.setActive(true);
 
         // Find the ad
@@ -162,13 +165,8 @@ public class RentalServiceImpl implements RentalService {
                 .build();
         emailService.sendEmail(email);
 
-        // Create model and view
-        ModelAndView view = new ModelAndView("approve").
-                            addObject("title", "Rental has been activated");
-        view.setStatus(HttpStatus.OK);
-
-        // Return model
-        return view;
+        // Return response
+        return new Response("Leieforhold godtatt", HttpStatus.OK);
         // return new ModelAndView("approve").addObject("title", "Rental has been activated");
     }
 
@@ -180,11 +178,11 @@ public class RentalServiceImpl implements RentalService {
      * @throws IOException thrown when email fails.
      */
     @Override
-    public ModelAndView declineRental(Long rentalId) throws MessagingException, IOException {
+    public Response declineRental(Long rentalId) throws MessagingException, IOException {
 
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
         if (rentalOptional.isEmpty()){
-            return new ModelAndView("approve").addObject("title", "Rental is not found in the database");
+            return new Response("Leiforhold ikke funnet", HttpStatus.NO_CONTENT);
         }
 
         Rental rental = rentalOptional.get();
@@ -201,7 +199,7 @@ public class RentalServiceImpl implements RentalService {
                 .build();
         emailService.sendEmail(email);
         rentalRepository.deleteById(rentalId);
-        return new ModelAndView("approve").addObject("title","Rental is deleted");
+        return new Response("Leiforhold er avslått", HttpStatus.OK);
     }
 
     /**
@@ -237,6 +235,9 @@ public class RentalServiceImpl implements RentalService {
             user.getReviews().add(review);
             Ad ad = rental.getAd();
             ad.getReviews().add(review);
+            if (user.getRating() > 8){
+                user.setVerified(true);
+            }
             reviewRepository.save(review);
             adRepository.save(ad);
             userRepository.save(user);

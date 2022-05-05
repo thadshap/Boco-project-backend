@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -34,29 +33,28 @@ public class RentalController {
     public Response createRental(@RequestBody RentalDto rentalDto) throws MessagingException, IOException {
         log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
         if(!securityService.isUserByEmail(rentalDto.getBorrower()) && !securityService.isVerifiedUser(0L)){
-            return new Response("Du kan ikke leie dette produktet.", HttpStatus.BAD_REQUEST);
+            return new Response("Du kan ikke leie dette produktet," +
+                    "du må verifisere emailen din.", HttpStatus.NO_CONTENT);
         }
         return rentalService.createRental(rentalDto);
     }
 
     @PatchMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public ModelAndView activateRental(@PathVariable Long rentalId) throws MessagingException, IOException {
+    public Response activateRental(@PathVariable Long rentalId) throws MessagingException, IOException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
         if(!securityService.isRentalOwner(rentalId)){
-            return new ModelAndView("approve")
-                    .addObject("title", "Du har ikke tilgang på forespørselen.");
+            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.NO_CONTENT);
         }
         return rentalService.activateRental(rentalId);
     }
 
     @DeleteMapping("/decline/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public ModelAndView declineRental(@PathVariable Long rentalId) throws MessagingException, IOException {
+    public Response declineRental(@PathVariable Long rentalId) throws MessagingException, IOException {
     log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
         if(!securityService.isRentalOwner(rentalId)){
-        return new ModelAndView("approve")
-                .addObject("title", "Du har ikke tilgang på forespørselen.");
+        return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.NO_CONTENT);
     }
         return rentalService.declineRental(rentalId);
     }

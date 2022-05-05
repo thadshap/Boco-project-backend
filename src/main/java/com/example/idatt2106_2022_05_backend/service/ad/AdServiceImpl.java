@@ -209,6 +209,22 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Response getAllCategoriesWithLevel(){
+        List<Category> categories = categoryRepository.findAll();
+        ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
+        for (int i = 0; i < categories.size(); i++) {
+            categoriesToReturn.add(CategoryDto.builder()
+                            .level(categories.get(i).getLevel())
+                            .icon(categories.get(i).getIcon())
+                            .parentName(categories.get(i).getParentName())
+                            .name(categories.get(i).getName())
+                            .id(categories.get(i).getId())
+                            .build());
+        }
+        return new Response(categoriesToReturn, HttpStatus.OK);
+    }
+
+    @Override
     public Response getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
 
@@ -465,7 +481,7 @@ public class AdServiceImpl implements AdService {
                             collect(Collectors.toList());
         }
         for(AdDto a: adDtos){
-            a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            a.setDistance(calculateDistance(userGeoLocation.getLng(), userGeoLocation.getLat(), a.getLat(), a.getLng()));
         }
         //exceptionhandling
         if(adDtos.size()>0) {
@@ -711,9 +727,30 @@ public class AdServiceImpl implements AdService {
      * @return distance in km
      */
     public double calculateDistance(double lat1, double long1, double lat2, double long2) {
-        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
-        return dist / 1000;
+        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(long1, lat1, long2, lat2);
+        return dist / 10000;
     }
+
+//    public double calculateDistance(double lat1, double lon1, double lat2,
+//                                    double lon2) {
+//        double elevation = 10; //height in meters
+//        double elevation2 = 10; //height in meters
+//        final int R = 6371; // Radius of the earth
+//
+//        double latDistance = Math.toRadians(lat2 - lat1);
+//        double lonDistance = Math.toRadians(lon2 - lon1);
+//        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+//                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+//                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//        double distance = R * c * 1000; // convert to meters
+//
+//        double height = elevation - elevation2;
+//
+//        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+//
+//        return Math.sqrt(distance)/10000;
+//    }
 
     // get all reviews for an add with owner = user id
     @Override
@@ -942,7 +979,7 @@ public class AdServiceImpl implements AdService {
             List<AdDto> list = adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
                     .collect(Collectors.toList());
             for(AdDto a: list){
-                a.setDistance(calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+                a.setDistance((calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng())));
             }
             // Casting objects to Dto and returning
             return new Response(list, HttpStatus.OK);
