@@ -2,31 +2,31 @@ spring:
   servlet:
     multipart:
       enabled: true
+#  jpa:
+#    generate-ddl: true
+#    properties:
+#      show-sql: false
+#      hibernate:
+#        ddl-auto: update
+#        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+#  datasource:
+#    username: user
+#    url: jdbc:mysql://localhost:3307/bocogruppe5
+#    password: user
+  h2:
+    console:
+      enabled: true
+      path: /h2/
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     generate-ddl: true
-    properties:
-      show-sql: false
-      hibernate:
-        ddl-auto: update
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: create
   datasource:
+    url: jdbc:h2:file:~/test
     username: user
-    url: jdbc:mysql://localhost:3307/bocogruppe5
-    password: user
-    #  h2:
-    #    console:
-    #      enabled: true
-    #      path: /h2/
-    #    jpa:
-    #      show-sql: 'true'
-    #      hibernate:
-    #        ddl-auto: update
-    #    database-platform: org.hibernate.dialect.H2Dialect
-    #  datasource:
-    #    url: jdbc:h2:file:~/test
-    #    username: user
-    #    password:
-    #    driverClassName: org.h2.Driver
+    password:
+    driverClassName: org.h2.Driver
   mail:
     host: ${EMAIL_HOST:smtp.gmail.com}
     username: ${EMAIL_USERNAME:hassano19988991@gmail.com}
