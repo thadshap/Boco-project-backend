@@ -404,13 +404,13 @@ public class DataLoader implements ApplicationRunner {
 
             Rental rental = Rental.builder().active(false).rentFrom(LocalDate.now().minusDays(2)).rentTo(LocalDate.now().minusDays(1)).dateOfRental(LocalDate.now().minusDays(4)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(false).deadline(LocalDate.now().minusDays(90)).rentTo(LocalDate.now().minusDays(80)).rentFrom(LocalDate.now().minusDays(89)).dateOfRental(LocalDate.now().minusDays(4)).build();
+            rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(false).deadline(LocalDate.now().minusDays(95)).rentTo(LocalDate.now().minusDays(85)).rentFrom(LocalDate.now().minusDays(94)).dateOfRental(LocalDate.now().minusDays(105)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(matte).owner(user6).borrower(user9).price(100).active(false).deadline(LocalDate.now().minusDays(3)).rentTo(LocalDate.now().minusDays(7)).rentFrom(LocalDate.now().minusDays(4)).dateOfRental(LocalDate.now().minusDays(4)).build();
+            rental = Rental.builder().ad(matte).owner(user6).borrower(user9).price(100).active(false).deadline(LocalDate.now().minusDays(100)).rentTo(LocalDate.now().minusDays(90)).rentFrom(LocalDate.now().minusDays(99)).dateOfRental(LocalDate.now().minusDays(110)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().minusDays(3)).rentTo(LocalDate.now().minusDays(7)).rentFrom(LocalDate.now().minusDays(4)).dateOfRental(LocalDate.now().minusDays(4)).build();
+            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().minusDays(105)).rentTo(LocalDate.now().minusDays(95)).rentFrom(LocalDate.now().minusDays(104)).dateOfRental(LocalDate.now().minusDays(115)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(3)).rentTo(LocalDate.now().minusDays(7)).rentFrom(LocalDate.now().minusDays(4)).dateOfRental(LocalDate.now().minusDays(4)).build();
+            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
             rentalRepository.save(rental);
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
