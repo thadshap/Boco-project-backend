@@ -15,6 +15,7 @@ public class FilterListOfAds {
     private String filterType;
     private double upperLimit;
     private double lowerLimit;
+    // When a user has clicked on a category and wants to only get ads within that category
     private String category;
 
     private boolean lowestValueFirst;

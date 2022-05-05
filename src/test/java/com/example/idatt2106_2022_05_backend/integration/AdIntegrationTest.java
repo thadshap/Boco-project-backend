@@ -2,14 +2,13 @@ package com.example.idatt2106_2022_05_backend.integration;
 
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
+import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Geocoder;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,9 +20,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,7 +27,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -127,7 +122,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.WEEK).
-                    duration(2).
                     price(100).
                     streetAddress("Project Road 4").
                     postalCode(7234).
@@ -170,7 +164,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.MONTH).
-                    duration(2).
                     price(100).
                     streetAddress("The sea").
                     postalCode(7000).
@@ -212,7 +205,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.MONTH).
-                    duration(2).
                     price(100).
                     streetAddress("The sea").
                     postalCode(7000).
@@ -257,7 +249,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.HOUR).
-                    duration(2).
                     price(100).
                     streetAddress("non existent").
                     postalCode(7000).
@@ -294,7 +285,7 @@ public class AdIntegrationTest {
 
             // Building an ad without persisting it
             AdDto newAd = AdDto.builder().title("ad with a very specific title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .userId(user.getId()).categoryId(category.getId()).build();
 
             adService.postNewAd(newAd);
@@ -338,7 +329,7 @@ public class AdIntegrationTest {
 
             // Building an ad without persisting it
             Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Save the ad with the foreign keys
@@ -384,7 +375,7 @@ public class AdIntegrationTest {
 
                 // Building an ad
                 Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                         .user(user1).category(category1).build();
 
                 // Save the new ad
@@ -420,7 +411,7 @@ public class AdIntegrationTest {
             for (int i = 0; i < 15; i++) {
                 // Building an ad
                 Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                         .user(user1).category(category1).build();
 
                 // Save the new ad
@@ -454,11 +445,11 @@ public class AdIntegrationTest {
 
             // Create available ads
             Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist them
@@ -467,11 +458,11 @@ public class AdIntegrationTest {
 
             // Create unavailable ads
             Ad unavailableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad unavailableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist them
@@ -502,11 +493,11 @@ public class AdIntegrationTest {
 
             // Create available ads
             Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).lat(63.401920).lng(10.443579).city("Trondheim")
+                    .durationType(AdType.HOUR).price(100).lat(63.401920).lng(10.443579).city("Trondheim")
                     .streetAddress("address").postalCode(7999).user(user).category(category).build();
 
             adRepository.save(availableAd1);
@@ -533,15 +524,15 @@ public class AdIntegrationTest {
 
             // Create ads
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             // Persist them
@@ -569,11 +560,11 @@ public class AdIntegrationTest {
 
             // Create ads with rental == true
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             // Persist
@@ -599,11 +590,11 @@ public class AdIntegrationTest {
 
             // Create ads with rental == false
             Ad ad1 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist
@@ -635,17 +626,17 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).city("Bodø").user(user)
+                    .price(100).streetAddress("address").postalCode(8000).city("Bodø").user(user)
                     .category(category).build();
 
             // Create ad
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8001).city("Bodø").user(user)
+                    .price(100).streetAddress("address").postalCode(8001).city("Bodø").user(user)
                     .category(category).build();
 
             // Create ad
             Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").city("Bodø").postalCode(8002).user(user)
+                    .price(100).streetAddress("address").city("Bodø").postalCode(8002).user(user)
                     .category(category).build();
 
             // Persist ads
@@ -669,7 +660,7 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             // Persist the ad
@@ -782,7 +773,7 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist the ad
@@ -825,7 +816,7 @@ public class AdIntegrationTest {
 
             // Creating ad without coordinates
             Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
                     .city("båtsfjord").user(user).category(category).build();
 
             // Persist the ad
@@ -850,7 +841,7 @@ public class AdIntegrationTest {
 
             // Creating ad without coordinates
             AdDto ad = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
                     .city("båtsfjord").userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad
@@ -879,6 +870,26 @@ public class AdIntegrationTest {
         @SneakyThrows
         @Test
         public void getAllAdsSortedByDistance() {
+            User user1 = userRepository.findAll().get(0);
+            Category category1 = categoryRepository.findAll().get(0);
+
+            // Creating ad without coordinates
+            AdDto ad1 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+            AdDto ad2 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+            AdDto ad3 = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .city("båtsfjord").userId(user1.getId()).categoryId(category1.getId()).build();
+
+
+            // Persist the ad
+            adService.postNewAd(ad1);
+            adService.postNewAd(ad2);
+            adService.postNewAd(ad3);
+
             // Verify that the db contains at least 3 ads
             assertTrue(adRepository.findAll().size() >= 3);
 
@@ -901,80 +912,224 @@ public class AdIntegrationTest {
         }
 
         // Should return ads
+        @SneakyThrows
         @Test
-        public void searchByDistance_WhenAdsExistWithinDistance() {
+        public void getAdsWithCategoryAndFilter() {
+            User user = userRepository.findAll().get(0);
 
-        }
+            assertNotNull(user);
 
-        // Should return no ads
-        @Test
-        public void searchByDistance_WhenNoAdsExistWithinDistance() {
+            // Create two categories
+            Category category1 = Category.builder().
+                    name("The parent of the two categories").
+                    parent(true).
+                    child(false).
+                    build();
 
-        }
+            Category category2 = Category.builder().
+                    name("The child of the two categories").
+                    parentName(category1.getName()).
+                    parent(false).
+                    child(true).
+                    build();
 
-        @Test
-        public void sortByDescendingTitle() {
+            // Persisting the categories
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
 
-        }
+            assertNotNull(category1);
+            assertNotNull(category2);
 
-        @Test
-        public void sortByAscendingTitle() {
 
-        }
+            // Create a couple of ads with different prices and addresses (but with the same category)
+            AdDto adDto1 = AdDto.builder().
+                    title("random title1").description("").rental(true).
+                    rentedOut(false).durationType(AdType.HOUR).
+                    price(10).streetAddress("fjordvegen 2").
+                    postalCode(9990).city("båtsfjord").userId(user.getId()).
+                    categoryId(category1.getId()).build();
 
-        @Test
-        public void sortByCreatedDateAscending() {
+            AdDto adDto2 = AdDto.builder().title("random title2").description("").
+                    rental(true).rentedOut(false).durationType(AdType.HOUR).
+                    price(100).streetAddress("Rønvikgata 5").
+                    postalCode(8006).city("bodø").userId(user.getId()).
+                    categoryId(category1.getId()).build();
 
-        }
+            AdDto adDto3 = AdDto.builder().title("random title3").description("").
+                    rental(true).rentedOut(false).durationType(AdType.HOUR).
+                    price(1000).streetAddress("Kjerkgata 3").
+                    postalCode(7374).city("røros").userId(user.getId()).
+                    categoryId(category1.getId()).build();
 
-        @Test
-        public void sortByCreatedDateDescending() {
+            // Creating an ad with a different category
+            AdDto adDto4 = AdDto.builder().title("random title4").description("").
+                    rental(true).rentedOut(false).durationType(AdType.HOUR).
+                    price(1000).streetAddress("Kjerkgata 3").
+                    postalCode(7374).city("røros").userId(user.getId()).
+                    categoryId(category2.getId()).build();
 
-        }
+            // Persist the ad
+            adService.postNewAd(adDto1);
+            adService.postNewAd(adDto2);
+            adService.postNewAd(adDto3);
+            adService.postNewAd(adDto4);
 
-        @Test
-        public void adReturned_WhenSearchingForPartsOfExistingTitle() {
+            // Get the ads
+            Optional<Ad> adFound1 = adRepository.findByTitle("random title1").stream().findFirst();
+            Optional<Ad> adFound2 = adRepository.findByTitle("random title2").stream().findFirst();
+            Optional<Ad> adFound3 = adRepository.findByTitle("random title3").stream().findFirst();
+            Optional<Ad> adFound4 = adRepository.findByTitle("random title4").stream().findFirst();
 
-        }
+            // Assert that all are found
+            assertTrue(adFound1.isPresent());
+            assertTrue(adFound2.isPresent());
+            assertTrue(adFound3.isPresent());
+            assertTrue(adFound4.isPresent());
 
-        @Test
-        public void nothingReturned_WhenSearchingForPartsOfNonExistingTitle() {
+            Ad ad1 = adFound1.get();
+            Ad ad2 = adFound2.get();
+            Ad ad3 = adFound3.get();
+            Ad ad4 = adFound3.get();
 
-        }
+            // Assert that the prices are correct
+            assertEquals(10, ad1.getPrice());
+            assertEquals(100, ad2.getPrice());
+            assertEquals(1000, ad3.getPrice());
+            assertEquals(1000, ad4.getPrice());
 
-        @Test
-        public void adsAreSortedByPriceAscending() {
 
-        }
+            // Add the ids to the DTOs
+            adDto1.setAdId(ad1.getId());
+            adDto2.setAdId(ad2.getId());
+            adDto3.setAdId(ad3.getId());
+            adDto4.setAdId(ad4.getId());
 
-        @Test
-        public void adsAreSortedByPriceDescending() {
+            // Create a random latitude and longitude simulating the position of the user
+            double lat = 63.411080;
+            double lng = 10.401449;
 
-        }
+            // To perform this method a FilterListOfAds-object is needed
+            FilterListOfAds filterListOfAds = new FilterListOfAds();
 
-        @Test
-        public void adsAreSortedByDistanceAscending() {
+            // Generating the attributes needed for the filterListOfAds
+            List<AdDto> adList = new ArrayList<>();
+            adList.add(adDto1);
+            adList.add(adDto2);
+            adList.add(adDto3);
+            adList.add(adDto4);
 
-        }
+            assertEquals(4,adList.size());
 
-        @Test
-        public void adsAreSortedByDistanceDescending() {
 
-        }
+            // Price and distance (distance) are possible filters
+            String filterType1 = "price";
+            String filterType2 = "distance";
 
-        @Test
-        public void adsWithinDistanceAreReturned() {
+            // The filters need upper limits
+            Double upperPrice = 700.0;
+            Double upperDistance = 1000.0;
 
-        }
+            // The filters need lower limits
+            Double lowerPrice = 9.0;
+            Double lowerDistance = 10.0;
 
-        @Test
-        public void adsWithingPriceRanceAreReturned() {
+            // Only 3 of 4 ads are in this category
+            String category = category1.getName();
 
-        }
+            // We now have all we need to start creating the object
+            filterListOfAds.setList(adList);
+            filterListOfAds.setLat(lat);
+            filterListOfAds.setLng(lng);
 
-        @Test
-        public void adsAreGivenCoordinates_WhenAdExists() {
+            // Filter ads on price
+            filterListOfAds.setFilterType(filterType1);
+            filterListOfAds.setLowerLimit(lowerPrice);
+            filterListOfAds.setUpperLimit(upperPrice);
+            filterListOfAds.setLowestValueFirst(false);
 
+            ResponseEntity<Object> response0 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result0 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(HttpStatus.OK.value(), response0.getStatusCodeValue());
+            assertEquals(result0.size(), 2);
+
+            // Filter ads on price with the lowest value first
+            filterListOfAds.setLowestValueFirst(true);
+            ResponseEntity<Object> response1 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result1 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(HttpStatus.OK.value(), response1.getStatusCodeValue());
+            assertEquals(result1.size(), 2);
+            assertTrue((result1.get(0).getPrice()) > (result1.get(1).getPrice()));
+
+
+            // Filter ads on price and category --> this should return no more than 3
+            // TODO this will also retrieve (due to recursion) the categories that are children of the selected category
+            filterListOfAds.setLowestValueFirst(false);
+            filterListOfAds.setCategory(category);
+            ResponseEntity<Object> response2 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result2 = getAdsWithCategoryAndFilter(filterListOfAds);
+            assertEquals(result2.size(), 2);
+            assertEquals(HttpStatus.OK.value(), response2.getStatusCodeValue());
+
+
+            // Filter ads on distance
+            filterListOfAds.setFilterType(filterType2);
+            filterListOfAds.setLowerLimit(lowerDistance);
+            filterListOfAds.setUpperLimit(upperDistance);
+            filterListOfAds.setCategory(null); //todo use "" if null gives error
+
+            ResponseEntity<Object> response3 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result3 = getAdsWithCategoryAndFilter(filterListOfAds);
+
+            // Add distance to each adDto
+            adDto1.setDistance(calculateDistance(lat, lng, ad1.getLat(),
+                    ad1.getLng()));
+            adDto2.setDistance(calculateDistance(lat, lng, ad2.getLat(),
+                    ad2.getLng()));
+            adDto3.setDistance(calculateDistance(lat, lng, ad3.getLat(),
+                    ad3.getLng()));
+            adDto4.setDistance(calculateDistance(lat, lng, ad4.getLat(),
+                    ad4.getLng()));
+
+            // Retrieve the distances saved for each ad
+            double distance1 = adDto1.getDistance();
+            double distance2 = adDto2.getDistance();
+            double distance3 = adDto3.getDistance();
+            double distance4 = adDto4.getDistance();
+
+            System.out.println("Ad1: " + distance1);
+            System.out.println("Ad2: " + distance2);
+            System.out.println("Ad3: " + distance3);
+            System.out.println("Ad4: " + distance4);
+
+            // Load the distances into an arrayList
+            ArrayList<Double> distances = new ArrayList<>();
+            distances.add(distance1);
+            distances.add(distance2);
+            distances.add(distance3);
+            distances.add(distance4);
+
+            // TODO where in the method do we retrieve the distance ? from dto or object
+            int counter = 0;
+
+            for(Double distance : distances) {
+                System.out.println("distance: " + distance);
+                if (distance >= lowerDistance && distance <= upperDistance) {
+                    counter ++;
+                }
+            }
+
+
+            assertEquals(HttpStatus.OK.value(), response3.getStatusCodeValue());
+            assertEquals(result3.size(), counter);
+
+            // Filter ads on distance and category
+            filterListOfAds.setCategory(category); //todo use "" if null gives error
+            ResponseEntity<Object> response4 = adService.getAdsWithCategoryAndFilter(filterListOfAds);
+            List<AdDto> result4 = getAdsWithCategoryAndFilter(filterListOfAds);
+
+            // For all the ads in the category, get those with distance > 9 and < 1000 (3 of the ads)
+            assertEquals(HttpStatus.OK.value(), response4.getStatusCodeValue());
+            assertEquals(result4.size(), 3);
         }
 
         /**
@@ -1004,6 +1159,157 @@ public class AdIntegrationTest {
             return ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList());
         }
 
+        public List<AdDto> getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
+            UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
+
+            // If there is a category we sort for it
+            if(filterListOfAds.getCategory() != null) {
+                List<AdDto> list = getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
+                        userGeoLocation);
+                System.out.println("The size of the list " + list.size());
+                filterListOfAds.setList(list);
+                return getAllAdsWithFilter(filterListOfAds);
+            }
+            // If there is no category we do not sort for it
+            else {
+                return getAllAdsWithFilter(filterListOfAds);
+            }
+        }
+
+        public List<AdDto> getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
+            List<Ad> ads = new ArrayList<>();
+            if (filterListOfAds.getList() != null) {
+                for (AdDto a : filterListOfAds.getList()) {
+                    ads.add(adRepository.findById(a.getAdId()).get());
+                }
+            } else {
+                ads = adRepository.findAll();
+            }
+            List<AdDto> list = new ArrayList<>();
+            if (filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+                list = ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
+            }
+
+            if (filterListOfAds.getFilterType().toLowerCase().equals("price")) {
+
+                for (Ad a : ads) {
+                    if (a.getPrice() < filterListOfAds.getUpperLimit() && a.getPrice() > filterListOfAds.getLowerLimit()) {
+
+                        list.add(modelMapper.map(a, AdDto.class));
+                    }
+                }
+            }
+            // Returning array with nearest location
+            if (filterListOfAds.getLat() != 0 && filterListOfAds.getLng() != 0) {
+                for (AdDto a : list) {
+                    a.setDistance(
+                            calculateDistance(filterListOfAds.getLat(), filterListOfAds.getLng(), a.getLat(), a.getLng()));
+                }
+                // setting them in the right order
+                if (filterListOfAds.isLowestValueFirst()) {
+                    list.sort(Comparator.comparing(AdDto::getDistance));
+                } else {
+                    list.sort(Comparator.comparing(AdDto::getDistance).reversed());
+                }
+                // excluding those that are outside the limit of distance
+                if (filterListOfAds.getUpperLimit() != 0
+                        && filterListOfAds.getFilterType().toLowerCase().equals("distance")) {
+                    list.removeIf(a -> a.getDistance() > filterListOfAds.getUpperLimit());
+                }
+                return list;
+            }
+
+            return null;
+        }
+
+        public ArrayList<AdDto> getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
+
+            // Retrieve all categories from database
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+            System.out.println("The amount of categories in db: " + categories.size());
+
+            // List of subCategories found using recursive function
+            List<Category> subCategories = findSubCategories(categories, new ArrayList<>(), name, 0);
+
+            System.out.println("Number of subcategories: " + subCategories.size());
+            ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
+
+            // Iterate over all sub-categories found
+            for (Category category : subCategories) {
+                // Iterate over all ads in category
+                if (category.getAds() != null) {
+                    for (Ad ad : category.getAds()) {
+                        // Create dto
+                        AdDto dto = castObject(ad);
+                        // Add to list
+                        adsToBeReturned.add(dto);
+                    }
+                }
+            }
+
+            // Find the parent category
+            Set<Category> parentCategories = categoryRepository.findByName(name);
+
+            // There should only be ONE category in the set
+            Category parentCategory = parentCategories.stream().findFirst().get();
+
+            // Now, also add the ads connected to only the parent category to the list!
+            if(parentCategory.getAds() != null) {
+                for (Ad ad : parentCategory.getAds()) {
+                    AdDto dto = castObject(ad);
+                    adsToBeReturned.add(dto);
+                }
+            }
+            // Calculation and setting distance for ads
+            for (AdDto a : adsToBeReturned) {
+                a.setDistance(
+                        calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
+            }
+            // sort so nearest ads comes first
+            adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
+
+            // Now all ads are returned
+            return adsToBeReturned;
+        }
+
+        private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
+                                                 int start) {
+
+            // Position in array == start
+            int arrayLength = start;
+
+            // Base case: If the position in the array is equal to the size of the array
+            if (arrayLength == listIn.size()) {
+                // Return the list that now contains all sub-categories
+                return listOut;
+            } else {
+                // Iterate through all categories
+                for (int i = start; i < listIn.size(); i++) {
+                    Category category = listIn.get(i);
+
+                    // If the category is a sub-class
+                    if (category.getParentName() != null) {
+
+                        // If a category has current category as parent category
+                        if (category.getParentName().equalsIgnoreCase(parentName)) {
+
+                            // Add the category to the list to be returned
+                            listOut.add(category);
+
+                            // This category is now the new parent
+                            parentName = category.getName();
+
+                            // Call on the function recursively from the start for this category
+                            findSubCategories(listIn, listOut, parentName, start);
+                        }
+                    }
+                }
+                // Increment the list and call on the function recursively
+                return findSubCategories(listIn, listOut, parentName, start + 1);
+            }
+        }
+
+
         private AdDto castObject(Ad ad) {
             AdDto adDto = modelMapper.map(ad, AdDto.class);
             ;
@@ -1017,123 +1323,5 @@ public class AdIntegrationTest {
             double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
             return dist / 1000;
         }
-
-        private List<AdDto> sortByDistance(UserGeoLocation userGeoLocation) throws IOException {
-            List<AdDto> ads = getAllAdsWithDistance(userGeoLocation);
-//            return ads.stream().limit(userGeoLocation.getAmount()).collect(Collectors.toList());
-            return null;
-        }
-
-        private List<AdDto> sortByDescending(int pageSize, String sortBy) {
-            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).descending());
-            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
-
-        }
-
-        private List<AdDto> sortByAscending(int pageSize, String sortBy) {
-            Pageable pageable = PageRequest.of(0, pageSize, Sort.by(sortBy).ascending());
-            List<Ad> list = adRepository.findAll(pageable).get().collect(Collectors.toList());
-            return list.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList());
-        }
-
-        private Stream<AdDto> sortByCreatedDateAscending(int pageSize) {
-            List<Ad> ads = adRepository.findAll();
-            ads.sort(Comparator.comparing(Ad::getCreated));
-            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                    .limit(pageSize);
-        }
-
-        private Stream<AdDto> sortByCreatedDateDescending(int pageSize) {
-            List<Ad> ads = adRepository.findAll();
-            ads.sort(Comparator.comparing(Ad::getCreated).reversed());
-            return ads.stream().map(ad -> modelMapper.map(ad, AdDto.class)).collect(Collectors.toList()).stream()
-                    .limit(pageSize);
-        }
-
-        private List<AdDto> searchThroughAds(String searchWord) {
-            // List to be filled with corresponding ads
-            List<Ad> adsContainingSearchWord = new ArrayList<>();
-
-            List<Ad> ads = adRepository.findAll();
-
-            // Checking all titles for searchWord
-            for (Ad a : ads) {
-                if (a.getTitle().toLowerCase().contains(searchWord.toLowerCase())) {
-                    adsContainingSearchWord.add(a);
-                }
-            }
-            List<Category> categories = categoryRepository.findAll();
-
-            // Adding all ads with the category
-            for (Category c : categories) {
-                if (c.getName().toLowerCase().contains(searchWord.toLowerCase())) {
-                    for (Ad a : c.getAds()) {
-                        if (!adsContainingSearchWord.contains(a)) {
-                            adsContainingSearchWord.add(a);
-                        }
-                    }
-                }
-            }
-
-            // Casting objects to Dto and returning
-            return adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
-                    .collect(Collectors.toList());
-        }
-
-        private List<AdDto> sortArrayByPriceAscending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getPrice));
-            return list;
-        }
-
-        private List<AdDto> sortArrayByPriceDescending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getPrice).reversed());
-            return list;
-        }
-
-        private List<AdDto> sortArrayByDistanceAscending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getDistance));
-            return list;
-        }
-
-        private List<AdDto> sortArrayByDistanceDescending(List<AdDto> list) {
-            list.sort(Comparator.comparing(AdDto::getDistance).reversed());
-            return list;
-        }
-
-        private List<AdDto> getListWithinDistanceInterval(List<AdDto> list, double limit) {
-            list.stream().filter(x -> x.getDistance() < limit).collect(Collectors.toList());
-            return list;
-        }
-
-        private List<AdDto> getListOfAdsWithinPriceRange(List<AdDto> list, double upperLimit, double lowerLimit) {
-            list.stream().filter(x -> lowerLimit < x.getPrice() && x.getPrice() < upperLimit)
-                    .collect(Collectors.toList());
-            return list;
-        }
-
-        private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Geocoder geocoder = new Geocoder();
-
-            String response = geocoder.GeocodeSync(ad.getStreetAddress() + ad.getPostalCode() + ad.getCity());
-            JsonNode responseJSONNode = objectMapper.readTree(response);
-            JsonNode items = responseJSONNode.get("items");
-
-            for (JsonNode item : items) {
-                JsonNode address = item.get("address");
-                String label = address.get("label").asText();
-                JsonNode position = item.get("position");
-
-                String lat = position.get("lat").asText();
-                String lng = position.get("lng").asText();
-                System.out.println(label + " is located at " + lat + "," + lng + ".");
-                if (!lng.equals("") && !lat.equals("")) {
-                    ad.setLat(Double.parseDouble(lat));
-                    ad.setLng(Double.parseDouble(lng));
-                }
-            }
-        }
-
     }
 }

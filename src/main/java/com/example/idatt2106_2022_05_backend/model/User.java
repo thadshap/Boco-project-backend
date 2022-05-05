@@ -21,7 +21,8 @@ import java.util.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "user_sequence", strategy = GenerationType.SEQUENCE)
     @Column(name = "user_id")
     private Long id;
 
@@ -88,7 +89,7 @@ public class User {
     @ToString.Exclude
     private Set<Message> messages;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_group",
             joinColumns = {@JoinColumn(name = "user_id")},

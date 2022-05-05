@@ -40,7 +40,6 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     UserRepository userRepository;
 
-
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
@@ -212,21 +211,31 @@ public class ChatServiceImpl implements ChatService {
         Group newGroup = new Group();
         newGroup.setName(privateGroupDto.getGroupName());
 
-        User userOne = userRepository.getById(privateGroupDto.getUserOneId());
-        User userTwo = userRepository.getById(privateGroupDto.getUserTwoId());
+        Optional<User> userOneFound = userRepository.findById(privateGroupDto.getUserOneId());
+        Optional<User> userTwoFound = userRepository.findById(privateGroupDto.getUserTwoId());
 
-        HashSet<User> users = new HashSet<>();
-        users.add(userOne);
-        users.add(userTwo);
-        newGroup.setUsers(users);
+        if(userOneFound.isPresent() && userTwoFound.isPresent()) {
+            // Retrieve the users
+            User userOne = userOneFound.get();
+            User userTwo = userTwoFound.get();
 
-        groupRepository.save(newGroup);
+            // Generate a hash-set to hold the users
+            HashSet<User> users = new HashSet<>();
+            users.add(userOne);
+            users.add(userTwo);
+            newGroup.setUsers(users);
 
-        GroupDto groupDto = new GroupDto();
-        groupDto.setGroupId(newGroup.getId());
-        groupDto.setGroupName(newGroup.getName());
+            groupRepository.save(newGroup);
 
-        return new Response(groupDto, HttpStatus.OK);
+            GroupDto groupDto = new GroupDto();
+            groupDto.setGroupId(newGroup.getId());
+            groupDto.setGroupName(newGroup.getName());
+
+            return new Response(groupDto, HttpStatus.OK);
+        }
+        else {
+            return new Response("Could not find one or both of the users", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
