@@ -85,8 +85,6 @@ public class DataLoader implements ApplicationRunner {
             this.pictureRepository = pictureRepository;
             this.groupRepository = groupRepository;
             this.messageRepository = messageRepository;
-            this.groupRepository = groupRepository;
-            this.messageRepository = messageRepository;
         }
 
         public void run(ApplicationArguments args) throws IOException {
@@ -546,9 +544,9 @@ public class DataLoader implements ApplicationRunner {
 
 
 
-            Group group1 = Group.builder().name("gruppechat1").build();
-            Group group2 = Group.builder().name("gruppechat2").build();
-            Group group3 = Group.builder().name("gruppechat3").build();
+            Group group1 = Group.builder().name(user1.getFirstName() + " og " + user2.getFirstName()).build();
+            Group group2 = Group.builder().name(user2.getFirstName() + " og " + user3.getFirstName()).build();
+            Group group3 = Group.builder().name(user3.getFirstName() + " og " + user4.getFirstName()).build();
 
             Set<User> users1 = new HashSet<>();
             users1.add(user1);
