@@ -38,4 +38,8 @@ public class Group {
     )
     @ToString.Exclude
     private Set<User> users;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
+    private Set<Message> messages;
+
 }
