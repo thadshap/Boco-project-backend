@@ -396,7 +396,7 @@ public class AdIntegrationTest {
             UserGeoLocation dto = new UserGeoLocation();
             dto.setLat(63.52);
             dto.setLng(15.23);
-            dto.setAmount(1);
+//            dto.setAmount(1);
             ResponseEntity<Object> res = adService.getPageOfAds(15, dto);
 
             // Service class should return HttpResponse.OK
@@ -434,7 +434,7 @@ public class AdIntegrationTest {
             UserGeoLocation dto = new UserGeoLocation();
             dto.setLat(63.52);
             dto.setLng(15.23);
-            dto.setAmount(10);
+//            dto.setAmount(10);
             ResponseEntity<Object> res = adService.getPageOfAds(24, dto);
 
             // Service class should return HttpResponse.OK
@@ -890,7 +890,7 @@ public class AdIntegrationTest {
             userGeoLocation.setLng(10.404052);
 
             // Amount == the number of ads requested
-            userGeoLocation.setAmount(3);
+//            userGeoLocation.setAmount(3);
 
             // Call on the method using the service-class in order to verify the HTTP-response
             ResponseEntity<Object> res = adService.getAllAdsWithDistance(userGeoLocation);

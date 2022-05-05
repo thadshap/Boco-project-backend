@@ -46,7 +46,8 @@ public class ChatController {
 
     @RequestMapping("/group/{id}")
     public Response onOpen(@PathVariable long id) {
-        return chatService.getChat(id);
+//        return chatService.getChat(id);
+        return null;
     }
 
 
@@ -79,6 +80,12 @@ public class ChatController {
     @ApiOperation(value = "Endpoint to get all messages by group id", response = Response.class)
     public Response getGroupMessagesByGroupId(@PathVariable long groupId) {
         return chatService.getAllMessagesByGroupId(groupId);
+    }
+
+    @GetMapping("/group/users/{groupId}")
+    @ApiOperation(value = "Endpoint to get all users by group id", response = Response.class)
+    public Response getGroupUsersByGroupId(@PathVariable long groupId) {
+        return chatService.getGroupUsersByGroupId(groupId);
     }
 
     @PutMapping("/group/remove/user/{groupId}/{userId}")

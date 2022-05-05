@@ -986,12 +986,15 @@ public class AdServiceImpl implements AdService {
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        PictureReturnDto returnDto = PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
-                .type(pictures.get(0).getType())
-                .build();
-        returnDto.setId(adId);
-        return new Response(returnDto, HttpStatus.OK);
+        List<PictureReturnDto> returnDto = new ArrayList<>();
+        for (int i = 0; i < pictures.size(); i++) {
+            returnDto.add(PictureReturnDto.builder()
+                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .type(pictures.get(i).getType())
+                    .build());
+            returnDto.get(i).setId(adId);
+        }
+        return new Response(returnDto.get(0), HttpStatus.OK);
     }
 
 

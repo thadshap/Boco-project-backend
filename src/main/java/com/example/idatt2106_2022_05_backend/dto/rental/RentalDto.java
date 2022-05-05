@@ -39,6 +39,8 @@ public class RentalDto {
 
     private int price;
 
+    private boolean isReviewed;
+
     @ApiModelProperty(notes = "name of owner of item")
     private String owner;
 

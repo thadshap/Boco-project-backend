@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify email response</title>
+</head>
+
+<body style="font-family: system-ui;
+            color: #2c3e50;
+            background-color: rgb(230,247,255);"
+>
+<div class="container"
+     style="background: rgb(230,247,255);
+            padding: 2em;
+            text-align: center;
+            height: 100%;"
+>
+
+    <div class="d-sm-flex flex-grow-1 justify-content-sm-center align-items-sm-center w-100 main-container"
+         style=""
+    >
+
+        <div class="text-end"
+             style=""
+        >
+
+            <div class="w-100 verify-info-container"
+                 style="display: flex;
+                        justify-content: center;
+                        padding-top: 1em;"
+            >
+
+                <div class="me-auto w-100 verify-info"
+                     style="
+                            background: rgba(255,253,253,0.74);
+                            border-radius: 4px;
+                            text-align: center;
+                            padding: 0 0 5% 7%;
+                            display: flex;
+                            flex-direction: column;
+                            width: 60%;"
+                >
+
+                    <div class="email-response"
+                         style="padding-right: 7%;"
+                    >
+                        <div class="email-img-container"
+                             style="width: 100%;
+                                    display: flex;"
+                        >
+
+                        </div>
+
+                        <div>
+
+                            <div class="header"
+                                 style="font-weight: bold;
+                                        font-size: 2em;
+                                        padding-bottom: 10px;"
+                            >
+                                <a th:text="${'Hei ' + name + '!'}"></a>
+                            </div>
+
+                            <div>
+                                <a th:text="${lont != null} ? 'Låneforespørselen din er nå godtatt :'
+                                : 'Låneforespørselen din er nå avslått :'"></a>
+                            </div>
+
+                            <div
+                                 style="padding-top: 20px;" class="link"
+                            >
+                                <a th:href="${url}">Ta meg dit</a>
+<!--                                <a th:href="${urlBytt != null} ? urlBytt : ''"></a>-->
+                                <br>
+                                <br>
+                                <a >Med vennlig hilsen Boco!</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

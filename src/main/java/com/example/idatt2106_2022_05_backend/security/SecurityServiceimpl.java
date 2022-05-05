@@ -1,9 +1,6 @@
 package com.example.idatt2106_2022_05_backend.security;
 
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Picture;
-import com.example.idatt2106_2022_05_backend.model.Rental;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,6 +28,9 @@ public class SecurityServiceimpl implements SecurityService {
 
     @Autowired
     PictureRepository pictureRepository;
+
+    @Autowired
+    private AcceptRentalTokenRepository acceptRentalTokenRepository;
 
     /**
      * Method to see if user that is making the request.
@@ -112,6 +112,22 @@ public class SecurityServiceimpl implements SecurityService {
         Rental rental = rentalRepository.findById(rentalId).orElse(null);
         User user = getUser();
         if (rental != null && user != null && rental.getOwner() != null) {
+            return rental.getOwner().equals(user);
+        }
+        return false;
+    }
+
+    /**
+     * Method to see if user is owner of rental object by a string token.
+     * @param rentalId id of rental object.
+     * @return true if user is owner of rental object.
+     */
+    @Override
+    public boolean isRentalOwnerByToken(Long rentalId, String token) {
+        Rental rental = rentalRepository.findById(rentalId).orElse(null);
+        AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
+        User user = accToken.getUser();
+        if(rental != null && user != null  && rental.getOwner() != null){
             return rental.getOwner().equals(user);
         }
         return false;
