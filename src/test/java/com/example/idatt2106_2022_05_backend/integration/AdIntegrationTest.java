@@ -129,7 +129,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.WEEK).
-                    duration(2).
                     price(100).
                     streetAddress("Project Road 4").
                     postalCode(7234).
@@ -172,7 +171,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.MONTH).
-                    duration(2).
                     price(100).
                     streetAddress("The sea").
                     postalCode(7000).
@@ -214,7 +212,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.MONTH).
-                    duration(2).
                     price(100).
                     streetAddress("The sea").
                     postalCode(7000).
@@ -259,7 +256,6 @@ public class AdIntegrationTest {
                     rental(true).
                     rentedOut(false).
                     durationType(AdType.HOUR).
-                    duration(2).
                     price(100).
                     streetAddress("non existent").
                     postalCode(7000).
@@ -296,7 +292,7 @@ public class AdIntegrationTest {
 
             // Building an ad without persisting it
             AdDto newAd = AdDto.builder().title("ad with a very specific title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .userId(user.getId()).categoryId(category.getId()).build();
 
             adService.postNewAd(newAd);
@@ -340,7 +336,7 @@ public class AdIntegrationTest {
 
             // Building an ad without persisting it
             Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Save the ad with the foreign keys
@@ -386,7 +382,7 @@ public class AdIntegrationTest {
 
                 // Building an ad
                 Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                         .user(user1).category(category1).build();
 
                 // Save the new ad
@@ -422,7 +418,7 @@ public class AdIntegrationTest {
             for (int i = 0; i < 15; i++) {
                 // Building an ad
                 Ad newAd = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                        .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                        .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                         .user(user1).category(category1).build();
 
                 // Save the new ad
@@ -456,11 +452,11 @@ public class AdIntegrationTest {
 
             // Create available ads
             Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist them
@@ -469,11 +465,11 @@ public class AdIntegrationTest {
 
             // Create unavailable ads
             Ad unavailableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad unavailableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(true)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist them
@@ -504,11 +500,11 @@ public class AdIntegrationTest {
 
             // Create available ads
             Ad availableAd1 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad availableAd2 = Ad.builder().title("title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).lat(63.401920).lng(10.443579).city("Trondheim")
+                    .durationType(AdType.HOUR).price(100).lat(63.401920).lng(10.443579).city("Trondheim")
                     .streetAddress("address").postalCode(7999).user(user).category(category).build();
 
             adRepository.save(availableAd1);
@@ -535,15 +531,15 @@ public class AdIntegrationTest {
 
             // Create ads
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(8000).user(user).category(category)
                     .build();
 
             // Persist them
@@ -571,11 +567,11 @@ public class AdIntegrationTest {
 
             // Create ads with rental == true
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             // Persist
@@ -601,11 +597,11 @@ public class AdIntegrationTest {
 
             // Create ads with rental == false
             Ad ad1 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             Ad ad2 = Ad.builder().title("title").description("").rental(false).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist
@@ -637,17 +633,17 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad1 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8000).city("Bodø").user(user)
+                    .price(100).streetAddress("address").postalCode(8000).city("Bodø").user(user)
                     .category(category).build();
 
             // Create ad
             Ad ad2 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(8001).city("Bodø").user(user)
+                    .price(100).streetAddress("address").postalCode(8001).city("Bodø").user(user)
                     .category(category).build();
 
             // Create ad
             Ad ad3 = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").city("Bodø").postalCode(8002).user(user)
+                    .price(100).streetAddress("address").city("Bodø").postalCode(8002).user(user)
                     .category(category).build();
 
             // Persist ads
@@ -671,7 +667,7 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad = Ad.builder().title("title").description("").rental(true).rentedOut(false).durationType(AdType.HOUR)
-                    .duration(2).price(100).streetAddress("address").postalCode(7999).user(user).category(category)
+                    .price(100).streetAddress("address").postalCode(7999).user(user).category(category)
                     .build();
 
             // Persist the ad
@@ -784,7 +780,7 @@ public class AdIntegrationTest {
 
             // Create ad
             Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("address").postalCode(7999)
+                    .durationType(AdType.HOUR).price(100).streetAddress("address").postalCode(7999)
                     .user(user).category(category).build();
 
             // Persist the ad
@@ -827,7 +823,7 @@ public class AdIntegrationTest {
 
             // Creating ad without coordinates
             Ad ad = Ad.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
                     .city("båtsfjord").user(user).category(category).build();
 
             // Persist the ad
@@ -852,7 +848,7 @@ public class AdIntegrationTest {
 
             // Creating ad without coordinates
             AdDto ad = AdDto.builder().title("random title").description("").rental(true).rentedOut(false)
-                    .durationType(AdType.HOUR).duration(2).price(100).streetAddress("fjordvegen 2").postalCode(9990)
+                    .durationType(AdType.HOUR).price(100).streetAddress("fjordvegen 2").postalCode(9990)
                     .city("båtsfjord").userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad
@@ -936,26 +932,26 @@ public class AdIntegrationTest {
             AdDto adDto1 = AdDto.builder().
                     title("random title1").description("").rental(true).
                     rentedOut(false).durationType(AdType.HOUR).
-                    duration(2).price(10).streetAddress("fjordvegen 2").
+                    price(10).streetAddress("fjordvegen 2").
                     postalCode(9990).city("båtsfjord").userId(user.getId()).
                     categoryId(category1.getId()).build();
 
             AdDto adDto2 = AdDto.builder().title("random title2").description("").
                     rental(true).rentedOut(false).durationType(AdType.HOUR).
-                    duration(2).price(100).streetAddress("Rønvikgata 5").
+                    price(100).streetAddress("Rønvikgata 5").
                     postalCode(8006).city("bodø").userId(user.getId()).
                     categoryId(category1.getId()).build();
 
             AdDto adDto3 = AdDto.builder().title("random title3").description("").
                     rental(true).rentedOut(false).durationType(AdType.HOUR).
-                    duration(2).price(1000).streetAddress("Kjerkgata 3").
+                    price(1000).streetAddress("Kjerkgata 3").
                     postalCode(7374).city("røros").userId(user.getId()).
                     categoryId(category1.getId()).build();
 
             // Creating an ad with a different category
             AdDto adDto4 = AdDto.builder().title("random title4").description("").
                     rental(true).rentedOut(false).durationType(AdType.HOUR).
-                    duration(2).price(1000).streetAddress("Kjerkgata 3").
+                    price(1000).streetAddress("Kjerkgata 3").
                     postalCode(7374).city("røros").userId(user.getId()).
                     categoryId(category2.getId()).build();
 

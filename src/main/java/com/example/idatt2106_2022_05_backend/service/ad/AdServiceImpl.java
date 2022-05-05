@@ -584,7 +584,6 @@ public class AdServiceImpl implements AdService {
         // Required attributes
         newAd.setRental(adDto.isRental());
         newAd.setRentedOut(false);
-        newAd.setDuration(adDto.getDuration());
         newAd.setDurationType(adDto.getDurationType());
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
@@ -743,9 +742,6 @@ public class AdServiceImpl implements AdService {
             }
             if (adUpdateDto.getDescription() != null) {
                 ad.setDescription(adUpdateDto.getDescription());
-            }
-            if (adUpdateDto.getDuration() > 0) {
-                ad.setDuration(adUpdateDto.getDuration());
             }
             if (adUpdateDto.getDurationType() != null) {
                 ad.setDurationType(adUpdateDto.getDurationType());

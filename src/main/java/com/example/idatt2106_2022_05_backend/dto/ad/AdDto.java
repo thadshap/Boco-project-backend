@@ -34,9 +34,6 @@ public class AdDto {
     @ApiModelProperty(notes = "boolean true if item is currently rented out")
     private boolean rentedOut;
 
-    @ApiModelProperty(notes = "Duration of rental")
-    private int duration;
-
     @ApiModelProperty(notes = "unity of rental: hour, day, week or month")
     private AdType durationType;
 

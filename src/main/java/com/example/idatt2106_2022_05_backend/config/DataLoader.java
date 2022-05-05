@@ -358,31 +358,31 @@ public class DataLoader implements ApplicationRunner {
 
             // Create ad
             Ad borremaskin = Ad.builder().title("Borre-maskin").description("Leier ut en kraftig borremaskin. Pent brukt og fungerer som den skal.").
-                    rental(true).durationType(AdType.MONTH).duration(2).price(50).created(LocalDate.now()).lat(63.2).lng(10.4).streetAddress("Valgrindvegen 5A").postalCode(7031).city("Trondheim").user(user1).category(verktoy).build();
+                    rental(true).durationType(AdType.MONTH).price(50).created(LocalDate.now()).lat(63.2).lng(10.4).streetAddress("Valgrindvegen 5A").postalCode(7031).city("Trondheim").user(user1).category(verktoy).build();
             Ad tux = Ad.builder().title("Leier ut tux").description("1000 kr pr kveld").rental(true).durationType(AdType.WEEK).
-                    duration(2).price(1000).created(LocalDate.now()).lat(62.4).lng(10.1).streetAddress("Markaplassen 15").postalCode(7054).
+                    price(1000).created(LocalDate.now()).lat(62.4).lng(10.1).streetAddress("Markaplassen 15").postalCode(7054).
                     city("Trondheim").user(user2).category(clothes).build();
             Ad pc = Ad.builder().title("Leier ut Pc").description("Lån en lenovo PC, funker bra til skole eller jobb.").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(800).created(LocalDate.now()).lat(64.2).lng(10.4).streetAddress("Fagrabrekka 2").postalCode(7056).
+                    durationType(AdType.MONTH).price(800).created(LocalDate.now()).lat(64.2).lng(10.4).streetAddress("Fagrabrekka 2").postalCode(7056).
                     city("Ranheim").user(user3).category(datamaskin).build();
             Ad charger = Ad.builder().title("Pc lader").description("Leier ut en ny lenovo lader").rental(true).durationType(AdType.MONTH).
-                    duration(2).price(1000).created(LocalDate.now()).lat(60.4).lng(10.4).streetAddress("Reidar Raaens veg 7").
+                    price(1000).created(LocalDate.now()).lat(60.4).lng(10.4).streetAddress("Reidar Raaens veg 7").
                     postalCode(7056).city("Ranheim").user(user3).category(datamaskin).build();
             Ad motherBoard = Ad.builder().title("Mother board").description("Leier ut ut ny lenovo motherboard").
-                    rental(true).durationType(AdType.MONTH).duration(2).price(600).created(LocalDate.now()).lat(63.4).lng(10.4).
+                    rental(true).durationType(AdType.MONTH).price(600).created(LocalDate.now()).lat(63.4).lng(10.4).
                     streetAddress("Svartholtet 12").postalCode(7092).city("Tiller").user(user3).category(datamaskin).build();
             Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(60.9).lng(10.4).
+                    durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(60.9).lng(10.4).
                     streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user1).category(otherOutdoor).build();
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(200).created(LocalDate.now()).lat(59.4).lng(10.4).
+                    durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(59.4).lng(10.4).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user1).category(verktoy).build();
             Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(100).created(LocalDate.now()).lat(63.4).lng(11.4).
+                    durationType(AdType.MONTH).price(100).created(LocalDate.now()).lat(63.4).lng(11.4).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
-            Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.4).lng(10.5).
+            Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.4).lng(10.5).
                     streetAddress("Konrad Dahls veg 7B").city("Trondheim").postalCode(7024).user(user3).category(otherhobby).build();
-            Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).duration(2).
+            Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
                     price(800).created(LocalDate.now()).lat(63.7).lng(12.4).streetAddress("Ålivegen 6C").city("Vikhammer").
                     postalCode(7560).user(user4).category(telt).build();
             // Persist all ads
@@ -397,30 +397,30 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(klovn);
             adRepository.save(tent);
 
-            Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).duration(1).price(350).
+            Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.43).lng(10.4).build();
-            Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).duration(4).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
+            Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
                     rental(true).user(user2).category(grill).created(LocalDate.now()).lat(64.4).lng(10.3).build();
-            Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").duration(1).postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
+            Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
                     user(user3).lat(64.3).durationType(AdType.DAY).lng(10.4).created(LocalDate.now()).category(pizzaovn).build();
-            Ad koleboks = Ad.builder().title("Kjøleboks leies ut").description("Kjøleboks leies ut til arrangementer").duration(3).durationType(AdType.DAY).streetAddress("Fjordvegen 2").postalCode(9999).city("Båtsfjord").
+            Ad koleboks = Ad.builder().title("Kjøleboks leies ut").description("Kjøleboks leies ut til arrangementer").durationType(AdType.DAY).streetAddress("Fjordvegen 2").postalCode(9999).city("Båtsfjord").
                     price(100).user(user4).rental(true).category(otherKitchen).created(LocalDate.now()).lat(71.0).lng(60).build();
             adRepository.save(kjokkenmaskin);
             adRepository.save(grillen);
             adRepository.save(pizzaspade);
             adRepository.save(koleboks);
 
-            Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").duration(2).durationType(AdType.DAY).postalCode(7500).streetAddress("Stokkanvegen 2").
+            Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").durationType(AdType.DAY).postalCode(7500).streetAddress("Stokkanvegen 2").
                     price(200).user(user1).category(car).rental(true).city("Stjørdal").created(LocalDate.now()).lat(64.4).lng(10.4).build();
-            Ad bot = Ad.builder().title("Seilbåt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").duration(1).durationType(AdType.DAY).
+            Ad bot = Ad.builder().title("Seilbåt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").durationType(AdType.DAY).
                     postalCode(7018).price(1200).user(user2).rental(true).category(boat).city("Trondheim").created(LocalDate.now()).lat(63.43).lng(10.36).build();
-            Ad sykkel = Ad.builder().title("Sykkel til utleie").description("Leier ut bysykkelen min. Perfekt til turister.").duration(1).durationType(AdType.DAY).postalCode(7020).streetAddress("Schnitlers vei 6").
+            Ad sykkel = Ad.builder().title("Sykkel til utleie").description("Leier ut bysykkelen min. Perfekt til turister.").durationType(AdType.DAY).postalCode(7020).streetAddress("Schnitlers vei 6").
                     price(100).user(user3).rental(true).city("Trondheim").category(bike).lat(63.42).lng(10.36).created(LocalDate.now()).build();
-            Ad sparkesykkel = Ad.builder().description("Triksesparkesykkel kan leies for en billig penge").title("Trikse sparkesykkel").duration(2).durationType(AdType.HOUR).postalCode(7042).city("Trondheim").
+            Ad sparkesykkel = Ad.builder().description("Triksesparkesykkel kan leies for en billig penge").title("Trikse sparkesykkel").durationType(AdType.HOUR).postalCode(7042).city("Trondheim").
                     streetAddress("Biskop Sigurds gate 7").price(70).rental(true).user(user4).created(LocalDate.now()).category(bikey).lat(63.43).lng(10.42).build();
-            Ad moped = Ad.builder().title("Moped til utleie").description("Leier ut mopeden min til daglig bruk, da den ikke brukes så mye.").duration(1).durationType(AdType.DAY).postalCode(7014).city("Trondheim").
+            Ad moped = Ad.builder().title("Moped til utleie").description("Leier ut mopeden min til daglig bruk, da den ikke brukes så mye.").durationType(AdType.DAY).postalCode(7014).city("Trondheim").
                     streetAddress("Øvre Kristianstens gate 2B").price(300).rental(true).user(user1).category(scooter).lat(63.42).lng(10.40).rentedOut(true).created(LocalDate.now()).build();
-            Ad tilhenger = Ad.builder().title("Tilhenger").description("Stor tilhenger til utleie, funker for møbler og store gjenstander.").duration(1).durationType(AdType.DAY).postalCode(7051).price(350).rental(true).
+            Ad tilhenger = Ad.builder().title("Tilhenger").description("Stor tilhenger til utleie, funker for møbler og store gjenstander.").durationType(AdType.DAY).postalCode(7051).price(350).rental(true).
                     streetAddress("Øvre Bergsvingen 3").city("Trondheim").user(user2).created(LocalDate.now()).category(hanger).lat(63.41).lng(10.42).build();
             adRepository.save(bil);
             adRepository.save(bot);

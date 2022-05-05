@@ -39,9 +39,6 @@ public class Ad {
     @Column(name = "rental", nullable = false)
     private boolean rental;
 
-    @Column(name = "duration", nullable = false)
-    private int duration;
-
     @Column(name = "duration_type", nullable = false)
     private AdType durationType;
 

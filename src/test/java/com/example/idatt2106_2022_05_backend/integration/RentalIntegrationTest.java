@@ -89,7 +89,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -145,7 +145,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -204,7 +204,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -287,7 +287,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -364,7 +364,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -416,7 +416,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -474,7 +474,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -538,7 +538,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -594,7 +594,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -644,10 +644,10 @@ public class RentalIntegrationTest {
 
         // Create an ad
         AdDto speaker1 = AdDto.builder().title("Title 1 for test").description("Renting out a brand new speaker")
-                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .rental(true).durationType(AdType.WEEK).price(100).streetAddress("vollabakken 3")
                 .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
         AdDto speaker2 = AdDto.builder().title("Title 2 for test").description("Renting out a brand new speaker")
-                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .rental(true).durationType(AdType.WEEK).price(100).streetAddress("vollabakken 3")
                 .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
 
         // Persist ads

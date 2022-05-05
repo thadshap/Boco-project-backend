@@ -108,7 +108,7 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
                     .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
@@ -140,7 +140,7 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
                     .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
