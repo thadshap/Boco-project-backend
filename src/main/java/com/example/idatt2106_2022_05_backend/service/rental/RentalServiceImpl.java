@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -57,17 +58,6 @@ public class RentalServiceImpl implements RentalService {
         }
         Optional<Ad> ad = adRepository.findById(rentalDto.getAdId());
         if (ad.isPresent()) {
-            Set<CalendarDate> cld = ad.get().getDates();
-
-            if (rentalDto.isActive()) {
-                for (CalendarDate calDate : cld) {
-                    if (calDate.getDate().isBefore(rentalDto.getRentTo())
-                            && calDate.getDate().isAfter(rentalDto.getRentFrom())) {
-                        calDate.setAvailable(false);
-                        dayDateRepository.save(calDate);
-                    }
-                }
-            }
             rentalDto.setActive(false);
             User owner = userRepository.getByEmail(rentalDto.getOwner());
             User borrower = userRepository.getByEmail(rentalDto.getBorrower());
@@ -103,25 +93,46 @@ public class RentalServiceImpl implements RentalService {
      */
     @Override
     public Response activateRental(Long rentalId) {
-        Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
-        if (rentalOptional.isEmpty()){
+        Optional<Rental> rentalFound = rentalRepository.findById(rentalId);
+        if (rentalFound.isEmpty()){
             return new Response("Rental is not found in the database", HttpStatus.NO_CONTENT);
         }
-        Rental rental = rentalOptional.get();
-        rental.setActive(true);
-        Set<CalendarDate> cld = rental.getAd().getDates();
-        for (CalendarDate calDate : cld) {
-            if (calDate.getDate().isBefore(rental.getRentTo()) && calDate.getDate().isAfter(rental.getRentFrom())) {
-                calDate.setAvailable(false);
-                dayDateRepository.save(calDate);
-            }
-        }
-        rentalRepository.save(rental);
-        // TODO check if right user gets confirm email
+        else {
+            Rental rental = rentalFound.get();
 
-        // emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
-        // "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
-        return new Response("Rental has been activated", HttpStatus.ACCEPTED);
+            // Find the ad
+            Ad ad = rental.getAd();
+
+            // Get all dates for the ad
+            Set<CalendarDate> cld = ad.getDates();
+
+            // todo @mæsjøl hvis testan feile så sett active til false hihi
+            // Set the selected dates to active
+            for (CalendarDate calDate : cld) { //todo also check for equal to start + end date
+
+                // Get the LocalDate
+                LocalDate date = calDate.getDate();
+                // If date equals start -or end date OR date is in between start -and endDate
+                if (date.isEqual(rental.getRentFrom()) || date.isEqual(rental.getRentTo()) ||
+                        (date.isBefore(rental.getRentTo()) && date.isAfter(rental.getRentFrom()))) {
+
+                    // Mark the date as unavailable
+                    calDate.setAvailable(false);
+
+                    // Persist the change
+                    dayDateRepository.save(calDate);
+                }
+            }
+            // Set the rental as active
+            rental.setActive(true);
+
+            // Persist the rental
+            rentalRepository.save(rental);
+
+            // emailService.sendEmail("BOCO", rental.getBorrower().getEmail(), "Utån Godkjent!",
+            // "Ditt låneforespørsel av " + rental.getAd().getTitle() + ", er nå godkjent av utleier!");
+            return new Response("Rental has been activated", HttpStatus.ACCEPTED);
+        }
     }
 
     /**

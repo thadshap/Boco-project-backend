@@ -39,7 +39,7 @@ public class RentalController {
 
     @PutMapping("/activate/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
-    public Response activateRental(@PathVariable Long rentalId) throws MessagingException {
+    public Response activateRental(@PathVariable Long rentalId) {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
         if (!securityService.isRentalOwner(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);

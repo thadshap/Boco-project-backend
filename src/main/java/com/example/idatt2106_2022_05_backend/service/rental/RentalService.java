@@ -11,7 +11,7 @@ import javax.mail.MessagingException;
 public interface RentalService {
     Response createRental(RentalDto rentalDto);
 
-    Response activateRental(Long rentalId) throws MessagingException;
+    Response activateRental(Long rentalId);
 
     Response completeRental(Long rentalId, RentalReviewDto rentalDto);
 
