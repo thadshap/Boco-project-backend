@@ -116,7 +116,7 @@ public class ChatServiceImpl implements ChatService {
             group = Group.builder().name(ad.getTitle()).users(users).build();
         }
 
-        String content = "Hei, jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
+        String content = "Hei," + owner.getFirstName() + " " + owner.getLastName() + " jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
                 "Pris: " + rentalDto.getPrice() + "kr \n" +
                 "http://localhost:8080/rental/approve_rental?rentalId=" + rentalDto.getId();
