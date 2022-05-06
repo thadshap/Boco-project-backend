@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
                 Picture profilePicture = user.getPicture();
 
                 // Check to see if the profile picture is the same as the argument
-                if (Arrays.equals(profilePicture.getData(), chosenPicture)) {
+                if (Arrays.equals(profilePicture.getBase64().getBytes(), chosenPicture)) {
 
                     // Remove this picture from user
                     user.setPicture(null); // todo maybe to this about 10 lines below?
