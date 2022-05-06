@@ -21,7 +21,10 @@ public class FacebookClient {
 
     /**
      * Class to connect with facebook api and retrieve the user.
-     * @param accessToken token for user given out by facebook.
+     * 
+     * @param accessToken
+     *            token for user given out by facebook.
+     * 
      * @return returns an instance of facebook user.
      */
     public FacebookUser getUser(String accessToken) {

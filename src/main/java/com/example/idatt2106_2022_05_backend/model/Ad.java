@@ -12,8 +12,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.example.idatt2106_2022_05_backend.enums.AdType.DAY;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,11 +23,12 @@ import static com.example.idatt2106_2022_05_backend.enums.AdType.DAY;
 public class Ad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ad_id")
+    @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
+    @Column(name = "ad_id", nullable = false)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     // Is nullable
@@ -37,18 +36,18 @@ public class Ad {
     private String description;
 
     // If true --> for rent; if false --> item is being given away
-    @Column(name = "rental")
+    @Column(name = "rental", nullable = false)
     private boolean rental;
 
-    @Column(name = "duration")
-    private AdType durationType = DAY;
+    @Column(name = "duration_type", nullable = false)
+    private AdType durationType;
 
     // True if the item is rented out
-    @Column(name = "rented_out")
+    @Column(name = "rented_out", nullable = false)
     private boolean rentedOut;
 
     // Is nullable
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
     // Is nullable
@@ -56,7 +55,7 @@ public class Ad {
     private String streetAddress;
 
     // Is nullable
-    @Column(name = "postal_code")
+    @Column(name = "postal_code", nullable = false)
     private int postalCode;
 
     @NotNull
@@ -123,44 +122,24 @@ public class Ad {
         return "/ad-photos/" + id + "/" + photos;
     }
 
-
     @PreRemove
     private void removeRelationships() {
-        if (dates != null) {
-            setDates(null);
-        }
-        if(user != null) {
-            setUser(null);
-        }
-        if(category != null) {
-            setCategory(null);
-        }
-    }
-
-
-/**
-//    @PreRemove
-    private void removeRelationships() {
-        if (pictures != null) {
-            setPictures(null);
-        }
-        if (category != null) {
-            setCategory(null);
-        }
-        if (rentals != null) {
-            setRentals(null);
-        }
-        if (reviews != null) {
-            setReviews(null);
-        }
         if (dates != null) {
             setDates(null);
         }
         if (user != null) {
             setUser(null);
         }
+        if (category != null) {
+            setCategory(null);
+        }
     }
-*/
+
+    /**
+     * // @PreRemove private void removeRelationships() { if (pictures != null) { setPictures(null); } if (category !=
+     * null) { setCategory(null); } if (rentals != null) { setRentals(null); } if (reviews != null) { setReviews(null);
+     * } if (dates != null) { setDates(null); } if (user != null) { setUser(null); } }
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o)

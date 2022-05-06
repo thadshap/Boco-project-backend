@@ -27,7 +27,6 @@ public class Picture {
     @Column(name = "type")
     private String type;
 
-
     @Lob
     @Column(name = "image")
     private String base64;

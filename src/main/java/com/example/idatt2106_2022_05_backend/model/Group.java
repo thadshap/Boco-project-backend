@@ -2,7 +2,6 @@ package com.example.idatt2106_2022_05_backend.model;
 
 import lombok.*;
 
-
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.Setter;
 
 import java.util.Set;
 
-
 @Getter
 @Setter
 @ToString
@@ -19,23 +17,20 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="groupss")
+@Table(name = "groupss")
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="group_id", nullable=false)
+    @Column(name = "group_id", nullable = false)
     private Long id;
 
     @Column(name = "name")
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name="user_group",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
-    )
+    @JoinTable(name = "user_group", joinColumns = { @JoinColumn(name = "group_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "user_id") })
     @ToString.Exclude
     private Set<User> users;
 

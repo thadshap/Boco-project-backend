@@ -16,8 +16,7 @@ import java.util.Set;
 public class Category {
 
     @Id
-    @SequenceGenerator(name = "category_sequence", sequenceName = "category_sequence", allocationSize = 1)
-    @GeneratedValue(generator = "category_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private Long id;
 
@@ -27,8 +26,8 @@ public class Category {
     @NotNull
     private boolean parent;
 
-//    @NotNull
-//    private boolean middleChild;
+    // @NotNull
+    // private boolean middleChild;
 
     @NotNull
     private boolean child;

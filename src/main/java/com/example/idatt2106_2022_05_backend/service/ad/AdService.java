@@ -44,7 +44,7 @@ public interface AdService {
     // Get all available ads by user id
     Response getAllAvailableAdsByUser(long userId);
 
-    //Get a page of ads
+    // Get a page of ads
     Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation);
 
     // Get all ads by postal code

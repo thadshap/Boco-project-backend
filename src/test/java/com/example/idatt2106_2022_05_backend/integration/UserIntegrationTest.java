@@ -80,52 +80,29 @@ public class UserIntegrationTest {
         userRepository.save(user2);
 
         // Building categories
-        Category clothes = Category.builder().
-                name("new category1").
-                parent(true).
-                build();
+        Category clothes = Category.builder().name("new category1").parent(true).build();
 
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(clothes);
         categoryRepository.save(it);
 
         // Building an ad-dto with foreign keys
-         AdDto dto = AdDto.builder().
-         title("unique title for this tesst1.").
-         description("Renting out a pair of shoes in size 40").
-         rental(true).
-         rentedOut(false).
-         durationType(AdType.WEEK).
-         price(100).
-         lat(63.401920).
-         lng(10.443579).
-         streetAddress("Fjordvegen 2").
-         postalCode(9990).
-         city("Båtsfjord").
-         userId(user.getId()).
-         categoryId(it.getId()).
-         build();
+        AdDto dto = AdDto.builder().title("unique title for this tesst1.")
+                .description("Renting out a pair of shoes in size 40").rental(true).rentedOut(false)
+                .durationType(AdType.WEEK).price(100).lat(63.401920).lng(10.443579).streetAddress("Fjordvegen 2")
+                .postalCode(9990).city("Båtsfjord").userId(user.getId()).categoryId(it.getId()).build();
 
-         adService.postNewAd(dto);
+        adService.postNewAd(dto);
 
-         Set<Ad> adFound = adRepository.findByTitle("unique title for this tesst1.");
-         Ad ad = adFound.stream().findFirst().get();
+        Set<Ad> adFound = adRepository.findByTitle("unique title for this tesst1.");
+        Ad ad = adFound.stream().findFirst().get();
 
-         // Create rental
-        Rental rental = Rental.builder().
-                ad(ad).
-                owner(user).
-                borrower(user2).
-                active(false).
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().plusDays(1)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().plusDays(2)).build();
+        // Create rental
+        Rental rental = Rental.builder().ad(ad).owner(user).borrower(user2).active(false).dateOfRental(LocalDate.now())
+                .rentFrom(LocalDate.now().plusDays(1)).rentTo(LocalDate.now().plusWeeks(1))
+                .deadline(LocalDate.now().plusDays(2)).build();
         rentalRepository.save(rental);
     }
 
@@ -145,8 +122,6 @@ public class UserIntegrationTest {
 
     @Nested
     class TestUserRepo {
-
-
 
         @Test
         public void getUserByEmail_WhenEmailCorrect() {
@@ -199,8 +174,8 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
-                    .postalCode(7000).user(user).category(category).build();
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea").postalCode(7000)
+                    .user(user).category(category).build();
 
             // Persist the ad
             Ad savedAd = adRepository.save(newAd);
@@ -231,8 +206,8 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
-                    .postalCode(7000).user(user).category(category).build();
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea").postalCode(7000)
+                    .user(user).category(category).build();
 
             // Persist the ad
             Ad savedAd = adRepository.save(newAd);

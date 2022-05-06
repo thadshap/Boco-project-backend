@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
@@ -28,10 +29,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
@@ -77,6 +80,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private FacebookClient facebookClient;
 
+    @Autowired
+    private PictureRepository pictureRepository;
+
     /**
      * Method to get user from facebook and log them in to.
      *
@@ -86,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
      * @return user login dto.
      */
     @Override
-    public Response loginUserFacebook(String accessToken) {
+    public Response loginUserFacebook(String accessToken) throws IOException {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
@@ -95,14 +101,37 @@ public class AuthServiceImpl implements AuthService {
             User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName()).verified(true)
                     .password(passwordEncoder.encode(generatePassword(8))).build();
+            Picture picture = profilePicture(user);
             userRepository.save(user);
-            userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
-        }
-        final String token = jwtUtil.generateToken(userDetails);
-        User user = userRepository.findByEmail(facebookUser.getEmail());
-        LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
+            pictureRepository.save(picture);
 
+            userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
+            log.debug(userDetails.getUsername() + " created");
+        }
+        User user2 = userRepository.findByEmail(facebookUser.getEmail());
+        final String token = jwtUtil.generateToken(userDetails);
+        System.out.println(userDetails.getUsername());
+        System.out.println(token);
+        System.out.println(user2.getEmail());
+        LoginResponse jwt = LoginResponse.builder().id(user2.getId()).token(token).build();
         return new Response(jwt, HttpStatus.ACCEPTED);
+    }
+
+    private Picture profilePicture(User user) throws IOException {
+        File pb = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
+        byte[] fileContent = Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .base64(Base64.getEncoder().encodeToString(fileContent)).type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        System.out.println("kj'm hit");
+        System.out.println("kj'm hit");
+        user.setNumberOfReviews(0);
+        user.setRating(0L);
+        user.setVerified(false);
+        user.setEmailVerified(true);
+        return picture1;
     }
 
     /**
@@ -132,20 +161,24 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
-            if (inputLine.contains("\"email\"")){
+            if (inputLine.contains("\"email\"")) {
                 String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
                 user.setEmail(replace.replace(",", ""));
             }
-            if (inputLine.contains("\"given_name\"")){
+            if (inputLine.contains("\"given_name\"")) {
                 String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
                 user.setFirstName(replace.replace(",", ""));
             }
-            if (inputLine.contains("\"family_name\"")){
+            if (inputLine.contains("\"family_name\"")) {
                 String replace = inputLine.split(":")[1];
+                System.out.println(replace = replace.replace("\"", ""));
                 user.setLastName(replace.replace(",", ""));
             }
-            if (inputLine.contains("\"picture\"")){
+            if (inputLine.contains("\"picture\"")) {
                 String replace = inputLine.split(":")[1] + inputLine.split(":")[2];
+                System.out.println(replace = replace.replace("\"", ""));
                 user.setPictureUrl(replace.replace(",", ""));
             }
         }
@@ -155,28 +188,30 @@ public class AuthServiceImpl implements AuthService {
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
 
-        if (userDetails == null){
+        if (userDetails == null) {
+            Picture picture = profilePicture(user);
             user.setPassword(passwordEncoder.encode(generatePassword(8)));
-            user.setVerified(true);
             userRepository.save(user);
+            pictureRepository.save(picture);
             userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
         }
         final String token = jwtUtil.generateToken(userDetails);
 
-//        User user = userRepository.findByEmail(socialLoginRequest.getEmail());
+        user = userRepository.findByEmail(user.getEmail());
 
-
-        LoginResponse jwt = LoginResponse.builder()
-                .id(user.getId())
-                .token(token)
-                .build();
+        System.out.println(user.getFirstName() + " " + user.getLastName() + " " + user.getEmail());
+        System.out.println(user.getId());
+        LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
     /**
      * Helper method to generate password for facebook and google users
-     * @param length length of password
+     * 
+     * @param length
+     *            length of password
+     * 
      * @return returns raw password
      */
     private String generatePassword(int length) {
@@ -193,7 +228,7 @@ public class AuthServiceImpl implements AuthService {
         password[2] = specialChar.charAt(randome.nextInt(specialChar.length()));
         password[3] = numbers.charAt(randome.nextInt(numbers.length()));
 
-        for(int i = 4; i< length ; i++) {
+        for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(randome.nextInt(combinedChars.length()));
         }
         return new String(password);
@@ -201,12 +236,16 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to handle user logging in.
-     * @param loginDto dto containing login credentials.
+     * 
+     * @param loginDto
+     *            dto containing login credentials.
+     * 
      * @return response.
      */
     @Override
     public Response login(LoginDto loginDto) {
 
+        System.out.println(loginDto.getEmail() + " " + loginDto.getPassword());
         User user = userRepository.findByEmail(loginDto.getEmail());
         if (user == null) {
             // throw exception
@@ -222,23 +261,27 @@ public class AuthServiceImpl implements AuthService {
 
         final String token = jwtUtil.generateToken(userDetails);
 
-        LoginResponse jwt = LoginResponse.builder()
-                .id(user.getId())
-                .token(token)
-                .build();
+        LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
     /**
      * Method to handle request of resetting password.
-     * @param forgotPasswordDto dto containing email.
-     * @param url url to send in the mail of the user.
+     * 
+     * @param forgotPasswordDto
+     *            dto containing email.
+     * @param url
+     *            url to send in the mail of the user.
+     * 
      * @return response if mail is sent.
-     * @throws MessagingException throws exception if messaging fails.
+     * 
+     * @throws MessagingException
+     *             throws exception if messaging fails.
      */
     @Override
-    public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url) throws MessagingException, IOException {
+    public Response resetPassword(UserForgotPasswordDto forgotPasswordDto, String url)
+            throws MessagingException, IOException {
         User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
 
         if (user != null) {
@@ -250,16 +293,14 @@ public class AuthServiceImpl implements AuthService {
             variables.put("name", user.getFirstName() + " " + user.getLastName());
             variables.put("url", url + "/auth/renewYourPassword");
 
-            Email email = Email.builder()
-                    .from("BOCO@gmail.com")
-                    .to(user.getEmail())
-                    .template(new ThymeleafTemplate("verify_mail", variables))
-                    .subject("Forespørsel om å endre passord")
+            Email email = Email.builder().from("BOCO@gmail.com").to(user.getEmail())
+                    .template(new ThymeleafTemplate("verify_mail", variables)).subject("Forespørsel om å endre passord")
                     .build();
             emailService.sendEmail(email);
 
-//            emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
-//                    "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO renewYourPassword skal sende bruker til form som skal sende til /renewPassword
+            // emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO, nytt passord",
+            // "Klikk på lenken under for å endre passordet ditt." + "\n" + url + "/auth/renewYourPassword");//TODO
+            // renewYourPassword skal sende bruker til form som skal sende til /renewPassword
             log.info("Click the link to change your account: {}", url + "/auth/renewYourPassword");
 
             return new Response(token, HttpStatus.ACCEPTED);
@@ -270,8 +311,12 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to validate the password wanted to change by token created.
-     * @param token token to verify the user.
-     * @param forgotPasswordDto dto containing password to change.
+     * 
+     * @param token
+     *            token to verify the user.
+     * @param forgotPasswordDto
+     *            dto containing password to change.
+     * 
      * @return ModelAndView with response.
      */
     @Override
@@ -280,7 +325,7 @@ public class AuthServiceImpl implements AuthService {
         ModelAndView view = new ModelAndView("verified");
         if (resetPasswordToken.equals(null)) {
             view.addObject("txt1", "Ikke gyldig token for å bytte passord!");
-            view.addObject("url", "http://localhost:8080/login");
+            view.addObject("url", "https://localhost:8080/login");
             return view;
         }
 
@@ -305,8 +350,12 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to create an account.
-     * @param createAccount Dto to create an account.
-     * @param url url to send in the mail to user.
+     * 
+     * @param createAccount
+     *            Dto to create an account.
+     * @param url
+     *            url to send in the mail to user.
+     * 
      * @return response.
      */
     @Override
@@ -317,8 +366,19 @@ public class AuthServiceImpl implements AuthService {
 
         User user = modelMapper.map(createAccount, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
 
+        File pb = new File("src/main/resources/static/images/anders.jpg");
+        byte[] fileContent = Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .base64(Base64.getEncoder().encodeToString(fileContent)).type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        pictureRepository.save(picture1);
+        user.setNumberOfReviews(0);
+        user.setRating(0L);
+        user.setVerified(false);
+        userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
         saveUserVerificationTokenForUser(token, user);
@@ -330,12 +390,8 @@ public class AuthServiceImpl implements AuthService {
         variables.put("url", url);
         variables.put("lagd", "sant");
 
-        Email email = Email.builder()
-                .from("BOCO@gmail.com")
-                .to(user.getEmail())
-                .template(new ThymeleafTemplate("verify_mail", variables))
-                .subject("Verifiser konto i BOCO")
-                .build();
+        Email email = Email.builder().from("BOCO@gmail.com").to(user.getEmail())
+                .template(new ThymeleafTemplate("verify_mail", variables)).subject("Verifiser konto i BOCO").build();
         emailService.sendEmail(email);
 
         log.info("Click the link to verify your account: {}", url);
@@ -345,7 +401,10 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to validate email by their token.
-     * @param token token to validate email by.
+     * 
+     * @param token
+     *            token to validate email by.
+     * 
      * @return string response if valid or not.
      */
     @Override
@@ -372,8 +431,11 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to save user verification.
-     * @param token token to verify user after creation.
-     * @param user user to add token to.
+     * 
+     * @param token
+     *            token to verify user after creation.
+     * @param user
+     *            user to add token to.
      */
     @Override
     public void saveUserVerificationTokenForUser(String token, User user) {
@@ -384,10 +446,16 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to create new token if the previous is expired.
-     * @param prevToken previous token.
-     * @param url url to send mail to.
+     * 
+     * @param prevToken
+     *            previous token.
+     * @param url
+     *            url to send mail to.
+     * 
      * @return response.
-     * @throws MessagingException throws exception if messaging fails.
+     * 
+     * @throws MessagingException
+     *             throws exception if messaging fails.
      */
     @Override
     public Response createNewToken(String prevToken, HttpServletRequest url) throws MessagingException {
@@ -402,7 +470,7 @@ public class AuthServiceImpl implements AuthService {
         userVerificationTokenRepository.save(verificationToken);
         User user = verificationToken.getUser();
 
-        String newUrl = "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
+        String newUrl = "https://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
                 + "/auth/verifyRegistration?token=" + verificationToken.getToken();
 
         emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",
@@ -415,8 +483,11 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to update auth type of user logging in.
-     * @param email email.
-     * @param oauth2ClientName name of auth type.
+     * 
+     * @param email
+     *            email.
+     * @param oauth2ClientName
+     *            name of auth type.
      */
     @Override
     public void updateAuthenticationType(String email, String oauth2ClientName) {
@@ -429,7 +500,10 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * Method to generate a JWToken for a user logging in.
-     * @param token token to verify user.
+     * 
+     * @param token
+     *            token to verify user.
+     * 
      * @return JWToken.
      */
     @Override
