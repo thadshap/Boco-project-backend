@@ -339,25 +339,24 @@ public class DataLoader implements ApplicationRunner {
             Ad motherBoard = Ad.builder().title("Mother board").description("Leier ut ut ny lenovo motherboard").
                     rental(true).durationType(AdType.MONTH).price(600).created(LocalDate.now()).lat(63.354059).lng(10.382288).
                     streetAddress("Svartholtet 12").postalCode(7092).city("Tiller").user(user7).category(datamaskin).build();
-            AdDto sovepose = AdDto.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
+            Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
                     durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.354789).lng(10.377470).
-                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").userId(user8.getId()).categoryId(otherOutdoor.getId()).build();
+                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
-            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
+            Ad matte = Ad.builder().title("Skolebøker Matematikk 1").description("Leier ut matematiske metoder 3 boka").rental(true).
                     durationType(AdType.MONTH).price(100).created(LocalDate.now()).lat(63.392700).lng(10.350411).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
             Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.400695).lng(10.334900).
                     streetAddress("Konrad Dahls veg 7B").city("Trondheim").postalCode(7024).user(user2).category(otherhobby).build();
-            Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
+            Ad tent = Ad.builder().title("Lavvo").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
                     price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
                     postalCode(7560).user(user3).category(telt).build();
-            Ad test = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
-                    price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
-                    postalCode(7560).user(user3).category(container).build();
+
             // Persist all ads
             adRepository.save(borremaskin);
+            adRepository.save(sovepose);
             adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
@@ -366,14 +365,6 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(matte);
             adRepository.save(klovn);
             adRepository.save(tent);
-            adRepository.save(test);
-
-            // Because "sovepose" is used to test w/ frontend, it must be posted the way it would logically be posted
-            adService.postNewAd(sovepose);
-
-            // Retrieve the ad
-            Set<Ad> adsFound = adRepository.findByTitle(sovepose.getTitle());
-            Ad sovepose2 = adsFound.stream().findFirst().get();
 
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.433734).lng(10.588934).build();
@@ -390,7 +381,7 @@ public class DataLoader implements ApplicationRunner {
 
             Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").durationType(AdType.DAY).postalCode(7500).streetAddress("Stokkanvegen 2").
                     price(200).user(user8).category(car).rental(true).city("Stjørdal").created(LocalDate.now()).lat(63.468724).lng(10.928546).build();
-            Ad bot = Ad.builder().title("Seilbåt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").durationType(AdType.DAY).
+            Ad bot = Ad.builder().title("Båt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").durationType(AdType.DAY).
                     postalCode(7018).price(1200).user(user9).rental(true).category(boat).city("Trondheim").created(LocalDate.now()).lat(63.431758).lng(10.362587).build();
             Ad sykkel = Ad.builder().title("Sykkel til utleie").description("Leier ut bysykkelen min. Perfekt til turister.").durationType(AdType.DAY).postalCode(7020).streetAddress("Schnitlers vei 6").
                     price(100).user(user1).rental(true).city("Trondheim").category(bike).lat(63.427021).lng(10.362470).created(LocalDate.now()).build();
@@ -438,7 +429,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
             rental = Rental.builder().ad(charger).owner(user6).borrower(user9).price(200).active(true).deadline(LocalDate.now().minusDays(9)).rentTo(LocalDate.now().minusDays(2)).rentFrom(LocalDate.now().minusDays(8)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose2).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
+            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
             rentalRepository.save(rental);
 
             // Extracting the object for use in next method
@@ -449,7 +440,7 @@ public class DataLoader implements ApplicationRunner {
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(sovepose2).user(user7).description("Elendig produkt").rating(2).build();
+            review = Review.builder().ad(sovepose).user(user7).description("Elendig produkt").rating(2).build();
             reviewRepository.save(review);
             review = Review.builder().ad(borremaskin).user(user4).description("Elendig produkt").rating(1).build();
             reviewRepository.save(review);
@@ -488,6 +479,8 @@ public class DataLoader implements ApplicationRunner {
             savepb(pb, user1);
             pb = new File("src/main/resources/static/images/hasan.jpg");
             savepb(pb,user2);
+            pb = new File("src/main/resources/static/images/obama.jpg");
+            savepb(pb, user3);
             pb = new File("src/main/resources/static/images/maiken.jpg");
             savepb(pb, user4);
             pb = new File("src/main/resources/static/images/thadsha.jpeg");
@@ -500,8 +493,7 @@ public class DataLoader implements ApplicationRunner {
             savepb(pb, user8);
             pb = new File("src/main/resources/static/images/leo.jpg");
             savepb(pb, user9);
-            pb = new File("src/main/resources/static/images/obama.jpg");
-            savepb(pb, user3);
+
 
             File file = new File("src/main/resources/static/images/borrmaskin.jpg");
             fileContent(borremaskin, file);
@@ -560,24 +552,32 @@ public class DataLoader implements ApplicationRunner {
             file = new File("src/main/resources/static/images/mboard.jpg");
             fileContent(motherBoard, file);
 
-            file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
-            fileContent(sovepose2, file);
+            file = new File("src/main/resources/static/images/termos.jpg");
+            fileContent(sovepose, file);
 
-            file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
+            file = new File("src/main/resources/static/images/tux.jpg");
             fileContent(tux, file);
 
-            file = new File("src/main/resources/static/images/random/diego-ph-fIq0tET6llw-unsplash.jpg");
+            file = new File("src/main/resources/static/images/motherboads.jpg");
             fileContent(motherBoard, file);
 
-            file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
-            fileContent(sovepose2, file);
+            file = new File("src/main/resources/static/images/sovepose.jpg");
+            fileContent(sovepose, file);
 
-            file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
+            file = new File("src/main/resources/static/images/pc.jpg");
             fileContent(pc, file);
 
             file = new File("src/main/resources/static/images/brod.jpg");
             fileContent(kjokkenmaskin, file);
 
+            file = new File("src/main/resources/static/images/gassgrill.jpg");
+            fileContent(grillen, file);
+
+            file = new File("src/main/resources/static/images/koleboks.jpeg");
+            fileContent(koleboks, file);
+
+            file = new File("src/main/resources/static/images/pizzaspade.jpeg");
+            fileContent(pizzaspade, file);
 
 
             Group group1 = Group.builder().name(user1.getFirstName() + " og " + user2.getFirstName()).build();
