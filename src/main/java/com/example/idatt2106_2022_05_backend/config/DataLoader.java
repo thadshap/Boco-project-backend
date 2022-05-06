@@ -345,7 +345,7 @@ public class DataLoader implements ApplicationRunner {
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
-            Ad matte = Ad.builder().title("Skolebøker Matematikk 1").description("Leier ut matematiske metoder 3 boka").rental(true).
+            Ad matte = Ad.builder().title("Skolebøker Matematikk 1").user(user1).description("Leier ut matematiske metoder 3 boka").rental(true).
                     durationType(AdType.MONTH).price(100).created(LocalDate.now()).lat(63.392700).lng(10.350411).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
             Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.400695).lng(10.334900).
