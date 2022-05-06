@@ -6,6 +6,7 @@ import com.example.idatt2106_2022_05_backend.dto.ReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
@@ -66,11 +67,9 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads.
-     * 
+     *
      * @return all ads.
-     * 
-     * @throws IOException
-     *             modelmapper.
+     * @throws IOException modelmapper.
      */
     @Override
     public Response getAllAds() throws IOException {
@@ -91,10 +90,8 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads in a category by category name.
-     * 
-     * @param name
-     *            name of category.
-     * 
+     *
+     * @param name name of category.
      * @return returns ads if found.
      */
     @Override
@@ -131,9 +128,8 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads in category by category id
-     * 
+     *
      * @param categoryId
-     * 
      * @return
      */
     @Override
@@ -167,6 +163,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to get all sub categories of a parent category.
+     *
+     * @param parentName parent category
+     * @return returns array of sub-category categoryDtos, or erro message if none found
+     */
     @Override
     public Response getAllSubCategories(String parentName) {
         // List that will be returned
@@ -215,6 +217,11 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to get all categories in a level.
+     *
+     * @return returns array of categoryDtos in level.
+     */
     @Override
     public Response getAllCategoriesWithLevel() {
         List<Category> categories = categoryRepository.findAll();
@@ -228,6 +235,11 @@ public class AdServiceImpl implements AdService {
         return new Response(categoriesToReturn, HttpStatus.OK);
     }
 
+    /**
+     * Method to get all categories.
+     *
+     * @return returns list of categoryDtos
+     */
     @Override
     public Response getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
@@ -300,9 +312,7 @@ public class AdServiceImpl implements AdService {
     /**
      * Retrieves the ads of this category and all categories that have this category as parentCategory
      *
-     * @param name
-     *            is the name of this category
-     *
+     * @param name is the name of this category
      * @return a list of ads
      */
     @Override
@@ -370,6 +380,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to find all sub-categories of a parent category.
+     *
+     * @param categoryId id of parent category
+     * @return returns list of sub-categories
+     */
     @Override
     public List<Category> findSubCategories(long categoryId) {
         Optional<Category> categoryFound = categoryRepository.findById(categoryId);
@@ -429,34 +445,39 @@ public class AdServiceImpl implements AdService {
      *            is a list containing all categories in db
      * @param //listOut
      *            is an empty list that is being filled up with sub-categories as the method recursively iterates
-     * 
+     *
      * @return listOut
      *
      *         private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String
      *         parentName, int start) { // Position in array == start int arrayLength = start;
-     * 
+     *
      *         // Make a counter and if it is not == 1 && base case is not reached when the loop ends, // call on the
      *         function again from parentName == arrayLength.getName int loopCounter = 0;
-     * 
+     *
      *         // Base case: If the position in the array is equal to the size of the array if (arrayLength ==
      *         listIn.size()) { // Return the list that now contains all sub-categories return listOut; } else { //
      *         Iterate through all categories for (int i = start; i < listIn.size(); i++) { Category category =
      *         listIn.get(i);
-     * 
+     *
      *         // If the category is a sub-class if (category.getParentName() != null) {
-     * 
+     *
      *         // If a category has current category as parent category if
      *         (category.getParentName().equalsIgnoreCase(parentName)) {
-     * 
+     *
      *         // Add the category to the list to be returned listOut.add(category);
-     * 
+     *
      *         // This category is now the new parent parentName = category.getName();
-     * 
+     *
      *         // Call on the function recursively from the start for this category findSubCategories(listIn, listOut,
      *         parentName, start); } } } // Increment the list and call on the function recursively return
      *         findSubCategories(listIn, listOut, parentName, start + 1); } }
      */
 
+    /**
+     * Method to get all parent categories of a sub-category.
+     *
+     * @return returns all parent categories.
+     */
     @Override
     public Response getAllParentCategories() {
         List<Category> allCategories = categoryRepository.findAll();
@@ -477,7 +498,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get ad by id
+    /**
+     * Method to get an ad by its id.
+     *
+     * @param id id of ad to find.
+     * @return returns adDto if found
+     */
     @Override
     public Response getAdById(long id) {
         Optional<Ad> ad = adRepository.findById(id);
@@ -489,7 +515,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all ads for user
+    /**
+     * Method to get all ads of a user.
+     *
+     * @param userId id of user
+     * @return returns response with a list of ads
+     */
     @Override
     public Response getAllAdsByUser(long userId) {
         Set<Ad> adsFound = userRepository.getAdsByUserId(userId);
@@ -506,9 +537,7 @@ public class AdServiceImpl implements AdService {
     /**
      * Get a page of ads
      *
-     * @param sizeOfPage
-     *            number of the page size
-     *
+     * @param sizeOfPage number of the page size
      * @return Response with page in body
      */
     @Override
@@ -537,7 +566,11 @@ public class AdServiceImpl implements AdService {
         return new Response("Fant ingen annonser på denne forespørselen", HttpStatus.NO_CONTENT);
     }
 
-    // Get all available ads
+    /**
+     * Method to get all available ads in the repository.
+     *
+     * @return retunrs response with a list of AdDtos.
+     */
     @Override
     public Response getAllAvailableAds() {
         List<AdDto> availableAds = adRepository.getAllAvailableAds().stream()
@@ -554,7 +587,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all available ads by user id
+    /**
+     * Method to get all available ads by user.
+     *
+     * @param userId id of user
+     * @return returns response with list of AdDtos
+     */
     @Override
     public Response getAllAvailableAdsByUser(long userId) {
         if (userRepository.existsById(userId)) {
@@ -573,7 +611,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-    // Get all ads by postal code
+    /**
+     * Method to get all ads in a postal code.
+     *
+     * @param postalCode postal code to search.
+     * @return returns response with a list of available ads
+     */
     @Override
     public Response getAllAdsByPostalCode(int postalCode) {
         Set<Ad> availableAds = adRepository.findByPostalCode(postalCode);
@@ -597,7 +640,14 @@ public class AdServiceImpl implements AdService {
     /**
      * Get all ads with items that are: - Being given away = false - Being rented out = true
      */
-    // Get all ads by rental type
+    /**
+     * Method that gets all ads with items that are:
+     * - Being given away = false
+     * - Being rented out = true
+     *
+     * @param rentalType type of rental
+     * @return returns response with a list of AdDtos
+     */
     @Override
     public Response getAllAdsByRentalType(boolean rentalType) {
         Set<AdDto> ads = adRepository.findByRental(rentalType).stream().map(ad -> modelMapper.map(ad, AdDto.class))
@@ -610,6 +660,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to get all ads in given city
+     *
+     * @param city city to find ads in
+     * @return returns response with list of AdDtos
+     */
     @Override
     public Response getAllAdsInCity(String city) {
 
@@ -638,20 +694,16 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Posts new ad
-     * 
-     * @param adDto
-     *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
-     *            durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
-     *            category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
      *
-     * @param adDto
-     *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
-     *            durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
-     *            category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
-     *
-     *            can contain (nullable in db): - description - picture (pictures of the item to be rented out) -
-     *            rentedOut (true if the item is rented out, which it should be at initialization)
-     *
+     * @param adDto must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
+     *              durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
+     *              category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
+     * @param adDto must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
+     *              durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
+     *              category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
+     *              <p>
+     *              can contain (nullable in db): - description - picture (pictures of the item to be rented out) -
+     *              rentedOut (true if the item is rented out, which it should be at initialization)
      * @return response
      */
     @Override
@@ -711,13 +763,11 @@ public class AdServiceImpl implements AdService {
     /**
      * method that goes through all ads and returns the with the calculated distance
      *
-     * @param userGeoLocation
-     *            users location
+     * @param userGeoLocation users location
      *
      * @return a list of ads including the distance to the users location
      *
-     * @throws IOException
-     *             if decompression pictures fails
+     * @throws IOException if decompression pictures fails
      */
     public Response getAllAdsWithDistance(UserGeoLocation userGeoLocation) throws IOException {
         ArrayList<AdDto> ads = new ArrayList<>();
@@ -743,14 +793,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * support method that creates a dto of ad
-     * 
-     * @param ad
-     *            ad
-     * 
+     *
+     * @param ad ad
+     *
      * @return ad dto
-     * 
-     * @throws IOException
-     *             if decompression of bytes fails
+     *
+     * @throws IOException if decompression of bytes fails
      */
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = modelMapper.map(ad, AdDto.class);
@@ -763,14 +811,10 @@ public class AdServiceImpl implements AdService {
     /**
      * Method that calculates distance between two geolocations
      *
-     * @param lat1
-     *            latitude user
-     * @param long1
-     *            longitude user
-     * @param lat2
-     *            latitude item
-     * @param long2
-     *            longitude item
+     * @param lat1  latitude user
+     * @param long1 longitude user
+     * @param lat2  latitude item
+     * @param long2 longitude item
      *
      * @return distance in km
      */
@@ -779,7 +823,13 @@ public class AdServiceImpl implements AdService {
         return dist / 1000;
     }
 
-    // get all reviews for an add with owner = user id
+    /**
+     * Method to get all reviews for an add with owners id.
+     *
+     * @param userId id of owner
+     *
+     * @return returns response with reviews
+     */
     @Override
     public Response getReviewsByUserId(long userId) {
 
@@ -795,6 +845,13 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to update an ads information.
+     *
+     * @param adId        id of ad to update
+     * @param adUpdateDto {@link AdUpdateDto} object with information needed to update an ad
+     * @return returns response with update status.
+     */
     @Override
     public Response updateAd(Long adId, AdUpdateDto adUpdateDto) {
 
@@ -841,7 +898,14 @@ public class AdServiceImpl implements AdService {
         return new Response("Annonsen er oppdatert", HttpStatus.OK);
     }
 
-    // delete ad
+    /**
+     * Method to delete an ad.
+     *
+     * @param adId
+     *              id of ad to be deleted
+     *
+     * @return returns response with status
+     */
     @Override
     public Response deleteAd(long adId) {
         Optional<Ad> ad = adRepository.findById(adId);
@@ -930,12 +994,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     * 
+     *
      * @param ad_id
-     *            id
+     *              id
      * @param chosenPicture
-     *            picture_id
-     * 
+     *              picture_id
+     *
      * @return response with status ok or not found
      */
     @Override
@@ -974,6 +1038,16 @@ public class AdServiceImpl implements AdService {
         return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Method to search through ads with a searchword.
+     *
+     * @param searchword
+     *              word to search for
+     * @param userGeoLocation
+     *              {@link UserGeoLocation} object with geolocation information
+     *
+     * @return returns list of ads matching the search
+     */
     @Override
     public Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation) {
         // List to be filled with corresponding ads
@@ -1012,6 +1086,16 @@ public class AdServiceImpl implements AdService {
         return new Response("Fant ingen annonser med dette søkeordet.", HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Method to set cordinates on ad.
+     *
+     * @param ad
+     *              ad to change cordinates of
+     *
+     * @throws IOException
+     *
+     * @throws InterruptedException
+     */
     private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
         Geocoder geocoder = new Geocoder();
@@ -1036,6 +1120,14 @@ public class AdServiceImpl implements AdService {
         }
     }
 
+    /**
+     * Method to get all pictures for an ad.
+     *
+     * @param adId
+     *              id of ad to get pictures for
+     *
+     * @return returns list of PictureReturnDtos of ad pictures
+     */
     @Override
     public List<PictureReturnDto> getAllPicturesForAd(long adId) {
         Ad ad = adRepository.getById(adId);
@@ -1053,6 +1145,14 @@ public class AdServiceImpl implements AdService {
         return returnDto;
     }
 
+    /**
+     * Method to get first picture for an ad
+     *
+     * @param adId
+     *              id of ad
+     *
+     * @return returns response with pictures changed
+     */
     @Override
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
@@ -1070,6 +1170,18 @@ public class AdServiceImpl implements AdService {
         return new Response(returnDto.get(0), HttpStatus.OK);
     }
 
+    /**
+     * Method to store images for ad
+     *
+     * @param adId
+     *              id of ad to store images for
+     * @param files
+     *              picture multipart file
+     *
+     * @return returns response of success status
+     *
+     * @throws IOException
+     */
     @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
         Optional<Ad> adOptional = adRepository.findById(adId);
@@ -1091,6 +1203,15 @@ public class AdServiceImpl implements AdService {
         return new Response("Bildet er lagret", HttpStatus.OK);
     }
 
+    /**
+     * Method to get ads with categories and filter,
+     * allows sorting ads by category and a filter
+     *
+     * @param filterListOfAds
+     *              {@link FilterListOfAds} object to store filter information
+     *
+     * @return returns response with all ads matching category and filter
+     */
     @Override
     public Response getAdsWithCategoryAndFilter(FilterListOfAds filterListOfAds) {
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
@@ -1113,6 +1234,14 @@ public class AdServiceImpl implements AdService {
          */
     }
 
+    /**
+     * Method to get all ads matching given filter
+     *
+     * @param filterListOfAds
+     *              {@link FilterListOfAds} object to store filter information
+     *
+     * @return returns response with a list of matching ads
+     */
     @Override
     public Response getAllAdsWithFilter(FilterListOfAds filterListOfAds) {
         List<Ad> ads = new ArrayList<>();
