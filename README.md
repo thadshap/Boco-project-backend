@@ -10,9 +10,12 @@ items of necessity when the situation sees it fit.
 
 ### Table of contents
 - [Who the application is for](###Who the application is for (main target audience)) <br>
-- [Technologies used](###Technologies) <br>
+- [Database relations](###Database relation-model)
+- [Technologies used](###Technologies) 
+- [Application layout](###Application layout (structure))
 - [How to run and install the backend](###How to run and install the project backend) <br>
 - [How to run and install the frontend](###How to run and install the project frontend) <br>
+- [How to create keys/certificates (for https)] (###Keys and Sertificates)
 - [How to use the application](###How to use the application)<br>
 - [Dummy data](###Dummy data)
 - [CI/CD for the project](###CI/CD)<br>
@@ -28,12 +31,26 @@ The application is currently only existing in norwegian, but future releases are
 
 <br>
 
+### Database relation-model 
+![img_1.png](src/main/resources/images/img_1.png)
+
+<br> 
 
 ### Technologies
-The BOCO Rental Project uses the Vue.js Framework at Frontend, and SpringBoot to provide the backend. <br>
-PHPMyAdmin holds the database.
+The BOCO Rental Project uses:
+- The Vue.js Framework at Frontend
+- SpringBoot to provide the backend.
+- JWT - Authentication for REST APIs
+- MySQL - PHPMyAdmin holds the database. 
+- H2 Database Engine - In-memory database for testing
+- Swagger - API documentation
+- Bootstrap / Bootstrap Studio - UI design
+Swagger documentation is available at **localhost:8443/swagger-ui/**
 
 <br>
+
+###Application layout (structure)
+
 
 ### How to run and install the project backend
 The technologies needed to run the commands are:
@@ -94,6 +111,8 @@ To serve up the application, run:
     npm run serve 
 
 <br>
+
+### Keys and Certificates
 
 ### How to use the application
 The application is very intuitive in that it behaves the same way other applications do; 
