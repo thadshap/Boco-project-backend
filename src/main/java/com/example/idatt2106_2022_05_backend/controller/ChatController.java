@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -47,6 +48,9 @@ public class ChatController {
     @ApiOperation(value = "Endpoint to create a two-user group", response = Response.class)
     public Response createTwoUserGroup(@RequestBody PrivateGroupDto privateGroupDto) {
         logger.debug("Call to create a two-user group");
+        if (!(securityService.isUser(privateGroupDto.getUserOneId()) || securityService.isUser(privateGroupDto.getUserOneId()))) {
+            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+        }
         return chatService.createTwoUserGroup(privateGroupDto);
     }
 
@@ -76,6 +80,9 @@ public class ChatController {
     @ApiOperation(value = "Endpoint to get all groups by user id", response = Response.class)
     public Response getGroupChatSubscriptions(@PathVariable long userId) {
         logger.debug("Call to get all groups by user id");
+        if (!securityService.isUser(userId)) {
+            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+        }
         return chatService.getGroupChatsBasedOnUserId(userId);
     }
 
@@ -97,6 +104,9 @@ public class ChatController {
     @ApiOperation(value = "Endpoint remove a user from group", response = Response.class)
     public Response removeUserFromGroupById(@PathVariable long groupId, @PathVariable long userId) {
         logger.debug("Call to remove a user from group");
+        if (!securityService.isUser(userId)) {
+            return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
+        }
         return chatService.removeUserFromGroupById(groupId, userId);
     }
 
