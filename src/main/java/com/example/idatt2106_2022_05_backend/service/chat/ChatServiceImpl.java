@@ -471,7 +471,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is already in group", HttpStatus.NOT_FOUND);
         }
 
         users.add(user);
@@ -502,7 +502,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is already in group", HttpStatus.NOT_FOUND);
         }
 
         users.add(user);
