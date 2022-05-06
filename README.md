@@ -9,20 +9,20 @@ items of necessity when the situation sees it fit.
 
 
 ### Table of contents
-- [Who the application is for](###Who the application is for (main target audience)) <br>
-- [Database relations](###Database relation-model)
-- [Technologies used](###Technologies) 
-- [Application layout](###Application layout (structure))
-- [Security](###Security)
-- [How to run and install the backend](###How to run and install the project backend) <br>
-- [How to run and install the frontend](###How to run and install the project frontend) <br>
-- [How to create keys/certificates (https)](###Keys and certificates)
-- [How to use the application](###How to use the application)<br>
-- [Dummy data](###Dummy data)
+- [Who the application is for](###who-the-application-is-for) <br>
+- [Database relations](###database-relation-model)
+- [Technologies used](###technologies) 
+- [Application layout](###application-layout (structure))
+- [Security](###security)
+- [How to run and install the backend](###how-to-run-and-install-the-project-backend) <br>
+- [How to run and install the frontend](###how-to-run-and-install-the-project-frontend) <br>
+- [How to create keys/certificates (https)](###keys-and-certificates)
+- [How to use the application](###how-to-use-the-application)<br>
+- [Dummy data](###dummy-data)
 - [CI/CD for the project](###CI/CD)<br>
-- [Team members of the BOCO project](###Team members of the BOCO project)<br>
-- [Future work](###Future work)<br>
-- [Project license](###License)<br>
+- [Team members of the BOCO project](###team-members-of-the-BOCO-project)<br>
+- [Future work](###future-work)<br>
+- [Project license](###license)<br>
 
 <br>
 
