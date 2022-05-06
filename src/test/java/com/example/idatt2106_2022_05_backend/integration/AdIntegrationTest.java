@@ -350,7 +350,7 @@ public class AdIntegrationTest {
             // The method will fail when wrong id is used
             ResponseEntity<Object> res = adService.getAllAvailableAdsByUser(wrongUserId);
 
-            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
+            assertEquals(HttpStatus.NO_CONTENT.value(), res.getStatusCodeValue());
         }
 
         @Test

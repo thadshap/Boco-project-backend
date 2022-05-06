@@ -6,10 +6,7 @@ import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.rental.RentalUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
-import com.example.idatt2106_2022_05_backend.model.Ad;
-import com.example.idatt2106_2022_05_backend.model.Category;
-import com.example.idatt2106_2022_05_backend.model.Rental;
-import com.example.idatt2106_2022_05_backend.model.User;
+import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
@@ -28,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -365,7 +363,7 @@ public class RentalIntegrationTest {
 
         // Create an ad
         // Create ads as well
-        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
+        AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere1")
                 .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
@@ -373,10 +371,10 @@ public class RentalIntegrationTest {
         // persist ad
         adService.postNewAd(speaker1);
 
-        Set<Ad> foundAds = adRepository.findByTitle("Title that does not exist elsewhere");
+        Set<Ad> foundAds = adRepository.findByTitle("Title that does not exist elsewhere1");
 
         Optional<Ad> foundAd = foundAds.stream().findFirst();
-        assertNotNull(foundAd);
+        assertTrue(foundAd.isPresent());
 
         // Create rental (not active)
         Rental rental = Rental.builder().dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().minusDays(2))
@@ -386,9 +384,25 @@ public class RentalIntegrationTest {
         // Persist rental
         Rental rentalFound = rentalRepository.save(rental);
 
+        CalendarDto dto = CalendarDto.builder().
+                adId(foundAd.get().getId()).
+                rentalId(rentalFound.getId()).build();
+
+        // Get all the unavailable dates for the ad
+        int unavailableBeforeActivation = getUnavailableDates(dto).size();
+        assertEquals(unavailableBeforeActivation, 0);
+
+
+        assertNotNull(rentalFound);
+
         // Activate rental
-        Response response = rentalService.activateRental(rentalFound.getId());
-        assertEquals(HttpStatus.OK.value(), response.getStatus().value());
+        ResponseEntity<Object> response = rentalService.activateRental(rentalFound.getId());
+
+        // Retrieve the number of unavailable dates now
+        int unavailableAfterActivation = getUnavailableDates(dto).size();
+        assertNotEquals(unavailableBeforeActivation, unavailableAfterActivation);
+        assertEquals(7, unavailableAfterActivation);
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 
@@ -689,5 +703,50 @@ public class RentalIntegrationTest {
         assertTrue(res.getBody().toString().contains("adId=" + foundAd1Id));
         assertTrue(res.getBody().toString().contains("adId=" + foundAd2Id));
 
+    }
+
+    /*********************************** Methods for use in testing ***************************************/
+
+    public ArrayList<LocalDate> getUnavailableDates(CalendarDto dto) {
+
+        // Array containing unavailable dates within span
+        ArrayList<LocalDate> datesOut = new ArrayList<>();
+
+        // Get the ad the dto points to
+        Optional<Ad> ad = adRepository.findById(dto.getAdId());
+
+        if (ad.isPresent()) {
+
+            // Find out when the ad was created
+            LocalDate startDate = ad.get().getCreated();
+
+            // Find out when the ad expires --> startDate + 12 months
+            LocalDate expirationDate = startDate.plusMonths(12);
+
+            // Get all dates for the ad
+            Set<CalendarDate> dates = adRepository.getDatesForAd(dto.getAdId());
+
+            // Use creation and expiration to calculate span
+            for (CalendarDate date : dates) {
+
+                // If the date is within the specified span
+                // PS: plus/minus days because we want to include the start and end dates in our search
+                if (date.getDate().isAfter(startDate.minusDays(1))
+                        && date.getDate().isBefore(expirationDate.plusDays(1))) {
+
+                    // If the date is not available
+                    if (!date.isAvailable()) {
+
+                        // Add to return-array
+                        datesOut.add(date.getDate());
+                    }
+                }
+            }
+            // Return the array and the HttpResponse
+            return datesOut;
+        }
+
+        // If ad was not present in db, the dto containing an id that does not exist
+        return null;
     }
 }
