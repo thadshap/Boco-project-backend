@@ -167,6 +167,9 @@ You also need to install the client certificate in the browser:
 
 Turn of any ad-blocking extention and now you can run the application with HTTPS.
 
+### Login page in branch feat/social
+![img.png](src/main/resources/images/SocialLogin.png)
+
 ### How to use the application
 The application is very intuitive in that it behaves the same way other applications do; 
 using the same principles of Universal Design (UX).

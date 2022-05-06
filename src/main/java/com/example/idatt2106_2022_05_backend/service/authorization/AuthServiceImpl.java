@@ -117,6 +117,14 @@ public class AuthServiceImpl implements AuthService {
         return new Response(jwt, HttpStatus.ACCEPTED);
     }
 
+    /**
+     *
+     * Method to get a users profile picture
+     *
+     * @param user user to find profile picture of
+     * @return returns profile picture
+     * @throws IOException
+     */
     private Picture profilePicture(User user) throws IOException {
         File pb = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
         byte[] fileContent = Files.readAllBytes(pb.toPath());
