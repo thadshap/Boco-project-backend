@@ -287,16 +287,19 @@ public class UserServiceImpl implements UserService {
         if (userUpdateDto.getFirstName() != null) {
             if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
                 user.setFirstName(userUpdateDto.getFirstName());
+                userRepository.save(user);
             }
         }
         if (userUpdateDto.getLastName() != null) {
             if (!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) {
                 user.setLastName(userUpdateDto.getLastName());
+                userRepository.save(user);
             }
         }
         if (userUpdateDto.getPassword() != null) {
             if (!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) {
                 user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+                userRepository.save(user);
             }
         }
         // if all fields are empty
