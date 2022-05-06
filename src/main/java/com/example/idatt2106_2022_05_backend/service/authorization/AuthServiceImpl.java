@@ -295,7 +295,7 @@ public class AuthServiceImpl implements AuthService {
         ModelAndView view = new ModelAndView("verified");
         if (resetPasswordToken.equals(null)) {
             view.addObject("txt1", "Ikke gyldig token for å bytte passord!");
-            view.addObject("url", "http://localhost:8080/login");
+            view.addObject("url", "https://localhost:8080/login");
             return view;
         }
 
@@ -417,7 +417,7 @@ public class AuthServiceImpl implements AuthService {
         userVerificationTokenRepository.save(verificationToken);
         User user = verificationToken.getUser();
 
-        String newUrl = "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
+        String newUrl = "https://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath()
                 + "/auth/verifyRegistration?token=" + verificationToken.getToken();
 
         emailService.sendEmail("BOCO", user.getEmail(), "Konto i BOCO",

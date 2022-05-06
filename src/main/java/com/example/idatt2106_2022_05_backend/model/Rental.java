@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 public class Rental {
 
     @Id
-    @SequenceGenerator(name = "rental_sequence", sequenceName = "rental_sequence", allocationSize = 1)
-    @GeneratedValue(generator = "rental_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rental_id")
     private Long id;
 

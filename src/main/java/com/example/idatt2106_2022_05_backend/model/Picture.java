@@ -17,8 +17,7 @@ import java.util.Objects;
 public class Picture {
 
     @Id
-    @SequenceGenerator(name = "picture_sequence", sequenceName = "picture_sequence", allocationSize = 1)
-    @GeneratedValue(generator = "picture_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_id", nullable = false)
     private Long id;
 
@@ -28,9 +27,13 @@ public class Picture {
     @Column(name = "type")
     private String type;
 
-    @Lob // LOB is datatype for storing large object data
-    @Column(name = "data", nullable = false)
+     // LOB is datatype for storing large object data
+    @Column(name = "data", nullable = true)
     private byte[] data;
+
+    @Lob
+    @Column(name = "image")
+    private String base64;
 
     @ManyToOne
     @JoinColumn(name = "ad_id")
