@@ -9,20 +9,21 @@ items of necessity when the situation sees it fit.
 
 
 ### Table of contents
-- [Who the application is for](###Who the application is for (main target audience)) <br>
-- [Database relations](###Database relation-model)
-- [Technologies used](###Technologies) 
-- [Application layout](###Application layout (structure))
-- [Security](###Security)
-- [How to run and install the backend](###How to run and install the project backend) <br>
-- [How to run and install the frontend](###How to run and install the project frontend) <br>
-- [How to create keys/certificates (https)](###Keys and certificates)
-- [How to use the application](###How to use the application)<br>
-- [Dummy data](###Dummy data)
+- [Who the application is for](###who-the-application-is-for) <br>
+- [Database relations](###database-relation-model)
+- [Technologies used](###technologies) 
+- [Application layout](###application-layout (structure))
+- [About branches](###about-branches )
+- [Security](###security)
+- [How to run and install the backend](###how-to-run-and-install-the-project-backend) <br>
+- [How to run and install the frontend](###how-to-run-and-install-the-project-frontend) <br>
+- [How to create keys/certificates (https)](###keys-and-certificates)
+- [How to use the application](###how-to-use-the-application)<br>
+- [Dummy data](###dummy-data)
 - [CI/CD for the project](###CI/CD)<br>
-- [Team members of the BOCO project](###Team members of the BOCO project)<br>
-- [Future work](###Future work)<br>
-- [Project license](###License)<br>
+- [Team members of the BOCO project](###team-members-of-the-BOCO-project)<br>
+- [Future work](###future-work)<br>
+- [Project license](###license)<br>
 
 <br>
 
@@ -71,6 +72,10 @@ abstraction is to lower coupling between the service layer (business layer) and 
 **The presentation layer** is the controller folder, which has the responsibility to handle HTTP requests <br>
 through the use of endpoints. The controllers forward the requests to the Service layer; and returns the results to clients. <br>
 The controllers are the only classes that communicate with the frontend.
+
+### About branches 
+- If the user wishes to use HTTPS, the user must use ___feat/social___ to run the backend. <br> The application will then only work with FireFox. <br>
+- If the user wishes to use HTTP, the user must use ___main___ to run the backend. <br> The application will then run with both Google Chrome and FireFox. <br> 
 
 ### Security 
 When frontend and backend communicate (through the controllers), JWT-tokens are used to authenticate the user roles <br>
