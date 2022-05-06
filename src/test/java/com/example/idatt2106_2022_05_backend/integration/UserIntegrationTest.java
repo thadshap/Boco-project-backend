@@ -1,13 +1,17 @@
 package com.example.idatt2106_2022_05_backend.integration;
 
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.Ad;
 import com.example.idatt2106_2022_05_backend.model.Category;
+import com.example.idatt2106_2022_05_backend.model.Rental;
 import com.example.idatt2106_2022_05_backend.model.User;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.user.UserService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -19,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -60,10 +65,14 @@ public class UserIntegrationTest {
     @Autowired
     MessageRepository messageRepository;
 
+    @SneakyThrows
     @BeforeEach
     public void setUp() {
         // Building a user
-        User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+        User user = User.builder().firstName("firstName").lastName("lastName").email("user11.name@hotmail.com")
+                .password("pass1word").build();
+
+        User user2 = User.builder().firstName("firstName").lastName("lastName").email("user22.name@hotmail.com")
                 .password("pass1word").build();
 
         // Saving the user
@@ -83,6 +92,40 @@ public class UserIntegrationTest {
         // Saving the categories
         categoryRepository.save(clothes);
         categoryRepository.save(it);
+
+        // Building an ad-dto with foreign keys
+         AdDto dto = AdDto.builder().
+         title("unique title for this tesst.").
+         description("Renting out a pair of shoes in size 40").
+         rental(true).
+         rentedOut(false).
+         durationType(AdType.WEEK).
+         price(100).
+         lat(63.401920).
+         lng(10.443579).
+         streetAddress("Fjordvegen 2").
+         postalCode(9990).
+         city("Båtsfjord").
+         userId(user.getId()).
+         categoryId(it.getId()).
+         build();
+
+         adService.postNewAd(dto);
+
+         Set<Ad> adFound = adRepository.findByTitleContaining("unique title for this tesst.");
+         Ad ad = adFound.stream().findFirst().get();
+
+         // Create rental
+        Rental rental = Rental.builder().
+                ad(ad).
+                owner(user).
+                borrower(user2).
+                active(false).
+                dateOfRental(LocalDate.now()).
+                rentFrom(LocalDate.now().plusDays(1)).
+                rentTo(LocalDate.now().plusWeeks(1)).
+                deadline(LocalDate.now().plusDays(2)).build();
+        rentalRepository.save(rental);
     }
 
     @AfterEach
@@ -331,7 +374,8 @@ public class UserIntegrationTest {
 
         @Test
         public void userDeleted_WhenIdCorrect() {
-            User user = userRepository.findAll().get(0);
+            // TODO FIX THIS AFTERWARDS...
+            User user = userRepository.findAll().get(1);
 
             ResponseEntity<Object> response = userService.deleteUser(user.getId());
 

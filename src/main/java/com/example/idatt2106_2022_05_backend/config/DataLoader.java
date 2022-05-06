@@ -308,7 +308,7 @@ public class DataLoader implements ApplicationRunner {
 
             //sub-categories for gardening
             Category verktoy = Category.builder().level(2).name("Verktøy").child(true).parentName(garden.getName()).build();
-            Category container = Category.builder().level(2).name("Container").child(true).parentName(garden.getName()).build();
+            Category container = Category.builder().level(2).name("Container").child(true).parent(false).parentName(garden.getName()).build();
             Category stoler = Category.builder().level(2).name("Stoler og bord").child(true).parentName(garden.getName()).build();
             Category hage = Category.builder().level(2).name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
             Category othergarden = Category.builder().level(2).name("Annet").child(true).parentName(garden.getName()).build();
@@ -353,6 +353,9 @@ public class DataLoader implements ApplicationRunner {
             Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
                     price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
                     postalCode(7560).user(user3).category(telt).build();
+            Ad test = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
+                    price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
+                    postalCode(7560).user(user3).category(container).build();
             // Persist all ads
             adRepository.save(borremaskin);
             adRepository.save(tux);
@@ -363,6 +366,7 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(matte);
             adRepository.save(klovn);
             adRepository.save(tent);
+            adRepository.save(test);
 
             // Because "sovepose" is used to test w/ frontend, it must be posted the way it would logically be posted
             adService.postNewAd(sovepose);
@@ -426,8 +430,6 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
             rental = Rental.builder().ad(borremaskin).owner(user5).borrower(user5).price(370).active(true).deadline(LocalDate.now().minusDays(13)).rentTo(LocalDate.now().minusDays(1)).rentFrom(LocalDate.now().minusDays(12)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose2).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
-            rentalRepository.save(rental);
             rental = Rental.builder().ad(kjokkenmaskin).owner(user4).borrower(user6).price(1000).active(true).deadline(LocalDate.now().minusDays(40)).rentTo(LocalDate.now().minusDays(15)).rentFrom(LocalDate.now().minusDays(39)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(pizzaspade).owner(user6).borrower(user5).price(120).active(true).deadline(LocalDate.now().minusDays(9)).rentTo(LocalDate.now().minusDays(1)).rentFrom(LocalDate.now().minusDays(8)).dateOfRental(LocalDate.now()).build();
@@ -435,6 +437,8 @@ public class DataLoader implements ApplicationRunner {
             rental = Rental.builder().ad(pc).owner(user3).borrower(user7).price(100).active(true).deadline(LocalDate.now().minusDays(23)).rentTo(LocalDate.now().minusDays(15)).rentFrom(LocalDate.now().minusDays(22)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(charger).owner(user6).borrower(user9).price(200).active(true).deadline(LocalDate.now().minusDays(9)).rentTo(LocalDate.now().minusDays(2)).rentFrom(LocalDate.now().minusDays(8)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(sovepose2).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
             rentalRepository.save(rental);
 
             // Extracting the object for use in next method

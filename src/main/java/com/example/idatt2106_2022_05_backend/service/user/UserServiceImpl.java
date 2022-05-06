@@ -1,11 +1,13 @@
 package com.example.idatt2106_2022_05_backend.service.user;
 
 import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
+import com.example.idatt2106_2022_05_backend.dto.rental.RentalReviewDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserUpdateDto;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
+import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +28,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private AdRepository adRepository;
-
-    @Autowired
     private ReviewRepository reviewRepository;
 
     @Autowired
@@ -36,9 +35,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PictureRepository pictureRepository;
-
-    @Autowired
-    private MessageRepository messageRepository;
 
     @Autowired
     private AdService adService;
