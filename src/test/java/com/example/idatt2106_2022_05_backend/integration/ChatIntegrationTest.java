@@ -91,23 +91,15 @@ public class ChatIntegrationTest {
         User user3 = User.builder().firstName("firstName3").lastName("lastName3").email("user3.name3@hotmail.com")
                 .password("pass1word").build();
 
-
         // Saving the users
         User user1Saved = userRepository.save(user1);
         User user2Saved = userRepository.save(user2);
         User user3Saved = userRepository.save(user3);
 
-
         // Building categories
-        Category clothes = Category.builder().
-                name("new category1").
-                parent(true).
-                build();
+        Category clothes = Category.builder().name("new category1").parent(true).build();
 
-        Category it = Category.builder().
-                name("new category2").
-                parent(true).
-                build();
+        Category it = Category.builder().name("new category2").parent(true).build();
 
         // Saving the categories
         categoryRepository.save(clothes);
@@ -115,38 +107,18 @@ public class ChatIntegrationTest {
 
         // Building an ad-dto with foreign keys
         /**
-        AdDto ad = AdDto.builder().
-                title("Nike shoes generic title").
-                description("Renting out a pair of shoes in size 40").
-                rental(true).
-                rentedOut(false).
-                durationType(AdType.WEEK).
-                price(100).
-                streetAddress("Fjordvegen 2").
-                postalCode(9990).
-                city("Båtsfjord").
-                userId(user1.getId()).
-                categoryId(it.getId()).
-                build();
+         * AdDto ad = AdDto.builder(). title("Nike shoes generic title"). description("Renting out a pair of shoes in
+         * size 40"). rental(true). rentedOut(false). durationType(AdType.WEEK). price(100). streetAddress("Fjordvegen
+         * 2"). postalCode(9990). city("Båtsfjord"). userId(user1.getId()). categoryId(it.getId()). build();
          */
 
-        Ad ad = Ad.builder().
-                title("Nike shoes generic title").
-                description("Renting out a pair of shoes in size 40").
-                rental(true).
-                rentedOut(false).
-                durationType(AdType.WEEK).
-                price(100).
-                streetAddress("Fjordvegen 2").
-                postalCode(9990).
-                city("Båtsfjord").
-                user(user1).
-                category(it).
-                build();
+        Ad ad = Ad.builder().title("Nike shoes generic title").description("Renting out a pair of shoes in size 40")
+                .rental(true).rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Fjordvegen 2")
+                .postalCode(9990).city("Båtsfjord").user(user1).category(it).build();
 
         // Post the ad
         Ad adSaved = adRepository.save(ad);
-        //adService.postNewAd(ad);
+        // adService.postNewAd(ad);
 
         // Retrieve the ad
         // Set<Ad> ads = adRepository.findByTitle("Nike shoes generic title");
@@ -156,28 +128,16 @@ public class ChatIntegrationTest {
 
         // Generate a rental dto
         /**
-        RentalDto dto = RentalDto.builder().
-                adId(adSaved.getId()).
-                owner(user1Saved.getEmail()).
-                borrower(user2Saved.getEmail()).
-                active(false).
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().plusDays(1)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().plusDays(2)).build();
-
-        // Create a rental
-        rentalService.createRental(dto);
+         * RentalDto dto = RentalDto.builder(). adId(adSaved.getId()). owner(user1Saved.getEmail()).
+         * borrower(user2Saved.getEmail()). active(false). dateOfRental(LocalDate.now()).
+         * rentFrom(LocalDate.now().plusDays(1)). rentTo(LocalDate.now().plusWeeks(1)).
+         * deadline(LocalDate.now().plusDays(2)).build();
+         * 
+         * // Create a rental rentalService.createRental(dto);
          */
-        Rental rental = Rental.builder().
-                ad(adSaved).
-                owner(user1Saved).
-                borrower(user2Saved).
-                active(false).
-                dateOfRental(LocalDate.now()).
-                rentFrom(LocalDate.now().plusDays(1)).
-                rentTo(LocalDate.now().plusWeeks(1)).
-                deadline(LocalDate.now().plusDays(2)).build();
+        Rental rental = Rental.builder().ad(adSaved).owner(user1Saved).borrower(user2Saved).active(false)
+                .dateOfRental(LocalDate.now()).rentFrom(LocalDate.now().plusDays(1))
+                .rentTo(LocalDate.now().plusWeeks(1)).deadline(LocalDate.now().plusDays(2)).build();
         rentalRepository.save(rental);
 
         // Creating a group chat
@@ -289,7 +249,7 @@ public class ChatIntegrationTest {
                 Group group = groupFound.get();
 
                 // Assert that all 3 users are saved into the group-chat
-                assertEquals(group.getUsers().size(),3);
+                assertEquals(group.getUsers().size(), 3);
             }
 
             @Test
@@ -313,16 +273,10 @@ public class ChatIntegrationTest {
 
                 assertEquals(ad.getId(), rental.getAd().getId());
 
-
                 // Create a rental dto
-                RentalDto dto = RentalDto.builder().
-                        adId(ad.getId()).
-                        rentTo(rental.getRentTo()).
-                        rentFrom(rental.getRentFrom()).
-                        borrower(rental.getBorrower().getEmail()).
-                        owner(rental.getOwner().getEmail()).
-                        price(ad.getPrice()).id(rental.getId()).
-                        build();
+                RentalDto dto = RentalDto.builder().adId(ad.getId()).rentTo(rental.getRentTo())
+                        .rentFrom(rental.getRentFrom()).borrower(rental.getBorrower().getEmail())
+                        .owner(rental.getOwner().getEmail()).price(ad.getPrice()).id(rental.getId()).build();
 
                 // Get the number of messages in db before we run the method
                 int prevNumber = messageRepository.findAll().size();
@@ -394,7 +348,6 @@ public class ChatIntegrationTest {
                 chatService.sendMessage(group.getId(), dto);
                 chatService.sendMessage(group.getId(), dto);
 
-
                 // Get the messages for the group
                 ResponseEntity<Object> response = chatService.getAllMessagesByGroupId(group.getId());
                 assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
@@ -425,7 +378,7 @@ public class ChatIntegrationTest {
                 List<Long> ids = Methods.this.getGroupUsersByGroupId(group.getId());
 
                 // Assert result
-                assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
                 assertEquals(ids.size(), numberOfMembers);
             }
 
@@ -500,8 +453,7 @@ public class ChatIntegrationTest {
                 User user = userFound.get();
 
                 // Remove the user from the group
-                ResponseEntity<Object> response = chatService.
-                        removeUserFromGroupById(group.getId(), user.getId());
+                ResponseEntity<Object> response = chatService.removeUserFromGroupById(group.getId(), user.getId());
 
                 Optional<Group> groupFound = groupRepository.findById(group.getId());
 
@@ -532,8 +484,8 @@ public class ChatIntegrationTest {
                 Group group = groupRepository.findAll().get(0);
 
                 // Update the group with a new name!
-                ResponseEntity<Object> response = chatService.
-                        changeGroupNameFromGroupId(group.getId(), "A new name :-)");
+                ResponseEntity<Object> response = chatService.changeGroupNameFromGroupId(group.getId(),
+                        "A new name :-)");
 
                 // Assert response code
                 assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
@@ -558,9 +510,8 @@ public class ChatIntegrationTest {
                 Group group = groupRepository.findAll().get(0);
 
                 // Create a new user
-                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
-                        .password("pass1word").build();
-
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3")
+                        .email("user4.name3@hotmail.com").password("pass1word").build();
 
                 // Saving the users
                 User user = userRepository.save(newUser);
@@ -592,9 +543,8 @@ public class ChatIntegrationTest {
                 Group group = groupRepository.findAll().get(0);
 
                 // Create a new user
-                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
-                        .password("pass1word").build();
-
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3")
+                        .email("user4.name3@hotmail.com").password("pass1word").build();
 
                 // Saving the users
                 User user = userRepository.save(newUser);
@@ -617,9 +567,10 @@ public class ChatIntegrationTest {
                 assertNotEquals(prevCount, newCount);
             }
         }
+
         /************************ METHODS COPIED IN FROM CHAT-SERVICE (FOR TESTING) ***********************/
         public GroupDto createTwoUserGroup(PrivateGroupDto privateGroupDto) {
-            //TODO check if group with the users already exists
+            // TODO check if group with the users already exists
             if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
                 return null;
             }
@@ -630,7 +581,7 @@ public class ChatIntegrationTest {
             Optional<User> userOneFound = userRepository.findById(privateGroupDto.getUserOneId());
             Optional<User> userTwoFound = userRepository.findById(privateGroupDto.getUserTwoId());
 
-            if(userOneFound.isPresent() && userTwoFound.isPresent()) {
+            if (userOneFound.isPresent() && userTwoFound.isPresent()) {
                 // Retrieve the users
                 User userOne = userOneFound.get();
                 User userTwo = userTwoFound.get();
@@ -648,8 +599,7 @@ public class ChatIntegrationTest {
                 groupDto.setGroupName(newGroup.getName());
 
                 return groupDto;
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -692,19 +642,14 @@ public class ChatIntegrationTest {
                 Message ms = msL.get(i);
 
                 PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
-                //TODO change when getPicture changes
-                if(pRDto == null){
-                    pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+                // TODO change when getPicture changes
+                if (pRDto == null) {
+                    pRDto = new PictureReturnDto(0L, "no picture", "no picture");
                 }
 
                 String ts = ms.getTimestamp().toString().split("\\.")[0];
-                MessageDto messageDto = new MessageDto(
-                        ms.getContent(),
-                        ts, ms.getUser().getId(),
-                        ms.getUser().getFirstName(),
-                        ms.getUser().getLastName(),
-                        pRDto.getType(),
-                        pRDto.getBase64());
+                MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(),
+                        ms.getUser().getFirstName(), ms.getUser().getLastName(), pRDto.getType(), pRDto.getBase64());
                 messageDtoList.add(messageDto);
             }
 
@@ -717,7 +662,7 @@ public class ChatIntegrationTest {
         }
 
         public GroupDto createGroupFromUserIds(ListGroupDto listGroupDto) {
-            //TODO multiple of same user given?
+            // TODO multiple of same user given?
             List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
             Set<User> users = new HashSet<>();
 
@@ -728,14 +673,11 @@ public class ChatIntegrationTest {
             if (users.size() == 2) {
                 Group group = checkIfUsersHavePrivateGroup(users);
                 if (group != null) {
-                    return new GroupDto(group.getId(),group.getName());
+                    return new GroupDto(group.getId(), group.getName());
                 }
             }
 
-            Group newGroup = Group.builder()
-                    .name(listGroupDto.getGroupName())
-                    .users(users)
-                    .build();
+            Group newGroup = Group.builder().name(listGroupDto.getGroupName()).users(users).build();
             groupRepository.save(newGroup);
 
             GroupDto groupDto = new GroupDto();

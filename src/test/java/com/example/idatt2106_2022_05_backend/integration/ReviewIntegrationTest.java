@@ -50,7 +50,6 @@ public class ReviewIntegrationTest {
     @Autowired
     CategoryRepository categoryRepository;
 
-
     @Autowired
     CalendarDateRepository calendarDateRepository;
 

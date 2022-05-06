@@ -73,7 +73,6 @@ public class CategoryIntegrationTest {
     class CategoryMethods {
         private ModelMapper modelMapper = new ModelMapper();
 
-
         @Test
         public void getAllParentCategoriesTest() {
             // Using copied over method
@@ -135,8 +134,8 @@ public class CategoryIntegrationTest {
         @Test
         public void getAllAdsForCategoryAndSubCategories() {
             // Create new user
-            User userCreation = User.builder().firstName("firstName").lastName("lastName").email("karoline.wahls@hotmail.com")
-                    .password("pass1word").build();
+            User userCreation = User.builder().firstName("firstName").lastName("lastName")
+                    .email("karoline.wahls@hotmail.com").password("pass1word").build();
 
             // Saving the user
             User user = userRepository.save(userCreation);
@@ -145,15 +144,15 @@ public class CategoryIntegrationTest {
             Category category1 = Category.builder().name("Flasks and SUCH").level(1).parent(true).child(false).build();
 
             // Two sub categories
-            Category category2 = Category.builder().name("Action figures").level(2).parentName("Flasks and SUCH").parent(false).child(true)
-                    .build();
+            Category category2 = Category.builder().name("Action figures").level(2).parentName("Flasks and SUCH")
+                    .parent(false).child(true).build();
 
             Category category3 = Category.builder().name("Marvel").level(2).parentName("Flasks and SUCH").parent(true)
                     .child(true).build();
 
             // Creating sub categories for sub category
-            Category category4 = Category.builder().name("Marvel sub category").level(3).parentName("Marvel").parent(false)
-                    .child(true).build();
+            Category category4 = Category.builder().name("Marvel sub category").level(3).parentName("Marvel")
+                    .parent(false).child(true).build();
 
             // Persist
             Category category1Saved = categoryRepository.save(category1);
@@ -161,35 +160,32 @@ public class CategoryIntegrationTest {
             Category category3Saved = categoryRepository.save(category3);
             Category category4Saved = categoryRepository.save(category4);
 
-
             // Create ad for parent
             AdDto ad1 = AdDto.builder().title("Flask the best one")
                     .description("Renting out best flask ever without specific category....").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).price(100).
-                    streetAddress("Sagbakken 2").postalCode(7234).city("Ler").
-                    userId(user.getId()).categoryId(category1Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2").postalCode(7234)
+                    .city("Ler").userId(user.getId()).categoryId(category1Saved.getId()).build();
 
             // Create ad for child layer 1
             AdDto ad2 = AdDto.builder().title("Drink flasks").description("Renting out drink flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2")
-                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category2Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2").postalCode(7234)
+                    .city("Ler").userId(user.getId()).categoryId(category2Saved.getId()).build();
 
             // Ad for the 2nd layer child
             AdDto ad3 = AdDto.builder().title("Metal flask").description("Renting out metal flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2")
-                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category3Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2").postalCode(7234)
+                    .city("Ler").userId(user.getId()).categoryId(category3Saved.getId()).build();
 
             // Ad for the 2nd layer child
             AdDto ad4 = AdDto.builder().title("Metal flask").description("Renting out metal flask").rental(true)
-                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2")
-                    .postalCode(7234).city("Ler").userId(user.getId()).categoryId(category4Saved.getId()).build();
+                    .rentedOut(false).durationType(AdType.WEEK).price(100).streetAddress("Sagbakken 2").postalCode(7234)
+                    .city("Ler").userId(user.getId()).categoryId(category4Saved.getId()).build();
 
             // Persist the ads
             adService.postNewAd(ad1);
             adService.postNewAd(ad2);
             adService.postNewAd(ad3);
             adService.postNewAd(ad4);
-
 
             UserGeoLocation dto = new UserGeoLocation();
             dto.setLat(63.09567);
@@ -212,10 +208,8 @@ public class CategoryIntegrationTest {
         @Test
         public void getAllAdsForSpecificCategory() {
             // Create a user
-            User userCreation = User.builder().firstName("firstName").lastName("lastName").
-                    email("karoline.wahls@hotmail.com").
-                    password("pass1word").
-                    build();
+            User userCreation = User.builder().firstName("firstName").lastName("lastName")
+                    .email("karoline.wahls@hotmail.com").password("pass1word").build();
 
             // Saving the user
             User user = userRepository.save(userCreation);
@@ -270,7 +264,7 @@ public class CategoryIntegrationTest {
             List<Category> subCategories = adService.findSubCategories(category.getId());
             ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
-            if(subCategories != null) {
+            if (subCategories != null) {
                 // Iterate over all sub-categories found
                 for (Category category1 : subCategories) {
                     // Iterate over all ads in category
@@ -296,7 +290,7 @@ public class CategoryIntegrationTest {
             Category parentCategory = parentCategories.stream().findFirst().get();
 
             // Now, also add the ads connected to only the parent category to the list!
-            if(parentCategory.getAds() != null) {
+            if (parentCategory.getAds() != null) {
                 for (Ad ad : parentCategory.getAds()) {
                     AdDto dto = null;
                     try {

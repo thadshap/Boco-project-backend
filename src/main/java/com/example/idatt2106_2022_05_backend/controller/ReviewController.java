@@ -30,21 +30,21 @@ public class ReviewController {
         return reviewService.getReviewsByAdId(adId);
     }
 
-//    @PostMapping("/auth/new/review")
-//    @ApiOperation(value = "Endpoint to create a new review", response = Response.class)
-//    public Response createNewReview(@RequestBody ReviewDto newReview) {
-//        log.debug("[X] Call to create new review for ad with id = {}", newReview.getAdId());
-//        if(!securityService.is(userId)){
-//            return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
-//        }
-//        return reviewService.createNewReview(newReview);
-//    }
+    // @PostMapping("/auth/new/review")
+    // @ApiOperation(value = "Endpoint to create a new review", response = Response.class)
+    // public Response createNewReview(@RequestBody ReviewDto newReview) {
+    // log.debug("[X] Call to create new review for ad with id = {}", newReview.getAdId());
+    // if(!securityService.is(userId)){
+    // return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
+    // }
+    // return reviewService.createNewReview(newReview);
+    // }
 
     @DeleteMapping("/auth/delete/review")
     @ApiOperation(value = "Endpoint to delete a review", response = Response.class)
     public Response deleteReview(@RequestBody ReviewDto reviewDto) {
         log.debug("[X] Call to delete review of ad with id = {}", reviewDto.getAdId());
-        if(!securityService.isReviewOwner(reviewDto)){
+        if (!securityService.isReviewOwner(reviewDto)) {
             return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
         }
         return reviewService.deleteReview(reviewDto.getAdId(), reviewDto.getUserId());

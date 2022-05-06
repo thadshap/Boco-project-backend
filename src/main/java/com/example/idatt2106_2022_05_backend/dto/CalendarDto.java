@@ -15,8 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @ApiModel(description = "Data transfer object of calender dates, used to send and return calender dates")
-@NoArgsConstructor
-@AllArgsConstructor
 public class CalendarDto {
 
     @ApiModelProperty(notes = "id of corresponding ad")

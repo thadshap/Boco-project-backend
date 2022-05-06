@@ -1,6 +1,5 @@
 package com.example.idatt2106_2022_05_backend.model;
 
-
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -64,7 +63,7 @@ public class User {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private AcceptRentalToken acceptRentalToken;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "picture_id", referencedColumnName = "picture_id")
     private Picture picture;
 
@@ -91,41 +90,38 @@ public class User {
     private Set<Message> messages;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name="user_group",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "group_id")}
-    )
+    @JoinTable(name = "user_group", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "group_id") })
     private Set<Group> groupChats;
 
     public void setAd(Ad newAd) {
         ads.add(newAd);
     }
 
-//    @PreRemove
-//    void remove(){
-//        if(ads != null) {
-//            setAds(null);
-//        }
-//        if(reviews != null) {
-//            setReviews(null);
-//        }
-//        if(rentalsBorrowed != null) {
-//            setRentalsBorrowed(null); //todo talk about this logic
-//        }
-//        if(rentalsOwned != null) {
-//            setRentalsOwned(null);
-//        }
-//        if(picture != null) {
-//            setPicture(null);
-//        }
-//        if(resetPasswordToken != null) {
-//            setResetPasswordToken(null);
-//        }
-//        if(userVerificationToken != null) {
-//            setUserVerificationToken(null);
-//        }
-//    }
+    // @PreRemove
+    // void remove(){
+    // if(ads != null) {
+    // setAds(null);
+    // }
+    // if(reviews != null) {
+    // setReviews(null);
+    // }
+    // if(rentalsBorrowed != null) {
+    // setRentalsBorrowed(null); //todo talk about this logic
+    // }
+    // if(rentalsOwned != null) {
+    // setRentalsOwned(null);
+    // }
+    // if(picture != null) {
+    // setPicture(null);
+    // }
+    // if(resetPasswordToken != null) {
+    // setResetPasswordToken(null);
+    // }
+    // if(userVerificationToken != null) {
+    // setUserVerificationToken(null);
+    // }
+    // }
 
     public void addReview(Review newReview) {
         reviews.add(newReview);
@@ -133,8 +129,10 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         User user = (User) o;
         return id != null && Objects.equals(id, user.id);
     }

@@ -51,6 +51,7 @@ public class SecurityServiceimpl implements SecurityService {
 
     /**
      * Method to get the current user.
+     * 
      * @return current user making the call.
      */
     @Override
@@ -124,7 +125,10 @@ public class SecurityServiceimpl implements SecurityService {
 
     /**
      * Method to see if user is owner of rental object by a string token.
-     * @param rentalId id of rental object.
+     * 
+     * @param rentalId
+     *            id of rental object.
+     * 
      * @return true if user is owner of rental object.
      */
     @Override
@@ -132,7 +136,7 @@ public class SecurityServiceimpl implements SecurityService {
         Rental rental = rentalRepository.findById(rentalId).orElse(null);
         AcceptRentalToken accToken = acceptRentalTokenRepository.findByToken(token);
         User user = accToken.getUser();
-        if(rental != null && user != null  && rental.getOwner() != null){
+        if (rental != null && user != null && rental.getOwner() != null) {
             return rental.getOwner().equals(user);
         }
         return false;

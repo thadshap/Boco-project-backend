@@ -102,7 +102,7 @@ public class PictureIntegrationTest {
         public void emptyDatabase() {
             List<Picture> pictures = pictureRepository.findAll();
             for (Picture picture : pictures) {
-                if(picture.getUser() != null) {
+                if (picture.getUser() != null) {
                     picture.getUser().setPicture(null);
                     userRepository.save(picture.getUser());
                     picture.setUser(null); // todo do the same with user?
@@ -138,8 +138,7 @@ public class PictureIntegrationTest {
 
             try {
                 // Perform the method
-                ResponseEntity<Object> res =
-                        userService.updatePicture(user.getId(), mockMultipartFile);
+                ResponseEntity<Object> res = userService.updatePicture(user.getId(), mockMultipartFile);
 
                 // Assert that the profile picture exists
                 Optional<User> userFound = userRepository.findById(user.getId());
@@ -178,8 +177,7 @@ public class PictureIntegrationTest {
             try {
                 long wrongUserId = 100010L;
                 // Perform the method
-                ResponseEntity<Object> res =
-                        userService.updatePicture(wrongUserId, mockMultipartFile);
+                ResponseEntity<Object> res = userService.updatePicture(wrongUserId, mockMultipartFile);
 
                 // Assert that the profile picture does not exist
                 Optional<User> userFound = userRepository.findById(wrongUserId);
@@ -218,8 +216,7 @@ public class PictureIntegrationTest {
 
             try {
                 // Save the picture
-                ResponseEntity<Object> res =
-                        userService.updatePicture(user.getId(), mockMultipartFile);
+                ResponseEntity<Object> res = userService.updatePicture(user.getId(), mockMultipartFile);
 
                 // Assert that the profile picture exists
                 Optional<User> userFound = userRepository.findById(user.getId());
@@ -440,8 +437,7 @@ public class PictureIntegrationTest {
                     assertNotEquals(numberOfPictures, currentNumberOfPictures);
 
                     // Now, delete the picture
-                    ResponseEntity<Object> response = adService.deletePicture(adFound.get().getId(),
-                            files);
+                    ResponseEntity<Object> response = adService.deletePicture(adFound.get().getId(), files);
 
                     Optional<Ad> adFound2 = adRepository.findById(ad.getId());
                     if (adFound.isPresent()) {
@@ -449,8 +445,7 @@ public class PictureIntegrationTest {
                         // Assert correct response
                         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
                         assertEquals(1, adFound2.get().getPictures().size());
-                    }
-                    else {
+                    } else {
                         fail();
                     }
                 } else {

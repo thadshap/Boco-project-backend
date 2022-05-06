@@ -114,14 +114,13 @@ public class UserServiceImpl implements UserService {
              * ouputMessageRepository.delete(message); } }
              */
             // Get messages
-//            List<Message> messages = messageRepository.findAll();
-//            for (Message message : messages) {
-//                if (message.getUser().getId() == user.getId()) {
-//                    message.setUser(null);
-//                    messageRepository.save(message);
-//                }
-//            }
-
+            // List<Message> messages = messageRepository.findAll();
+            // for (Message message : messages) {
+            // if (message.getUser().getId() == user.getId()) {
+            // message.setUser(null);
+            // messageRepository.save(message);
+            // }
+            // }
 
             userRepository.save(user);
 
@@ -156,7 +155,7 @@ public class UserServiceImpl implements UserService {
             User user = userFound.get();
 
             // If the user has a profile picture
-            if(user.getPicture() != null) {
+            if (user.getPicture() != null) {
 
                 // Get the profile picture
                 Picture profilePicture = user.getPicture();
@@ -180,8 +179,7 @@ public class UserServiceImpl implements UserService {
                     userRepository.save(user);
 
                     return new Response("Slettet bildet", HttpStatus.OK);
-                }
-                else {
+                } else {
                     // If we get here, pictures are equal to null
                     return new Response("Denne brukeren har et annet profilbilde", HttpStatus.NOT_FOUND);
                 }
@@ -194,29 +192,32 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to update to update profile picture.
-     * @param userId id of user.
-     * @param file picture file.
+     * 
+     * @param userId
+     *            id of user.
+     * @param file
+     *            picture file.
+     * 
      * @return response if user exists or not.
-     * @throws IOException when retrieving bytes from file.
+     * 
+     * @throws IOException
+     *             when retrieving bytes from file.
      */
     @Override
     public Response updatePicture(Long userId, MultipartFile file) throws IOException {
         // User user = userRepository.getById(userId);
         Optional<User> userFound = userRepository.findById(userId);
 
-        if(userFound.isPresent()) {
+        if (userFound.isPresent()) {
             // Get the user
             User user = userFound.get();
 
             // Create the picture entity using the multipart-file
-            Picture picture = Picture.builder()
-                    .filename(file.getName())
-                    .type(file.getContentType())
-//                    .data(file.getBytes())
-                    .base64(Base64.getEncoder().encodeToString(file.getBytes()))
-                    .build();
+            Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType())
+                    // .data(file.getBytes())
+                    .base64(Base64.getEncoder().encodeToString(file.getBytes())).build();
 
-            if(user.getPicture() != null) {
+            if (user.getPicture() != null) {
                 // Delete the current photo
                 pictureRepository.findById(user.getPicture().getId()).get().setUser(null);
                 user.setPicture(null);
@@ -228,16 +229,14 @@ public class UserServiceImpl implements UserService {
                 picture.setUser(user);
                 userRepository.save(user);
                 pictureRepository.save(picture);
-            }
-            else {
+            } else {
                 user.setPicture(picture);
                 picture.setUser(user);
                 userRepository.save(user);
                 pictureRepository.save(picture);
             }
             return new Response("Bildet er lagret", HttpStatus.OK);
-        }
-        else {
+        } else {
             return new Response("Brukeren ble ikke funnet", HttpStatus.NOT_FOUND);
         }
 
@@ -245,22 +244,23 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method to return picture of user.
-     * @param userId id of user.
+     * 
+     * @param userId
+     *            id of user.
+     * 
      * @return returns user profile picture.
      */
     @Override
     public PictureReturnDto getPicture(Long userId) {
         User user = userRepository.getById(userId);
         List<Picture> picture = pictureRepository.findByUser(user);
-        //temp fix so backend does not crash when no picture found
+        // temp fix so backend does not crash when no picture found
         if (picture.size() == 0) {
             return null;
         }
         return PictureReturnDto.builder()
-                //                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
-                .base64(picture.get(0).getBase64())
-                .type(picture.get(0).getType())
-                .build();
+                // .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .base64(picture.get(0).getBase64()).type(picture.get(0).getType()).build();
     }
 
     /**
@@ -299,9 +299,8 @@ public class UserServiceImpl implements UserService {
             }
         }
         // if all fields are empty
-        else if(     userUpdateDto.getFirstName() == null &&
-                userUpdateDto.getLastName() == null &&
-                userUpdateDto.getPassword() == null) {
+        else if (userUpdateDto.getFirstName() == null && userUpdateDto.getLastName() == null
+                && userUpdateDto.getPassword() == null) {
             return null;
         }
         return new Response("User updated", HttpStatus.OK);
@@ -322,20 +321,13 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User userGot = userFromDB.get();
-        if (userGot.getRating() > 8){
+        if (userGot.getRating() > 8) {
             userGot.setVerified(true);
         }
-        UserReturnDto user = UserReturnDto.builder()
-                .id(userGot.getId())
-                .firstName(userGot.getFirstName())
-                .lastName(userGot.getLastName())
-                .email(userGot.getEmail())
-                .role(userGot.getRole())
-                .verified(userGot.isVerified())
-                .rating(userGot.getRating())
-                .nrOfReviews(userGot.getNumberOfReviews())
-                .pictureUrl(userGot.getPictureUrl())
-                .build();
+        UserReturnDto user = UserReturnDto.builder().id(userGot.getId()).firstName(userGot.getFirstName())
+                .lastName(userGot.getLastName()).email(userGot.getEmail()).role(userGot.getRole())
+                .verified(userGot.isVerified()).rating(userGot.getRating()).nrOfReviews(userGot.getNumberOfReviews())
+                .pictureUrl(userGot.getPictureUrl()).build();
 
         return new Response(user, HttpStatus.OK);
     }

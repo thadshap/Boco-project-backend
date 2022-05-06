@@ -26,8 +26,8 @@ public class Category {
     @NotNull
     private boolean parent;
 
-//    @NotNull
-//    private boolean middleChild;
+    // @NotNull
+    // private boolean middleChild;
 
     @NotNull
     private boolean child;

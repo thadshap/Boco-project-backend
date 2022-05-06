@@ -122,44 +122,24 @@ public class Ad {
         return "/ad-photos/" + id + "/" + photos;
     }
 
-
     @PreRemove
     private void removeRelationships() {
-        if (dates != null) {
-            setDates(null);
-        }
-        if(user != null) {
-            setUser(null);
-        }
-        if(category != null) {
-            setCategory(null);
-        }
-    }
-
-
-/**
-//    @PreRemove
-    private void removeRelationships() {
-        if (pictures != null) {
-            setPictures(null);
-        }
-        if (category != null) {
-            setCategory(null);
-        }
-        if (rentals != null) {
-            setRentals(null);
-        }
-        if (reviews != null) {
-            setReviews(null);
-        }
         if (dates != null) {
             setDates(null);
         }
         if (user != null) {
             setUser(null);
         }
+        if (category != null) {
+            setCategory(null);
+        }
     }
-*/
+
+    /**
+     * // @PreRemove private void removeRelationships() { if (pictures != null) { setPictures(null); } if (category !=
+     * null) { setCategory(null); } if (rentals != null) { setRentals(null); } if (reviews != null) { setReviews(null);
+     * } if (dates != null) { setDates(null); } if (user != null) { setUser(null); } }
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o)

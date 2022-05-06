@@ -75,16 +75,10 @@ public class CalendarIntegrationTest {
         @BeforeEach
         public void setUp() {
             /**
-            // Deleting due to threads
-            reviewRepository.deleteAll();
-            rentalRepository.deleteAll();
-            pictureRepository.deleteAll();
-            calendarDateRepository.deleteAll();
-            adRepository.deleteAll();
-            userRepository.deleteAll();
-            categoryRepository.deleteAll();
-            // calendarDateRepository.deleteAll();
-
+             * // Deleting due to threads reviewRepository.deleteAll(); rentalRepository.deleteAll();
+             * pictureRepository.deleteAll(); calendarDateRepository.deleteAll(); adRepository.deleteAll();
+             * userRepository.deleteAll(); categoryRepository.deleteAll(); // calendarDateRepository.deleteAll();
+             * 
              */
             messageRepository.deleteAll();
             pictureRepository.deleteAll();
@@ -136,7 +130,7 @@ public class CalendarIntegrationTest {
             rentalRepository.deleteAll();
             userRepository.deleteAll();
             adRepository.deleteAll();
-            //userRepository.deleteAll();
+            // userRepository.deleteAll();
             categoryRepository.deleteAll();
             calendarDateRepository.deleteAll();
         }
@@ -252,11 +246,9 @@ public class CalendarIntegrationTest {
 
             // Create new ad
             AdDto speaker = AdDto.builder().title("New ad for testing and such")
-                    .description("Renting out a brand new speaker").rental(true)
-                    .durationType(AdType.WEEK).price(100)
-                    .streetAddress("Speaker street 2").postalCode(7120)
-                    .city("Trondheim").lat(63.401920).lng(10.443579).
-                    userId(user.getId()).categoryId(category.getId()).build();
+                    .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).price(100)
+                    .streetAddress("Speaker street 2").postalCode(7120).city("Trondheim").lat(63.401920).lng(10.443579)
+                    .userId(user.getId()).categoryId(category.getId()).build();
 
             // Persist the ad --> the dates are now also persisted
             ResponseEntity<Object> r = adService.postNewAd(speaker);
@@ -264,8 +256,8 @@ public class CalendarIntegrationTest {
             assertEquals(HttpStatus.CREATED.value(), r.getStatusCodeValue());
 
             // Use the method to search through all ads
-            //ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing and such");
-            //assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            // ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing and such");
+            // assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
 
             Set<Ad> adsFound = adRepository.findByTitle("New ad for testing and such");
 
@@ -351,8 +343,8 @@ public class CalendarIntegrationTest {
             assertEquals(HttpStatus.CREATED.value(), r.getStatusCodeValue());
 
             // Use the method to search through all ads
-            //ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing");
-            //assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+            // ResponseEntity<Object> response = adService.searchThroughAds("New ad for testing");
+            // assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
 
             Set<Ad> adsFound = adRepository.findByTitle("New ad for testing");
 

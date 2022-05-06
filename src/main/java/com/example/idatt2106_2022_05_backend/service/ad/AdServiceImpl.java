@@ -66,8 +66,11 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads.
+     * 
      * @return all ads.
-     * @throws IOException modelmapper.
+     * 
+     * @throws IOException
+     *             modelmapper.
      */
     @Override
     public Response getAllAds() throws IOException {
@@ -80,7 +83,7 @@ public class AdServiceImpl implements AdService {
             AdDto newAd = castObject(ad);
             adsToBeReturned.add(newAd);
         }
-        if(adsToBeReturned.size()==0){
+        if (adsToBeReturned.size() == 0) {
             return new Response(adsToBeReturned, HttpStatus.NO_CONTENT);
         }
         return new Response(adsToBeReturned, HttpStatus.OK);
@@ -88,7 +91,10 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads in a category by category name.
-     * @param name name of category.
+     * 
+     * @param name
+     *            name of category.
+     * 
      * @return returns ads if found.
      */
     @Override
@@ -125,7 +131,9 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Method to get all ads in category by category id
+     * 
      * @param categoryId
+     * 
      * @return
      */
     @Override
@@ -208,18 +216,14 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Response getAllCategoriesWithLevel(){
+    public Response getAllCategoriesWithLevel() {
         List<Category> categories = categoryRepository.findAll();
         ArrayList<CategoryDto> categoriesToReturn = new ArrayList<>();
         for (int i = 0; i < categories.size(); i++) {
-            categoriesToReturn.add(CategoryDto.builder()
-                            .level(categories.get(i).getLevel())
-                            .icon(categories.get(i).getIcon()).child(categories.get(i).isChild())
-                            .parent(categories.get(i).isParent())
-                            .parentName(categories.get(i).getParentName())
-                            .name(categories.get(i).getName())
-                            .id(categories.get(i).getId())
-                            .build());
+            categoriesToReturn.add(CategoryDto.builder().level(categories.get(i).getLevel())
+                    .icon(categories.get(i).getIcon()).child(categories.get(i).isChild())
+                    .parent(categories.get(i).isParent()).parentName(categories.get(i).getParentName())
+                    .name(categories.get(i).getName()).id(categories.get(i).getId()).build());
         }
         return new Response(categoriesToReturn, HttpStatus.OK);
     }
@@ -312,7 +316,7 @@ public class AdServiceImpl implements AdService {
         List<Category> subCategories = findSubCategories(category.getId());
         ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
-        if(subCategories != null) {
+        if (subCategories != null) {
             // Iterate over all sub-categories found
             for (Category category1 : subCategories) {
                 // Iterate over all ads in category
@@ -338,7 +342,7 @@ public class AdServiceImpl implements AdService {
         Category parentCategory = parentCategories.stream().findFirst().get();
 
         // Now, also add the ads connected to only the parent category to the list!
-        if(parentCategory.getAds() != null) {
+        if (parentCategory.getAds() != null) {
             for (Ad ad : parentCategory.getAds()) {
                 AdDto dto = null;
                 try {
@@ -366,32 +370,30 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-
-
     @Override
     public List<Category> findSubCategories(long categoryId) {
         Optional<Category> categoryFound = categoryRepository.findById(categoryId);
 
         List<Category> toReturn = new ArrayList<>();
 
-        if(categoryFound.isPresent()) {
+        if (categoryFound.isPresent()) {
 
             // Get the category
             Category category = categoryFound.get();
 
             // Get all categories
             List<Category> allCategories = categoryRepository.findAll();
-            if(category.getLevel() == 1) {
+            if (category.getLevel() == 1) {
                 for (Category cat : allCategories) {
-                    if(cat.getLevel() == 2) {
+                    if (cat.getLevel() == 2) {
                         // If cat's name equals category.getName()
-                        if(Objects.equals(cat.getParentName(), category.getName())) {
+                        if (Objects.equals(cat.getParentName(), category.getName())) {
                             // Add cat to list of categories to return, then iterate over all categories (lvl 3)
                             toReturn.add(cat);
-                            for(Category cat2 : allCategories) {
-                                if(cat2.getLevel() == 3) {
+                            for (Category cat2 : allCategories) {
+                                if (cat2.getLevel() == 3) {
                                     // If the third lvl category has the 2nd level category as its parent
-                                    if(Objects.equals(cat2.getParentName(), cat.getName())) {
+                                    if (Objects.equals(cat2.getParentName(), cat.getName())) {
                                         toReturn.add(cat2);
                                     }
                                 }
@@ -401,22 +403,20 @@ public class AdServiceImpl implements AdService {
                 }
                 return toReturn;
             }
-            if(category.getLevel() == 2) {
-                for(Category cat2 : allCategories) {
-                    if(cat2.getLevel() == 3) {
+            if (category.getLevel() == 2) {
+                for (Category cat2 : allCategories) {
+                    if (cat2.getLevel() == 3) {
                         // If the third lvl category has the 2nd level category as its parent
-                        if(Objects.equals(cat2.getParentName(), category.getName())) {
+                        if (Objects.equals(cat2.getParentName(), category.getName())) {
                             toReturn.add(cat2);
                         }
                     }
                 }
                 return toReturn;
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -425,49 +425,36 @@ public class AdServiceImpl implements AdService {
      * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
      * sub-categories and so on)
      *
-     * @param //listIn is a list containing all categories in db
-     * @param //listOut is an empty list that is being filled up with sub-categories as the method recursively iterates
+     * @param //listIn
+     *            is a list containing all categories in db
+     * @param //listOut
+     *            is an empty list that is being filled up with sub-categories as the method recursively iterates
+     * 
      * @return listOut
      *
-    private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
-            int start) {
-        // Position in array == start
-        int arrayLength = start;
-
-        // Make a counter and if it is not == 1 && base case is not reached when the loop ends,
-        // call on the function again from parentName == arrayLength.getName
-        int loopCounter = 0;
-
-        // Base case: If the position in the array is equal to the size of the array
-        if (arrayLength == listIn.size()) {
-            // Return the list that now contains all sub-categories
-            return listOut;
-        } else {
-            // Iterate through all categories
-            for (int i = start; i < listIn.size(); i++) {
-                Category category = listIn.get(i);
-
-                // If the category is a sub-class
-                if (category.getParentName() != null) {
-
-                    // If a category has current category as parent category
-                    if (category.getParentName().equalsIgnoreCase(parentName)) {
-
-                        // Add the category to the list to be returned
-                        listOut.add(category);
-
-                        // This category is now the new parent
-                        parentName = category.getName();
-
-                        // Call on the function recursively from the start for this category
-                        findSubCategories(listIn, listOut, parentName, start);
-                    }
-                }
-            }
-            // Increment the list and call on the function recursively
-            return findSubCategories(listIn, listOut, parentName, start + 1);
-        }
-    }
+     *         private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String
+     *         parentName, int start) { // Position in array == start int arrayLength = start;
+     * 
+     *         // Make a counter and if it is not == 1 && base case is not reached when the loop ends, // call on the
+     *         function again from parentName == arrayLength.getName int loopCounter = 0;
+     * 
+     *         // Base case: If the position in the array is equal to the size of the array if (arrayLength ==
+     *         listIn.size()) { // Return the list that now contains all sub-categories return listOut; } else { //
+     *         Iterate through all categories for (int i = start; i < listIn.size(); i++) { Category category =
+     *         listIn.get(i);
+     * 
+     *         // If the category is a sub-class if (category.getParentName() != null) {
+     * 
+     *         // If a category has current category as parent category if
+     *         (category.getParentName().equalsIgnoreCase(parentName)) {
+     * 
+     *         // Add the category to the list to be returned listOut.add(category);
+     * 
+     *         // This category is now the new parent parentName = category.getName();
+     * 
+     *         // Call on the function recursively from the start for this category findSubCategories(listIn, listOut,
+     *         parentName, start); } } } // Increment the list and call on the function recursively return
+     *         findSubCategories(listIn, listOut, parentName, start + 1); } }
      */
 
     @Override
@@ -477,8 +464,8 @@ public class AdServiceImpl implements AdService {
 
         for (Category category : allCategories) {
             if (category.isParent()) {
-                CategoryDto dto = CategoryDto.builder().child(category.isChild()).parent(category.isParent()).id(category.getId()).name(category.getName())
-                        .icon(category.getIcon()).build();
+                CategoryDto dto = CategoryDto.builder().child(category.isChild()).parent(category.isParent())
+                        .id(category.getId()).name(category.getName()).icon(category.getIcon()).build();
                 categoriesToReturn.add(dto);
             }
         }
@@ -525,27 +512,25 @@ public class AdServiceImpl implements AdService {
      * @return Response with page in body
      */
     @Override
-    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation){
+    public Response getPageOfAds(int sizeOfPage, UserGeoLocation userGeoLocation) {
         // Check if size of page is smaller than all ads
         List<Ad> ads = adRepository.findAll();
         List<AdDto> adDtos = new ArrayList<>();
-        if(sizeOfPage <= ads.size()) {
-            Pageable pageOf = PageRequest.of(0,sizeOfPage);
-             adDtos = adRepository.findAll(pageOf).stream()
-                    .map( ad -> modelMapper.map(ad, AdDto.class)).
-                    collect(Collectors.toList());
+        if (sizeOfPage <= ads.size()) {
+            Pageable pageOf = PageRequest.of(0, sizeOfPage);
+            adDtos = adRepository.findAll(pageOf).stream().map(ad -> modelMapper.map(ad, AdDto.class))
+                    .collect(Collectors.toList());
 
+        } else {
+            adDtos = adRepository.findAll().stream().map(ad -> modelMapper.map(ad, AdDto.class))
+                    .collect(Collectors.toList());
         }
-        else {
-            adDtos = adRepository.findAll().stream()
-                    .map( ad -> modelMapper.map(ad, AdDto.class)).
-                            collect(Collectors.toList());
+        for (AdDto a : adDtos) {
+            a.setDistance(
+                    calculateDistance(userGeoLocation.getLng(), userGeoLocation.getLat(), a.getLat(), a.getLng()));
         }
-        for(AdDto a: adDtos){
-            a.setDistance(calculateDistance(userGeoLocation.getLng(), userGeoLocation.getLat(), a.getLat(), a.getLng()));
-        }
-        //exceptionhandling
-        if(adDtos.size()>0) {
+        // exceptionhandling
+        if (adDtos.size() > 0) {
             adDtos.sort(Comparator.comparing(AdDto::getDistance));
             return new Response(adDtos, HttpStatus.OK);
         }
@@ -653,15 +638,11 @@ public class AdServiceImpl implements AdService {
 
     /**
      * Posts new ad
-     * @param adDto must contain:
-     *              - rental (being rented out or given away)
-     *              - duration (quantity of duration type)
-     *              - durationType (type of duration --> see "AdType" enum)
-     *              - categoryId (only the id of the nearest category)
-     *              - price
-     *              - street_address (of the item)
-     *              - postal_code (of the item)
-     *              - name (header of the ad)
+     * 
+     * @param adDto
+     *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
+     *            durationType (type of duration --> see "AdType" enum) - categoryId (only the id of the nearest
+     *            category) - price - street_address (of the item) - postal_code (of the item) - name (header of the ad)
      *
      * @param adDto
      *            must contain: - rental (being rented out or given away) - duration (quantity of duration type) -
@@ -750,9 +731,10 @@ public class AdServiceImpl implements AdService {
             // Adding all ads to list and then response
             ads.add(adDto);
         }
-        //In case no ads were found
-        if(ads.size()>0) {
-            return new Response(ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList()),
+        // In case no ads were found
+        if (ads.size() > 0) {
+            return new Response(
+                    ads.stream().sorted(Comparator.comparing(AdDto::getDistance)).collect(Collectors.toList()),
                     HttpStatus.OK);
         }
 
@@ -761,9 +743,14 @@ public class AdServiceImpl implements AdService {
 
     /**
      * support method that creates a dto of ad
-     * @param ad ad
+     * 
+     * @param ad
+     *            ad
+     * 
      * @return ad dto
-     * @throws IOException if decompression of bytes fails
+     * 
+     * @throws IOException
+     *             if decompression of bytes fails
      */
     private AdDto castObject(Ad ad) throws IOException {
         AdDto adDto = modelMapper.map(ad, AdDto.class);
@@ -798,11 +785,12 @@ public class AdServiceImpl implements AdService {
 
         Set<Review> reviews = adRepository.getReviewsByUserId(userId);
         // If the reviews-list contains anything
-        if(reviews.size() > 0) {
-            return new Response(adRepository.getReviewsByUserId(userId).stream().map(review -> modelMapper
-                    .map(review, ReviewDto.class)).collect(Collectors.toList()), HttpStatus.OK);
-        }
-        else {
+        if (reviews.size() > 0) {
+            return new Response(
+                    adRepository.getReviewsByUserId(userId).stream()
+                            .map(review -> modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList()),
+                    HttpStatus.OK);
+        } else {
             return new Response("Fant ingen omtaler på denne brukeren", HttpStatus.NO_CONTENT);
         }
     }
@@ -912,10 +900,8 @@ public class AdServiceImpl implements AdService {
             ad.get().setReviews(null);
 
             /**
-            // Delete the ad from the dates
-            for (CalendarDate date : ad.get().getDates()) {
-                date.getAds().remove(ad.get());
-            }
+             * // Delete the ad from the dates for (CalendarDate date : ad.get().getDates()) {
+             * date.getAds().remove(ad.get()); }
              */
 
             // Delete the dates from the ad
@@ -928,7 +914,6 @@ public class AdServiceImpl implements AdService {
             // ad.get().getUser().getAds().remove(ad.get());
             // ad.get().setUser(null);
             ad.get().getUser().getAds().remove(ad.get());
-
 
             adRepository.save(ad.get());
 
@@ -945,8 +930,12 @@ public class AdServiceImpl implements AdService {
 
     /**
      * method to delete a picture on an ad
-     * @param ad_id id
-     * @param chosenPicture picture_id
+     * 
+     * @param ad_id
+     *            id
+     * @param chosenPicture
+     *            picture_id
+     * 
      * @return response with status ok or not found
      */
     @Override
@@ -979,14 +968,11 @@ public class AdServiceImpl implements AdService {
                 }
                 return new Response("Slettet " + i + " bilder.", HttpStatus.OK);
             }
-                // If we get here, pictures are equal to null
-                return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
-            }
-            return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
+            // If we get here, pictures are equal to null
+            return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);
         }
-
-
-
+        return new Response("Annonsen med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
+    }
 
     @Override
     public Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation) {
@@ -1013,18 +999,18 @@ public class AdServiceImpl implements AdService {
                 }
             }
         }
-        if(adsContainingSearchWord.size()>0) {
+        if (adsContainingSearchWord.size() > 0) {
             List<AdDto> list = adsContainingSearchWord.stream().map(ad1 -> modelMapper.map(ad1, AdDto.class))
                     .collect(Collectors.toList());
-            for(AdDto a: list){
-                a.setDistance((calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng())));
+            for (AdDto a : list) {
+                a.setDistance((calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(),
+                        a.getLng())));
             }
             // Casting objects to Dto and returning
             return new Response(list, HttpStatus.OK);
         }
         return new Response("Fant ingen annonser med dette søkeordet.", HttpStatus.NO_CONTENT);
     }
-
 
     private void setCoordinatesOnAd(Ad ad) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1054,16 +1040,14 @@ public class AdServiceImpl implements AdService {
     public List<PictureReturnDto> getAllPicturesForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        if (pictures.isEmpty()){
+        if (pictures.isEmpty()) {
             return null;
         }
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
-//                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
-                    .base64(pictures.get(i).getBase64())
-                    .type(pictures.get(i).getType())
-                    .build());
+                    // .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+                    .base64(pictures.get(i).getBase64()).type(pictures.get(i).getType()).build());
             returnDto.get(i).setId(adId);
         }
         return returnDto;
@@ -1073,20 +1057,18 @@ public class AdServiceImpl implements AdService {
     public Response getFirstPictureForAd(long adId) {
         Ad ad = adRepository.getById(adId);
         List<Picture> pictures = pictureRepository.findByAd(ad);
-        if (pictures.isEmpty()){
+        if (pictures.isEmpty()) {
             return new Response("Annonse med tittel \"" + ad.getTitle() + "\" har ingen bilder", HttpStatus.NOT_FOUND);
-        }List<PictureReturnDto> returnDto = new ArrayList<>();
+        }
+        List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
             returnDto.add(PictureReturnDto.builder()
-//                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData())
-                    .base64(pictures.get(i).getBase64())
-                    .type(pictures.get(i).getType())
-                    .build());
+                    // .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData())
+                    .base64(pictures.get(i).getBase64()).type(pictures.get(i).getType()).build());
             returnDto.get(i).setId(adId);
         }
         return new Response(returnDto.get(0), HttpStatus.OK);
     }
-
 
     @Override
     public Response storeImageForAd(long adId, List<MultipartFile> files) throws IOException {
@@ -1098,12 +1080,9 @@ public class AdServiceImpl implements AdService {
 
         ad.setPictures(new HashSet<>());
         for (int i = 0; i < files.size(); i++) {
-            Picture picture = Picture.builder()
-                    .filename(files.get(i).getName())
-                    .type(files.get(i).getContentType())
-//                    .data(files.get(i).getBytes())
-                    .base64(Base64.getEncoder().encodeToString(files.get(i).getBytes()))
-                    .build();
+            Picture picture = Picture.builder().filename(files.get(i).getName()).type(files.get(i).getContentType())
+                    // .data(files.get(i).getBytes())
+                    .base64(Base64.getEncoder().encodeToString(files.get(i).getBytes())).build();
             ad.getPictures().add(picture);
             picture.setAd(ad);
             pictureRepository.save(picture);
@@ -1117,7 +1096,7 @@ public class AdServiceImpl implements AdService {
         UserGeoLocation userGeoLocation = new UserGeoLocation(filterListOfAds.getLat(), filterListOfAds.getLng());
 
         // If there is a category we sort for it
-        if(filterListOfAds.getCategory() != null) {
+        if (filterListOfAds.getCategory() != null) {
             List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
                     userGeoLocation).getBody();
             filterListOfAds.setList(list);
@@ -1128,10 +1107,9 @@ public class AdServiceImpl implements AdService {
             return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
         }
         /**
-        List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
-        filterListOfAds.setList(list);
-        // TODO ELSE() retrieve all ads and filter them!
-        return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
+         * List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
+         * userGeoLocation).getBody(); filterListOfAds.setList(list); // TODO ELSE() retrieve all ads and filter them!
+         * return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
          */
     }
 

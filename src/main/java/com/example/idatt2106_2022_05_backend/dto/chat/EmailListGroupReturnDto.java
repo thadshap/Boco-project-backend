@@ -1,4 +1,5 @@
 package com.example.idatt2106_2022_05_backend.dto.chat;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

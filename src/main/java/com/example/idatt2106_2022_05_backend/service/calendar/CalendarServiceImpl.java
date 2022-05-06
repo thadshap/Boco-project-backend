@@ -118,7 +118,10 @@ public class CalendarServiceImpl implements CalendarService {
 
     /**
      * Helper method to set dates for an ad.
-     * @param dto calendar dto.
+     * 
+     * @param dto
+     *            calendar dto.
+     * 
      * @return return response if dates are set or not.
      */
     private Response setDates(CalendarDto dto) {
@@ -178,7 +181,8 @@ public class CalendarServiceImpl implements CalendarService {
     /**
      * Method to add dates to Calendar.
      * 
-     * @param adId id of ad.
+     * @param adId
+     *            id of ad.
      * 
      * @return returns a list of calendar dtos.
      */
@@ -230,6 +234,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     /**
      * Method to see if dates are available or not.
+     * 
      * @param dto
      *            contains: id
      *

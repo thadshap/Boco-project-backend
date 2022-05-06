@@ -53,7 +53,7 @@ public class ChatServiceImpl implements ChatService {
 
     private Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
 
-    //private support method
+    // private support method
     private Group getGroup(long id) {
         return groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Fant ikke gruppechat"));
@@ -68,7 +68,9 @@ public class ChatServiceImpl implements ChatService {
      *
      * Helping method to check if two users have a two-user group with each other.
      *
-     * @param usrs List of two users to check
+     * @param usrs
+     *            List of two users to check
+     * 
      * @return returns group if a group is found, null if no group is found
      */
     private Group checkIfUsersHavePrivateGroup(Set<User> usrs, String name) {
@@ -96,11 +98,11 @@ public class ChatServiceImpl implements ChatService {
      * Method to send a rental message from borrower to owner.
      *
      * @param rentalDto
-     *      {@link RentalDto} object with information to update a rental
+     *            {@link RentalDto} object with information to update a rental
      *
      */
     @Override
-    public void sendRentalMessage(RentalDto rentalDto){
+    public void sendRentalMessage(RentalDto rentalDto) {
         User owner = userRepository.findByEmail(rentalDto.getOwner());
         User borrower = userRepository.findByEmail(rentalDto.getBorrower());
         Set<User> users = new HashSet<>();
@@ -112,14 +114,14 @@ public class ChatServiceImpl implements ChatService {
 
         Group group = checkIfUsersHavePrivateGroup(users, ad.getTitle());
 
-        if (group == null){
+        if (group == null) {
             group = Group.builder().name(ad.getTitle()).users(users).build();
         }
 
-        String content = "Hei, " + owner.getFirstName() + " " + owner.getLastName() + "! Jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
-                "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
-                "Pris: " + rentalDto.getPrice() + "kr \n" +
-                "https://localhost:8080/approve_rental?rentalId=" + rentalDto.getId();
+        String content = "Hei, " + owner.getFirstName() + " " + owner.getLastName() + "! Jeg vil leie fra annonsen "
+                + ad.getTitle() + ".\n" + "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n"
+                + "Pris: " + rentalDto.getPrice() + "kr \n" + "https://localhost:8080/approve_rental?rentalId="
+                + rentalDto.getId();
 
         Message message = new Message();
         message.setContent(content);
@@ -135,7 +137,8 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to get all messages in a group-
      *
-     * @param groupId id of group to get messages from
+     * @param groupId
+     *            id of group to get messages from
      *
      * @return returns HttpStatus and list of messages.
      */
@@ -152,18 +155,13 @@ public class ChatServiceImpl implements ChatService {
 
             PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
 
-            if(pRDto == null){
-                pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+            if (pRDto == null) {
+                pRDto = new PictureReturnDto(0L, "no picture", "no picture");
             }
 
             String ts = ms.getTimestamp().toString().split("\\.")[0];
-            MessageDto messageDto = new MessageDto(
-                    ms.getContent(),
-                    ts, ms.getUser().getId(),
-                    ms.getUser().getFirstName(),
-                    ms.getUser().getLastName(),
-                    pRDto.getType(),
-                    pRDto.getBase64());
+            MessageDto messageDto = new MessageDto(ms.getContent(), ts, ms.getUser().getId(),
+                    ms.getUser().getFirstName(), ms.getUser().getLastName(), pRDto.getType(), pRDto.getBase64());
             messageDtoList.add(messageDto);
         }
 
@@ -174,7 +172,8 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to get all userIds in a group
      *
-     * @param groupId id of group to get users from
+     * @param groupId
+     *            id of group to get users from
      *
      * @return returns HttpStatus and a list of userIds.
      */
@@ -197,7 +196,7 @@ public class ChatServiceImpl implements ChatService {
      * Method to create a new group with two users.
      *
      * @param privateGroupDto
-     *      {@link PrivateGroupDto} object with information to create a two user group.
+     *            {@link PrivateGroupDto} object with information to create a two user group.
      *
      * @return returns HttpStatus and created group.
      */
@@ -213,7 +212,7 @@ public class ChatServiceImpl implements ChatService {
         Optional<User> userOneFound = userRepository.findById(privateGroupDto.getUserOneId());
         Optional<User> userTwoFound = userRepository.findById(privateGroupDto.getUserTwoId());
 
-        if(userOneFound.isPresent() && userTwoFound.isPresent()) {
+        if (userOneFound.isPresent() && userTwoFound.isPresent()) {
             // Retrieve the users
             User userOne = userOneFound.get();
             User userTwo = userTwoFound.get();
@@ -231,8 +230,7 @@ public class ChatServiceImpl implements ChatService {
             groupDto.setGroupName(newGroup.getName());
 
             return new Response(groupDto, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new Response("Could not find one or both of the users", HttpStatus.NOT_FOUND);
         }
     }
@@ -241,7 +239,8 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to create group from multiple userIds.
      *
-     * @param listGroupDto {@link ListGroupDto} object with information to create a multiple user group.
+     * @param listGroupDto
+     *            {@link ListGroupDto} object with information to create a multiple user group.
      *
      * @return returns HttpStatus and created group.
      */
@@ -257,15 +256,11 @@ public class ChatServiceImpl implements ChatService {
         if (users.size() == 2) {
             Group group = checkIfUsersHavePrivateGroup(users, listGroupDto.getGroupName());
             if (group != null) {
-                return new Response(new GroupDto(group.getId(),group.getName()), HttpStatus.OK);
+                return new Response(new GroupDto(group.getId(), group.getName()), HttpStatus.OK);
             }
         }
 
-
-        Group newGroup = Group.builder()
-                .name(listGroupDto.getGroupName())
-                .users(users)
-                .build();
+        Group newGroup = Group.builder().name(listGroupDto.getGroupName()).users(users).build();
         groupRepository.save(newGroup);
 
         GroupDto groupDto = new GroupDto();
@@ -280,7 +275,7 @@ public class ChatServiceImpl implements ChatService {
      * Method to create a new group from a list of emails.
      *
      * @param emailListGroupDto
-     *          {@link EmailListGroupDto} object with information needed to create a multiple user group.
+     *            {@link EmailListGroupDto} object with information needed to create a multiple user group.
      *
      * @return returns HttpStatus and created group.
      */
@@ -292,59 +287,45 @@ public class ChatServiceImpl implements ChatService {
 
         for (int i = 0; i < emails.size(); i++) {
             User user = userRepository.findByEmail(emails.get(i));
-            if(user == null) {
+            if (user == null) {
                 logger.debug("Did not find user with email: " + emails.get(i));
                 failedEmails.add(emails.get(i));
             } else {
                 users.add(userRepository.findByEmail(emails.get(i)));
             }
         }
-        if(users.size() < 2) {
-            return new Response(EmailListGroupReturnDto
-                    .builder()
-                    .succeeded(false)
-                    .failedEmails(failedEmails)
-                    .groupName(null)
-                    .groupId(null)
-                    .build(), HttpStatus.OK);
+        if (users.size() < 2) {
+            return new Response(EmailListGroupReturnDto.builder().succeeded(false).failedEmails(failedEmails)
+                    .groupName(null).groupId(null).build(), HttpStatus.OK);
         }
 
         if (users.size() == 2) {
             Group group = checkIfUsersHavePrivateGroup(users, emailListGroupDto.getGroupName());
             if (group != null) {
-                return new Response(EmailListGroupReturnDto
-                        .builder()
-                        .succeeded(true)
-                        .failedEmails(failedEmails)
-                        .groupName(group.getName())
-                        .groupId(group.getId()).build(), HttpStatus.OK);
+                return new Response(EmailListGroupReturnDto.builder().succeeded(true).failedEmails(failedEmails)
+                        .groupName(group.getName()).groupId(group.getId()).build(), HttpStatus.OK);
             }
         }
 
-        Group newGroup = Group.builder()
-                .name(emailListGroupDto.getGroupName())
-                .users(users)
-                .build();
+        Group newGroup = Group.builder().name(emailListGroupDto.getGroupName()).users(users).build();
         groupRepository.save(newGroup);
 
         GroupDto groupDto = new GroupDto();
         groupDto.setGroupId(newGroup.getId());
         groupDto.setGroupName(newGroup.getName());
 
-        return new Response(EmailListGroupReturnDto
-                .builder()
-                .succeeded(true)
-                .failedEmails(failedEmails)
-                .groupName(newGroup.getName())
-                .groupId(newGroup.getId()).build(), HttpStatus.OK);
+        return new Response(EmailListGroupReturnDto.builder().succeeded(true).failedEmails(failedEmails)
+                .groupName(newGroup.getName()).groupId(newGroup.getId()).build(), HttpStatus.OK);
     }
 
     /**
      *
      * Method to change group name.
      *
-     * @param groupId id of group to change name.
-     * @param newName new name of group.
+     * @param groupId
+     *            id of group to change name.
+     * @param newName
+     *            new name of group.
      *
      * @return returns HttpStatus.
      */
@@ -363,8 +344,10 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to store incoming message in repository, and ready message to be sent to other users.
      *
-     * @param groupId group id of message to be sant.
-     * @param messageDto {@link MessageDto} object with all message data needed by chat.
+     * @param groupId
+     *            group id of message to be sant.
+     * @param messageDto
+     *            {@link MessageDto} object with all message data needed by chat.
      *
      * @return return messageDto to send to other users
      */
@@ -379,19 +362,15 @@ public class ChatServiceImpl implements ChatService {
         }
 
         Timestamp ts = Timestamp.from(Instant.now());
-        Message message = Message.builder()
-                .timestamp(ts)
-                .content(messageDto.getContent())
-                .group(group)
-                .user(user)
+        Message message = Message.builder().timestamp(ts).content(messageDto.getContent()).group(group).user(user)
                 .build();
 
         messageRepository.save(message);
 
         PictureReturnDto pRDto = userService.getPicture(messageDto.getUserId());
 
-        if(pRDto == null){
-            pRDto = new PictureReturnDto(0L,"no picture", "no picture");
+        if (pRDto == null) {
+            pRDto = new PictureReturnDto(0L, "no picture", "no picture");
         }
 
         messageDto.setFirstName(user.getFirstName());
@@ -407,7 +386,8 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to get group chats that a user is in.
      *
-     * @param id user id to get groups of.
+     * @param id
+     *            user id to get groups of.
      *
      * @return return HttpStatus and list og GroupDto objects.
      */
@@ -429,8 +409,10 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to remove a user from group.
      *
-     * @param groupId group id to remove user from.
-     * @param userId user id to be removed from group.
+     * @param groupId
+     *            group id to remove user from.
+     * @param userId
+     *            user id to be removed from group.
      *
      * @return return HttpStatus with result message.
      */
@@ -439,7 +421,6 @@ public class ChatServiceImpl implements ChatService {
         Group group = getGroup(groupId);
         User user = getUser(userId);
         Set<User> users = group.getUsers();
-
 
         if (users.contains(user)) {
             users.remove(user);
@@ -459,8 +440,10 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to add a user to group.
      *
-     * @param groupId group id to add user to.
-     * @param userId user id to add to group.
+     * @param groupId
+     *            group id to add user to.
+     * @param userId
+     *            user id to add to group.
      *
      * @return return HttpStatus and result message.
      */
@@ -485,8 +468,10 @@ public class ChatServiceImpl implements ChatService {
      *
      * Method to add user to group by email.
      *
-     * @param groupId group id to add user to.
-     * @param email email of user to add to group.
+     * @param groupId
+     *            group id to add user to.
+     * @param email
+     *            email of user to add to group.
      *
      * @return return HttpStatus
      */
@@ -495,7 +480,7 @@ public class ChatServiceImpl implements ChatService {
         Group group = getGroup(groupId);
         User user = userRepository.findByEmail(email);
 
-        if(user == null) {
+        if (user == null) {
             return new Response("Could not find user with email: " + email, HttpStatus.NOT_FOUND);
         }
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 public interface RentalService {
     Response createRental(RentalDto rentalDto) throws MessagingException, IOException;
 
-//    ModelAndView approveRental(Long rentalId, String token);
+    // ModelAndView approveRental(Long rentalId, String token);
 
     Response activateRental(Long rentalId) throws MessagingException, IOException;
 

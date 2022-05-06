@@ -48,7 +48,8 @@ public class ChatController {
     @ApiOperation(value = "Endpoint to create a two-user group", response = Response.class)
     public Response createTwoUserGroup(@RequestBody PrivateGroupDto privateGroupDto) {
         log.debug("[X] Call to create a two user group with name = {}", privateGroupDto.getGroupName());
-        if (!(securityService.isUser(privateGroupDto.getUserOneId()) || securityService.isUser(privateGroupDto.getUserOneId()))) {
+        if (!(securityService.isUser(privateGroupDto.getUserOneId())
+                || securityService.isUser(privateGroupDto.getUserOneId()))) {
             return new Response("Du har ikke tilgang", HttpStatus.BAD_REQUEST);
         }
         return chatService.createTwoUserGroup(privateGroupDto);
@@ -67,7 +68,6 @@ public class ChatController {
         log.debug("[X] Call to create a group with multiple emails with name = {}", emailListGroupDto.getGroupName());
         return chatService.createGroupFromUserEmail(emailListGroupDto);
     }
-
 
     @PutMapping("/group/name/{groupId}/{newName}")
     @ApiOperation(value = "Endpoint to change group name from groupId", response = Response.class)

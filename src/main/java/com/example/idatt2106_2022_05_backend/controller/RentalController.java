@@ -32,9 +32,9 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response createRental(@RequestBody RentalDto rentalDto) throws MessagingException, IOException {
         log.debug("[X] Call to create a rental of ad with id = {}", rentalDto.getAdId());
-        if(!securityService.isUserByEmail(rentalDto.getBorrower()) && !securityService.isVerifiedUser(0L)){
-            return new Response("Du kan ikke leie dette produktet," +
-                    "du må verifisere emailen din.", HttpStatus.NO_CONTENT);
+        if (!securityService.isUserByEmail(rentalDto.getBorrower()) && !securityService.isVerifiedUser(0L)) {
+            return new Response("Du kan ikke leie dette produktet," + "du må verifisere emailen din.",
+                    HttpStatus.NO_CONTENT);
         }
         return rentalService.createRental(rentalDto);
     }
@@ -43,7 +43,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response activateRental(@PathVariable Long rentalId) throws MessagingException, IOException {
         log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId)){
+        if (!securityService.isRentalOwner(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.NO_CONTENT);
         }
         return rentalService.activateRental(rentalId);
@@ -52,10 +52,10 @@ public class RentalController {
     @DeleteMapping("/decline/{rentalId}")
     @ApiOperation(value = "Endpoint to create a rental", response = Response.class)
     public Response declineRental(@PathVariable Long rentalId) throws MessagingException, IOException {
-    log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId)){
-        return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.NO_CONTENT);
-    }
+        log.debug("[X] Call to activate a rental of ad with id = {}", rentalId);
+        if (!securityService.isRentalOwner(rentalId)) {
+            return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.NO_CONTENT);
+        }
         return rentalService.declineRental(rentalId);
     }
 
@@ -63,7 +63,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to delete a rental", response = Response.class)
     public Response deleteRental(@PathVariable Long rentalId, @RequestBody RentalReviewDto rentalDto) {
         log.debug("[X] Call to delete a rental with id = {}", rentalId);
-        if(!securityService.isRentalBorrower(rentalId)){
+        if (!securityService.isRentalBorrower(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.completeRental(rentalId, rentalDto);
@@ -73,7 +73,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to update a rental", response = Response.class)
     public Response updateRental(@RequestBody RentalUpdateDto rentalDto, @PathVariable Long rentalId) {
         log.debug("[X] Call to update rental with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId)){
+        if (!securityService.isRentalOwner(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.updateRental(rentalDto, rentalId);// TODO real objects to return
@@ -83,7 +83,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to get a rental", response = Response.class)
     public Response getRental(@PathVariable Long rentalId) {
         log.debug("[X] Call to get rental with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId) && !securityService.isRentalBorrower(rentalId)){
+        if (!securityService.isRentalOwner(rentalId) && !securityService.isRentalBorrower(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.getRental(rentalId);
@@ -93,7 +93,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to get list of rentals by user id", response = Response.class)
     public Response getRentalsByUserId(@PathVariable Long userId) {
         log.debug("[X] Call to get all rentals of user with id = {}", userId);
-        if(!securityService.isUser(userId)){
+        if (!securityService.isUser(userId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.getRentalsByUserId(userId);
@@ -103,7 +103,7 @@ public class RentalController {
     @ApiOperation(value = "Endpoint to get picture of rentals by user id", response = Response.class)
     public Response getRentalPictureById(@PathVariable Long rentalId) {
         log.debug("[X] Call to get all rentals of user with id = {}", rentalId);
-        if(!securityService.isRentalOwner(rentalId) || !securityService.isRentalOwner(rentalId)){
+        if (!securityService.isRentalOwner(rentalId) || !securityService.isRentalOwner(rentalId)) {
             return new Response("Du har ikke tilgang på forespørselen.", HttpStatus.BAD_REQUEST);
         }
         return rentalService.getRentalPictureById(rentalId);

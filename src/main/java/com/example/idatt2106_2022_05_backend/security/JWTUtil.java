@@ -24,7 +24,10 @@ public class JWTUtil implements Serializable {
 
     /**
      * Method to retrieve email from the JWToken.
-     * @param token JWToken.
+     * 
+     * @param token
+     *            JWToken.
+     * 
      * @return email of the user making the call.
      */
     public String getEmailFromToken(String token) {
@@ -33,9 +36,13 @@ public class JWTUtil implements Serializable {
 
     /**
      * Retrieves all token information.
-     * @param token JWToken.
-     * @param claimsResolver all information.
+     * 
+     * @param token
+     *            JWToken.
+     * @param claimsResolver
+     *            all information.
      * @param <T>
+     * 
      * @return returns token information.
      */
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -57,7 +64,10 @@ public class JWTUtil implements Serializable {
 
     /**
      * Returns Token information.
-     * @param token JWToken.
+     * 
+     * @param token
+     *            JWToken.
+     * 
      * @return JWToken information.
      */
     private Claims getAllClaimsFromToken(String token) {

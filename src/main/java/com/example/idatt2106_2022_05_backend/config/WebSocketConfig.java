@@ -65,7 +65,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws");
         // addEndpoint is the endpoint where clients requests connection, handshake happens here
-        registry.addEndpoint("/ws").setAllowedOrigins("https://localhost:8080", "http://apic.app/online/",
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:8080", "http://apic.app/online/",
                 "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
     }
 
@@ -116,15 +116,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             headerAccessor.setLeaveMutable(true);
                             logger.debug("Message is: " + message.getPayload());
                         }
-
-                        // Jwt jwt = jwtDecoder.decode(accessToken);
-
-                        // JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-                        // Authentication authentication = converter.convert(jwt);
-
-                        // accessor.setUser(authentication);
-
-                        // accessor.setLeaveMutable(true);
                     }
                 }
 
@@ -132,49 +123,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
-
-    /*
-     * @Override public void configureClientInboundChannel(ChannelRegistration registration) {
-     * registration.interceptors(new ChannelInterceptor() {
-     * 
-     * @Override public Message<?> preSend(Message<?> message, MessageChannel channel) {
-     * logger.info("recieved a message"); StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-     * List<String> tokenList = headerAccessor.getNativeHeader("Authorization"); logger.info("removing header");
-     * logger.info("Message: " + message.getPayload().toString() + message.toString());
-     * headerAccessor.removeHeader("Authorization");
-     * 
-     * String email = null; String token = null;
-     * 
-     * if ( tokenList!=null && tokenList.size() > 0) { String auth = tokenList.get(0);
-     * logger.info("auth looks like this: " + auth);
-     * 
-     * if ( auth.startsWith("Bearer ")) { token = auth.substring(7); email = jwtUtil.getEmailFromToken(token); }
-     * 
-     * if (email!=null && SecurityContextHolder.getContext().getAuthentication() == null) { UserDetails userDetails =
-     * userDetailsService.loadUserByUsername(email);
-     * 
-     * logger.info("set security context");
-     * 
-     * if (jwtUtil.validateToken(token, userDetails)) { UsernamePasswordAuthenticationToken
-     * usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken( userDetails, null,
-     * userDetails.getAuthorities());
-     * 
-     * HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes())
-     * .getRequest();
-     * 
-     * usernamePasswordAuthenticationToken .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-     * 
-     * SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-     * 
-     * logger.info("Retrieving principal"); Authentication authentication =
-     * SecurityContextHolder.getContext().getAuthentication(); Principal myAuth = (Principal)
-     * authentication.getPrincipal(); headerAccessor.setUser(myAuth); //Not sure why, but necessary otherwise NPE in
-     * StompSubProtocolHandler! headerAccessor.setLeaveMutable(true); logger.info("Message is: "+ message.getPayload());
-     * 
-     * return MessageBuilder.createMessage(message.getPayload(), headerAccessor.getMessageHeaders()); } }
-     * 
-     * } return message; } }); }
-     * 
-     */
 
 }
