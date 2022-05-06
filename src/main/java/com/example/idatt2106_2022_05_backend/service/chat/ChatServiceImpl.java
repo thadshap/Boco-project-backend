@@ -440,19 +440,19 @@ public class ChatServiceImpl implements ChatService {
         User user = getUser(userId);
         Set<User> users = group.getUsers();
 
+
         if (users.contains(user)) {
             users.remove(user);
             group.setUsers(users);
             groupRepository.save(group);
-            if (group.getUsers().size() == 0) {
 
+            if (group.getUsers().size() == 0) {
                 groupRepository.delete(group);
             }
             return new Response("User removed", HttpStatus.OK);
         }
 
         return new Response("User not found in group", HttpStatus.BAD_REQUEST);
-
     }
 
     /**

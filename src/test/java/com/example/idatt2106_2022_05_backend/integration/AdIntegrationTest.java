@@ -350,7 +350,7 @@ public class AdIntegrationTest {
             // The method will fail when wrong id is used
             ResponseEntity<Object> res = adService.getAllAvailableAdsByUser(wrongUserId);
 
-            assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatusCodeValue());
+            assertEquals(HttpStatus.NO_CONTENT.value(), res.getStatusCodeValue());
         }
 
         @Test
@@ -1096,11 +1096,6 @@ public class AdIntegrationTest {
             double distance3 = adDto3.getDistance();
             double distance4 = adDto4.getDistance();
 
-            System.out.println("Ad1: " + distance1);
-            System.out.println("Ad2: " + distance2);
-            System.out.println("Ad3: " + distance3);
-            System.out.println("Ad4: " + distance4);
-
             // Load the distances into an arrayList
             ArrayList<Double> distances = new ArrayList<>();
             distances.add(distance1);
@@ -1112,7 +1107,6 @@ public class AdIntegrationTest {
             int counter = 0;
 
             for(Double distance : distances) {
-                System.out.println("distance: " + distance);
                 if (distance >= lowerDistance && distance <= upperDistance) {
                     counter ++;
                 }
@@ -1166,7 +1160,6 @@ public class AdIntegrationTest {
             if(filterListOfAds.getCategory() != null) {
                 List<AdDto> list = getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
                         userGeoLocation);
-                System.out.println("The size of the list " + list.size());
                 filterListOfAds.setList(list);
                 return getAllAdsWithFilter(filterListOfAds);
             }
@@ -1226,12 +1219,10 @@ public class AdIntegrationTest {
 
             // Retrieve all categories from database
             ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
-            System.out.println("The amount of categories in db: " + categories.size());
 
             // List of subCategories found using recursive function
             List<Category> subCategories = findSubCategories(categories, new ArrayList<>(), name, 0);
 
-            System.out.println("Number of subcategories: " + subCategories.size());
             ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
             // Iterate over all sub-categories found

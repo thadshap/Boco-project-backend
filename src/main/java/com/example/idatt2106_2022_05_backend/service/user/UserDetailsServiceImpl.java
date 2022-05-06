@@ -42,7 +42,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         if (userRepository.findByEmail(email) == null) {
             // throw new IllegalArgumentException();
-            System.out.println("user does not exist");
             return null;
         }
         User user = userRepository.findByEmail(email);

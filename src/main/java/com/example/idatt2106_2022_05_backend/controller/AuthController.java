@@ -32,7 +32,6 @@ public class AuthController {
     @PostMapping("/facebook/signin")
     public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) {
         log.info("facebook login {}", socialLoginRequest);
-        System.out.println(socialLoginRequest);
         return authService.loginUserFacebook(socialLoginRequest.getId_token());
     }
 
@@ -40,7 +39,6 @@ public class AuthController {
     public Response googleAuth(@RequestBody SocialLoginRequest socialLoginRequest)
             throws GeneralSecurityException, IOException {
         log.info("facebook login {}", socialLoginRequest);
-        System.out.println(socialLoginRequest.getId_token());
         return authService.loginUserGoogle(socialLoginRequest);
     }
 
