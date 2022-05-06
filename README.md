@@ -76,7 +76,11 @@ The controllers are the only classes that communicate with the frontend.
 When frontend and backend communicate (through the controllers), JWT-tokens are used to authenticate the user roles <br>
 in the database. Passwords are encrypted and salted using BCrypt password encoder (part of Spring Security). <br>
 The application also uses HTTPS instead of HTTP, actively enforcing security through the use of certificates.
-
+To use the application with HTTPS you can checkout feat/social branch. To connect with the Facebook and Google apis we 
+need HTTPS. To do run the application in HTTPS we have created self certificated keystore and truststore. Google chrome
+will not allow complete network requests when the certificates are not issued by certified CA's. And considering that 
+running smoothly on chrome is a requirement we have not implemented this functionality in the main branch. You can access
+social media login with Google and Facebook by checking out the feat/social branch.
 
 ### How to run and install the project backend
 The technologies needed to run the commands are:
@@ -142,27 +146,58 @@ To serve up the application, run:
 
 <br>
 
-### Keys and Certificates
+### Keys and Certificates to run on HTTPS
+To run the application with social media login and HTTPS you need to check out the branch feat/social.
+You need to run Mozilla Firefox and do the following:
+- Type about:preferences in the address bar
+- Open Advanced -> Certificates -> View Certificates -> Authorities
+- Click on Import
+- Locate the folder src/main/resources/keystore/keystores
+- Select the rootCA.crt file and click OK
+- Choose “Trust this CA to identify websites” and click OK
+
+You also need to install the client certificate in the browser:
+
+- Type about:preferences in the address bar in settings
+- Open Advanced -> View Certificates -> Your Certificates
+- Click on Import
+- Locate the folder src/main/resources/keystore/keystores
+- Select the clientBob.p12 file and click OK
+- Input the password <password> and click OK
+
+Turn of any ad-blocking extention and now you can run the application with HTTPS.
 
 ### How to use the application
 The application is very intuitive in that it behaves the same way other applications do; 
 using the same principles of Universal Design (UX).
 - The user enters the login page and is prompted to either log in or register a new account. <br> The user may use Google or Facebook to register/log in if desired.
-- Upon successful registration, the user is sent to the main page. <br> The user may choose to browse existing ads, or to create own ads if they wish to rent out items. 
+- Upon successful registration, the user is sent to the main page. 
+<br> The user may choose to browse existing ads, or to create own ads if they wish to rent out items.
+To have this capability the user must first verify their email address where a verification mail is sent.
 - If the user wishes to browse, they may sort items based on category, price, and descending/ascending order. 
-- If the user wished to rent an item, they can choose a span of available dates in the ad's calendar. <br> The rental is not immediate, because the owner of the item is prompted to accept the request (sent through email) before the user may borrow it. <br> Details regarding price-discussion, delivery/pick-up of the item is determined by the two parts (owner and borrower) through the use of the chat. 
+- If the user wished to rent an item, they can choose a span of available dates in the ad's calendar. 
+<br> The rental is not immediate, because the owner of the item is prompted to accept the request (sent through email) before the user may borrow it.
+In the messages the owner is sent a request and link with a detailed view of the rental properties, they can choose to accept or decline.
+<br> Details regarding price-discussion, delivery/pick-up of the item is determined by the two parts (owner and borrower) through the use of the chat. 
 - If the user wishes to chat with an arbitrary amount of people, they may do so through the use of groups. <br> Groups use WebSocket as a medium. 
 
 
 ### Dummy data
 
 The application database already contains categories and dummy-data (ads, rentals, users), which are free to use. <br>
-A dummy user for anyone to use when logging in is:
-
+A dummy users for anyone to use when logging in is:
 
 Username: ___andetel@stud.ntnu.no___ <br>
 Password: ___passord123___
 
+Username: ___hasano@stud.ntnu.no___ <br>
+Password: ___passord123___
+
+Username: ___maiken@gmail.com___ <br>
+Password: ___passord123___
+
+Username: ___thadsha@gmail.com___ <br>
+Password: ___passord123___
 
 ### Tests
 The project contains 87 (currently) backend tests, which are runnable through the use of the terminal command:
