@@ -1,10 +1,13 @@
 package com.example.idatt2106_2022_05_backend.config;
 
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
+import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,6 +30,9 @@ public class DataLoader implements ApplicationRunner {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RentalService rentalService;
 
     @Autowired
     private AdRepository adRepository;
@@ -86,6 +92,7 @@ public class DataLoader implements ApplicationRunner {
             this.messageRepository = messageRepository;
         }
 
+        @SneakyThrows
         public void run(ApplicationArguments args) throws IOException {
 
             // Create users
@@ -301,7 +308,7 @@ public class DataLoader implements ApplicationRunner {
 
             //sub-categories for gardening
             Category verktoy = Category.builder().level(2).name("Verktøy").child(true).parentName(garden.getName()).build();
-            Category container = Category.builder().level(2).name("Container").child(true).parentName(garden.getName()).build();
+            Category container = Category.builder().level(2).name("Container").child(true).parent(false).parentName(garden.getName()).build();
             Category stoler = Category.builder().level(2).name("Stoler og bord").child(true).parentName(garden.getName()).build();
             Category hage = Category.builder().level(2).name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
             Category othergarden = Category.builder().level(2).name("Annet").child(true).parentName(garden.getName()).build();
@@ -332,9 +339,9 @@ public class DataLoader implements ApplicationRunner {
             Ad motherBoard = Ad.builder().title("Mother board").description("Leier ut ut ny lenovo motherboard").
                     rental(true).durationType(AdType.MONTH).price(600).created(LocalDate.now()).lat(63.354059).lng(10.382288).
                     streetAddress("Svartholtet 12").postalCode(7092).city("Tiller").user(user7).category(datamaskin).build();
-            Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
+            AdDto sovepose = AdDto.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
                     durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.354789).lng(10.377470).
-                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
+                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").userId(user8.getId()).categoryId(otherOutdoor.getId()).build();
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
@@ -346,17 +353,27 @@ public class DataLoader implements ApplicationRunner {
             Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
                     price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
                     postalCode(7560).user(user3).category(telt).build();
+            Ad test = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
+                    price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
+                    postalCode(7560).user(user3).category(container).build();
             // Persist all ads
             adRepository.save(borremaskin);
             adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
-            adRepository.save(sovepose);
             adRepository.save(motherBoard);
             adRepository.save(newHammer);
             adRepository.save(matte);
             adRepository.save(klovn);
             adRepository.save(tent);
+            adRepository.save(test);
+
+            // Because "sovepose" is used to test w/ frontend, it must be posted the way it would logically be posted
+            adService.postNewAd(sovepose);
+
+            // Retrieve the ad
+            Set<Ad> adsFound = adRepository.findByTitle(sovepose.getTitle());
+            Ad sovepose2 = adsFound.stream().findFirst().get();
 
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.433734).lng(10.588934).build();
@@ -411,8 +428,6 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
             rental = Rental.builder().ad(newHammer).owner(user2).borrower(user4).price(3100).active(false).deadline(LocalDate.now().minusDays(30)).rentTo(LocalDate.now().minusDays(12)).rentFrom(LocalDate.now().minusDays(29)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user7).price(300).active(true).deadline(LocalDate.now().minusDays(9)).rentTo(LocalDate.now().minusDays(3)).rentFrom(LocalDate.now().minusDays(8)).dateOfRental(LocalDate.now()).build();
-            rentalRepository.save(rental);
             rental = Rental.builder().ad(borremaskin).owner(user5).borrower(user5).price(370).active(true).deadline(LocalDate.now().minusDays(13)).rentTo(LocalDate.now().minusDays(1)).rentFrom(LocalDate.now().minusDays(12)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(kjokkenmaskin).owner(user4).borrower(user6).price(1000).active(true).deadline(LocalDate.now().minusDays(40)).rentTo(LocalDate.now().minusDays(15)).rentFrom(LocalDate.now().minusDays(39)).dateOfRental(LocalDate.now()).build();
@@ -423,10 +438,18 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
             rental = Rental.builder().ad(charger).owner(user6).borrower(user9).price(200).active(true).deadline(LocalDate.now().minusDays(9)).rentTo(LocalDate.now().minusDays(2)).rentFrom(LocalDate.now().minusDays(8)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
+            rental = Rental.builder().ad(sovepose2).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
+            rentalRepository.save(rental);
+
+            // Extracting the object for use in next method
+            Rental rentalSaved = rentalRepository.save(rental);
+
+            // Activating rental in order to give frontend test-data
+            rentalService.activateRental(rentalSaved.getId());
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(sovepose).user(user7).description("Elendig produkt").rating(2).build();
+            review = Review.builder().ad(sovepose2).user(user7).description("Elendig produkt").rating(2).build();
             reviewRepository.save(review);
             review = Review.builder().ad(borremaskin).user(user4).description("Elendig produkt").rating(1).build();
             reviewRepository.save(review);
@@ -456,7 +479,7 @@ public class DataLoader implements ApplicationRunner {
             for(Ad a:adRepository.findAll()){
                 Set<Ad> adsy = new HashSet<>();
                 adsy.add(a);
-                a.getCategory().setAds(adsy);;
+                a.getCategory().setAds(adsy);
                 categoryRepository.save(a.getCategory());
             }
 
@@ -538,7 +561,7 @@ public class DataLoader implements ApplicationRunner {
             fileContent(motherBoard, file);
 
             file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
-            fileContent(sovepose, file);
+            fileContent(sovepose2, file);
 
             file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
             fileContent(tux, file);
@@ -547,7 +570,7 @@ public class DataLoader implements ApplicationRunner {
             fileContent(motherBoard, file);
 
             file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
-            fileContent(sovepose, file);
+            fileContent(sovepose2, file);
 
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);

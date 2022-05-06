@@ -32,7 +32,6 @@ public class FacebookClient {
         variables.put("fields", fields);
         variables.put("redirect", "false");
         variables.put("access_token", accessToken);
-        System.out.println(path);
         return restTemplate.getForObject(FACEBOOK_GRAPH_API_BASE + path, FacebookUser.class, variables);
     }
 }

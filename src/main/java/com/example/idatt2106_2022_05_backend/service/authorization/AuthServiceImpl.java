@@ -89,26 +89,17 @@ public class AuthServiceImpl implements AuthService {
     public Response loginUserFacebook(String accessToken) {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
-        System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " "
-                + facebookUser.getLastName() + " " + facebookUser.getPicture() + " " + facebookUser.getEmail());
-
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
         if (userDetails == null) {
-            System.out.println("user details is null");
             User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName()).verified(true)
                     .password(passwordEncoder.encode(generatePassword(8))).build();
             userRepository.save(user);
             userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
-            System.out.println("user is saved");
-            System.out.println(userDetails.getUsername());
         }
         final String token = jwtUtil.generateToken(userDetails);
-        System.out.println(userDetails.getUsername());
-        System.out.println(token);
         User user = userRepository.findByEmail(facebookUser.getEmail());
-        System.out.println(user.getEmail());
         LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
 
         return new Response(jwt, HttpStatus.ACCEPTED);
@@ -143,22 +134,18 @@ public class AuthServiceImpl implements AuthService {
             content.append(inputLine);
             if (inputLine.contains("\"email\"")){
                 String replace = inputLine.split(":")[1];
-                System.out.println(replace = replace.replace("\"", ""));
                 user.setEmail(replace.replace(",", ""));
             }
             if (inputLine.contains("\"given_name\"")){
                 String replace = inputLine.split(":")[1];
-                System.out.println(replace = replace.replace("\"", ""));
                 user.setFirstName(replace.replace(",", ""));
             }
             if (inputLine.contains("\"family_name\"")){
                 String replace = inputLine.split(":")[1];
-                System.out.println(replace = replace.replace("\"", ""));
                 user.setLastName(replace.replace(",", ""));
             }
             if (inputLine.contains("\"picture\"")){
                 String replace = inputLine.split(":")[1] + inputLine.split(":")[2];
-                System.out.println(replace = replace.replace("\"", ""));
                 user.setPictureUrl(replace.replace(",", ""));
             }
         }
@@ -178,7 +165,6 @@ public class AuthServiceImpl implements AuthService {
 
 //        User user = userRepository.findByEmail(socialLoginRequest.getEmail());
 
-        System.out.println(user.getFirstName() + " " + user.getLastName() + " " + user.getEmail());
 
         LoginResponse jwt = LoginResponse.builder()
                 .id(user.getId())
@@ -221,7 +207,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Response login(LoginDto loginDto) {
 
-        System.out.println(loginDto.getEmail() + " " + loginDto.getPassword());
         User user = userRepository.findByEmail(loginDto.getEmail());
         if (user == null) {
             // throw exception
