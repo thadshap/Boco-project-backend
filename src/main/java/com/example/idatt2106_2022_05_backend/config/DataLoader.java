@@ -17,10 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class loads in data for use in db upon start of application
@@ -609,7 +606,8 @@ public class DataLoader implements ApplicationRunner {
         fileContent = Files.readAllBytes(file.toPath());
         picture = Picture.builder()
                 .filename(file.getName())
-                .data(fileContent)
+                //                .data(fileContent)
+                .base64(Base64.getEncoder().encodeToString(fileContent))
                 .type(Files.probeContentType(file.toPath()))
                 .build();
         ad.setPictures(new HashSet<>());
@@ -622,7 +620,8 @@ public class DataLoader implements ApplicationRunner {
     public void savepb(File pb, User user) throws IOException {
         byte[] fileContent =  Files.readAllBytes(pb.toPath());
         Picture picture1 = Picture.builder().filename(pb.getName())
-                .data(fileContent)
+                //                .data(fileContent)
+                .base64(Base64.getEncoder().encodeToString(fileContent))
                 .type(Files.probeContentType(pb.toPath()))
                 .build();
         user.setPicture(picture1);

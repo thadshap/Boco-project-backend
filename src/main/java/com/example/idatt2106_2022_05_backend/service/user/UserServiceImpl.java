@@ -213,7 +213,11 @@ public class UserServiceImpl implements UserService {
             User user = userFound.get();
 
             // Create the picture entity using the multipart-file
-            Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType()).data(file.getBytes())
+            Picture picture = Picture.builder()
+                    .filename(file.getName())
+                    .type(file.getContentType())
+//                    .data(file.getBytes())
+                    .base64(Base64.getEncoder().encodeToString(file.getBytes()))
                     .build();
 
             if(user.getPicture() != null) {
@@ -257,7 +261,8 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                //                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .base64(picture.get(0).getBase64())
                 .type(picture.get(0).getType())
                 .build();
     }

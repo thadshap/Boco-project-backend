@@ -370,7 +370,8 @@ public class RentalServiceImpl implements RentalService {
             return new Response("No pictures found for rental with ad title \"" + rental.getAd().getTitle() + "\"",HttpStatus.NO_CONTENT);
         }
         PictureReturnDto returnDto = PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                //                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+                .base64(pictures.get(0).getBase64())
                 .type(pictures.get(0).getType())
                 .build();
         returnDto.setId(rentalId);
