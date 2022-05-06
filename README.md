@@ -13,9 +13,10 @@ items of necessity when the situation sees it fit.
 - [Database relations](###Database relation-model)
 - [Technologies used](###Technologies) 
 - [Application layout](###Application layout (structure))
+- [Security](###Security)
 - [How to run and install the backend](###How to run and install the project backend) <br>
 - [How to run and install the frontend](###How to run and install the project frontend) <br>
-- [How to create keys/certificates (for https)] (###Keys and Sertificates)
+- [How to create keys/certificates (https)](###Keys and certificates)
 - [How to use the application](###How to use the application)<br>
 - [Dummy data](###Dummy data)
 - [CI/CD for the project](###CI/CD)<br>
@@ -32,7 +33,7 @@ The application is currently only existing in norwegian, but future releases are
 <br>
 
 ### Database relation-model 
-![img_1.png](src/main/resources/images/img_1.png)
+![img_1.png](src/main/resources/images/UML.png)
 
 <br> 
 
@@ -50,6 +51,31 @@ Swagger documentation is available at **localhost:8443/swagger-ui/**
 <br>
 
 ###Application layout (structure)
+![img.png](src/main/resources/images/applicationLayout.png)
+
+This application implements REST API using the layered architectural style to organize our system of code. <br>
+The layered architectural-style enforces strong Separations of Concerns, which aids in: 
+- Providing a consistent pattern for our application's organization (structure)
+- Code readability, as code-composition is enhanced, because each layer and class deals with a single task.
+- Easier modifications due to how individual each layer is, minimally impacting other layers upon change.
+
+**The database layer** is the model folder, which holds all the entities (tables) for the database. <br>
+
+**The persistence layer** is the repository folder, which uses JpaRepository to provide an interface for br>
+accessing the database and for performing ___CRUD___ operations. <br>
+
+**The business layer** is the service folder, which implements the core logic of the application. Our service <br>
+layer is abstracted through the use of individual interfaces for each service class. The point of this interface <br>
+abstraction is to lower coupling between the service layer (business layer) and the controllers. <br>
+
+**The presentation layer** is the controller folder, which has the responsibility to handle HTTP requests <br>
+through the use of endpoints. The controllers forward the requests to the Service layer; and returns the results to clients. <br>
+The controllers are the only classes that communicate with the frontend.
+
+### Security 
+When frontend and backend communicate (through the controllers), JWT-tokens are used to authenticate the user roles <br>
+in the database. Passwords are encrypted and salted using BCrypt password encoder (part of Spring Security). <br>
+The application also uses HTTPS instead of HTTP, actively enforcing security through the use of certificates.
 
 
 ### How to run and install the project backend
@@ -60,6 +86,10 @@ The technologies needed to run the commands are:
 
 
     mvn --version
+
+To clone down the project, run the following command:
+
+    git clone https://gitlab.stud.idi.ntnu.no/hasanro/idatt2106_2022_05_backend.git
 
 When the project has been cloned down, the pom.xml dependencies must be downloaded using the command:
 
