@@ -436,8 +436,6 @@ public class ChatServiceImpl implements ChatService {
         User user = getUser(userId);
         Set<User> users = group.getUsers();
 
-        System.out.println("Old user count: " + group.getUsers().size());
-
 
         if (users.contains(user)) {
             users.remove(user);
@@ -447,7 +445,6 @@ public class ChatServiceImpl implements ChatService {
             if (group.getUsers().size() == 0) {
                 groupRepository.delete(group);
             }
-            System.out.println("New user count: " + groupRepository.findById(group.getId()).get().getUsers().size());
             return new Response("User removed", HttpStatus.OK);
         }
 

@@ -313,7 +313,6 @@ public class RentalIntegrationTest {
         // Set created to some arbitrary date that makes LocalDateTime.now() way too late for cancellation
         rentalFound.setCreated(LocalDateTime.now().minusWeeks(1).minusDays(2));
         rentalRepository.save(rentalFound);
-        System.out.println(rentalFound.getCreated());
 
         assertNotNull(rentalFound);
 

@@ -224,7 +224,6 @@ public class PictureIntegrationTest {
                 // Assert that the profile picture exists
                 Optional<User> userFound = userRepository.findById(user.getId());
                 if (userFound.isPresent()) {
-                    System.out.println("got here");
                     assertNotNull(userFound.get().getPicture());
                     assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
 

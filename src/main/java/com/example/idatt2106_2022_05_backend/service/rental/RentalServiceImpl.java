@@ -153,14 +153,10 @@ public class RentalServiceImpl implements RentalService {
         // Persist the rental
         rentalRepository.save(rental);
 
-        System.out.println("saved rental");
-
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
         variables.put("url", "http://localhost:8080/rentals");
         variables.put("lont", "sant");
-
-        System.out.println("Building email");
 
 
         Email email = Email.builder()
@@ -171,7 +167,6 @@ public class RentalServiceImpl implements RentalService {
                 .build();
         emailService.sendEmail(email);
 
-        System.out.println("Sent email");
         // Return response
         return new Response("Leieforhold godtatt", HttpStatus.OK);
         // return new ModelAndView("approve").addObject("title", "Rental has been activated");
@@ -303,11 +298,9 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public Response getRental(Long rentalId) {
         Optional<Rental> rentalOptional = rentalRepository.findById(rentalId);
-        System.out.println("rental id = " + rentalId);
         if (rentalOptional.isEmpty()){
             return new Response("Rental not found!", HttpStatus.NO_CONTENT);
         }
-        System.out.println("returning the rental");
         Rental rental = rentalOptional.get();
         RentalDto rentalReturn = RentalDto.builder()
                 .id(rental.getId())

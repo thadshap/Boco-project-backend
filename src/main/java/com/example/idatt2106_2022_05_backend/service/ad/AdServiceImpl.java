@@ -399,7 +399,6 @@ public class AdServiceImpl implements AdService {
                         }
                     }
                 }
-                System.out.println("category was level 1");
                 return toReturn;
             }
             if(category.getLevel() == 2) {
@@ -411,16 +410,13 @@ public class AdServiceImpl implements AdService {
                         }
                     }
                 }
-                System.out.println("category was level 2");
                 return toReturn;
             }
             else {
-                System.out.println("category was level 3");
                 return null;
             }
         }
         else {
-            System.out.println("Could not find category");
             return null;
         }
     }
@@ -444,7 +440,6 @@ public class AdServiceImpl implements AdService {
 
         // Base case: If the position in the array is equal to the size of the array
         if (arrayLength == listIn.size()) {
-            System.out.println("Array length equals list in --> finished");
             // Return the list that now contains all sub-categories
             return listOut;
         } else {
@@ -468,7 +463,6 @@ public class AdServiceImpl implements AdService {
                         findSubCategories(listIn, listOut, parentName, start);
                     }
                 }
-                System.out.println("parent name is null");
             }
             // Increment the list and call on the function recursively
             return findSubCategories(listIn, listOut, parentName, start + 1);
@@ -1112,7 +1106,6 @@ public class AdServiceImpl implements AdService {
                     .build();
             ad.getPictures().add(picture);
             picture.setAd(ad);
-          //   System.out.println("here " + i);
             pictureRepository.save(picture);
         }
         adRepository.save(ad);
@@ -1127,7 +1120,6 @@ public class AdServiceImpl implements AdService {
         if(filterListOfAds.getCategory() != null) {
             List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(),
                     userGeoLocation).getBody();
-            System.out.println(list.size());
             filterListOfAds.setList(list);
             return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
         }
@@ -1137,7 +1129,6 @@ public class AdServiceImpl implements AdService {
         }
         /**
         List<AdDto> list = (List<AdDto>) getAllAdsInCategoryAndSubCategories(filterListOfAds.getCategory(), userGeoLocation).getBody();
-        System.out.println(list.toString());
         filterListOfAds.setList(list);
         // TODO ELSE() retrieve all ads and filter them!
         return new Response(getAllAdsWithFilter(filterListOfAds), HttpStatus.OK);
