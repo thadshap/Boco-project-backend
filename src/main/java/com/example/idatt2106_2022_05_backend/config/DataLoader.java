@@ -5,6 +5,8 @@ import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
+import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,6 +29,9 @@ public class DataLoader implements ApplicationRunner {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RentalService rentalService;
 
     @Autowired
     private AdRepository adRepository;
@@ -84,6 +89,7 @@ public class DataLoader implements ApplicationRunner {
             this.messageRepository = messageRepository;
         }
 
+        @SneakyThrows
         public void run(ApplicationArguments args) throws IOException {
 
             // Create users
@@ -408,7 +414,12 @@ public class DataLoader implements ApplicationRunner {
             rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().minusDays(105)).rentTo(LocalDate.now().minusDays(95)).rentFrom(LocalDate.now().minusDays(104)).dateOfRental(LocalDate.now().minusDays(115)).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
-            rentalRepository.save(rental);
+
+            // Extracting the object for use in next method
+            Rental rentalSaved = rentalRepository.save(rental);
+
+            // Activating rental in order to give frontend test-data
+            rentalService.activateRental(rentalSaved.getId());
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
             reviewRepository.save(review);

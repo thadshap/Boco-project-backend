@@ -195,7 +195,7 @@ public class PictureIntegrationTest {
         @Test
         public void pictureDeleted() {
             // Get an existing user
-            User user = userRepository.findAll().get(0);
+            User user = userRepository.findAll().get(0); // todo this user could not be found
 
             // Verify that the user exists
             assertNotNull(user);
