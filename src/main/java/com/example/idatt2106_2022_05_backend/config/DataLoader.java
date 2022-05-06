@@ -1,5 +1,6 @@
 package com.example.idatt2106_2022_05_backend.config;
 
+import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.enums.AdType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.repository.*;
@@ -336,9 +337,9 @@ public class DataLoader implements ApplicationRunner {
             Ad motherBoard = Ad.builder().title("Mother board").description("Leier ut ut ny lenovo motherboard").
                     rental(true).durationType(AdType.MONTH).price(600).created(LocalDate.now()).lat(63.4).lng(10.4).
                     streetAddress("Svartholtet 12").postalCode(7092).city("Tiller").user(user7).category(datamaskin).build();
-            Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
+            AdDto sovepose = AdDto.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
                     durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(60.9).lng(10.4).
-                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
+                    streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").userId(user8.getId()).categoryId(otherOutdoor.getId()).build();
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(59.4).lng(10.4).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
@@ -355,12 +356,18 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(tux);
             adRepository.save(pc);
             adRepository.save(charger);
-            adRepository.save(sovepose);
             adRepository.save(motherBoard);
             adRepository.save(newHammer);
             adRepository.save(matte);
             adRepository.save(klovn);
             adRepository.save(tent);
+
+            // Because "sovepose" is used to test w/ frontend, it must be posted the way it would logically be posted
+            adService.postNewAd(sovepose);
+
+            // Retrieve the ad
+            Set<Ad> adsFound = adRepository.findByTitle(sovepose.getTitle());
+            Ad sovepose2 = adsFound.stream().findFirst().get();
 
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).price(350).
                     postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.43).lng(10.4).build();
@@ -413,7 +420,7 @@ public class DataLoader implements ApplicationRunner {
             rentalRepository.save(rental);
             rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().minusDays(105)).rentTo(LocalDate.now().minusDays(95)).rentFrom(LocalDate.now().minusDays(104)).dateOfRental(LocalDate.now().minusDays(115)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
+            rental = Rental.builder().ad(sovepose2).owner(user8).borrower(user4).price(3000).active(false).deadline(LocalDate.now().minusDays(110)).rentTo(LocalDate.now().minusDays(100)).rentFrom(LocalDate.now().minusDays(109)).dateOfRental(LocalDate.now().minusDays(120)).build();
 
             // Extracting the object for use in next method
             Rental rentalSaved = rentalRepository.save(rental);
@@ -451,7 +458,7 @@ public class DataLoader implements ApplicationRunner {
             for(Ad a:adRepository.findAll()){
                 Set<Ad> adsy = new HashSet<>();
                 adsy.add(a);
-                a.getCategory().setAds(adsy);;
+                a.getCategory().setAds(adsy);
                 categoryRepository.save(a.getCategory());
             }
 
@@ -533,7 +540,7 @@ public class DataLoader implements ApplicationRunner {
             fileContent(motherBoard, file);
 
             file = new File("src/main/resources/static/images/random/bekir-donmez-eofm5R5f9Kw-unsplash.jpg");
-            fileContent(sovepose, file);
+            fileContent(sovepose2, file);
 
             file = new File("src/main/resources/static/images/random/david-kovalenko-G85VuTpw6jg-unsplash.jpg");
             fileContent(tux, file);
@@ -542,7 +549,7 @@ public class DataLoader implements ApplicationRunner {
             fileContent(motherBoard, file);
 
             file = new File("src/main/resources/static/images/random/ian-dooley-hpTH5b6mo2s-unsplash.jpg");
-            fileContent(sovepose, file);
+            fileContent(sovepose2, file);
 
             file = new File("src/main/resources/static/images/random/jess-bailey-l3N9Q27zULw-unsplash.jpg");
             fileContent(pc, file);
