@@ -351,6 +351,7 @@ public class RentalServiceImpl implements RentalService {
                     .rentTo(rental.get(i).getRentTo())
                     .price(rental.get(i).getPrice())
                     .isReviewed(rental.get(i).isReviewed())
+                    .ownerId(rental.getOwner().getId())
                     .build();
             rentals.getRentals().add(rentalReturn);
         }
