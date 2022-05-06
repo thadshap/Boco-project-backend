@@ -36,6 +36,10 @@ public class ChatController {
     public MessageDto sendMessage(@DestinationVariable Long groupId, MessageDto messageDto) {
         logger.debug("Message sent to groupId: " + groupId + " from " + messageDto.getUserId());
         MessageDto msgDto = chatService.sendMessage(groupId, messageDto);
+        if (msgDto == null) {
+            logger.debug("Not sending message to subscribers because user is not in group.");
+            return null;
+        }
         return msgDto;
     }
 
