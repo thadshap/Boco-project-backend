@@ -23,7 +23,8 @@ import java.util.Set;
 public class Ad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
     @Column(name = "ad_id", nullable = false)
     private Long id;
 
@@ -137,7 +138,7 @@ public class Ad {
 
 
 /**
-    @PreRemove
+//    @PreRemove
     private void removeRelationships() {
         if (pictures != null) {
             setPictures(null);
