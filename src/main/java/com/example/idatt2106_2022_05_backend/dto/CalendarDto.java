@@ -3,14 +3,18 @@ package com.example.idatt2106_2022_05_backend.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Builder
 @Data
 @ApiModel(description = "Data transfer object of calender dates, used to send and return calender dates")
+@NoArgsConstructor
+@AllArgsConstructor
 public class CalendarDto {
 
     @ApiModelProperty(notes = "id of corresponding ad")
