@@ -75,12 +75,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-                logger.info("in client inbound channel");
-                logger.info(headerAccessor.getCommand().toString());
-                logger.info(message.toString());
+                logger.debug("in client inbound channel");
+                logger.debug(headerAccessor.getCommand().toString());
+                logger.debug(message.toString());
 
                 if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-                    logger.info("inside if");
+                    logger.debug("inside if");
 
                     List<String> authorization = headerAccessor.getNativeHeader("Authorization");
                     logger.debug("Authorization: " + authorization);
@@ -92,7 +92,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                        logger.info("set security context");
+                        logger.debug("set security context");
 
                         if (jwtUtil.validateToken(accessToken, userDetails)) {
                             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -106,15 +106,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
-                            logger.info("Retrieving principal");
+                            logger.debug("Retrieving principal");
                             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                            logger.info("have authentication");
+                            logger.debug("have authentication");
                             Principal myAuth = (Principal) authentication.getPrincipal();
-                            logger.info("have principal");
+                            logger.debug("have principal");
                             headerAccessor.setUser(myAuth);
                             // Not sure why, but necessary otherwise NPE in StompSubProtocolHandler!
                             headerAccessor.setLeaveMutable(true);
-                            logger.info("Message is: " + message.getPayload());
+                            logger.debug("Message is: " + message.getPayload());
                         }
 
                         // Jwt jwt = jwtDecoder.decode(accessToken);

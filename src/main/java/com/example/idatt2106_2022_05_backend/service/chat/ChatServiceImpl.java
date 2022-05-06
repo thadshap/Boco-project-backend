@@ -151,7 +151,7 @@ public class ChatServiceImpl implements ChatService {
             Message ms = msL.get(i);
 
             PictureReturnDto pRDto = userService.getPicture(ms.getUser().getId());
-            //TODO change when getPicture changes
+
             if(pRDto == null){
                 pRDto = new PictureReturnDto(0L,"no picture", "no picture");
             }
@@ -203,7 +203,6 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     public Response createTwoUserGroup(PrivateGroupDto privateGroupDto) {
-        //TODO check if group with the users already exists
         if (privateGroupDto.getUserOneId() == privateGroupDto.getUserTwoId()) {
             return new Response("Users must be different, same userId given.", HttpStatus.BAD_REQUEST);
         }
@@ -248,7 +247,6 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     public Response createGroupFromUserIds(ListGroupDto listGroupDto) {
-        //TODO multiple of same user given?
         List<Long> userIds = new ArrayList<>(listGroupDto.getUserIds());
         Set<User> users = new HashSet<>();
 
@@ -374,6 +372,12 @@ public class ChatServiceImpl implements ChatService {
     public MessageDto sendMessage(Long groupId, MessageDto messageDto) {
         User user = getUser(messageDto.getUserId());
         Group group = getGroup(groupId);
+
+        if (!group.getUsers().contains(user)) {
+            logger.info("Sender of message, Id: " + user.getId() + ", was not in group, not sending message to group.");
+            return null;
+        }
+
         Timestamp ts = Timestamp.from(Instant.now());
         Message message = Message.builder()
                 .timestamp(ts)
@@ -385,7 +389,7 @@ public class ChatServiceImpl implements ChatService {
         messageRepository.save(message);
 
         PictureReturnDto pRDto = userService.getPicture(messageDto.getUserId());
-        //TODO change when getPicture changes
+
         if(pRDto == null){
             pRDto = new PictureReturnDto(0L,"no picture", "no picture");
         }
@@ -467,7 +471,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is already in group", HttpStatus.NOT_FOUND);
         }
 
         users.add(user);
@@ -498,7 +502,7 @@ public class ChatServiceImpl implements ChatService {
         Set<User> users = group.getUsers();
 
         if (group.getUsers().contains(user)) {
-            return new Response("User is allready in group", HttpStatus.NOT_FOUND);
+            return new Response("User is already in group", HttpStatus.NOT_FOUND);
         }
 
         users.add(user);
