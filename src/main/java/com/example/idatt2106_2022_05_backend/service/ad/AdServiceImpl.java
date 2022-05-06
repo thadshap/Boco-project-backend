@@ -156,7 +156,7 @@ public class AdServiceImpl implements AdService {
             // Return the adDto-list
             return new Response(adsToBeReturned, HttpStatus.OK);
         } else {
-            return new Response("Could not find specified category", HttpStatus.NOT_FOUND);
+            return new Response("Fant ikke kategorien.", HttpStatus.NO_CONTENT);
         }
     }
 
@@ -215,7 +215,8 @@ public class AdServiceImpl implements AdService {
         for (int i = 0; i < categories.size(); i++) {
             categoriesToReturn.add(CategoryDto.builder()
                             .level(categories.get(i).getLevel())
-                            .icon(categories.get(i).getIcon())
+                            .icon(categories.get(i).getIcon()).child(categories.get(0).isChild())
+                            .parent(categories.get(0).isParent())
                             .parentName(categories.get(i).getParentName())
                             .name(categories.get(i).getName())
                             .id(categories.get(i).getId())
@@ -727,30 +728,9 @@ public class AdServiceImpl implements AdService {
      * @return distance in km
      */
     public double calculateDistance(double lat1, double long1, double lat2, double long2) {
-        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(long1, lat1, long2, lat2);
-        return dist / 10000;
+        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(lat1, long1, lat2, long2);
+        return dist / 1000;
     }
-
-//    public double calculateDistance(double lat1, double lon1, double lat2,
-//                                    double lon2) {
-//        double elevation = 10; //height in meters
-//        double elevation2 = 10; //height in meters
-//        final int R = 6371; // Radius of the earth
-//
-//        double latDistance = Math.toRadians(lat2 - lat1);
-//        double lonDistance = Math.toRadians(lon2 - lon1);
-//        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-//                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-//                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//        double distance = R * c * 1000; // convert to meters
-//
-//        double height = elevation - elevation2;
-//
-//        distance = Math.pow(distance, 2) + Math.pow(height, 2);
-//
-//        return Math.sqrt(distance)/10000;
-//    }
 
     // get all reviews for an add with owner = user id
     @Override
@@ -1045,7 +1025,6 @@ public class AdServiceImpl implements AdService {
                     .type(pictures.get(i).getType())
                     .build());
             returnDto.get(i).setId(adId);
-
         }
         return new Response(returnDto.get(0), HttpStatus.OK);
     }
