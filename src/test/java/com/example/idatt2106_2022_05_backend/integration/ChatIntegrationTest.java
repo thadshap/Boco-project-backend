@@ -551,12 +551,70 @@ public class ChatIntegrationTest {
 
             @Test
             public void addUserToGroupById() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Create a new user
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
+                        .password("pass1word").build();
+
+
+                // Saving the users
+                User user = userRepository.save(newUser);
+                assertNotNull(user);
+
+                // Get the previous member count of the group
+                int prevCount = group.getUsers().size();
+
+                // Add the new user to the group
+                ResponseEntity<Object> response = chatService.addUserToGroupById(group.getId(), user.getId());
+
+                // Assert response
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Get the new member count of the group
+                Group groupAfter = groupRepository.findById(group.getId()).get();
+                int newCount = groupAfter.getUsers().size();
+
+                // Assert that the member-count is different
+                assertNotEquals(prevCount, newCount);
             }
 
             @Test
             public void addUserToGroupByEmail() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Create a new user
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
+                        .password("pass1word").build();
+
+
+                // Saving the users
+                User user = userRepository.save(newUser);
+                assertNotNull(user);
+
+                // Get the previous member count of the group
+                int prevCount = group.getUsers().size();
+
+                // Add the new user to the group
+                ResponseEntity<Object> response = chatService.addUserToGroupByEmail(group.getId(), user.getEmail());
+
+                // Assert response
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Get the new member count of the group
+                Group groupAfter = groupRepository.findById(group.getId()).get();
+                int newCount = groupAfter.getUsers().size();
+
+                // Assert that the member-count is different
+                assertNotEquals(prevCount, newCount);
             }
         }
         /************************ METHODS COPIED IN FROM CHAT-SERVICE (FOR TESTING) ***********************/
