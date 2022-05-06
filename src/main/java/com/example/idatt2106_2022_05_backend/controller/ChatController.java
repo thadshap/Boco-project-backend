@@ -32,15 +32,13 @@ public class ChatController {
     @Autowired
     SecurityService securityService;
 
-    Logger logger = LoggerFactory.getLogger(ChatController.class);
-
     @MessageMapping("/chat/{groupId}")
     @SendTo("/topic/messages/{groupId}")
     public MessageDto sendMessage(@DestinationVariable Long groupId, MessageDto messageDto) {
         log.debug("[X] Call to send message to group with id = {}", groupId);
         MessageDto msgDto = chatService.sendMessage(groupId, messageDto);
         if (msgDto == null) {
-            logger.debug("Not sending message to subscribers because user is not in group.");
+            log.debug("[X] Not sending message to group because user is not in group");
             return null;
         }
         return msgDto;
