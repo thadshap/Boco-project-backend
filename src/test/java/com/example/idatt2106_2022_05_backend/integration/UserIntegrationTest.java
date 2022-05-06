@@ -77,6 +77,7 @@ public class UserIntegrationTest {
 
         // Saving the user
         userRepository.save(user);
+        userRepository.save(user2);
 
         // Building categories
         Category clothes = Category.builder().
@@ -95,7 +96,7 @@ public class UserIntegrationTest {
 
         // Building an ad-dto with foreign keys
          AdDto dto = AdDto.builder().
-         title("unique title for this tesst.").
+         title("unique title for this tesst1.").
          description("Renting out a pair of shoes in size 40").
          rental(true).
          rentedOut(false).
@@ -112,7 +113,7 @@ public class UserIntegrationTest {
 
          adService.postNewAd(dto);
 
-         Set<Ad> adFound = adRepository.findByTitleContaining("unique title for this tesst.");
+         Set<Ad> adFound = adRepository.findByTitle("unique title for this tesst1.");
          Ad ad = adFound.stream().findFirst().get();
 
          // Create rental

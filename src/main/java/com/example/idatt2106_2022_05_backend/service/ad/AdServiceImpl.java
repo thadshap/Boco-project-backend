@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -305,30 +304,28 @@ public class AdServiceImpl implements AdService {
     @Override
     public Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation) {
 
-        // Retrieve all categories from database
-        ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+        // Retrieve ParentCategory
         Set<Category> categoryFound = categoryRepository.findByName(name);
         Category category = categoryFound.stream().findFirst().get();
-        System.out.println("Number of categories in db: " + categories.size());
 
         // List of subCategories found using recursive function
-        // List<Category> subCategories = findSubCategories(name, 0, categories, new ArrayList<>(), name, 0);
         List<Category> subCategories = findSubCategories(category.getId());
-        System.out.println("Number of subcategories for the category: " + subCategories.size());
         ArrayList<AdDto> adsToBeReturned = new ArrayList<>();
 
-        // Iterate over all sub-categories found
-        for (Category category1 : subCategories) {
-            // Iterate over all ads in category
-            if (category1.getAds() != null) {
-                for (Ad ad : category1.getAds()) {
-                    try {
-                        // Create dto
-                        AdDto dto = castObject(ad);
-                        // Add to list
-                        adsToBeReturned.add(dto);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        if(subCategories != null) {
+            // Iterate over all sub-categories found
+            for (Category category1 : subCategories) {
+                // Iterate over all ads in category
+                if (category1.getAds() != null) {
+                    for (Ad ad : category1.getAds()) {
+                        try {
+                            // Create dto
+                            AdDto dto = castObject(ad);
+                            // Add to list
+                            adsToBeReturned.add(dto);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -358,18 +355,21 @@ public class AdServiceImpl implements AdService {
             a.setDistance(
                     calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(), a.getLat(), a.getLng()));
         }
-        if(adsToBeReturned.size()>0) {
+        if (adsToBeReturned.size() > 0) {
             // sort so nearest ads comes first
             adsToBeReturned.sort(Comparator.comparing(AdDto::getDistance));
 
             // Now all ads are returned
             return new Response(adsToBeReturned, HttpStatus.OK);
-        }else {
-            return new Response("Fant ingen tilhørende kategori.", HttpStatus.NO_CONTENT);
+        } else {
+            return new Response(null, HttpStatus.OK);
         }
     }
 
-    private List<Category> findSubCategories(long categoryId) {
+
+
+    @Override
+    public List<Category> findSubCategories(long categoryId) {
         Optional<Category> categoryFound = categoryRepository.findById(categoryId);
 
         List<Category> toReturn = new ArrayList<>();
@@ -399,6 +399,7 @@ public class AdServiceImpl implements AdService {
                         }
                     }
                 }
+                System.out.println("category was level 1");
                 return toReturn;
             }
             if(category.getLevel() == 2) {
@@ -406,41 +407,47 @@ public class AdServiceImpl implements AdService {
                     if(cat2.getLevel() == 3) {
                         // If the third lvl category has the 2nd level category as its parent
                         if(Objects.equals(cat2.getParentName(), category.getName())) {
-                            allCategories.add(cat2);
+                            toReturn.add(cat2);
                         }
                     }
                 }
+                System.out.println("category was level 2");
                 return toReturn;
             }
+            else {
+                System.out.println("category was level 3");
+                return null;
+            }
         }
-        return null;
+        else {
+            System.out.println("Could not find category");
+            return null;
+        }
     }
 
     /**
      * Recursive function that finds all sub-categories belonging to a category (including the sub-categories of
      * sub-categories and so on)
      *
-     * @param listIn is a list containing all categories in db
-     * @param listOut is an empty list that is being filled up with sub-categories as the method recursively iterates
+     * @param //listIn is a list containing all categories in db
+     * @param //listOut is an empty list that is being filled up with sub-categories as the method recursively iterates
      * @return listOut
-     */
-    private List<Category> findSubCategories(String original, int originalStart, ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
+     *
+    private List<Category> findSubCategories(ArrayList<Category> listIn, ArrayList<Category> listOut, String parentName,
             int start) {
-
         // Position in array == start
         int arrayLength = start;
 
+        // Make a counter and if it is not == 1 && base case is not reached when the loop ends,
+        // call on the function again from parentName == arrayLength.getName
+        int loopCounter = 0;
+
         // Base case: If the position in the array is equal to the size of the array
-        if (arrayLength == listIn.size() && parentName.equals(original)) {
+        if (arrayLength == listIn.size()) {
+            System.out.println("Array length equals list in --> finished");
             // Return the list that now contains all sub-categories
             return listOut;
-        }
-        // If this is true we have to continue the recursion where we left off w/ parent
-        else if(arrayLength == listIn.size()) {
-            System.out.println("i get into this one");
-            parentName = original;
-            start = originalStart;
-
+        } else {
             // Iterate through all categories
             for (int i = start; i < listIn.size(); i++) {
                 Category category = listIn.get(i);
@@ -458,43 +465,16 @@ public class AdServiceImpl implements AdService {
                         parentName = category.getName();
 
                         // Call on the function recursively from the start for this category
-                        findSubCategories(original,originalStart, listIn, listOut, parentName, 0);
+                        findSubCategories(listIn, listOut, parentName, start);
                     }
                 }
+                System.out.println("parent name is null");
             }
             // Increment the list and call on the function recursively
-            return findSubCategories(original, originalStart +1, listIn, listOut, original, start + 1);
-        }
-        else {
-            System.out.println("i get into this one too");
-
-            // Iterate through all categories
-            for (int i = start; i < listIn.size(); i++) {
-                Category category = listIn.get(i);
-
-                // If the category is a sub-class
-                if (category.getParentName() != null) {
-
-                    // If a category has current category as parent category
-                    if (category.getParentName().equalsIgnoreCase(parentName)) {
-
-                        // Add the category to the list to be returned
-                        listOut.add(category);
-
-                        // This category is now the new parent
-                        parentName = category.getName();
-
-                        // Call on the function recursively from the start for this category
-                        findSubCategories(original,originalStart, listIn, listOut, parentName, 0);
-                    }
-                }
-            }
-            // If there were no children for this category, we end up here, and we
-            // wish to increment the starting point by one, as well as use the original parentName
-            // Increment the list and call on the function recursively
-            return findSubCategories(original,originalStart +1, listIn, listOut, original, originalStart + 1);
+            return findSubCategories(listIn, listOut, parentName, start + 1);
         }
     }
+     */
 
     @Override
     public Response getAllParentCategories() {
