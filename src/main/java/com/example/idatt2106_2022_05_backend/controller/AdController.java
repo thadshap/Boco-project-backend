@@ -157,8 +157,10 @@ public class AdController {
      */
 
     @PostMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
+    @ApiOperation(value = "Endpoint to ad picture to ad", response = Response.class)
     public Response adPicture(@PathVariable Long userId, @PathVariable Long adId,
             @RequestPart List<MultipartFile> files) throws IOException {
+        log.debug("[X] Picture to ad to add with id = {}", adId);
         if(!securityService.isAdOwner(userId)){
             return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
         }
@@ -166,79 +168,102 @@ public class AdController {
     }
 
     @GetMapping("/ads/pictures/{adId}")
+    @ApiOperation(value = "Endpoint to get pictures for ad", response = Response.class)
     public List<PictureReturnDto> getPicturesForAd(@PathVariable long adId) {
+        log.debug("[X] Call to get all pictures from add with id = {}", adId);
         // TODO
         return adService.getAllPicturesForAd(adId);
     }
 
     @GetMapping("/ads/picture/{adId}")
+    @ApiOperation(value = "Endpoint to get first picture for ad", response = Response.class)
     public Response getPictureForAd(@PathVariable long adId) {
+        log.debug("[X] Call to get first picture from add with id = {}", adId);
         //TODO
         return adService.getFirstPictureForAd(adId);
     }
 
     @PostMapping("/ads/page/{sizeOfPage}")
-    @ApiOperation(value = "Endpoint to request a page of ads")
+    @ApiOperation(value = "Endpoint to request a page of ads", response = Response.class)
     public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation) {
+        log.debug("[X] Call to get page of ads");
         return adService.getPageOfAds(sizeOfPage, userGeoLocation);
     }
 
     @PostMapping("/search/{searchWord}")
-    @ApiOperation(value = "method to search through")
+    @ApiOperation(value = "Endpoint to search through", response = Response.class)
     public Response searchInAdsAndCategories(@PathVariable String searchWord, UserGeoLocation userGeoLocation) {
+        log.debug("[X] Call to search in ads and categories");
         return adService.searchThroughAds(searchWord, userGeoLocation);
     }
 
     // Get all categories
     @GetMapping("/categories")//TODO delete
+    @ApiOperation(value = "Endpoint to get all categories", response = Response.class)
     public Response getAllCategories() {
+        log.debug("[X] Call to get all categories");
         return adService.getAllCategories();
     }
 
     // Get sub-categories for a category
     @GetMapping("/categories/{parentCategoryName}")//TODO delete
+    @ApiOperation(value = "Endpoint to get all sub-categories for category", response = Response.class)
     public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName) {
+        log.debug("[X] Call to get all sub-categories for category with name = {}", parentCategoryName);
         return adService.getAllSubCategories(parentCategoryName);
     }
 
     // Get all ads for specific category id
     @GetMapping("/categories/ads/{categoryId}")
+    @ApiOperation(value = "Endpoint to get all ads in specific category", response = Response.class)
     public Response getAllAdsInCategory(@PathVariable long categoryId) {
+        log.debug("[X] Call to get all ads in category with id = {}", categoryId);
         return adService.getAllAdsInCategory(categoryId);
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @PostMapping("/categoriesRecursive/{categoryName}")//TODO delete if no tests
+    @PostMapping("/categoriesRecursive/{categoryName}")//TODO delete if no
+    @ApiOperation(value = "Endpoint to get all ads in specified category recursively", response = Response.class)
     public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
             @RequestBody UserGeoLocation userGeoLocation) {
+        log.debug("[X] Call to get all ads in category with name = {}", categoryName);
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
     @GetMapping("/categories/level")
+    @ApiOperation(value = "Endpoint to get all ads in category level", response = Response.class)
     public Response getAllAdsInCategoryRecursively() {
+        log.debug("[X] Call to get all ads in category level");
         return adService.getAllCategoriesWithLevel();
     }
 
     // Get all parent categories
     @GetMapping("/categories/parent")//TODO delete
+    @ApiOperation(value = "Endpoint to get all parent categories", response = Response.class)
     public Response getAllParentCategories() {
+        log.debug("[X] Call to get all parent categories");
         return adService.getAllParentCategories();
     }
 
     // Get all ads in city
     @GetMapping("/ads/city/{cityName}")
+    @ApiOperation(value = "Endpoint to get all ads in given city", response = Response.class)
     public Response getAllAdsInCity(@PathVariable String cityName) {
+        log.debug("[X] Call to get all ads in city with name = {}", cityName);
         return adService.getAllAdsInCity(cityName);
     }
 
     @PostMapping("/ads/filter")
+    @ApiOperation(value = "Endpoint to filter ads with given filters", response = Response.class)
     public Response filterAds(@RequestBody FilterListOfAds filterListOfAds) {
-        logger.info("in controller");
+        log.debug("[X] Call to filter ads with type = {}", filterListOfAds.getFilterType());
         return adService.getAllAdsWithFilter(filterListOfAds);
     }
 
     @PostMapping("/ads/category/filter")
+    @ApiOperation(value = "Endpoint to get ads with category and filter", response = Response.class)
     public Response getAdsWithCategoryAndFilter(@RequestBody FilterListOfAds filterListOfAds) {
+        log.debug("[X] Call to filter ads with type = {}", filterListOfAds.getFilterType());
         return adService.getAdsWithCategoryAndFilter(filterListOfAds);
     }
 
