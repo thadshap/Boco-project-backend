@@ -215,8 +215,8 @@ public class AdServiceImpl implements AdService {
         for (int i = 0; i < categories.size(); i++) {
             categoriesToReturn.add(CategoryDto.builder()
                             .level(categories.get(i).getLevel())
-                            .icon(categories.get(i).getIcon()).child(categories.get(0).isChild())
-                            .parent(categories.get(0).isParent())
+                            .icon(categories.get(i).getIcon()).child(categories.get(i).isChild())
+                            .parent(categories.get(i).isParent())
                             .parentName(categories.get(i).getParentName())
                             .name(categories.get(i).getName())
                             .id(categories.get(i).getId())
