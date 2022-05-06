@@ -6,6 +6,7 @@ import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.UpdatePictureDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.FilterListOfAds;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.security.SecurityService;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import io.swagger.annotations.Api;
@@ -29,6 +30,9 @@ public class AdController {
 
     @Autowired
     AdService adService;
+
+    @Autowired
+    SecurityService securityService;
 
     private Logger logger = LoggerFactory.getLogger(AdController.class);
 
@@ -98,6 +102,10 @@ public class AdController {
     @ApiOperation(value = "Endpoint to create a new ad", response = Response.class)
     public Response postAd(@RequestBody AdDto adDto) throws IOException, InterruptedException {
         log.debug("[X] Call to create a new ad");
+        if(!securityService.isUser(adDto.getUserId()) && !securityService.isVerifiedUser(0L)){
+            return new Response("Du kan opprette leie objektet," +
+                    " du må verifisere emailen din.", HttpStatus.NO_CONTENT);
+        }
         return adService.postNewAd(adDto);
     }
 
@@ -112,6 +120,9 @@ public class AdController {
     @ApiOperation(value = "", response = Response.class)
     public Response updateAd(@PathVariable Long adId, @RequestBody AdUpdateDto adUpdateDto) {
         log.debug("[X] Call to update an ad with id = {}", adId);
+        if(!securityService.isAdOwner(adId)){
+            return new Response("Du har ikke tilgang til dette.", HttpStatus.NO_CONTENT);
+        }
         return adService.updateAd(adId, adUpdateDto);
     }
 
@@ -119,13 +130,19 @@ public class AdController {
     @ApiOperation(value = "Endpoint to delete an ad", response = Response.class)
     public Response deleteAd(@PathVariable long adId) {
         log.debug("[X] Call to delete ad with id = {}", adId);
+        if(!securityService.isAdOwner(adId)){
+            return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
+        }
         return adService.deleteAd(adId);
     }
 
     @DeleteMapping("/auth/ads/picture/{userId}")
     @ApiOperation(value = "Endpoint to delete a picture from an ad", response = Response.class)
-    public Response deletePicture(@ModelAttribute UpdatePictureDto updatePictureDto, @RequestPart List<MultipartFile> files) throws IOException {
+    public Response deletePicture(@PathVariable Long userId, @ModelAttribute UpdatePictureDto updatePictureDto, @RequestPart List<MultipartFile> files) throws IOException {
         log.debug("[X] Picture to delete from add with id = {}", updatePictureDto.getId());
+        if(!securityService.isAdOwner(userId)){
+            return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
+        }
         return adService.deletePicture(updatePictureDto.getId(), files);
     }
 
@@ -142,7 +159,9 @@ public class AdController {
     @PostMapping(value = "/auth/ads/newPicture/{userId}/{adId}")
     public Response adPicture(@PathVariable Long userId, @PathVariable Long adId,
             @RequestPart List<MultipartFile> files) throws IOException {
-        // TODO
+        if(!securityService.isAdOwner(userId)){
+            return new Response("Du har ikke tilgang.", HttpStatus.NO_CONTENT);
+        }
         return adService.storeImageForAd(adId, files);
     }
 
@@ -158,7 +177,6 @@ public class AdController {
         return adService.getFirstPictureForAd(adId);
     }
 
-
     @PostMapping("/ads/page/{sizeOfPage}")
     @ApiOperation(value = "Endpoint to request a page of ads")
     public Response getPageOfAds(@PathVariable int sizeOfPage, @RequestBody UserGeoLocation userGeoLocation) {
@@ -172,13 +190,13 @@ public class AdController {
     }
 
     // Get all categories
-    @GetMapping("/categories")
+    @GetMapping("/categories")//TODO delete
     public Response getAllCategories() {
         return adService.getAllCategories();
     }
 
     // Get sub-categories for a category
-    @GetMapping("/categories/{parentCategoryName}")
+    @GetMapping("/categories/{parentCategoryName}")//TODO delete
     public Response getSubCategoriesForCategory(@PathVariable String parentCategoryName) {
         return adService.getAllSubCategories(parentCategoryName);
     }
@@ -190,14 +208,19 @@ public class AdController {
     }
 
     // Get all ads in category and sub-categories and then their sub-categories etc (recursive)
-    @PostMapping("/categoriesRecursive/{categoryName}")
+    @PostMapping("/categoriesRecursive/{categoryName}")//TODO delete if no tests
     public Response getAllAdsInCategoryRecursively(@PathVariable String categoryName,
             @RequestBody UserGeoLocation userGeoLocation) {
         return adService.getAllAdsInCategoryAndSubCategories(categoryName, userGeoLocation);
     }
 
+    @GetMapping("/categories/level")
+    public Response getAllAdsInCategoryRecursively() {
+        return adService.getAllCategoriesWithLevel();
+    }
+
     // Get all parent categories
-    @GetMapping("/categories/parent")
+    @GetMapping("/categories/parent")//TODO delete
     public Response getAllParentCategories() {
         return adService.getAllParentCategories();
     }

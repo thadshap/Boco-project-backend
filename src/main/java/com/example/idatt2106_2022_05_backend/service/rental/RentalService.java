@@ -13,13 +13,13 @@ import java.io.IOException;
 
 @Service
 public interface RentalService {
-    Response createRental(RentalDto rentalDto);
+    Response createRental(RentalDto rentalDto) throws MessagingException, IOException;
 
-    ModelAndView approveRental(Long rentalId, String token);
+//    ModelAndView approveRental(Long rentalId, String token);
 
-    ModelAndView activateRental(Long rentalId, String token) throws MessagingException, IOException;
+    Response activateRental(Long rentalId) throws MessagingException, IOException;
 
-    ModelAndView declineRental(Long rentalId, String token) throws MessagingException, IOException;
+    Response declineRental(Long rentalId) throws MessagingException, IOException;
 
     Response completeRental(Long rentalId, RentalReviewDto rentalDto);
 

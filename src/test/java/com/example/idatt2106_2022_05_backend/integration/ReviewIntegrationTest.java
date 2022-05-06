@@ -82,7 +82,7 @@ public class ReviewIntegrationTest {
 
             // Create new ad
             Ad speaker = Ad.builder().title("New speaker").description("Renting out a brand new speaker").rental(true)
-                    .durationType(AdType.WEEK).duration(2).price(100).streetAddress("Speaker street 2").postalCode(7120)
+                    .durationType(AdType.WEEK).price(100).streetAddress("Speaker street 2").postalCode(7120)
                     .city("Trondheim").user(user).category(category).build();
 
             // Persist the ad --> the dates are now also persisted

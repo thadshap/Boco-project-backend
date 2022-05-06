@@ -118,13 +118,13 @@ public class UserServiceImpl implements UserService {
              * ouputMessageRepository.delete(message); } }
              */
             // Get messages
-            List<Message> messages = messageRepository.findAll();
-            for (Message message : messages) {
-                if (message.getUser().getId() == user.getId()) {
-                    message.setUser(null);
-                    messageRepository.save(message);
-                }
-            }
+//            List<Message> messages = messageRepository.findAll();
+//            for (Message message : messages) {
+//                if (message.getUser().getId() == user.getId()) {
+//                    message.setUser(null);
+//                    messageRepository.save(message);
+//                }
+//            }
 
 
             userRepository.save(user);
@@ -196,24 +196,28 @@ public class UserServiceImpl implements UserService {
         return new Response("Bruker med spesifisert ID ikke funnet", HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Method to update to update profile picture.
+     * @param userId id of user.
+     * @param file picture file.
+     * @return response if user exists or not.
+     * @throws IOException when retrieving bytes from file.
+     */
     @Override
     public Response updatePicture(Long userId, MultipartFile file) throws IOException {
         // User user = userRepository.getById(userId);
         Optional<User> userFound = userRepository.findById(userId);
 
-        System.out.println(file.getName());
-        System.out.println(file.getContentType());
-        // String filename = file.getName().split("\\.")[1];
-        // if (file.isEmpty() || !filename.equalsIgnoreCase("jpg") || !filename.equalsIgnoreCase("png") ||
-        // !filename.equalsIgnoreCase("jpeg") ){
-        // return new Response("File type is not correct", HttpStatus.NOT_ACCEPTABLE);
-        // }
         if(userFound.isPresent()) {
             // Get the user
             User user = userFound.get();
 
             // Create the picture entity using the multipart-file
-            Picture picture = Picture.builder().filename(file.getName()).type(file.getContentType()).data(file.getBytes())
+            Picture picture = Picture.builder()
+                    .filename(file.getName())
+                    .type(file.getContentType())
+//                    .data(file.getBytes())
+                    .base64(Base64.getEncoder().encodeToString(file.getBytes()))
                     .build();
 
             if(user.getPicture() != null) {
@@ -257,7 +261,8 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return PictureReturnDto.builder()
-                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                //                .base64(Base64.getEncoder().encodeToString(picture.get(0).getData()))
+                .base64(picture.get(0).getBase64())
                 .type(picture.get(0).getType())
                 .build();
     }
@@ -275,21 +280,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response updateUser(Long userId, UserUpdateDto userUpdateDto) throws IOException {
         Optional<User> userFromDB = userRepository.findById(userId);
-        if(userFromDB.isEmpty()){
+        if (userFromDB.isEmpty()) {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User user = userFromDB.get();
-        if ((!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) && userUpdateDto.getFirstName() != null) {
-            user.setFirstName(userUpdateDto.getFirstName());
+        if (userUpdateDto.getFirstName() != null) {
+            if (!userUpdateDto.getFirstName().isEmpty() || !userUpdateDto.getFirstName().isBlank()) {
+                user.setFirstName(userUpdateDto.getFirstName());
+            }
         }
-        if ((!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) && userUpdateDto.getLastName() != null) {
-            user.setLastName(userUpdateDto.getLastName());
+        if (userUpdateDto.getLastName() != null) {
+            if (!userUpdateDto.getLastName().isEmpty() || !userUpdateDto.getLastName().isBlank()) {
+                user.setLastName(userUpdateDto.getLastName());
+            }
         }
-        if ((!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) && userUpdateDto.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+        if (userUpdateDto.getPassword() != null) {
+            if (!userUpdateDto.getPassword().isEmpty() || !userUpdateDto.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            }
         }
-        System.out.println(user.getFirstName() + " " + user.getEmail());
-        userRepository.save(user);
+        // if all fields are empty
+        else if(     userUpdateDto.getFirstName() == null &&
+                userUpdateDto.getLastName() == null &&
+                userUpdateDto.getPassword() == null) {
+            return null;
+        }
         return new Response("User updated", HttpStatus.OK);
     }
 
@@ -308,6 +323,9 @@ public class UserServiceImpl implements UserService {
             return new Response("User not found", HttpStatus.NO_CONTENT);
         }
         User userGot = userFromDB.get();
+        if (userGot.getRating() > 8){
+            userGot.setVerified(true);
+        }
         UserReturnDto user = UserReturnDto.builder()
                 .id(userGot.getId())
                 .firstName(userGot.getFirstName())

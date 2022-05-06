@@ -17,10 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class loads in data for use in db upon start of application
@@ -114,15 +111,15 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user9);
 
             // Create main-categories
-            Category kitchen = Category.builder().name("Kjøkken").parent(true).icon("fa fa-cutlery").build();
-            Category vehicle = Category.builder().name("Kjøretøy").parent(true).icon("fa fa-car").build();
-            Category sport = Category.builder().name("Sport").parent(true).icon("fas fa-biking").build();
-            Category computer = Category.builder().name("Data og datautstyr").parent(true).icon("fa fa-laptop").build();
-            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).build();
-            Category instruments = Category.builder().name("Instrumenter").parent(true).icon("fa fa-guitar").build();
-            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).icon("fas fa-tshirt").build();
-            Category hobby = Category.builder().name("Hobby og fritid").parent(true).icon("fas fa-running").build();
-            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).icon("fa fa-home").build();
+            Category kitchen = Category.builder().name("Kjøkken").parent(true).level(1).icon("fa fa-cutlery").build();
+            Category vehicle = Category.builder().name("Kjøretøy").parent(true).level(1).icon("fa fa-car").build();
+            Category sport = Category.builder().name("Sport").parent(true).level(1).icon("fas fa-biking").build();
+            Category computer = Category.builder().name("Data og datautstyr").parent(true).level(1).icon("fa fa-laptop").build();
+            Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).level(1).build();
+            Category instruments = Category.builder().name("Instrumenter").parent(true).level(1).icon("fa fa-guitar").build();
+            Category clothing = Category.builder().name("Klær og tilbehør").parent(true).level(1).icon("fas fa-tshirt").build();
+            Category hobby = Category.builder().name("Hobby og fritid").parent(true).level(1).icon("fas fa-running").build();
+            Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).level(1).icon("fa fa-home").build();
 
             //persisting categories
             categoryRepository.save(kitchen);
@@ -136,24 +133,24 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(garden);
 
             // Create sub-categories kitchen
-            Category kitchenmachine = Category.builder().name("Kjøkkenmaskin").parentName(kitchen.getName()).child(true).build();
-            Category grill = Category.builder().child(true).name("Grill").parentName(kitchen.getName()).build();
-            Category pizzaovn = Category.builder().child(true).name("Pizzaovn").parentName(kitchen.getName()).build();
-            Category otherKitchen = Category.builder().name("Annet").parentName(kitchen.getName()).child(true).build();
+            Category kitchenmachine = Category.builder().level(2).name("Kjøkkenmaskin").parentName(kitchen.getName()).child(true).build();
+            Category grill = Category.builder().level(2).child(true).name("Grill").parentName(kitchen.getName()).build();
+            Category pizzaovn = Category.builder().level(2).child(true).name("Pizzaovn").parentName(kitchen.getName()).build();
+            Category otherKitchen = Category.builder().level(2).name("Annet").parentName(kitchen.getName()).child(true).build();
             categoryRepository.save(kitchenmachine);
             categoryRepository.save(grill);
             categoryRepository.save(pizzaovn);
             categoryRepository.save(otherKitchen);
 
             //Sub-categories for vehicle
-            Category car = Category.builder().name("Bil").child(true).parentName(vehicle.getName()).build();
-            Category boat = Category.builder().name("Båt").child(true).parentName(vehicle.getName()).build();
-            Category bike = Category.builder().name("Sykkel").child(true).parentName(vehicle.getName()).build();
-            Category bikey = Category.builder().name("Sparkesykkel").child(true).parentName(vehicle.getName()).build();
-            Category scooter = Category.builder().name("Moped").child(true).parentName(vehicle.getName()).build();
-            Category hanger = Category.builder().name("Tilhenger").child(true).parentName(vehicle.getName()).build();
-            Category digger = Category.builder().name("Gravemaskin").child(true).parentName(vehicle.getName()).build();
-            Category otherVehicle = Category.builder().name("Annet").child(true).parentName(vehicle.getName()).build();
+            Category car = Category.builder().level(2).name("Bil").child(true).parentName(vehicle.getName()).build();
+            Category boat = Category.builder().level(2).name("Båt").child(true).parentName(vehicle.getName()).build();
+            Category bike = Category.builder().level(2).name("Sykkel").child(true).parentName(vehicle.getName()).build();
+            Category bikey = Category.builder().level(2).name("Sparkesykkel").child(true).parentName(vehicle.getName()).build();
+            Category scooter = Category.builder().level(2).name("Moped").child(true).parentName(vehicle.getName()).build();
+            Category hanger = Category.builder().level(2).name("Tilhenger").child(true).parentName(vehicle.getName()).build();
+            Category digger = Category.builder().level(2).name("Gravemaskin").child(true).parentName(vehicle.getName()).build();
+            Category otherVehicle = Category.builder().level(2).name("Annet").child(true).parentName(vehicle.getName()).build();
             categoryRepository.save(car);
             categoryRepository.save(boat);
             categoryRepository.save(bike);
@@ -164,34 +161,34 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherVehicle);
 
             //Sub-categories for sport
-            Category ballSport = Category.builder().name("Ballsport").child(true).parent(true).parentName(sport.getName()).build();
-            Category waterSport = Category.builder().name("Vannsport").child(true).parent(true).parentName(sport.getName()).build();
-            Category skis = Category.builder().name("Ski og skiutstyr").child(true).parent(true).parentName(sport.getName()).build();
-            Category outdoorlife = Category.builder().name("Friluftsliv").child(true).parent(true).parentName(sport.getName()).build();
+            Category ballSport = Category.builder().level(2).name("Ballsport").child(true).parent(true).parentName(sport.getName()).build();
+            Category waterSport = Category.builder().level(2).name("Vannsport").child(true).parent(true).parentName(sport.getName()).build();
+            Category skis = Category.builder().level(2).name("Ski og skiutstyr").child(true).parent(true).parentName(sport.getName()).build();
+            Category outdoorlife = Category.builder().level(2).name("Friluftsliv").child(true).parent(true).parentName(sport.getName()).build();
             categoryRepository.save(ballSport);
             categoryRepository.save(waterSport);
             categoryRepository.save(skis);
             categoryRepository.save(outdoorlife);
 
             //Sub-categories for ballsport
-            Category handball = Category.builder().name("Håndball").child(true).parentName(ballSport.getName()).build();
-            Category fotball = Category.builder().name("Fotball").child(true).parentName(ballSport.getName()).build();
-            Category basket = Category.builder().name("Basketball").child(true).parentName(ballSport.getName()).build();
-            Category ballSportother = Category.builder().name("Annet").child(true).parentName(ballSport.getName()).build();
+            Category handball = Category.builder().level(3).name("Håndball").child(true).parentName(ballSport.getName()).build();
+            Category fotball = Category.builder().level(3).name("Fotball").child(true).parentName(ballSport.getName()).build();
+            Category basket = Category.builder().level(3).name("Basketball").child(true).parentName(ballSport.getName()).build();
+            Category ballSportother = Category.builder().level(3).name("Annet").child(true).parentName(ballSport.getName()).build();
             categoryRepository.save(handball);
             categoryRepository.save(fotball);
             categoryRepository.save(basket);
             categoryRepository.save(ballSportother);
 
             //Sub-categories for watersport
-            Category lifewest = Category.builder().name("Redningsvest").child(true).parentName(waterSport.getName()).build();
-            Category divingequipment = Category.builder().name("Dykkerutstyr").child(true).parentName(waterSport.getName()).build();
-            Category wetsuit = Category.builder().name("Våtdrakt").child(true).parentName(waterSport.getName()).build();
-            Category badedyre = Category.builder().name("Badedyr").child(true).parentName(waterSport.getName()).build();
-            Category parasail = Category.builder().name("Parasail").child(true).parentName(waterSport.getName()).build();
-            Category tube = Category.builder().name("Tube").child(true).parentName(waterSport.getName()).build();
-            Category paddle = Category.builder().name("Paddlebrett").child(true).parentName(waterSport.getName()).build();
-            Category waterski =Category.builder().name("Vannski").child(true).parentName(waterSport.getName()).build();
+            Category lifewest = Category.builder().level(3).name("Redningsvest").child(true).parentName(waterSport.getName()).build();
+            Category divingequipment = Category.builder().level(3).name("Dykkerutstyr").child(true).parentName(waterSport.getName()).build();
+            Category wetsuit = Category.builder().level(3).name("Våtdrakt").child(true).parentName(waterSport.getName()).build();
+            Category badedyre = Category.builder().level(3).name("Badedyr").child(true).parentName(waterSport.getName()).build();
+            Category parasail = Category.builder().level(3).name("Parasail").child(true).parentName(waterSport.getName()).build();
+            Category tube = Category.builder().level(3).name("Tube").child(true).parentName(waterSport.getName()).build();
+            Category paddle = Category.builder().level(3).name("Paddlebrett").child(true).parentName(waterSport.getName()).build();
+            Category waterski =Category.builder().level(3).name("Vannski").child(true).parentName(waterSport.getName()).build();
             categoryRepository.save(lifewest);
             categoryRepository.save(divingequipment);
             categoryRepository.save(badedyre);
@@ -202,14 +199,14 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(waterski);
 
             //sub-categories for ski
-            Category slalomski = Category.builder().name("Slalomski").child(true).parentName(skis.getName()).build();
-            Category slalomsko = Category.builder().name("Slalomsko").child(true).parentName(skis.getName()).build();
-            Category slalomstaver = Category.builder().name("Slalomstaver").child(true).parentName(skis.getName()).build();
-            Category helmet = Category.builder().name("Hjelm").child(true).parentName(skis.getName()).build();
-            Category skoyteski = Category.builder().name("Skøyteski").child(true).parentName(skis.getName()).build();
-            Category klassiske = Category.builder().name("Klassiske ski").child(true).parentName(skis.getName()).build();
-            Category fellesski = Category.builder().name("Felleski").child(true).parentName(skis.getName()).build();
-            Category otherski = Category.builder().name("Annet").child(true).parentName(skis.getName()).build();
+            Category slalomski = Category.builder().level(3).name("Slalomski").child(true).parentName(skis.getName()).build();
+            Category slalomsko = Category.builder().level(3).name("Slalomsko").child(true).parentName(skis.getName()).build();
+            Category slalomstaver = Category.builder().level(3).name("Slalomstaver").child(true).parentName(skis.getName()).build();
+            Category helmet = Category.builder().level(3).name("Hjelm").child(true).parentName(skis.getName()).build();
+            Category skoyteski = Category.builder().level(3).name("Skøyteski").child(true).parentName(skis.getName()).build();
+            Category klassiske = Category.builder().level(3).name("Klassiske ski").child(true).parentName(skis.getName()).build();
+            Category fellesski = Category.builder().level(3).name("Felleski").child(true).parentName(skis.getName()).build();
+            Category otherski = Category.builder().level(3).name("Annet").child(true).parentName(skis.getName()).build();
             categoryRepository.save(slalomski);
             categoryRepository.save(slalomsko);
             categoryRepository.save(slalomstaver);
@@ -221,12 +218,12 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherski);
 
             //sub-categories for outdoor living
-            Category telt = Category.builder().name("Telt").child(true).parentName(outdoorlife.getName()).build();
-            Category fishingequipment = Category.builder().child(true).name("Fiskeutstyr").parentName(outdoorlife.getName()).build();
-            Category kano = Category.builder().name("Kano").child(true).parentName(outdoorlife.getName()).build();
-            Category kajakk  = Category.builder().name("Kajakk").child(true).parentName(outdoorlife.getName()).build();
-            Category clohting = Category.builder().name("Ytterklær").child(true).parentName(outdoorlife.getName()).build();
-            Category otherOutdoor = Category.builder().name("Annte").child(true).parentName(outdoorlife.getName()).build();
+            Category telt = Category.builder().level(3).name("Telt").child(true).parentName(outdoorlife.getName()).build();
+            Category fishingequipment = Category.builder().level(3).child(true).name("Fiskeutstyr").parentName(outdoorlife.getName()).build();
+            Category kano = Category.builder().level(3).name("Kano").child(true).parentName(outdoorlife.getName()).build();
+            Category kajakk  = Category.builder().level(3).name("Kajakk").child(true).parentName(outdoorlife.getName()).build();
+            Category clohting = Category.builder().level(3).name("Ytterklær").child(true).parentName(outdoorlife.getName()).build();
+            Category otherOutdoor = Category.builder().level(3).name("Annte").child(true).parentName(outdoorlife.getName()).build();
             categoryRepository.save(telt);
             categoryRepository.save(fishingequipment);
             categoryRepository.save(kajakk);
@@ -235,14 +232,14 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherOutdoor);
 
             //sub-categories data
-            Category screen = Category.builder().name("Skjerm").child(true).parentName(computer.getName()).build();
-            Category datamaskin = Category.builder().name("Datamaskin").child(true).parentName(computer.getName()).build();
-            Category spill =Category.builder().name("Spill").child(true).parentName(computer.getName()).build();
-            Category spillkonsoll = Category.builder().name("Spillkonsoll").child(true).parentName(computer.getName()).build();
-            Category kabler  = Category.builder().name("Ledninger").child(true).parentName(computer.getName()).build();
-            Category mobil =Category.builder().name("Mobil").child(true).parentName(computer.getName()).build();
-            Category kampera = Category.builder().name("Kamera").child(true).parentName(computer.getName()).build();
-            Category otherComputer =Category.builder().name("Annet").child(true).parentName(computer.getName()).build();
+            Category screen = Category.builder().level(2).name("Skjerm").child(true).parentName(computer.getName()).build();
+            Category datamaskin = Category.builder().level(2).name("Datamaskin").child(true).parentName(computer.getName()).build();
+            Category spill =Category.builder().level(2).name("Spill").child(true).parentName(computer.getName()).build();
+            Category spillkonsoll = Category.builder().level(2).name("Spillkonsoll").child(true).parentName(computer.getName()).build();
+            Category kabler  = Category.builder().level(2).name("Ledninger").child(true).parentName(computer.getName()).build();
+            Category mobil =Category.builder().level(2).name("Mobil").child(true).parentName(computer.getName()).build();
+            Category kampera = Category.builder().level(2).name("Kamera").child(true).parentName(computer.getName()).build();
+            Category otherComputer =Category.builder().level(2).name("Annet").child(true).parentName(computer.getName()).build();
             categoryRepository.save(screen);
             categoryRepository.save(datamaskin);
             categoryRepository.save(spill);
@@ -253,11 +250,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherComputer);
 
             //Sub-categories sound
-            Category speaker = Category.builder().name("Høytaler").child(true).parentName(sound.getName()).build();
-            Category cd = Category.builder().name("CD-spiller").child(true).parentName(sound.getName()).build();
-            Category lp = Category.builder().name("Platespiller").child(true).parentName(sound.getName()).build();
-            Category headphones = Category.builder().name("Hodetelefoner").child(true).parentName(sound.getName()).build();
-            Category othersound = Category.builder().name("Annet").child(true).parentName(sound.getName()).build();
+            Category speaker = Category.builder().level(2).name("Høytaler").child(true).parentName(sound.getName()).build();
+            Category cd = Category.builder().level(2).name("CD-spiller").child(true).parentName(sound.getName()).build();
+            Category lp = Category.builder().level(2).name("Platespiller").child(true).parentName(sound.getName()).build();
+            Category headphones = Category.builder().level(2).name("Hodetelefoner").child(true).parentName(sound.getName()).build();
+            Category othersound = Category.builder().level(2).name("Annet").child(true).parentName(sound.getName()).build();
             categoryRepository.save(speaker);
             categoryRepository.save(cd);
             categoryRepository.save(lp);
@@ -265,11 +262,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(othersound);
 
             //Other instrument
-            Category blow = Category.builder().name("Blåseinstrument").child(true).parentName(instruments.getName()).build();
-            Category streng = Category.builder().name("Strengeinstrument").child(true).parentName(instruments.getName()).build();
-            Category elektronisk = Category.builder().name("Elektriske instrumenter").child(true).parentName(instruments.getName()).build();
-            Category slag = Category.builder().name("Slaginstrument").child(true).parentName(instruments.getName()).build();
-            Category otherinstrument = Category.builder().name("Annet").child(true).parentName(instruments.getName()).build();
+            Category blow = Category.builder().level(2).name("Blåseinstrument").child(true).parentName(instruments.getName()).build();
+            Category streng = Category.builder().level(2).name("Strengeinstrument").child(true).parentName(instruments.getName()).build();
+            Category elektronisk = Category.builder().level(2).name("Elektriske instrumenter").child(true).parentName(instruments.getName()).build();
+            Category slag = Category.builder().level(2).name("Slaginstrument").child(true).parentName(instruments.getName()).build();
+            Category otherinstrument = Category.builder().level(2).name("Annet").child(true).parentName(instruments.getName()).build();
             categoryRepository.save(blow);
             categoryRepository.save(streng);
             categoryRepository.save(elektronisk);
@@ -277,11 +274,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherinstrument);
 
             //sub-categories for Clothes
-            Category clothes = Category.builder().name("Klær").child(true).parentName(clohting.getName()).build();
-            Category veske = Category.builder().name("Vesker").child(true).parentName(clothing.getName()).build();
-            Category sko = Category.builder().name("Sko").child(true).parentName(clothing.getName()).build();
-            Category smykker = Category.builder().name("Smykker").child(true).parentName(clothing.getName()).build();
-            Category otherclothes = Category.builder().name("Annet").child(true).parentName(clohting.getName()).build();
+            Category clothes = Category.builder().level(2).name("Klær").child(true).parentName(clohting.getName()).build();
+            Category veske = Category.builder().level(2).name("Vesker").child(true).parentName(clothing.getName()).build();
+            Category sko = Category.builder().level(2).name("Sko").child(true).parentName(clothing.getName()).build();
+            Category smykker = Category.builder().level(2).name("Smykker").child(true).parentName(clothing.getName()).build();
+            Category otherclothes = Category.builder().level(2).name("Annet").child(true).parentName(clohting.getName()).build();
             categoryRepository.save(clothes);
             categoryRepository.save(veske);
             categoryRepository.save(smykker);
@@ -289,12 +286,12 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherclothes);
 
             //Sub-categories for hobby
-            Category brettspill = Category.builder().name("Brettspill").child(true).parentName(hobby.getName()).build();
-            Category books = Category.builder().name("Bøker").child(true).parentName(hobby.getName()).build();
-            Category sklie = Category.builder().name("Sklie").child(true).parentName(hobby.getName()).build();
-            Category hoppeslott = Category.builder().name("Hoppeslott").child(true).parentName(hobby.getName()).build();
-            Category pynt = Category.builder().name("Pyntegjenstander").child(true).parentName(hobby.getName()).build();
-            Category otherhobby = Category.builder().name("Annet").child(true).parentName(hobby.getName()).build();
+            Category brettspill = Category.builder().level(2).name("Brettspill").child(true).parentName(hobby.getName()).build();
+            Category books = Category.builder().level(2).name("Bøker").child(true).parentName(hobby.getName()).build();
+            Category sklie = Category.builder().level(2).name("Sklie").child(true).parentName(hobby.getName()).build();
+            Category hoppeslott = Category.builder().level(2).name("Hoppeslott").child(true).parentName(hobby.getName()).build();
+            Category pynt = Category.builder().level(2).name("Pyntegjenstander").child(true).parentName(hobby.getName()).build();
+            Category otherhobby = Category.builder().level(2).name("Annet").child(true).parentName(hobby.getName()).build();
             categoryRepository.save(brettspill);
             categoryRepository.save(books);
             categoryRepository.save(sklie);
@@ -303,11 +300,11 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(otherhobby);
 
             //sub-categories for gardening
-            Category verktoy = Category.builder().name("Verktøy").child(true).parentName(garden.getName()).build();
-            Category container = Category.builder().name("Container").child(true).parentName(garden.getName()).build();
-            Category stoler = Category.builder().name("Stoler og bord").child(true).parentName(garden.getName()).build();
-            Category hage = Category.builder().name("Hage og uteliv").child(true).parent(true).parentName(garden.getName()).build();
-            Category othergarden = Category.builder().name("Annet").child(true).parentName(garden.getName()).build();
+            Category verktoy = Category.builder().level(2).name("Verktøy").child(true).parentName(garden.getName()).build();
+            Category container = Category.builder().level(2).name("Container").child(true).parentName(garden.getName()).build();
+            Category stoler = Category.builder().level(2).name("Stoler og bord").child(true).parentName(garden.getName()).build();
+            Category hage = Category.builder().level(2).name("Hage og uteliv").child(true).parent(false).parentName(garden.getName()).build();
+            Category othergarden = Category.builder().level(2).name("Annet").child(true).parentName(garden.getName()).build();
             categoryRepository.save(verktoy);
             categoryRepository.save(container);
             categoryRepository.save(stoler);
@@ -315,38 +312,38 @@ public class DataLoader implements ApplicationRunner {
             categoryRepository.save(othergarden);
 
             //sub-categories for hage
-            Category trillebor = Category.builder().child(true).name("Trillebår").parentName(hage.getName()).build();
-            Category hageverktoy = Category.builder().child(true).name("Hageredskaper").parentName(hage.getName()).build();
+            Category trillebor = Category.builder().level(3).child(true).name("Trillebår").parentName(hage.getName()).build();
+            Category hageverktoy = Category.builder().level(3).child(true).name("Hageredskaper").parentName(hage.getName()).build();
             categoryRepository.save(trillebor);
             categoryRepository.save(hageverktoy);
 
             // Create ad
             Ad borremaskin = Ad.builder().title("Borre-maskin").description("Leier ut en kraftig borremaskin. Pent brukt og fungerer som den skal.").
-                    rental(true).user(user5).durationType(AdType.MONTH).duration(2).price(50).created(LocalDate.now()).lat(63.410096).lng(10.401003).streetAddress("Valgrindvegen 5A").postalCode(7031).city("Trondheim").user(user1).category(verktoy).build();
+                    rental(true).user(user5).durationType(AdType.MONTH).price(50).created(LocalDate.now()).lat(63.410096).lng(10.401003).streetAddress("Valgrindvegen 5A").postalCode(7031).city("Trondheim").user(user1).category(verktoy).build();
             Ad tux = Ad.builder().title("Leier ut tux").description("1000 kr pr kveld").rental(true).durationType(AdType.WEEK).
-                    duration(2).price(1000).created(LocalDate.now()).lat(63.414228).lng(10.538283).streetAddress("Markaplassen 15").postalCode(7054).
+                    price(1000).created(LocalDate.now()).lat(63.414228).lng(10.538283).streetAddress("Markaplassen 15").postalCode(7054).
                     city("Trondheim").user(user2).category(clothes).build();
             Ad pc = Ad.builder().title("Leier ut Pc").description("Lån en lenovo PC, funker bra til skole eller jobb.").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(800).created(LocalDate.now()).lat(63.418887).lng(10.525684).streetAddress("Fagrabrekka 2").postalCode(7056).
+                    durationType(AdType.MONTH).price(800).created(LocalDate.now()).lat(63.418887).lng(10.525684).streetAddress("Fagrabrekka 2").postalCode(7056).
                     city("Ranheim").user(user3).category(datamaskin).build();
             Ad charger = Ad.builder().title("Pc lader").description("Leier ut en ny lenovo lader").rental(true).durationType(AdType.MONTH).
-                    duration(2).price(1000).created(LocalDate.now()).lat(63.417858).lng(10.523445).streetAddress("Reidar Raaens veg 7").
+                    price(1000).created(LocalDate.now()).lat(63.417858).lng(10.523445).streetAddress("Reidar Raaens veg 7").
                     postalCode(7056).city("Ranheim").user(user6).category(datamaskin).build();
             Ad motherBoard = Ad.builder().title("Mother board").description("Leier ut ut ny lenovo motherboard").
-                    rental(true).durationType(AdType.MONTH).duration(2).price(600).created(LocalDate.now()).lat(63.354059).lng(10.382288).
+                    rental(true).durationType(AdType.MONTH).price(600).created(LocalDate.now()).lat(63.354059).lng(10.382288).
                     streetAddress("Svartholtet 12").postalCode(7092).city("Tiller").user(user7).category(datamaskin).build();
             Ad sovepose = Ad.builder().title("Sovepose og primus").description("Leier ut sovepose og primus, leies ut kun sammen").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.354789).lng(10.377470).
+                    durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.354789).lng(10.377470).
                     streetAddress("Rognbudalen 18").postalCode(7092).city("Tiller").user(user8).category(otherOutdoor).build();
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
-                    durationType(AdType.MONTH).duration(2).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
+                    durationType(AdType.MONTH).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
             Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
-                    durationType(AdType.MONTH).duration(2).price(100).created(LocalDate.now()).lat(63.392700).lng(10.350411).
+                    durationType(AdType.MONTH).price(100).created(LocalDate.now()).lat(63.392700).lng(10.350411).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
-            Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.400695).lng(10.334900).
+            Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).price(300).created(LocalDate.now()).lat(63.400695).lng(10.334900).
                     streetAddress("Konrad Dahls veg 7B").city("Trondheim").postalCode(7024).user(user2).category(otherhobby).build();
-            Ad tent = Ad.builder().title("Ny lavvo").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).duration(2).
+            Ad tent = Ad.builder().title("Nytt telt").description("Lavvo med plass til 8").rental(true).durationType(AdType.DAY).
                     price(800).created(LocalDate.now()).lat(63.436265).lng(10.625622).streetAddress("Ålivegen 6C").city("Vikhammer").
                     postalCode(7560).user(user3).category(telt).build();
             // Persist all ads
@@ -361,34 +358,34 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(klovn);
             adRepository.save(tent);
 
-            Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).duration(1).price(350).
-                    postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(63.433787).lng(10.588871).build();
-            Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).duration(4).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
+            Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).price(350).
+                    postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.433734).lng(10.588934).build();
+            Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
                     rental(true).user(user5).category(grill).created(LocalDate.now()).lat(63.430782).lng(10.744085).build();
-            Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").duration(1).postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
+            Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
                     user(user6).lat(63.418166).durationType(AdType.DAY).lng(10.774536).created(LocalDate.now()).category(pizzaovn).build();
-            Ad koleboks = Ad.builder().title("Kjøleboks leies ut").description("Kjøleboks leies ut til arrangementer").duration(3).durationType(AdType.DAY).streetAddress("Fjordvegen 2").postalCode(9999).city("Båtsfjord").
+            Ad koleboks = Ad.builder().title("Kjøleboks leies ut").description("Kjøleboks leies ut til arrangementer").durationType(AdType.DAY).streetAddress("Fjordvegen 2").postalCode(9999).city("Båtsfjord").
                     price(100).user(user7).rental(true).category(otherKitchen).created(LocalDate.now()).lat(70.629820).lng(29.701159).build();
             adRepository.save(kjokkenmaskin);
             adRepository.save(grillen);
             adRepository.save(pizzaspade);
             adRepository.save(koleboks);
 
-            Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").duration(2).durationType(AdType.DAY).postalCode(7500).streetAddress("Stokkanvegen 2").
+            Ad bil = Ad.builder().title("Bil leies ut").description("Leier ut en volvo 240 til 200kr dagen").durationType(AdType.DAY).postalCode(7500).streetAddress("Stokkanvegen 2").
                     price(200).user(user8).category(car).rental(true).city("Stjørdal").created(LocalDate.now()).lat(63.468724).lng(10.928546).build();
-            Ad bot = Ad.builder().title("Seilbåt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").duration(1).durationType(AdType.DAY).
+            Ad bot = Ad.builder().title("Seilbåt til utleie").streetAddress("Illsvikøra 11").description("Leier ut seilbåten min i skansen for dagsturer til erfarne seilere").durationType(AdType.DAY).
                     postalCode(7018).price(1200).user(user9).rental(true).category(boat).city("Trondheim").created(LocalDate.now()).lat(63.431758).lng(10.362587).build();
-            Ad sykkel = Ad.builder().title("Sykkel til utleie").description("Leier ut bysykkelen min. Perfekt til turister.").duration(1).durationType(AdType.DAY).postalCode(7020).streetAddress("Schnitlers vei 6").
+            Ad sykkel = Ad.builder().title("Sykkel til utleie").description("Leier ut bysykkelen min. Perfekt til turister.").durationType(AdType.DAY).postalCode(7020).streetAddress("Schnitlers vei 6").
                     price(100).user(user1).rental(true).city("Trondheim").category(bike).lat(63.427021).lng(10.362470).created(LocalDate.now()).build();
-            Ad sparkesykkel = Ad.builder().description("Triksesparkesykkel kan leies for en billig penge").title("Trikse sparkesykkel").duration(2).durationType(AdType.HOUR).postalCode(7042).city("Trondheim").
+            Ad sparkesykkel = Ad.builder().description("Triksesparkesykkel kan leies for en billig penge").title("Trikse sparkesykkel").durationType(AdType.HOUR).postalCode(7042).city("Trondheim").
                     streetAddress("Biskop Sigurds gate 7").price(70).rental(true).user(user2).created(LocalDate.now()).category(bikey).lat(63.437387).lng(10.425300).build();
-            Ad moped = Ad.builder().title("Moped til utleie").description("Leier ut mopeden min til daglig bruk, da den ikke brukes så mye.").duration(1).durationType(AdType.DAY).postalCode(7014).city("Trondheim").
+            Ad moped = Ad.builder().title("Moped til utleie").description("Leier ut mopeden min til daglig bruk, da den ikke brukes så mye.").durationType(AdType.DAY).postalCode(7014).city("Trondheim").
                     streetAddress("Øvre Kristianstens gate 2B").price(300).rental(true).user(user3).category(scooter).lat(63.428744).lng(10.408958).rentedOut(true).created(LocalDate.now()).build();
-            Ad tilhenger = Ad.builder().title("Tilhenger").description("Stor tilhenger til utleie, funker for møbler og store gjenstander.").duration(1).durationType(AdType.DAY).postalCode(7051).price(350).rental(true).
+            Ad tilhenger = Ad.builder().title("Tilhenger").description("Stor tilhenger til utleie, funker for møbler og store gjenstander.").durationType(AdType.DAY).postalCode(7051).price(350).rental(true).
                     streetAddress("Øvre Bergsvingen 3").city("Trondheim").user(user4).created(LocalDate.now()).category(hanger).lat(63.417836).lng(10.422296).build();
-            Ad gravemaskin = Ad.builder().title("Gravemaskin til utleie").description("Leier ut en Ultimate digger 2000 fra CAT.Leier må hente selv.").durationType(AdType.DAY).duration(1).postalCode(7224).streetAddress("losjevegen 4").
+            Ad gravemaskin = Ad.builder().title("Gravemaskin til utleie").description("Leier ut en Ultimate digger 2000 fra CAT.Leier må hente selv.").durationType(AdType.DAY).postalCode(7224).streetAddress("losjevegen 4").
                     city("Melhus").price(1100).user(user5).rental(true).created(LocalDate.now()).category(digger).lat(63.284590).lng(10.284076).build();
-            Ad elsykker = Ad.builder().title("Min fine rosa elsykkel!").description("Vanskelig å komme seg hjem fra byen i helgene? Lån denne kjærra her!").duration(3).durationType(AdType.DAY).price(600).postalCode(7036).
+            Ad elsykker = Ad.builder().title("Min fine rosa elsykkel!").description("Vanskelig å komme seg hjem fra byen i helgene? Lån denne kjærra her!").durationType(AdType.DAY).price(600).postalCode(7036).
                     streetAddress("Venusvegen 10").city("Trondheim").rental(true).user(user6).created(LocalDate.now()).category(otherVehicle).lat( 63.391813).lng(10.415350).build();
             adRepository.save(bil);
             adRepository.save(bot);
@@ -399,8 +396,8 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(gravemaskin);
             adRepository.save(elsykker);
 
-            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").duration(1).durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(63.410096).lng(10.401003).build();
-            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.414228).lng(10.538283).category(ballSport).build();
+            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(63.410096).lng(10.401003).build();
+            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.414228).lng(10.538283).category(ballSport).build();
             adRepository.save(handyball);
             adRepository.save(ball);
 
@@ -560,9 +557,9 @@ public class DataLoader implements ApplicationRunner {
 
 
 
-            Group group1 = Group.builder().name("gruppechat1").build();
-            Group group2 = Group.builder().name("gruppechat2").build();
-            Group group3 = Group.builder().name("gruppechat3").build();
+            Group group1 = Group.builder().name(user1.getFirstName() + " og " + user2.getFirstName()).build();
+            Group group2 = Group.builder().name(user2.getFirstName() + " og " + user3.getFirstName()).build();
+            Group group3 = Group.builder().name(user3.getFirstName() + " og " + user4.getFirstName()).build();
 
             Set<User> users1 = new HashSet<>();
             users1.add(user1);
@@ -638,7 +635,8 @@ public class DataLoader implements ApplicationRunner {
     public void savepb(File pb, User user) throws IOException {
         byte[] fileContent =  Files.readAllBytes(pb.toPath());
         Picture picture1 = Picture.builder().filename(pb.getName())
-                .data(fileContent)
+                //                .data(fileContent)
+                .base64(Base64.getEncoder().encodeToString(fileContent))
                 .type(Files.probeContentType(pb.toPath()))
                 .build();
         user.setPicture(picture1);

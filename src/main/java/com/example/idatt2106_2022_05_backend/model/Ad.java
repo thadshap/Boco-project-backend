@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.example.idatt2106_2022_05_backend.enums.AdType.DAY;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,12 +25,11 @@ import java.util.Set;
 public class Ad {
 
     @Id
-    @SequenceGenerator(name = "ad_sequence", sequenceName = "ad_sequence", allocationSize = 1)
-    @GeneratedValue(generator = "ad_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "ad_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ad_id")
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
     private String title;
 
     // Is nullable
@@ -36,21 +37,18 @@ public class Ad {
     private String description;
 
     // If true --> for rent; if false --> item is being given away
-    @Column(name = "rental", nullable = false)
+    @Column(name = "rental")
     private boolean rental;
 
-    @Column(name = "duration", nullable = false)
-    private int duration;
-
-    @Column(name = "duration_type", nullable = false)
-    private AdType durationType;
+    @Column(name = "duration")
+    private AdType durationType = DAY;
 
     // True if the item is rented out
-    @Column(name = "rented_out", nullable = false)
+    @Column(name = "rented_out")
     private boolean rentedOut;
 
     // Is nullable
-    @Column(name = "price", nullable = false)
+    @Column(name = "price")
     private int price;
 
     // Is nullable
@@ -58,7 +56,7 @@ public class Ad {
     private String streetAddress;
 
     // Is nullable
-    @Column(name = "postal_code", nullable = false)
+    @Column(name = "postal_code")
     private int postalCode;
 
     @NotNull
@@ -141,7 +139,7 @@ public class Ad {
 
 
 /**
-    @PreRemove
+//    @PreRemove
     private void removeRelationships() {
         if (pictures != null) {
             setPictures(null);

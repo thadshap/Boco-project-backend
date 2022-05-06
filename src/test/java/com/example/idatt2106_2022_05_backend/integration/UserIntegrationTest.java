@@ -54,8 +54,55 @@ public class UserIntegrationTest {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    PictureRepository pictureRepository;
+
+    @Autowired
+    MessageRepository messageRepository;
+
+    @BeforeEach
+    public void setUp() {
+        // Building a user
+        User user = User.builder().firstName("firstName").lastName("lastName").email("user.name@hotmail.com")
+                .password("pass1word").build();
+
+        // Saving the user
+        userRepository.save(user);
+
+        // Building categories
+        Category clothes = Category.builder().
+                name("new category1").
+                parent(true).
+                build();
+
+        Category it = Category.builder().
+                name("new category2").
+                parent(true).
+                build();
+
+        // Saving the categories
+        categoryRepository.save(clothes);
+        categoryRepository.save(it);
+    }
+
+    @AfterEach
+    public void emptyDatabase() {
+        reviewRepository.deleteAll();
+        rentalRepository.deleteAll();
+        pictureRepository.deleteAll();
+        messageRepository.deleteAll();
+        userRepository.deleteAll();
+        adRepository.deleteAll();
+        // messageRepository.deleteAll();
+        // outputMessageRepository.deleteAll();
+        // userRepository.deleteAll();
+        categoryRepository.deleteAll();
+    }
+
     @Nested
     class TestUserRepo {
+
+
 
         @Test
         public void getUserByEmail_WhenEmailCorrect() {
@@ -108,7 +155,7 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
                     .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
@@ -140,7 +187,7 @@ public class UserIntegrationTest {
 
             // Building an ad with foreign keys and add it to the user
             Ad newAd = Ad.builder().title("Sail boat").description("Renting out a huge sail boat").rental(true)
-                    .rentedOut(false).durationType(AdType.MONTH).duration(2).price(100).streetAddress("The sea")
+                    .rentedOut(false).durationType(AdType.MONTH).price(100).streetAddress("The sea")
                     .postalCode(7000).user(user).category(category).build();
 
             // Persist the ad
@@ -210,8 +257,8 @@ public class UserIntegrationTest {
                 // Extract a response entity using UserService
                 ResponseEntity<Object> res = userService.updateUser(user.getId(), dto);
 
-                // Assert that the response code is OK
-                assertEquals(res.getStatusCodeValue(), HttpStatus.OK.value());
+                // Assert that the response is null (returned when there is no attribute in dto)
+                assertEquals(res, null);
 
                 // Assert that the updated user and the previous user is the same
                 assertEquals(user, userRepository.findById(user.getId()).get());
@@ -284,7 +331,7 @@ public class UserIntegrationTest {
 
         @Test
         public void userDeleted_WhenIdCorrect() {
-            User user = userRepository.findAll().get(1);
+            User user = userRepository.findAll().get(0);
 
             ResponseEntity<Object> response = userService.deleteUser(user.getId());
 

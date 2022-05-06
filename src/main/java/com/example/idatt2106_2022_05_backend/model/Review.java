@@ -17,8 +17,7 @@ import java.util.Objects;
 public class Review {
 
     @Id
-    @SequenceGenerator(name = "review_sequence", sequenceName = "review_sequence", allocationSize = 1)
-    @GeneratedValue(generator = "review_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id", nullable = false)
     private Long id;
 

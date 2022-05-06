@@ -44,6 +44,8 @@ public class RentalDto {
     @ApiModelProperty(notes = "name of owner of item")
     private String owner;
 
+    private Long ownerId;
+
     @ApiModelProperty(notes = "name of user that rents item")
     private String borrower;
 

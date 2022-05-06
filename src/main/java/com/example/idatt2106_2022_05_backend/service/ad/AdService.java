@@ -23,6 +23,8 @@ public interface AdService {
     // Get all ads in category by category name
     Response getAllAdsInCategory(String name);
 
+    Response getAllCategoriesWithLevel();
+
     Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
 
     Response getAllParentCategories();
@@ -67,8 +69,6 @@ public interface AdService {
 
     // delete picture
     Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
-
-    Response getAllCategoriesWithLevel();
 
     // Search in database
     Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation);

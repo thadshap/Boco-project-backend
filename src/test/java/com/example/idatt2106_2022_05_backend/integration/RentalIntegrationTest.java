@@ -14,6 +14,7 @@ import com.example.idatt2106_2022_05_backend.repository.*;
 import com.example.idatt2106_2022_05_backend.service.ad.AdService;
 import com.example.idatt2106_2022_05_backend.service.calendar.CalendarService;
 import com.example.idatt2106_2022_05_backend.service.rental.RentalService;
+import com.example.idatt2106_2022_05_backend.util.Response;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,7 +91,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -145,7 +147,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -204,7 +206,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -287,7 +289,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -364,7 +366,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -385,8 +387,8 @@ public class RentalIntegrationTest {
         Rental rentalFound = rentalRepository.save(rental);
 
         // Activate rental
-//        ResponseEntity<Object> response = rentalService.activateRental(rentalFound.getId());
-//        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+        Response response = rentalService.activateRental(rentalFound.getId());
+        assertEquals(HttpStatus.OK.value(), response.getStatus().value());
         assertNotEquals(rentalFound.isActive(), rentalRepository.findById(rentalFound.getId()).get().isActive());
     }
 
@@ -416,7 +418,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -474,7 +476,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere2")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -538,7 +540,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -594,7 +596,7 @@ public class RentalIntegrationTest {
         // Create an ad
         // Create ads as well
         AdDto speaker1 = AdDto.builder().title("Title that does not exist elsewhere3")
-                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK).duration(2)
+                .description("Renting out a brand new speaker").rental(true).durationType(AdType.WEEK)
                 .price(100).streetAddress("vollabakken 3").postalCode(7030).city("Trondheim").userId(owner.getId())
                 .categoryId(it.getId()).build();
 
@@ -644,10 +646,10 @@ public class RentalIntegrationTest {
 
         // Create an ad
         AdDto speaker1 = AdDto.builder().title("Title 1 for test").description("Renting out a brand new speaker")
-                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .rental(true).durationType(AdType.WEEK).price(100).streetAddress("vollabakken 3")
                 .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
         AdDto speaker2 = AdDto.builder().title("Title 2 for test").description("Renting out a brand new speaker")
-                .rental(true).durationType(AdType.WEEK).duration(2).price(100).streetAddress("vollabakken 3")
+                .rental(true).durationType(AdType.WEEK).price(100).streetAddress("vollabakken 3")
                 .postalCode(7030).city("Trondheim").userId(owner.getId()).categoryId(it.getId()).build();
 
         // Persist ads

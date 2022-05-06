@@ -45,9 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/auth/**",
             "/ws",
             "/ws/**",
-            "/rental/approve/**",
-            "/rental/activate/**",
-            "/rental/decline/**",
             "/api/ads/**",
             "/api/users/**",
             "/api/search/**",
@@ -81,7 +78,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().configurationSource(request -> {
@@ -102,11 +98,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .x509()
 //                .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
                 .and()
-
-                // Relax CSRF on the WebSocket due to needing direct access from apps
-                //.csrf().ignoringAntMatchers("/ws/**").and()
-                //.authorizeHttpRequests().antMatchers("/ws/**").permitAll().and()
-
 //                .formLogin().permitAll().loginPage("/auth/login")
 //                .usernameParameter("email").passwordParameter("password").successHandler(databaseLoginHandler).and()
 //                .oauth2Login().loginPage("/auth/login/outside/service").userInfoEndpoint()

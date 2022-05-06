@@ -2,6 +2,18 @@ spring:
   servlet:
     multipart:
       enabled: true
+#  jpa:
+#    generate-ddl: true
+#    properties:
+#      show-sql: false
+#      hibernate:
+#        ddl-auto: update
+#        dialect: org.hibernate.dialect.MySQL5Dialect
+#  datasource:
+#    username: user
+#    url: jdbc:mysql://localhost:3307/bocogruppe5
+#    password: user
+#    driver-class-name: com.mysql.jdbc.Driver
   h2:
     console:
       enabled: true
@@ -12,8 +24,7 @@ spring:
     hibernate:
       ddl-auto: create
   datasource:
-#    url: jdbc:h2:file:~/test
-    url: jdbc:h2:mem:test_mem
+    url: jdbc:h2:file:~/testt
     username: user
     password:
     driverClassName: org.h2.Driver
@@ -47,14 +58,3 @@ server:
 #    enabled-protocols: TLSv1.2
 #    client-auth: want
   port: 8443
-#logging:
-  #level:
-    #ROOT: info
-#org:
-#  apache:
-#    tomcat:
-#      websocket:
-#        SSL_TRUSTSTORE: src/main/resources/keystore/keystores/truststore.jks
-#        SSL_PROTOCOLS: TLS
-#        SSL_CONTEXT: ''
-#        SSL_TRUSTSTORE_PWD: ''

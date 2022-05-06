@@ -19,22 +19,27 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="groups")
+@Table(name="groupss")
 public class Group {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="group_id", nullable=false)
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_group",
             joinColumns = {@JoinColumn(name = "group_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
+    @ToString.Exclude
     private Set<User> users;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
+    private Set<Message> messages;
+
 }

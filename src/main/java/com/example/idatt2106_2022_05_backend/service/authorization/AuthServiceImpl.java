@@ -380,7 +380,7 @@ public class AuthServiceImpl implements AuthService {
             return "Valideringstid utløpt";
         }
 
-        user.setVerified(true);
+        user.setEmailVerified(true);
         userRepository.save(user);
         return "valid email";
     }
