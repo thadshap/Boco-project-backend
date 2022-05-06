@@ -111,12 +111,12 @@ public class DataLoader implements ApplicationRunner {
             userRepository.save(user9);
 
             // Create main-categories
-            Category kitchen = Category.builder().name("Kjøkken").parent(true).level(1).icon("fa fa-cutlery").build();
+            Category kitchen = Category.builder().name("Kjøkken").parent(true).level(1).icon("fas fa-utensils").build();
             Category vehicle = Category.builder().name("Kjøretøy").parent(true).level(1).icon("fa fa-car").build();
             Category sport = Category.builder().name("Sport").parent(true).level(1).icon("fas fa-biking").build();
             Category computer = Category.builder().name("Data og datautstyr").parent(true).level(1).icon("fa fa-laptop").build();
             Category sound = Category.builder().name("Lyd").icon("fa fa-volume-up").parent(true).level(1).build();
-            Category instruments = Category.builder().name("Instrumenter").parent(true).level(1).icon("fa fa-guitar").build();
+            Category instruments = Category.builder().name("Instrumenter").parent(true).level(1).icon("fas fa-guitar").build();
             Category clothing = Category.builder().name("Klær og tilbehør").parent(true).level(1).icon("fas fa-tshirt").build();
             Category hobby = Category.builder().name("Hobby og fritid").parent(true).level(1).icon("fas fa-running").build();
             Category garden = Category.builder().name("Hage, oppussing og møbler").parent(true).level(1).icon("fa fa-home").build();
@@ -622,7 +622,8 @@ public class DataLoader implements ApplicationRunner {
         fileContent = Files.readAllBytes(file.toPath());
         picture = Picture.builder()
                 .filename(file.getName())
-                .data(fileContent)
+                //.data(fileContent)
+                .base64(Base64.getEncoder().encodeToString(fileContent))
                 .type(Files.probeContentType(file.toPath()))
                 .build();
         ad.setPictures(new HashSet<>());

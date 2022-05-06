@@ -899,7 +899,7 @@ public class AdServiceImpl implements AdService {
             if (pictures != null) {
                 int i = 0;
                 for (Picture picture : pictures) {
-                    if (Arrays.equals(picture.getData(), chosenPicture.get(i).getBytes())) {
+                    if (Arrays.equals(picture.getBase64().getBytes(), chosenPicture.get(i).getBytes())) {
                         // Remove this picture from ad
                         ad.get().getPictures().remove(picture);
 
