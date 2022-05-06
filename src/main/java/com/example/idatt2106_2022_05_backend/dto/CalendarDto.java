@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CalendarDto {
 
     // AdId
