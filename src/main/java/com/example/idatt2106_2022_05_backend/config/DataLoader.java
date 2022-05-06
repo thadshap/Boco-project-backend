@@ -92,15 +92,15 @@ public class DataLoader implements ApplicationRunner {
         public void run(ApplicationArguments args) throws IOException {
 
             // Create users
-            User user1 = User.builder().numberOfReviews(3).rating(8.2).firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user1 = User.builder().numberOfReviews(0).rating(8.2).firstName("Anders").lastName("Tellefsen").email("andetel@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
             User user2 = User.builder().numberOfReviews(4).rating(3.1).firstName("Brage").lastName("Minge").email("bragem@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user3 = User.builder().numberOfReviews(100).rating(9).firstName("Hasan").lastName("Rehman").email("hasano@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user4 = User.builder().numberOfReviews(860).rating(10).firstName("Maiken Louise").lastName("Brechan").email("maiken@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user5 = User.builder().numberOfReviews(3).rating(9.0).firstName("Thadsha").lastName("Paramsothy").email("thadsha@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user6 = User.builder().numberOfReviews(1200).rating(6).firstName("Karoline").lastName("Wahl").email("karoline@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user7 = User.builder().numberOfReviews(12).rating(1).firstName("Eirin").lastName("Svinsås").email("eirin@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user8 = User.builder().numberOfReviews(60).rating(5).firstName("Leo").lastName("Leosen").email("leo@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
-            User user9 = User.builder().numberOfReviews(2).rating(7).firstName("Johannes").lastName("Herman").email("johannes@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user3 = User.builder().numberOfReviews(1).rating(9).firstName("Hasan").lastName("Rehman").email("hasano@stud.ntnu.no").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user4 = User.builder().numberOfReviews(1).rating(10).firstName("Maiken Louise").lastName("Brechan").email("maiken@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user5 = User.builder().numberOfReviews(1).rating(9.0).firstName("Thadsha").lastName("Paramsothy").email("thadsha@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user6 = User.builder().numberOfReviews(3).rating(6).firstName("Karoline").lastName("Wahl").email("karoline@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user7 = User.builder().numberOfReviews(0).rating(1).firstName("Eirin").lastName("Svinsås").email("eirin@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user8 = User.builder().numberOfReviews(1).rating(5).firstName("Leo").lastName("Leosen").email("leo@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
+            User user9 = User.builder().numberOfReviews(0).rating(7).firstName("Johannes").lastName("Herman").email("johannes@gmail.com").password(passwordEncoder.encode("passord123")).verified(true).role("User").build();
             // Persist the users
 
             userRepository.save(user1);
@@ -341,7 +341,7 @@ public class DataLoader implements ApplicationRunner {
             Ad newHammer = Ad.builder().title("Ny Hammer").description("Leier ut en ny hammer").rental(true).user(user5).
                     durationType(AdType.MONTH).duration(2).price(200).created(LocalDate.now()).lat(63.353148).lng(10.378120).
                     streetAddress("Arne Solbergs veg 30").postalCode(7092).city("Tiller").user(user9).category(verktoy).build();
-            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").user(user6).description("Leier ut matematiske metoder 3 boka").rental(true).
+            Ad matte = Ad.builder().title("Skolebøker Matematikk 3").description("Leier ut matematiske metoder 3 boka").rental(true).
                     durationType(AdType.MONTH).duration(2).price(100).created(LocalDate.now()).lat(63.392700).lng(10.350411).
                     streetAddress("Gabriel Scotts veg 32").postalCode(7023).city("Trondheim").user(user1).category(books).build();
             Ad klovn = Ad.builder().title("Klovnekostyme").description("Leier ut ett klovne-sett").rental(true).durationType(AdType.MONTH).duration(2).price(300).created(LocalDate.now()).lat(63.400695).lng(10.334900).
@@ -362,7 +362,7 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(tent);
 
             Ad kjokkenmaskin = Ad.builder().description("Brødbakemaskin leies ut. Man kan bake alt fra pizza deig til dansk rugbrød.").title("Bosch Brødbakemaskin").durationType(AdType.WEEK).duration(1).price(350).
-                    postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(64.433734).lng(10.588934).build();
+                    postalCode(7054).streetAddress("Væretrøa 160").city("Ranheim").rental(true).user(user4).category(kitchenmachine).created(LocalDate.now()).lat(63.433787).lng(10.588871).build();
             Ad grillen = Ad.builder().title("Gassgrill").description("Gassgrill leies ut uten gasstank").durationType(AdType.MONTH).duration(4).price(500).postalCode(7563).city("Malvik").streetAddress("Smiskaret 79").
                     rental(true).user(user5).category(grill).created(LocalDate.now()).lat(63.430782).lng(10.744085).build();
             Ad pizzaspade = Ad.builder().title("Pizzaspade").description("Pizzaspade gis bort da den ikke blir brukt.").duration(1).postalCode(7550).city("Hommelvik").streetAddress("Steinbruddvegen 3").price(0).rental(false).
@@ -399,41 +399,55 @@ public class DataLoader implements ApplicationRunner {
             adRepository.save(gravemaskin);
             adRepository.save(elsykker);
 
-            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").duration(1).durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(64.3).lng(10.4).build();
-            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.4).lng(10.39).category(ballSport).build();
+            Ad handyball = Ad.builder().title("Håndballsko").description("Låner ut håndballskoene mine i str 38").duration(1).durationType(AdType.WEEK).postalCode(7031).price(80).streetAddress("Valgrindvegen 5a").rental(true).user(user6).category(handball).city("Trondheim").created(LocalDate.now()).lat(63.410096).lng(10.401003).build();
+            Ad ball = Ad.builder().title("Badeball").description("Mega badeball med diameter 30m").duration(1).durationType(AdType.DAY).postalCode(7054).city("Ranheim").price(600).rental(true).streetAddress("Markaplassen 15").user(user4).created(LocalDate.now()).lat(63.414228).lng(10.538283).category(ballSport).build();
             adRepository.save(handyball);
             adRepository.save(ball);
 
-            Rental rental = Rental.builder().rentFrom(LocalDate.now().plusDays(2)).dateOfRental(LocalDate.now()).build();
+            Rental rental = Rental.builder().ad(tux).owner(user2).borrower(user3).price(900).active(true).rentFrom(LocalDate.now().plusDays(2)).rentTo(LocalDate.now().plusDays(3)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
             rental = Rental.builder().ad(klovn).owner(user2).borrower(user8).price(1000).active(true).deadline(LocalDate.now().plusDays(3)).rentTo(LocalDate.now().plusDays(7)).rentFrom(LocalDate.now().plusDays(4)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(matte).owner(user6).borrower(user9).price(100).active(true).deadline(LocalDate.now().plusDays(5)).rentTo(LocalDate.now().plusDays(9)).rentFrom(LocalDate.now().plusDays(6)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(matte).owner(user1).borrower(user9).price(100).active(true).deadline(LocalDate.now().minusDays(8)).rentTo(LocalDate.now().minusDays(2)).rentFrom(LocalDate.now().minusDays(7)).dateOfRental(LocalDate.now().minusDays(7)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().plusDays(7)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(8)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user1).price(3000).active(false).deadline(LocalDate.now().minusDays(11)).rentTo(LocalDate.now().minusDays(3)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now().minusDays(14)).build();
             rentalRepository.save(rental);
-            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user4).price(3000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rental = Rental.builder().ad(newHammer).owner(user2).borrower(user4).price(3100).active(false).deadline(LocalDate.now().plusDays(30)).rentTo(LocalDate.now().plusDays(12)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(sovepose).owner(user8).borrower(user7).price(300).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(borremaskin).owner(user5).borrower(user5).price(370).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(kjokkenmaskin).owner(user4).borrower(user6).price(1000).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(pizzaspade).owner(user6).borrower(user5).price(120).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(pc).owner(user3).borrower(user7).price(100).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
+            rentalRepository.save(rental);
+            rental = Rental.builder().ad(charger).owner(user6).borrower(user9).price(200).active(true).deadline(LocalDate.now().plusDays(9)).rentTo(LocalDate.now().plusDays(15)).rentFrom(LocalDate.now().plusDays(10)).dateOfRental(LocalDate.now()).build();
             rentalRepository.save(rental);
 
             Review review = Review.builder().ad(tux).user(user3).description("veldig bra anbefaler dette produktet!").rating(9).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(borremaskin).user(user2).description("Elendig produkt").rating(6).build();
+            review = Review.builder().ad(sovepose).user(user7).description("Elendig produkt").rating(2).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(kjokkenmaskin).user(user3).description("ten out of ten would buy again").rating(6).build();
+            review = Review.builder().ad(borremaskin).user(user4).description("Elendig produkt").rating(1).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(pizzaspade).user(user4).description("two out of ten would never buy again").rating(1).build();
+            review = Review.builder().ad(kjokkenmaskin).user(user6).description("ten out of ten would buy again").rating(10).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(matte).user(user2).description("Elendig produkt").rating(6).build();
+            review = Review.builder().ad(pizzaspade).user(user5).description("two out of ten would never buy again").rating(1).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(klovn).user(user3).description("ten out of ten would buy again").rating(6).build();
+            review = Review.builder().ad(matte).user(user9).description("Knallbra!").rating(9).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(newHammer).user(user4).description("two out of ten would never buy again").rating(1).build();
+            review = Review.builder().ad(klovn).user(user8).description("ten out of ten would buy again").rating(6).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(newHammer).user(user2).description("Elendig produkt").rating(6).build();
+            review = Review.builder().ad(newHammer).user(user4).description("two out of ten would never buy again").rating(2).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(pc).user(user2).description("ten out of ten would buy again").rating(6).build();
+            review = Review.builder().ad(newHammer).user(user1).description("Elendig produkt").rating(4).build();
             reviewRepository.save(review);
-            review = Review.builder().ad(charger).user(user4).description("two out of ten would never buy again").rating(1).build();
+            review = Review.builder().ad(pc).user(user7).description("ten out of ten would buy again").rating(9).build();
+            reviewRepository.save(review);
+            review = Review.builder().ad(charger).user(user9).description("two out of ten would never buy again").rating(1).build();
             reviewRepository.save(review);
 
             // Add dates to the ads // todo might not work due to id
