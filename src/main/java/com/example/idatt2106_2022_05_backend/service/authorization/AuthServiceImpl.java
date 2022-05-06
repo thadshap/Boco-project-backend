@@ -105,32 +105,38 @@ public class AuthServiceImpl implements AuthService {
             User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName()).verified(true)
                     .password(passwordEncoder.encode(generatePassword(8))).build();
-            File pb = new File("src/main/resources/static/images/anders.jpg");
-            byte[] fileContent =  Files.readAllBytes(pb.toPath());
-            Picture picture1 = Picture.builder().filename(pb.getName())
-                    .base64(Base64.getEncoder().encodeToString(fileContent))
-                    .type(Files.probeContentType(pb.toPath()))
-                    .build();
-            user.setPicture(picture1);
-            picture1.setUser(user);
-            pictureRepository.save(picture1);
-            user.setNumberOfReviews(0);
-            user.setRating(0L);
-            user.setVerified(false);
-            user.setEmailVerified(true);
+            Picture picture = profilePicture(user);
             userRepository.save(user);
+            pictureRepository.save(picture);
 
             userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
             log.debug(userDetails.getUsername() + " created");
         }
+        User user2 = userRepository.findByEmail(facebookUser.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
         System.out.println(userDetails.getUsername());
         System.out.println(token);
-        User user = userRepository.findByEmail(facebookUser.getEmail());
-        System.out.println(user.getEmail());
-        LoginResponse jwt = LoginResponse.builder().id(user.getId()).token(token).build();
-
+        System.out.println(user2.getEmail());
+        LoginResponse jwt = LoginResponse.builder().id(user2.getId()).token(token).build();
         return new Response(jwt, HttpStatus.ACCEPTED);
+    }
+
+    private Picture profilePicture(User user) throws IOException {
+        File pb = new File("src/main/resources/static/images/random/austin-chan-ukzHlkoz1IE-unsplash.jpg");
+        byte[] fileContent =  Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .base64(Base64.getEncoder().encodeToString(fileContent))
+                .type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        System.out.println("kj'm hit");
+        System.out.println("kj'm hit");
+        user.setNumberOfReviews(0);
+        user.setRating(0L);
+        user.setVerified(false);
+        user.setEmailVerified(true);
+        return picture1;
     }
 
     /**
@@ -185,36 +191,21 @@ public class AuthServiceImpl implements AuthService {
 
         con.disconnect();
 
-        File pb = new File("src/main/resources/static/images/anders.jpg");
-        byte[] fileContent =  Files.readAllBytes(pb.toPath());
-        Picture picture1 = Picture.builder().filename(pb.getName())
-                .base64(Base64.getEncoder().encodeToString(fileContent))
-                .type(Files.probeContentType(pb.toPath()))
-                .build();
-        user.setPicture(picture1);
-        picture1.setUser(user);
-        pictureRepository.save(picture1);
-        user.setNumberOfReviews(0);
-        user.setRating(0L);
-        user.setVerified(false);
-        user.setEmailVerified(true);
-        user.setPassword(passwordEncoder.encode(generatePassword(8)));
-        userRepository.save(user);
-
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
 
         if (userDetails == null){
+            Picture picture = profilePicture(user);
             user.setPassword(passwordEncoder.encode(generatePassword(8)));
-            user.setVerified(true);
             userRepository.save(user);
+            pictureRepository.save(picture);
             userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
         }
         final String token = jwtUtil.generateToken(userDetails);
 
-//        User user = userRepository.findByEmail(socialLoginRequest.getEmail());
+        user = userRepository.findByEmail(user.getEmail());
 
         System.out.println(user.getFirstName() + " " + user.getLastName() + " " + user.getEmail());
-
+        System.out.println(user.getId());
         LoginResponse jwt = LoginResponse.builder()
                 .id(user.getId())
                 .token(token)

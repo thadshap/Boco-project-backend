@@ -30,7 +30,7 @@ public class AuthController {
     private SecurityService securityService;
 
     @PostMapping("/facebook/signin")
-    public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) {
+    public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) throws IOException {
         log.info("facebook login {}", socialLoginRequest);
         System.out.println(socialLoginRequest);
         return authService.loginUserFacebook(socialLoginRequest.getId_token());
