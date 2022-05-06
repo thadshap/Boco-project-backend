@@ -113,14 +113,6 @@ public class UserServiceImpl implements UserService {
              * message : outputMessages) { message.setUser(null); ouputMessageRepository.save(message);
              * ouputMessageRepository.delete(message); } }
              */
-            // Get messages
-            // List<Message> messages = messageRepository.findAll();
-            // for (Message message : messages) {
-            // if (message.getUser().getId() == user.getId()) {
-            // message.setUser(null);
-            // messageRepository.save(message);
-            // }
-            // }
 
             userRepository.save(user);
 
