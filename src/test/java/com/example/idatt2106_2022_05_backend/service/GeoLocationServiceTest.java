@@ -20,7 +20,6 @@ class GeoLocationServiceTest {
 
         double dist = service.calculateDistance(userGeoLocation.getLat(), userGeoLocation.getLng(),
                 itemGeoLocation.getLat(), itemGeoLocation.getLng());
-        System.out.println("Distance between the given points should be about 3,5km" + dist);
         assertTrue(3.4 < dist && dist < 3.6);
     }
 }

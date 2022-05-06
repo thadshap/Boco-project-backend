@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.PictureReturnDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdDto;
 import com.example.idatt2106_2022_05_backend.dto.ad.AdUpdateDto;
 import com.example.idatt2106_2022_05_backend.dto.user.UserGeoLocation;
+import com.example.idatt2106_2022_05_backend.model.Category;
 import com.example.idatt2106_2022_05_backend.util.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,8 @@ public interface AdService {
     Response getAllCategoriesWithLevel();
 
     Response getAllAdsInCategoryAndSubCategories(String name, UserGeoLocation userGeoLocation);
+
+    List<Category> findSubCategories(long categoryId);
 
     Response getAllParentCategories();
 

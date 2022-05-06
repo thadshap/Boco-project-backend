@@ -411,29 +411,138 @@ public class ChatIntegrationTest {
 
             @Test
             public void getGroupUsersByGroupId() {
+                // Retrieve a user and group
+                Group group = groupRepository.findAll().get(0);
 
+                // Assert not null
+                assertNotNull(group);
+
+                // Get the number of members
+                int numberOfMembers = group.getUsers().size();
+
+                // Perform the method
+                ResponseEntity<Object> response = chatService.getGroupUsersByGroupId(group.getId());
+                List<Long> ids = Methods.this.getGroupUsersByGroupId(group.getId());
+
+                // Assert result
+                assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+                assertEquals(ids.size(), numberOfMembers);
             }
 
             @Test
             public void getGroupChatsBasedOnUserId() {
+                // Retrieve a user and group
+                User user1 = userRepository.findAll().get(0);
+                User user2 = userRepository.findAll().get(1);
+                User user3 = userRepository.findAll().get(2);
 
+                Group group = groupRepository.findAll().get(0);
+
+                // Assert not null
+                assertNotNull(user1);
+                assertNotNull(user2);
+                assertNotNull(user3);
+
+                assertNotNull(group);
+
+                // Get group chats based on user id
+                List<GroupDto> groupsBefore = Methods.this.getGroupChatsBasedOnUserId(user1.getId());
+
+                // Creating list to hold user ids
+                Set<Long> ids = new HashSet<>();
+                ids.add(user1.getId());
+                ids.add(user2.getId());
+                ids.add(user3.getId());
+
+                // ListGroupDto needed to call on method
+                ListGroupDto dto = new ListGroupDto();
+                dto.setGroupName("New group!");
+                dto.setUserIds(ids);
+
+                // Create a new group
+                Methods.this.createGroupFromUserIds(dto);
+
+                // Get group chats based on user id
+                List<GroupDto> groupsAfter = Methods.this.getGroupChatsBasedOnUserId(user1.getId());
+
+                // Assert that new and old number of chats is not the same
+                assertNotEquals(groupsBefore.size(), groupsAfter.size());
+
+                // Use the service method
+                ResponseEntity<Object> response = chatService.getGroupChatsBasedOnUserId(user1.getId());
+
+                // Assert response
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
             }
 
         }
 
         @Nested
         class RemovalTests {
+
             @Test
             public void removeUserFromGroupById() {
+                // Assert that there are users and groups in db
+                assertTrue(userRepository.findAll().size() > 0);
+                assertTrue(groupRepository.findAll().size() > 0);
+
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Get the previous number of users in the group
+                int prevMemberCount = group.getUsers().size();
+
+                // Get a user from the group
+                Optional<User> userFound = group.getUsers().stream().findFirst();
+
+                // Assert that the user exists
+                assertTrue(userFound.isPresent());
+                User user = userFound.get();
+
+                // Remove the user from the group
+                ResponseEntity<Object> response = chatService.
+                        removeUserFromGroupById(group.getId(), user.getId());
+
+                Optional<Group> groupFound = groupRepository.findById(group.getId());
+
+                // Assert that the group exists
+                assertTrue(groupFound.isPresent());
+
+                // Get the new number of users in the group
+                int newMemberCount = groupFound.get().getUsers().size();
+
+                // Assert proper response
+                assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
+
+                // Assert that the member count decreased
+                assertNotEquals(newMemberCount, prevMemberCount);
 
             }
         }
 
         @Nested
         class UpdateTests {
+
             @Test
             public void changeGroupNameFromGroupId() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Update the group with a new name!
+                ResponseEntity<Object> response = chatService.
+                        changeGroupNameFromGroupId(group.getId(), "A new name :-)");
+
+                // Assert response code
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Assert that the previous and new name is different
+                String prevName = group.getName();
+                String newName = groupRepository.findById(group.getId()).get().getName();
+
+                assertNotEquals(prevName, newName);
             }
         }
 
@@ -442,12 +551,70 @@ public class ChatIntegrationTest {
 
             @Test
             public void addUserToGroupById() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Create a new user
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
+                        .password("pass1word").build();
+
+
+                // Saving the users
+                User user = userRepository.save(newUser);
+                assertNotNull(user);
+
+                // Get the previous member count of the group
+                int prevCount = group.getUsers().size();
+
+                // Add the new user to the group
+                ResponseEntity<Object> response = chatService.addUserToGroupById(group.getId(), user.getId());
+
+                // Assert response
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Get the new member count of the group
+                Group groupAfter = groupRepository.findById(group.getId()).get();
+                int newCount = groupAfter.getUsers().size();
+
+                // Assert that the member-count is different
+                assertNotEquals(prevCount, newCount);
             }
 
             @Test
             public void addUserToGroupByEmail() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Create a new user
+                User newUser = User.builder().firstName("firstName4").lastName("lastName3").email("user4.name3@hotmail.com")
+                        .password("pass1word").build();
+
+
+                // Saving the users
+                User user = userRepository.save(newUser);
+                assertNotNull(user);
+
+                // Get the previous member count of the group
+                int prevCount = group.getUsers().size();
+
+                // Add the new user to the group
+                ResponseEntity<Object> response = chatService.addUserToGroupByEmail(group.getId(), user.getEmail());
+
+                // Assert response
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Get the new member count of the group
+                Group groupAfter = groupRepository.findById(group.getId()).get();
+                int newCount = groupAfter.getUsers().size();
+
+                // Assert that the member-count is different
+                assertNotEquals(prevCount, newCount);
             }
         }
         /************************ METHODS COPIED IN FROM CHAT-SERVICE (FOR TESTING) ***********************/
@@ -485,6 +652,33 @@ public class ChatIntegrationTest {
             else {
                 return null;
             }
+        }
+
+        public List<Long> getGroupUsersByGroupId(long groupId) {
+            Group group = getGroup(groupId);
+
+            List<User> users = new ArrayList<>(group.getUsers());
+            List<Long> userIds = new ArrayList<>();
+
+            for (int i = 0; i < users.size(); i++) {
+                userIds.add(users.get(i).getId());
+            }
+
+            return userIds;
+        }
+
+        public List<GroupDto> getGroupChatsBasedOnUserId(long id) {
+            User user = getUser(id);
+
+            Set<Group> groups = user.getGroupChats();
+            List<Group> groupsL = new ArrayList<>(groups);
+            List<GroupDto> grps = new ArrayList<>();
+
+            for (int i = 0; i < groupsL.size(); i++) {
+                grps.add(new GroupDto(groupsL.get(i).getId(), groupsL.get(i).getName()));
+            }
+
+            return grps;
         }
 
         public List<MessageDto> getAllMessagesByGroupId(long groupId) {
@@ -574,7 +768,8 @@ public class ChatIntegrationTest {
             }
 
             return null;
-        };
+        }
+
     }
 
 }

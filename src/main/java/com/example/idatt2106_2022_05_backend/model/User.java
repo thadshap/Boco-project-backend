@@ -70,10 +70,10 @@ public class User {
 
     // private Set<UserGroup> userGroup
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<Rental> rentalsOwned;
 
-    @OneToMany(mappedBy = "borrower", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "borrower", cascade = CascadeType.REMOVE)
     private List<Rental> rentalsBorrowed;
 
     // PS: These reviews are those that are WRITTEN by this user (not owned)

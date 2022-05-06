@@ -29,12 +29,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
@@ -95,13 +93,9 @@ public class AuthServiceImpl implements AuthService {
     public Response loginUserFacebook(String accessToken) throws IOException {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
-        System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " "
-                + facebookUser.getLastName() + " " + facebookUser.getPicture() + " " + facebookUser.getEmail());
-
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
         if (userDetails == null) {
-            log.debug("facebook user details is null");
             User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName()).verified(true)
                     .password(passwordEncoder.encode(generatePassword(8))).build();
