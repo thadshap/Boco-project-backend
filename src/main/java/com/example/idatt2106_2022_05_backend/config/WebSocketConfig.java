@@ -65,7 +65,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws");
         // addEndpoint is the endpoint where clients requests connection, handshake happens here
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:8080", "http://apic.app/online/",
+        registry.addEndpoint("/ws").setAllowedOrigins("https://localhost:8080", "http://apic.app/online/",
                 "chrome-extension://ggnhohnkfcpcanfekomdkjffnfcjnjam").withSockJS();
     }
 

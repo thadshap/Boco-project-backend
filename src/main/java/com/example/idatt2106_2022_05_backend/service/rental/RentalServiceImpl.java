@@ -96,7 +96,7 @@ public class RentalServiceImpl implements RentalService {
             Map<String, Object> variables = new HashMap<>();
             variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName() + "\n" +
                     "Nytt låneforespørsel er tilgjengelig for deg hos BOCO");
-            variables.put("url", "http://localhost:8080/chat");
+            variables.put("url", "https://localhost:8080/chat");
 
             Email email = Email.builder()
                     .from("BOCO@gmail.com")
@@ -155,7 +155,7 @@ public class RentalServiceImpl implements RentalService {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
-        variables.put("url", "http://localhost:8080/rentals");
+        variables.put("url", "https://localhost:8080/rentals");
         variables.put("lont", "sant");
 
 
@@ -191,7 +191,7 @@ public class RentalServiceImpl implements RentalService {
         rental.setActive(true);
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", rental.getBorrower().getFirstName() + " " + rental.getBorrower().getLastName());
-        variables.put("url", "http://localhost:8080/rentals");
+        variables.put("url", "https://localhost:8080/rentals");
 
         Email email = Email.builder()
                 .from("BOCO@gmail.com")
@@ -351,7 +351,6 @@ public class RentalServiceImpl implements RentalService {
                     .rentTo(rental.get(i).getRentTo())
                     .price(rental.get(i).getPrice())
                     .isReviewed(rental.get(i).isReviewed())
-                    .ownerId(rental.get(i).getOwner().getId())
                     .build();
             rentals.getRentals().add(rentalReturn);
         }
@@ -371,7 +370,7 @@ public class RentalServiceImpl implements RentalService {
             return new Response("No pictures found for rental with ad title \"" + rental.getAd().getTitle() + "\"",HttpStatus.NO_CONTENT);
         }
         PictureReturnDto returnDto = PictureReturnDto.builder()
-                //                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
+//                .base64(Base64.getEncoder().encodeToString(pictures.get(0).getData()))
                 .base64(pictures.get(0).getBase64())
                 .type(pictures.get(0).getType())
                 .build();

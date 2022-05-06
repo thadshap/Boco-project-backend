@@ -12,7 +12,7 @@ import java.security.GeneralSecurityException;
 
 public interface AuthService {
 
-    Response loginUserFacebook(String accessToken);
+    Response loginUserFacebook(String accessToken) throws IOException;
 
     Response loginUserGoogle(SocialLoginRequest socialLoginRequest) throws GeneralSecurityException, IOException;
 

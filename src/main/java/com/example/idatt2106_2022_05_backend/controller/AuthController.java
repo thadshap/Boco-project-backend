@@ -30,7 +30,7 @@ public class AuthController {
     private SecurityService securityService;
 
     @PostMapping("/facebook/signin")
-    public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) {
+    public Response facebookAuth(@RequestBody SocialLoginRequest socialLoginRequest) throws IOException {
         log.info("facebook login {}", socialLoginRequest);
         return authService.loginUserFacebook(socialLoginRequest.getId_token());
     }
@@ -55,7 +55,7 @@ public class AuthController {
             throws MessagingException, IOException {
         log.debug("[X] Call to reset password");
         return authService.resetPassword(forgotPasswordDto,
-                "http://" + url.getServerName() + ":" + "8080" + url.getContextPath());
+                "https://" + url.getServerName() + ":" + "8080" + url.getContextPath());
     }
 
     @PostMapping("/renewPassword")
@@ -78,7 +78,7 @@ public class AuthController {
     public ModelAndView verifyRegistration(@RequestParam("token") String token) {
         log.debug("[X] Call to verify user with email");
         String result = authService.validateEmailThroughToken(token);
-        String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "http://localhost8080/resendVerification?"
+        String resendVerificationMail = "Send verifikasjons mail på nytt\n" + "https://localhost8080/resendVerification?"
                 + token;
         ModelAndView view = new ModelAndView("verified");
         if (result.equalsIgnoreCase("valid email")) {
@@ -102,6 +102,6 @@ public class AuthController {
     }
 
     private String url(HttpServletRequest url) {
-        return "http://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath();
+        return "https://" + url.getServerName() + ":" + url.getServerPort() + url.getContextPath();
     }
 }

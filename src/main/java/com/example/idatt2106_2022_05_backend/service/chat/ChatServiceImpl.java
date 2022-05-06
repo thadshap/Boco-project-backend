@@ -119,7 +119,7 @@ public class ChatServiceImpl implements ChatService {
         String content = "Hei, " + owner.getFirstName() + " " + owner.getLastName() + "! Jeg vil leie fra annonsen " + ad.getTitle() + ".\n" +
                 "Fra: " + rentalDto.getRentFrom() + " til " + rentalDto.getRentTo() + "\n" +
                 "Pris: " + rentalDto.getPrice() + "kr \n" +
-                "http://localhost:8080/approve_rental?rentalId=" + rentalDto.getId();
+                "https://localhost:8080/approve_rental?rentalId=" + rentalDto.getId();
 
         Message message = new Message();
         message.setContent(content);

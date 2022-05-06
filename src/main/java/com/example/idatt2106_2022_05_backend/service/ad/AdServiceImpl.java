@@ -680,7 +680,7 @@ public class AdServiceImpl implements AdService {
         // Required attributes
         newAd.setRental(adDto.isRental());
         newAd.setRentedOut(false);
-//        newAd.setDurationType(adDto.getDurationType());
+        newAd.setDurationType(adDto.getDurationType());
         newAd.setPrice(adDto.getPrice());
         newAd.setStreetAddress(adDto.getStreetAddress());
         newAd.setTitle(adDto.getTitle());
@@ -823,9 +823,9 @@ public class AdServiceImpl implements AdService {
             if (adUpdateDto.getDescription() != null) {
                 ad.setDescription(adUpdateDto.getDescription());
             }
-//            if (adUpdateDto.getDurationType() != null) {
-//                ad.setDurationType(adUpdateDto.getDurationType());
-//            }
+            if (adUpdateDto.getDurationType() != null) {
+                ad.setDurationType(adUpdateDto.getDurationType());
+            }
             if (adUpdateDto.getPrice() > 0) {
                 ad.setPrice(adUpdateDto.getPrice());
             }
@@ -1060,7 +1060,7 @@ public class AdServiceImpl implements AdService {
         List<PictureReturnDto> returnDto = new ArrayList<>();
         for (int i = 0; i < pictures.size(); i++) {
             returnDto.add(PictureReturnDto.builder()
-                    //                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
+//                    .base64(Base64.getEncoder().encodeToString(pictures.get(i).getData()))
                     .base64(pictures.get(i).getBase64())
                     .type(pictures.get(i).getType())
                     .build());
@@ -1101,7 +1101,7 @@ public class AdServiceImpl implements AdService {
             Picture picture = Picture.builder()
                     .filename(files.get(i).getName())
                     .type(files.get(i).getContentType())
-                    //                    .data(files.get(i).getBytes())
+//                    .data(files.get(i).getBytes())
                     .base64(Base64.getEncoder().encodeToString(files.get(i).getBytes()))
                     .build();
             ad.getPictures().add(picture);
