@@ -68,6 +68,7 @@ public interface AdService {
     // delete picture
     Response deletePicture(long ad_id, List<MultipartFile> chosenPicture) throws IOException;
 
+    Response getAllCategoriesWithLevel();
 
     // Search in database
     Response searchThroughAds(String searchword, UserGeoLocation userGeoLocation);
