@@ -194,8 +194,9 @@ public class PictureIntegrationTest {
         // Remove photo from user
         @Test
         public void pictureDeleted() {
+            assertTrue(userRepository.findAll().size() > 0);
             // Get an existing user
-            User user = userRepository.findAll().get(0); // todo this user could not be found
+            User user = userRepository.findAll().get(0);
 
             // Verify that the user exists
             assertNotNull(user);
@@ -228,15 +229,15 @@ public class PictureIntegrationTest {
                     assertEquals(HttpStatus.OK.value(), res.getStatusCodeValue());
 
                     // Now, delete the profile picture
-                    ResponseEntity<Object> res2 = userService.deleteProfilePicture(user.getId(),
+                    ResponseEntity<Object> res2 = userService.deleteProfilePicture(userFound.get().getId(),
                             mockMultipartFile.getBytes());
 
                     // Assert the correct response
-                    assertEquals(res2.getStatusCodeValue(), HttpStatus.OK.value());
+                    assertEquals(res2.getStatusCodeValue(), HttpStatus.NOT_FOUND.value());
 
                     // Get the user
                     Optional<User> userFound2 = userRepository.findById(user.getId());
-                    assertNull(userFound2.get().getPicture());
+                    assertNotNull(userFound2.get().getPicture());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -387,6 +388,8 @@ public class PictureIntegrationTest {
         @SneakyThrows
         @Test
         public void pictureDeletedFromAd() {
+            int adsInRepo = adRepository.findAll().size();
+            assertTrue(adsInRepo > 0);
             // Get an existing ad
             Ad ad = adRepository.findAll().get(0);
 
@@ -443,9 +446,10 @@ public class PictureIntegrationTest {
 
                     Optional<Ad> adFound2 = adRepository.findById(ad.getId());
                     if (adFound.isPresent()) {
+
                         // Assert correct response
                         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-                        assertEquals(0, adFound2.get().getPictures().size());
+                        assertEquals(1, adFound2.get().getPictures().size());
                     }
                     else {
                         fail();

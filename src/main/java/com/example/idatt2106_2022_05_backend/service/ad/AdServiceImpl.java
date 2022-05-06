@@ -919,27 +919,25 @@ public class AdServiceImpl implements AdService {
             if (pictures != null) {
                 int i = 0;
                 for (Picture picture : pictures) {
-                    if (Arrays.equals(picture.getData(), chosenPicture.get(i).getBytes())) {
-                        // Remove this picture from ad
-                        ad.get().getPictures().remove(picture);
+                    for(MultipartFile inputFile : chosenPicture) {
+                        if (Arrays.equals(picture.getData(), inputFile.getBytes())) {
+                            // Remove this picture from ad
+                            ad.get().getPictures().remove(picture);
 
-                        // Set the foreign keys of the picture equal to null
-                        picture.setAd(null);
-                        picture.setUser(null);
+                            // Set the foreign keys of the picture equal to null
+                            picture.setAd(null);
+                            picture.setUser(null);
 
-                        // Update the ad
-                        adRepository.save(ad.get());
+                            // Update the ad
+                            adRepository.save(ad.get());
 
-                        // Delete the PICTURE
-                        pictureRepository.delete(picture);
-
-                        // Update the ad
-                        // adRepository.save(ad.get());
-
-                        return new Response("Slettet bildet", HttpStatus.OK);
+                            // Delete the PICTURE
+                            pictureRepository.delete(picture);
+                            i++;
+                        }
                     }
-                    i++;
                 }
+                return new Response("Slettet " + i + " bilder.", HttpStatus.OK);
             }
             // If we get here, pictures are equal to null
             return new Response("Bildet ble ikke funnet i databasen", HttpStatus.NO_CONTENT);

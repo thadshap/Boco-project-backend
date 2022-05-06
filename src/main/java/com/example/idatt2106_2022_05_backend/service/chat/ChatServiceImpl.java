@@ -448,7 +448,6 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return new Response("User not found in group", HttpStatus.BAD_REQUEST);
-
     }
 
     /**
