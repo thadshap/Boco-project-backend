@@ -28,8 +28,8 @@ public class Picture {
     private String type;
 
     // LOB is datatype for storing large object data
-    @Column(name = "data", nullable = true)
-    private byte[] data;
+    //@Column(name = "data", nullable = true)
+    //private byte[] data;
 
     @Lob
     @Column(name = "image")
