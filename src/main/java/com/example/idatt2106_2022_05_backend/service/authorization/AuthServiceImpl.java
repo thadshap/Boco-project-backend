@@ -5,6 +5,7 @@ import com.example.idatt2106_2022_05_backend.dto.user.*;
 import com.example.idatt2106_2022_05_backend.enums.AuthenticationType;
 import com.example.idatt2106_2022_05_backend.model.*;
 import com.example.idatt2106_2022_05_backend.model.facebook.FacebookUser;
+import com.example.idatt2106_2022_05_backend.repository.PictureRepository;
 import com.example.idatt2106_2022_05_backend.repository.ResetPasswordTokenRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserRepository;
 import com.example.idatt2106_2022_05_backend.repository.UserVerificationTokenRepository;
@@ -28,10 +29,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
@@ -77,6 +80,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private FacebookClient facebookClient;
 
+    @Autowired
+    private PictureRepository pictureRepository;
+
     /**
      * Method to get user from facebook and log them in to.
      *
@@ -86,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
      * @return user login dto.
      */
     @Override
-    public Response loginUserFacebook(String accessToken) {
+    public Response loginUserFacebook(String accessToken) throws IOException {
         FacebookUser facebookUser = facebookClient.getUser(accessToken);
 
         System.out.println(facebookUser.getEmail() + " " + facebookUser.getFirstName() + " "
@@ -95,14 +101,27 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
 
         if (userDetails == null) {
-            System.out.println("user details is null");
+            log.debug("facebook user details is null");
             User user = User.builder().email(facebookUser.getEmail()).firstName(facebookUser.getFirstName())
                     .lastName(facebookUser.getLastName()).verified(true)
                     .password(passwordEncoder.encode(generatePassword(8))).build();
+            File pb = new File("src/main/resources/static/images/anders.jpg");
+            byte[] fileContent =  Files.readAllBytes(pb.toPath());
+            Picture picture1 = Picture.builder().filename(pb.getName())
+                    .base64(Base64.getEncoder().encodeToString(fileContent))
+                    .type(Files.probeContentType(pb.toPath()))
+                    .build();
+            user.setPicture(picture1);
+            picture1.setUser(user);
+            pictureRepository.save(picture1);
+            user.setNumberOfReviews(0);
+            user.setRating(0L);
+            user.setVerified(false);
+            user.setEmailVerified(true);
             userRepository.save(user);
+
             userDetails = userDetailsServiceImpl.loadUserByUsername(facebookUser.getEmail());
-            System.out.println("user is saved");
-            System.out.println(userDetails.getUsername());
+            log.debug(userDetails.getUsername() + " created");
         }
         final String token = jwtUtil.generateToken(userDetails);
         System.out.println(userDetails.getUsername());
@@ -165,6 +184,22 @@ public class AuthServiceImpl implements AuthService {
         in.close();
 
         con.disconnect();
+
+        File pb = new File("src/main/resources/static/images/anders.jpg");
+        byte[] fileContent =  Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .base64(Base64.getEncoder().encodeToString(fileContent))
+                .type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        pictureRepository.save(picture1);
+        user.setNumberOfReviews(0);
+        user.setRating(0L);
+        user.setVerified(false);
+        user.setEmailVerified(true);
+        user.setPassword(passwordEncoder.encode(generatePassword(8)));
+        userRepository.save(user);
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
 
@@ -332,6 +367,19 @@ public class AuthServiceImpl implements AuthService {
 
         User user = modelMapper.map(createAccount, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        File pb = new File("src/main/resources/static/images/anders.jpg");
+        byte[] fileContent =  Files.readAllBytes(pb.toPath());
+        Picture picture1 = Picture.builder().filename(pb.getName())
+                .base64(Base64.getEncoder().encodeToString(fileContent))
+                .type(Files.probeContentType(pb.toPath()))
+                .build();
+        user.setPicture(picture1);
+        picture1.setUser(user);
+        pictureRepository.save(picture1);
+        user.setNumberOfReviews(0);
+        user.setRating(0L);
+        user.setVerified(false);
         userRepository.save(user);
 
 
