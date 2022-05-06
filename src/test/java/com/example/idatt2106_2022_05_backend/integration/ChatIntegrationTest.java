@@ -503,8 +503,13 @@ public class ChatIntegrationTest {
                 ResponseEntity<Object> response = chatService.
                         removeUserFromGroupById(group.getId(), user.getId());
 
+                Optional<Group> groupFound = groupRepository.findById(group.getId());
+
+                // Assert that the group exists
+                assertTrue(groupFound.isPresent());
+
                 // Get the new number of users in the group
-                int newMemberCount = group.getUsers().size();
+                int newMemberCount = groupFound.get().getUsers().size();
 
                 // Assert proper response
                 assertEquals(response.getStatusCodeValue(), HttpStatus.OK.value());
@@ -517,9 +522,27 @@ public class ChatIntegrationTest {
 
         @Nested
         class UpdateTests {
+
             @Test
             public void changeGroupNameFromGroupId() {
+                // Assert that there are users and groups in db
+                assertTrue(groupRepository.findAll().size() > 0);
 
+                // Get a group
+                Group group = groupRepository.findAll().get(0);
+
+                // Update the group with a new name!
+                ResponseEntity<Object> response = chatService.
+                        changeGroupNameFromGroupId(group.getId(), "A new name :-)");
+
+                // Assert response code
+                assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+
+                // Assert that the previous and new name is different
+                String prevName = group.getName();
+                String newName = groupRepository.findById(group.getId()).get().getName();
+
+                assertNotEquals(prevName, newName);
             }
         }
 
